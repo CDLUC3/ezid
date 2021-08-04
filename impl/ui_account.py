@@ -464,7 +464,7 @@ def sendPasswordResetEmail(username, emailAddress):
 def decodePasswordResetRequest(request):
     """Decodes a password reset request, returning a tuple (username,
     timestamp) on success or None on error."""
-    m = re.match("/([^ ,]+),(\d+),([\da-f]+)$", request)
+    m = re.match("/([^ ,]+),(\\d+),([\\da-f]+)$", request)
     if not m:
         return None
     username = m.group(1)

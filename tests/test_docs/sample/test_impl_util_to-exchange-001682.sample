@@ -1,0 +1,62 @@
+input_json=
+{"mrt.creator":"cdl_oac","erc":"who: James C. Sawders
+what: Cuba - Province of Oriente - Santiago De Cuba: The channel waters of the entrance to Santiago harbor now the scene of
+seashore fun and frolic was once the screen of naval maneuvering by both Spanish and American fleets in the days of 1898 during
+the Spanish-American War. The little hilly islands had no fine homes or swimming clubs or casinos. In the water just between the
+two islands in the foreground the Merrimac sank. Lt. Hobson, under orders, sank the ship which was a collier but it was planned to
+have her go down closer to the mouth of the channel instead of inside. Shells from the Spaniards damaged the Merrimac so that she
+could not be steered into the proper position, sinking before this could be accomplished. The Spanish flotilla, in the channel
+behind the hill island slipped out thro [through] the channel around the point of the island at the center back of the picture, by
+passing the Merrimac and slipping out to the open sea under cover of darkness on July 3, 1898, one month after the Merrimac had
+gone down. As Cervera got his ships out of the harbor, He ordered the Mercedes sunk in an effort to keep the Americans out of the
+harbor, but because of American shells, his ship-sinking did no better than the Americans in the matter of placing. The Spaniards
+were overhauled by the Americans outside the harbor mouth and their ships shelled, setting fire to the wooden decks which caused
+the Spaniards to beach the ships and abandon them in order to save their men who were subsequently taken prisoners by Cuban force
+near by.
+when: 1948
+where: ark:/13030/m51z4bcx
+where: ark:/13030/kt1w1014q8"}
+~~~~~~~~~~
+dict_pp=
+{'erc': 'who: James C. Sawders
+'
+        'what: Cuba - Province of Oriente - Santiago De Cuba: The channel '
+        'waters of the entrance to Santiago harbor now the scene of seashore '
+        'fun and frolic was once the screen of naval maneuvering by both '
+        'Spanish and American fleets in the days of 1898 during the '
+        'Spanish-American War. The little hilly islands had no fine homes or '
+        'swimming clubs or casinos. In the water just between the two islands '
+        'in the foreground the Merrimac sank. Lt. Hobson, under orders, sank '
+        'the ship which was a collier but it was planned to have her go down '
+        'closer to the mouth of the channel instead of inside. Shells from the '
+        'Spaniards damaged the Merrimac so that she could not be steered into '
+        'the proper position, sinking before this could be accomplished. The '
+        'Spanish flotilla, in the channel behind the hill island slipped out '
+        'thro [through] the channel around the point of the island at the '
+        'center back of the picture, by passing the Merrimac and slipping out '
+        'to the open sea under cover of darkness on July 3, 1898, one month '
+        'after the Merrimac had gone down. As Cervera got his ships out of the '
+        'harbor, He ordered the Mercedes sunk in an effort to keep the '
+        'Americans out of the harbor, but because of American shells, his '
+        'ship-sinking did no better than the Americans in the matter of '
+        'placing. The Spaniards were overhauled by the Americans outside the '
+        'harbor mouth and their ships shelled, setting fire to the wooden '
+        'decks which caused the Spaniards to beach the ships and abandon them '
+        'in order to save their men who were subsequently taken prisoners by '
+        'Cuban force near by.
+'
+        'when: 1948
+'
+        'where: ark:/13030/m51z4bcx
+'
+        'where: ark:/13030/kt1w1014q8',
+ 'mrt.creator': 'cdl_oac'}
+~~~~~~~~~~
+keys=
+mrt.creator, erc
+~~~~~~~~~~
+output_exchange=
+mrt.creator cdl_oac erc
+who:%20James%20C.%20Sawders%0Awhat:%20Cuba%20-%20Province%20of%20Oriente%20-%20Santiago%20De%20Cuba:%20The%20channel%20waters%20of%20the%20entrance%20to%20Santiago%20harbor%20now%20the%20scene%20of%20seashore%20fun%20and%20frolic%20was%20once%20the%20screen%20of%20naval%20maneuvering%20by%20both%20Spanish%20and%20American%20fleets%20in%20the%20days%20of%201898%20during%20the%20Spanish-
+American%20War.%20The%20little%20hilly%20islands%20had%20no%20fine%20homes%20or%20swimming%20clubs%20or%20casinos.%20In%20the%20water%20just%20between%20the%20two%20islands%20in%20the%20foreground%20the%20Merrimac%20sank.%20Lt.%20Hobson,%20under%20orders,%20sank%20the%20ship%20which%20was%20a%20collier%20but%20it%20was%20planned%20to%20have%20her%20go%20down%20closer%20to%20the%20mouth%20of%20the%20channel%20instead%20of%20inside.%20Shells%20from%20the%20Spaniards%20damaged%20the%20Merrimac%20so%20that%20she%20could%20not%20be%20steered%20into%20the%20proper%20position,%20sinking%20before%20this%20could%20be%20accomplished.%20The%20Spanish%20flotilla,%20in%20the%20channel%20behind%20the%20hill%20island%20slipped%20out%20thro%20%5Bthrough%5D%20the%20channel%20around%20the%20point%20of%20the%20island%20at%20the%20center%20back%20of%20the%20picture,%20by%20passing%20the%20Merrimac%20and%20slipping%20out%20to%20the%20open%20sea%20under%20cover%20of%20darkness%20on%20July%203,%201898,%20one%20month%20after%20the%20Merrimac%20had%20gone%20down.%20As%20Cervera%20got%20his%20ships%20out%20of%20the%20harbor,%20He%20ordered%20the%20Mercedes%20sunk%20in%20an%20effort%20to%20keep%20the%20Americans%20out%20of%20the%20harbor,%20but%20because%20of%20American%20shells,%20his%20ship-
+sinking%20did%20no%20better%20than%20the%20Americans%20in%20the%20matter%20of%20placing.%20The%20Spaniards%20were%20overhauled%20by%20the%20Americans%20outside%20the%20harbor%20mouth%20and%20their%20ships%20shelled,%20setting%20fire%20to%20the%20wooden%20decks%20which%20caused%20the%20Spaniards%20to%20beach%20the%20ships%20and%20abandon%20them%20in%20order%20to%20save%20their%20men%20who%20were%20subsequently%20taken%20prisoners%20by%20Cuban%20force%20near%20by.%0Awhen:%201948%0Awhere:%20ark:/13030/m51z4bcx%0Awhere:%20ark:/13030/kt1w1014q8

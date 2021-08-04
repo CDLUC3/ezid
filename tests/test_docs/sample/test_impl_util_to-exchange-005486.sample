@@ -1,0 +1,147 @@
+input_json=
+{"mrt.creator":"escholarship","erc":"who: Adams, J.,; Aggarwal, M.M.,; Ahammed, Z.,; Amonett, J.,; Anderson, B.D.,; Arkhipkin,
+D.,; Averichev, G.S.,; Badyal, S.K.,; Bai, Y.,; Balewski, J.,; Barannikova, O.,; Barnby, L.S.,; Baudot, J.,; Bekele, S.,; Belaga,
+V.V.,; Bellwied, R.,; Berger, J.,; Bezverkhny, B.I.,; Bharadwaj, S.,; Bhasin, A.,; Bhati, A.K.,; Bhatia, V.S,; Bichsel, H.,;
+Billmeier, A.,; Bland, L.C.,; Blyth, C.O.,; Bonner, B.E.,; Botje, M.,; Boucham, A.,; Brandin, A.V.,; Bravar, A.,; Bystersky, M.,;
+Cadman, R.V.,; Cai, X.Z.,; Caines, H.,; Calderon de la Barca Sanchez, M.,; Carroll, J.,; Castillo, J.,; Cebra, D.,; Chajecki, Z.,;
+Chaloupka, P.,; Chattopadhyay, S.,; Chen, H.F.,; Chen, Y.,; Cheng, J.,; Cherney, M.,; Chikanian, A.,; Christie, W.,; Coffin,
+J.P.,; Cormier, T.M.,; Cramer, J.G.,; Crawford, H.J.,; Das, D.,; Das, S.,; de Moura, M.M.,; Derevschikov, A.A.,; Didenko, L.,;
+Dietel, T.,; Dogra, S.M.,; Dong, W.J.,; Dong, X.,; Draper, J.E.,; Du, F.,; Dubey, A.K.,; Dunin, V.B.,; Dunlop, J.C.,; Dutta
+Mazumdar, M.R.,; Eckardt, V.,; Edwards, W.R.,; Efimov, L.G.,; Emelianov, V.,; Engelage, J.,; Eppley, G.,; Erazmus, B.,; Estienne,
+M.,; Fachini, P.,; Faivre, J.,; Fatemi, R.,; Fedorisin, J.,; Filimonov, K.,; Filip, P.,; Finch, E.,; Fine, V.,; Fisyak, Y.,;
+Foley, K.J.,; Fomenko, K.,; Fu, J.,; Gagliardi, C.A.,; Gans, J.,; Ganti, M.S.,; Gaudichet, L.,; Geurts, F.,; Ghazikhanian, V.,;
+Ghosh, P.,; Gonzalez, J.E.,; Grachov, O.,; Grebenyuk, O.,; Grosnick, D.,; Guertin, S.M.,; Guo, Y.,; Gupta, A.,; Gutierrez, T.D.,;
+Hallman, T.J.,; Hamed, A.,; Hardtke, D.,; Harris, J.W.,; Heinz, M.,; Henry, T.W.,; Hepplemann, S.,; Hippolyte, B.,; Hirsch, A.,;
+Hjort, E.,; Hoffmann, G.W.,; Horsley, M.,; Huang, H.Z.,; Huang, S.L.,; Hughes, E.W.,; Humanic, T.J.,; Igo, G.,; Ishihara, A.,;
+Jacobs, P.,; Jacobs, W.W.,; Janik, M.,; Jiang, H.,; Jones, P.G.,; Judd, E.G.,; Kabana, S.,; Kang, K.,; Kaplan, M.,; Keane, D.,;
+Khodyrev, V.Yu.,; Kiryluk, J.,; Kisiel, A.,; Kislov, E.M.,; Klay, J.,; Klein, S.R.,; Klyachko, A.,; Koetke, D.D.,; Kollegger, T.,;
+Kopytine, M.,; Kotchenda, L.,; Kramer, M.,; Kravtsov, P.,; Kravtsov, V.I.,; Krueger, K.,; Kuhn, C.,; Kulikov, A.I.,; Kumar, A.,;
+Kunz, C.L.,; Kutuev, R.Kh.,; Kuznetsov, A.A.,; Lamont, M.A.C.,; Landgraf, J.M.,; Lange, S.,; Laue, F.,; Lauret, J.,; Lebedev, A.,;
+Lednicky, R.,; Lehocka, S.,; LeVine, M.J.,; Li, C.,; Li, Q.,; Li, Y.,; Lindenbaum, S.J.,; Lisa, M.A.,; Liu, F.,; Liu, L.,; Liu,
+Q.J.,; Liu, Z.,; Ljubicic, T.,; Llope, W.J.,; Long, H.,; Longacre, R.S.,; Lopez-Noriega, M.,; Love, W.A.,; Lu, Y.,; Ludlam, T.,;
+Lynn, D.,; Ma, G.L.,; Ma, J.G.,; Ma, Y.G,; Magestro, D.,; Mahajan, S.,; Mahapatra, D.P.,; Majka, R.,; Mangotra, L.K.,; Manweiler,
+R.,; Margetis, S.,; Markert, C.,; Martin, L.,; Marx, J.N.,; Matis, H.S.,; Matulenko, Yu.A.,; McClain, C.J.,; McShane, T.S.,;
+Meissner, F.,; Melnick, Yu.,; Meschanin, A.,; Miller, M.L.,; Milosevich, Z.,; Minaev, N.G.,; Mironov, C.,; Mischke, A.,; Mishra,
+D.K.,; Mitchell, J.,; Mohanty, B.,; Molnar, L.,; Moore, C.F.,; Morozov, D.A.,; Munhoz, M.G.,; Nandi, B.K.,; Nayak, S.K.,; Nayak,
+T.K.,; Nelson, J.M.,; Netrakanti, P,K.,; Nikitin, V.A.,; Nogach, L.V.,; Nurushev, S.B.,; Odyniec, G.,; Ogawa, A.,; Okorokov, V.,;
+Oldenburg, M.,; Olson, D.,; Pal, S.K.,; Panebratsev, Y.,; Panitkin, S.Y.,; Pavlinov, A.I.,; Pawlak, T.,; Peitzmann, T.,;
+Perevoztchikov, V.,; Perkins, C.,; Peryt, W.,; Petrov, V.A.,; Phatak, S.C.,; Picha, R.,; Planinic, M.,; Pluta, J.,; Porile, N.,;
+Porter, J.,; Poskanzer, A.M.,; Potekhin, M.,; Potrebenikova, E.,; Potukuchi, B.V.K.S.,; Prindle, D.,; Pruneau, C.,; Putschke, J.,;
+Rai, G.,; Rakness, G.,; Raniwala, R.,; Raniwala, S.,; Ravel, O.,; Ray, R.L.,; Razin, S.V.,; Reichhold, D.,; Reid, J.G.,; Renault,
+G.,; Retiere, F.,; Ridiger, A.,; Ritter, H.G.,; Roberts, J.B.,; Rogachevskiy, O.V.,; Romero, J.L.,; Rose, A.,; Roy, C.,; Ruan,
+L.,; Sahoo, W.,; Sakrejda, I.,; Salur, S.,; Sandweiss, J.,; Savin, I.,; Sazhin, P.S.,; Schambach, J.,; Scharenberg, R.P.,;
+Schmitz, N.,; Schroeder, L.S.,; Schweda, K.,; Seger, J.,; Seyboth, P.,; Shahaliev, E.,; Shao, M.,; Shao, W.,; Sharma, M.,; Shen,
+W.Q.,; Shestermanov, K.E.,; Shimanskiy, S.S.,; Sichtermann, E.,; Simon, F.,; Singaraju, R.N.,; Skoro, G.,; Smirnov, N.,;
+Snellings, R.,; Sood, G.,; Sorensen, P.,; Sowinski, J.,; Speltz, J.,; Spinka, H.M.,; Srivastava, B.,; Stadnik, A.,; Stanislaus,
+T.D.S.,; Stock, R.,; Stolpovsky, A.,; Strikhanov, M.,; Stringfellow, B.,; Suaide, A.A.P.,; Sugarbaker, E.,; Suire, C.,; Sumbera,
+M.,; Surrow, B.,; Symons, T.J.M.,; Szanto de Toledo, A.,; Szarwas, P.,; Tai, A.,; Takahashi, J.,; Tang, A.H.,; Tarnowsky, T.,;
+Thein, D.,; Thomas, J.H.,; Timoshenko, S.,; Tokarev, M.,; Trainor, T.A.,; Trentalange, S.,; Tribble, R.E.,; Tsai, O.D.,; Ulery,
+J.,; Ullrich, T.,; Underwood, D.G.,; Urkinbaev, A.,; Van Buren, G.,; van Leeuwen, M.,; Vander Molen, A.M.,; Varma, R.,;
+Vasilevski, I.M.,; Vasiliev, A.N.,; Vernet, R.,; Vigdor, S.E.,; Viyogi, Y.P.,; Vokal, S.,; Voloshin, S.A.,; Vznuzdaev, M.,;
+Waggoner, W.T.,; Wang, F.,; Wang, G.,; Wang, G.,; Wang, X.L.,; Wang, Y.,; Wang, Y.,; Wang, Z.M.,; Ward, H.,; Watson, J.W.,; Webb,
+J.C.,; Wells, R.,; Westfall, G.D.,; Wetzler, A.,; Whitten, C. Jr.,; Wieman, H.,; Wissink, S.W.,; Witt, R.,; Wood, J.,; Wu, J.,;
+Xu, N.,; Xu, Z.,; Xu, Z.Z.,; Yamamoto, E.,; Yepes, P.,
+what: Minijet Deformation and Charge-independent Two-particle Correlations on Momentum Subspace (eta,phi) In Au-Au Collisions at
+sqrt(sNN) = 130 GeV
+when: 2004-11-04
+where: ark:/13030/qt0ck5g0tk"}
+~~~~~~~~~~
+dict_pp=
+{'erc': 'who: Adams, J.,; Aggarwal, M.M.,; Ahammed, Z.,; Amonett, J.,; '
+        'Anderson, B.D.,; Arkhipkin, D.,; Averichev, G.S.,; Badyal, S.K.,; '
+        'Bai, Y.,; Balewski, J.,; Barannikova, O.,; Barnby, L.S.,; Baudot, '
+        'J.,; Bekele, S.,; Belaga, V.V.,; Bellwied, R.,; Berger, J.,; '
+        'Bezverkhny, B.I.,; Bharadwaj, S.,; Bhasin, A.,; Bhati, A.K.,; Bhatia, '
+        'V.S,; Bichsel, H.,; Billmeier, A.,; Bland, L.C.,; Blyth, C.O.,; '
+        'Bonner, B.E.,; Botje, M.,; Boucham, A.,; Brandin, A.V.,; Bravar, A.,; '
+        'Bystersky, M.,; Cadman, R.V.,; Cai, X.Z.,; Caines, H.,; Calderon de '
+        'la Barca Sanchez, M.,; Carroll, J.,; Castillo, J.,; Cebra, D.,; '
+        'Chajecki, Z.,; Chaloupka, P.,; Chattopadhyay, S.,; Chen, H.F.,; Chen, '
+        'Y.,; Cheng, J.,; Cherney, M.,; Chikanian, A.,; Christie, W.,; Coffin, '
+        'J.P.,; Cormier, T.M.,; Cramer, J.G.,; Crawford, H.J.,; Das, D.,; Das, '
+        'S.,; de Moura, M.M.,; Derevschikov, A.A.,; Didenko, L.,; Dietel, T.,; '
+        'Dogra, S.M.,; Dong, W.J.,; Dong, X.,; Draper, J.E.,; Du, F.,; Dubey, '
+        'A.K.,; Dunin, V.B.,; Dunlop, J.C.,; Dutta Mazumdar, M.R.,; Eckardt, '
+        'V.,; Edwards, W.R.,; Efimov, L.G.,; Emelianov, V.,; Engelage, J.,; '
+        'Eppley, G.,; Erazmus, B.,; Estienne, M.,; Fachini, P.,; Faivre, J.,; '
+        'Fatemi, R.,; Fedorisin, J.,; Filimonov, K.,; Filip, P.,; Finch, E.,; '
+        'Fine, V.,; Fisyak, Y.,; Foley, K.J.,; Fomenko, K.,; Fu, J.,; '
+        'Gagliardi, C.A.,; Gans, J.,; Ganti, M.S.,; Gaudichet, L.,; Geurts, '
+        'F.,; Ghazikhanian, V.,; Ghosh, P.,; Gonzalez, J.E.,; Grachov, O.,; '
+        'Grebenyuk, O.,; Grosnick, D.,; Guertin, S.M.,; Guo, Y.,; Gupta, A.,; '
+        'Gutierrez, T.D.,; Hallman, T.J.,; Hamed, A.,; Hardtke, D.,; Harris, '
+        'J.W.,; Heinz, M.,; Henry, T.W.,; Hepplemann, S.,; Hippolyte, B.,; '
+        'Hirsch, A.,; Hjort, E.,; Hoffmann, G.W.,; Horsley, M.,; Huang, H.Z.,; '
+        'Huang, S.L.,; Hughes, E.W.,; Humanic, T.J.,; Igo, G.,; Ishihara, A.,; '
+        'Jacobs, P.,; Jacobs, W.W.,; Janik, M.,; Jiang, H.,; Jones, P.G.,; '
+        'Judd, E.G.,; Kabana, S.,; Kang, K.,; Kaplan, M.,; Keane, D.,; '
+        'Khodyrev, V.Yu.,; Kiryluk, J.,; Kisiel, A.,; Kislov, E.M.,; Klay, '
+        'J.,; Klein, S.R.,; Klyachko, A.,; Koetke, D.D.,; Kollegger, T.,; '
+        'Kopytine, M.,; Kotchenda, L.,; Kramer, M.,; Kravtsov, P.,; Kravtsov, '
+        'V.I.,; Krueger, K.,; Kuhn, C.,; Kulikov, A.I.,; Kumar, A.,; Kunz, '
+        'C.L.,; Kutuev, R.Kh.,; Kuznetsov, A.A.,; Lamont, M.A.C.,; Landgraf, '
+        'J.M.,; Lange, S.,; Laue, F.,; Lauret, J.,; Lebedev, A.,; Lednicky, '
+        'R.,; Lehocka, S.,; LeVine, M.J.,; Li, C.,; Li, Q.,; Li, Y.,; '
+        'Lindenbaum, S.J.,; Lisa, M.A.,; Liu, F.,; Liu, L.,; Liu, Q.J.,; Liu, '
+        'Z.,; Ljubicic, T.,; Llope, W.J.,; Long, H.,; Longacre, R.S.,; '
+        'Lopez-Noriega, M.,; Love, W.A.,; Lu, Y.,; Ludlam, T.,; Lynn, D.,; Ma, '
+        'G.L.,; Ma, J.G.,; Ma, Y.G,; Magestro, D.,; Mahajan, S.,; Mahapatra, '
+        'D.P.,; Majka, R.,; Mangotra, L.K.,; Manweiler, R.,; Margetis, S.,; '
+        'Markert, C.,; Martin, L.,; Marx, J.N.,; Matis, H.S.,; Matulenko, '
+        'Yu.A.,; McClain, C.J.,; McShane, T.S.,; Meissner, F.,; Melnick, Yu.,; '
+        'Meschanin, A.,; Miller, M.L.,; Milosevich, Z.,; Minaev, N.G.,; '
+        'Mironov, C.,; Mischke, A.,; Mishra, D.K.,; Mitchell, J.,; Mohanty, '
+        'B.,; Molnar, L.,; Moore, C.F.,; Morozov, D.A.,; Munhoz, M.G.,; Nandi, '
+        'B.K.,; Nayak, S.K.,; Nayak, T.K.,; Nelson, J.M.,; Netrakanti, P,K.,; '
+        'Nikitin, V.A.,; Nogach, L.V.,; Nurushev, S.B.,; Odyniec, G.,; Ogawa, '
+        'A.,; Okorokov, V.,; Oldenburg, M.,; Olson, D.,; Pal, S.K.,; '
+        'Panebratsev, Y.,; Panitkin, S.Y.,; Pavlinov, A.I.,; Pawlak, T.,; '
+        'Peitzmann, T.,; Perevoztchikov, V.,; Perkins, C.,; Peryt, W.,; '
+        'Petrov, V.A.,; Phatak, S.C.,; Picha, R.,; Planinic, M.,; Pluta, J.,; '
+        'Porile, N.,; Porter, J.,; Poskanzer, A.M.,; Potekhin, M.,; '
+        'Potrebenikova, E.,; Potukuchi, B.V.K.S.,; Prindle, D.,; Pruneau, C.,; '
+        'Putschke, J.,; Rai, G.,; Rakness, G.,; Raniwala, R.,; Raniwala, S.,; '
+        'Ravel, O.,; Ray, R.L.,; Razin, S.V.,; Reichhold, D.,; Reid, J.G.,; '
+        'Renault, G.,; Retiere, F.,; Ridiger, A.,; Ritter, H.G.,; Roberts, '
+        'J.B.,; Rogachevskiy, O.V.,; Romero, J.L.,; Rose, A.,; Roy, C.,; Ruan, '
+        'L.,; Sahoo, W.,; Sakrejda, I.,; Salur, S.,; Sandweiss, J.,; Savin, '
+        'I.,; Sazhin, P.S.,; Schambach, J.,; Scharenberg, R.P.,; Schmitz, N.,; '
+        'Schroeder, L.S.,; Schweda, K.,; Seger, J.,; Seyboth, P.,; Shahaliev, '
+        'E.,; Shao, M.,; Shao, W.,; Sharma, M.,; Shen, W.Q.,; Shestermanov, '
+        'K.E.,; Shimanskiy, S.S.,; Sichtermann, E.,; Simon, F.,; Singaraju, '
+        'R.N.,; Skoro, G.,; Smirnov, N.,; Snellings, R.,; Sood, G.,; Sorensen, '
+        'P.,; Sowinski, J.,; Speltz, J.,; Spinka, H.M.,; Srivastava, B.,; '
+        'Stadnik, A.,; Stanislaus, T.D.S.,; Stock, R.,; Stolpovsky, A.,; '
+        'Strikhanov, M.,; Stringfellow, B.,; Suaide, A.A.P.,; Sugarbaker, E.,; '
+        'Suire, C.,; Sumbera, M.,; Surrow, B.,; Symons, T.J.M.,; Szanto de '
+        'Toledo, A.,; Szarwas, P.,; Tai, A.,; Takahashi, J.,; Tang, A.H.,; '
+        'Tarnowsky, T.,; Thein, D.,; Thomas, J.H.,; Timoshenko, S.,; Tokarev, '
+        'M.,; Trainor, T.A.,; Trentalange, S.,; Tribble, R.E.,; Tsai, O.D.,; '
+        'Ulery, J.,; Ullrich, T.,; Underwood, D.G.,; Urkinbaev, A.,; Van '
+        'Buren, G.,; van Leeuwen, M.,; Vander Molen, A.M.,; Varma, R.,; '
+        'Vasilevski, I.M.,; Vasiliev, A.N.,; Vernet, R.,; Vigdor, S.E.,; '
+        'Viyogi, Y.P.,; Vokal, S.,; Voloshin, S.A.,; Vznuzdaev, M.,; Waggoner, '
+        'W.T.,; Wang, F.,; Wang, G.,; Wang, G.,; Wang, X.L.,; Wang, Y.,; Wang, '
+        'Y.,; Wang, Z.M.,; Ward, H.,; Watson, J.W.,; Webb, J.C.,; Wells, R.,; '
+        'Westfall, G.D.,; Wetzler, A.,; Whitten, C. Jr.,; Wieman, H.,; '
+        'Wissink, S.W.,; Witt, R.,; Wood, J.,; Wu, J.,; Xu, N.,; Xu, Z.,; Xu, '
+        'Z.Z.,; Yamamoto, E.,; Yepes, P.,
+'
+        'what: Minijet Deformation and Charge-independent Two-particle '
+        'Correlations on Momentum Subspace (eta,phi) In Au-Au Collisions at '
+        'sqrt(sNN) = 130 GeV
+'
+        'when: 2004-11-04
+'
+        'where: ark:/13030/qt0ck5g0tk',
+ 'mrt.creator': 'escholarship'}
+~~~~~~~~~~
+keys=
+mrt.creator, erc
+~~~~~~~~~~
+output_exchange=
+mrt.creator escholarship erc
+who:%20Adams,%20J.,%3B%20Aggarwal,%20M.M.,%3B%20Ahammed,%20Z.,%3B%20Amonett,%20J.,%3B%20Anderson,%20B.D.,%3B%20Arkhipkin,%20D.,%3B%20Averichev,%20G.S.,%3B%20Badyal,%20S.K.,%3B%20Bai,%20Y.,%3B%20Balewski,%20J.,%3B%20Barannikova,%20O.,%3B%20Barnby,%20L.S.,%3B%20Baudot,%20J.,%3B%20Bekele,%20S.,%3B%20Belaga,%20V.V.,%3B%20Bellwied,%20R.,%3B%20Berger,%20J.,%3B%20Bezverkhny,%20B.I.,%3B%20Bharadwaj,%20S.,%3B%20Bhasin,%20A.,%3B%20Bhati,%20A.K.,%3B%20Bhatia,%20V.S,%3B%20Bichsel,%20H.,%3B%20Billmeier,%20A.,%3B%20Bland,%20L.C.,%3B%20Blyth,%20C.O.,%3B%20Bonner,%20B.E.,%3B%20Botje,%20M.,%3B%20Boucham,%20A.,%3B%20Brandin,%20A.V.,%3B%20Bravar,%20A.,%3B%20Bystersky,%20M.,%3B%20Cadman,%20R.V.,%3B%20Cai,%20X.Z.,%3B%20Caines,%20H.,%3B%20Calderon%20de%20la%20Barca%20Sanchez,%20M.,%3B%20Carroll,%20J.,%3B%20Castillo,%20J.,%3B%20Cebra,%20D.,%3B%20Chajecki,%20Z.,%3B%20Chaloupka,%20P.,%3B%20Chattopadhyay,%20S.,%3B%20Chen,%20H.F.,%3B%20Chen,%20Y.,%3B%20Cheng,%20J.,%3B%20Cherney,%20M.,%3B%20Chikanian,%20A.,%3B%20Christie,%20W.,%3B%20Coffin,%20J.P.,%3B%20Cormier,%20T.M.,%3B%20Cramer,%20J.G.,%3B%20Crawford,%20H.J.,%3B%20Das,%20D.,%3B%20Das,%20S.,%3B%20de%20Moura,%20M.M.,%3B%20Derevschikov,%20A.A.,%3B%20Didenko,%20L.,%3B%20Dietel,%20T.,%3B%20Dogra,%20S.M.,%3B%20Dong,%20W.J.,%3B%20Dong,%20X.,%3B%20Draper,%20J.E.,%3B%20Du,%20F.,%3B%20Dubey,%20A.K.,%3B%20Dunin,%20V.B.,%3B%20Dunlop,%20J.C.,%3B%20Dutta%20Mazumdar,%20M.R.,%3B%20Eckardt,%20V.,%3B%20Edwards,%20W.R.,%3B%20Efimov,%20L.G.,%3B%20Emelianov,%20V.,%3B%20Engelage,%20J.,%3B%20Eppley,%20G.,%3B%20Erazmus,%20B.,%3B%20Estienne,%20M.,%3B%20Fachini,%20P.,%3B%20Faivre,%20J.,%3B%20Fatemi,%20R.,%3B%20Fedorisin,%20J.,%3B%20Filimonov,%20K.,%3B%20Filip,%20P.,%3B%20Finch,%20E.,%3B%20Fine,%20V.,%3B%20Fisyak,%20Y.,%3B%20Foley,%20K.J.,%3B%20Fomenko,%20K.,%3B%20Fu,%20J.,%3B%20Gagliardi,%20C.A.,%3B%20Gans,%20J.,%3B%20Ganti,%20M.S.,%3B%20Gaudichet,%20L.,%3B%20Geurts,%20F.,%3B%20Ghazikhanian,%20V.,%3B%20Ghosh,%20P.,%3B%20Gonzalez,%20J.E.,%3B%20Grachov,%20O.,%3B%20Grebenyuk,%20O.,%3B%20Grosnick,%20D.,%3B%20Guertin,%20S.M.,%3B%20Guo,%20Y.,%3B%20Gupta,%20A.,%3B%20Gutierrez,%20T.D.,%3B%20Hallman,%20T.J.,%3B%20Hamed,%20A.,%3B%20Hardtke,%20D.,%3B%20Harris,%20J.W.,%3B%20Heinz,%20M.,%3B%20Henry,%20T.W.,%3B%20Hepplemann,%20S.,%3B%20Hippolyte,%20B.,%3B%20Hirsch,%20A.,%3B%20Hjort,%20E.,%3B%20Hoffmann,%20G.W.,%3B%20Horsley,%20M.,%3B%20Huang,%20H.Z.,%3B%20Huang,%20S.L.,%3B%20Hughes,%20E.W.,%3B%20Humanic,%20T.J.,%3B%20Igo,%20G.,%3B%20Ishihara,%20A.,%3B%20Jacobs,%20P.,%3B%20Jacobs,%20W.W.,%3B%20Janik,%20M.,%3B%20Jiang,%20H.,%3B%20Jones,%20P.G.,%3B%20Judd,%20E.G.,%3B%20Kabana,%20S.,%3B%20Kang,%20K.,%3B%20Kaplan,%20M.,%3B%20Keane,%20D.,%3B%20Khodyrev,%20V.Yu.,%3B%20Kiryluk,%20J.,%3B%20Kisiel,%20A.,%3B%20Kislov,%20E.M.,%3B%20Klay,%20J.,%3B%20Klein,%20S.R.,%3B%20Klyachko,%20A.,%3B%20Koetke,%20D.D.,%3B%20Kollegger,%20T.,%3B%20Kopytine,%20M.,%3B%20Kotchenda,%20L.,%3B%20Kramer,%20M.,%3B%20Kravtsov,%20P.,%3B%20Kravtsov,%20V.I.,%3B%20Krueger,%20K.,%3B%20Kuhn,%20C.,%3B%20Kulikov,%20A.I.,%3B%20Kumar,%20A.,%3B%20Kunz,%20C.L.,%3B%20Kutuev,%20R.Kh.,%3B%20Kuznetsov,%20A.A.,%3B%20Lamont,%20M.A.C.,%3B%20Landgraf,%20J.M.,%3B%20Lange,%20S.,%3B%20Laue,%20F.,%3B%20Lauret,%20J.,%3B%20Lebedev,%20A.,%3B%20Lednicky,%20R.,%3B%20Lehocka,%20S.,%3B%20LeVine,%20M.J.,%3B%20Li,%20C.,%3B%20Li,%20Q.,%3B%20Li,%20Y.,%3B%20Lindenbaum,%20S.J.,%3B%20Lisa,%20M.A.,%3B%20Liu,%20F.,%3B%20Liu,%20L.,%3B%20Liu,%20Q.J.,%3B%20Liu,%20Z.,%3B%20Ljubicic,%20T.,%3B%20Llope,%20W.J.,%3B%20Long,%20H.,%3B%20Longacre,%20R.S.,%3B%20Lopez-
+Noriega,%20M.,%3B%20Love,%20W.A.,%3B%20Lu,%20Y.,%3B%20Ludlam,%20T.,%3B%20Lynn,%20D.,%3B%20Ma,%20G.L.,%3B%20Ma,%20J.G.,%3B%20Ma,%20Y.G,%3B%20Magestro,%20D.,%3B%20Mahajan,%20S.,%3B%20Mahapatra,%20D.P.,%3B%20Majka,%20R.,%3B%20Mangotra,%20L.K.,%3B%20Manweiler,%20R.,%3B%20Margetis,%20S.,%3B%20Markert,%20C.,%3B%20Martin,%20L.,%3B%20Marx,%20J.N.,%3B%20Matis,%20H.S.,%3B%20Matulenko,%20Yu.A.,%3B%20McClain,%20C.J.,%3B%20McShane,%20T.S.,%3B%20Meissner,%20F.,%3B%20Melnick,%20Yu.,%3B%20Meschanin,%20A.,%3B%20Miller,%20M.L.,%3B%20Milosevich,%20Z.,%3B%20Minaev,%20N.G.,%3B%20Mironov,%20C.,%3B%20Mischke,%20A.,%3B%20Mishra,%20D.K.,%3B%20Mitchell,%20J.,%3B%20Mohanty,%20B.,%3B%20Molnar,%20L.,%3B%20Moore,%20C.F.,%3B%20Morozov,%20D.A.,%3B%20Munhoz,%20M.G.,%3B%20Nandi,%20B.K.,%3B%20Nayak,%20S.K.,%3B%20Nayak,%20T.K.,%3B%20Nelson,%20J.M.,%3B%20Netrakanti,%20P,K.,%3B%20Nikitin,%20V.A.,%3B%20Nogach,%20L.V.,%3B%20Nurushev,%20S.B.,%3B%20Odyniec,%20G.,%3B%20Ogawa,%20A.,%3B%20Okorokov,%20V.,%3B%20Oldenburg,%20M.,%3B%20Olson,%20D.,%3B%20Pal,%20S.K.,%3B%20Panebratsev,%20Y.,%3B%20Panitkin,%20S.Y.,%3B%20Pavlinov,%20A.I.,%3B%20Pawlak,%20T.,%3B%20Peitzmann,%20T.,%3B%20Perevoztchikov,%20V.,%3B%20Perkins,%20C.,%3B%20Peryt,%20W.,%3B%20Petrov,%20V.A.,%3B%20Phatak,%20S.C.,%3B%20Picha,%20R.,%3B%20Planinic,%20M.,%3B%20Pluta,%20J.,%3B%20Porile,%20N.,%3B%20Porter,%20J.,%3B%20Poskanzer,%20A.M.,%3B%20Potekhin,%20M.,%3B%20Potrebenikova,%20E.,%3B%20Potukuchi,%20B.V.K.S.,%3B%20Prindle,%20D.,%3B%20Pruneau,%20C.,%3B%20Putschke,%20J.,%3B%20Rai,%20G.,%3B%20Rakness,%20G.,%3B%20Raniwala,%20R.,%3B%20Raniwala,%20S.,%3B%20Ravel,%20O.,%3B%20Ray,%20R.L.,%3B%20Razin,%20S.V.,%3B%20Reichhold,%20D.,%3B%20Reid,%20J.G.,%3B%20Renault,%20G.,%3B%20Retiere,%20F.,%3B%20Ridiger,%20A.,%3B%20Ritter,%20H.G.,%3B%20Roberts,%20J.B.,%3B%20Rogachevskiy,%20O.V.,%3B%20Romero,%20J.L.,%3B%20Rose,%20A.,%3B%20Roy,%20C.,%3B%20Ruan,%20L.,%3B%20Sahoo,%20W.,%3B%20Sakrejda,%20I.,%3B%20Salur,%20S.,%3B%20Sandweiss,%20J.,%3B%20Savin,%20I.,%3B%20Sazhin,%20P.S.,%3B%20Schambach,%20J.,%3B%20Scharenberg,%20R.P.,%3B%20Schmitz,%20N.,%3B%20Schroeder,%20L.S.,%3B%20Schweda,%20K.,%3B%20Seger,%20J.,%3B%20Seyboth,%20P.,%3B%20Shahaliev,%20E.,%3B%20Shao,%20M.,%3B%20Shao,%20W.,%3B%20Sharma,%20M.,%3B%20Shen,%20W.Q.,%3B%20Shestermanov,%20K.E.,%3B%20Shimanskiy,%20S.S.,%3B%20Sichtermann,%20E.,%3B%20Simon,%20F.,%3B%20Singaraju,%20R.N.,%3B%20Skoro,%20G.,%3B%20Smirnov,%20N.,%3B%20Snellings,%20R.,%3B%20Sood,%20G.,%3B%20Sorensen,%20P.,%3B%20Sowinski,%20J.,%3B%20Speltz,%20J.,%3B%20Spinka,%20H.M.,%3B%20Srivastava,%20B.,%3B%20Stadnik,%20A.,%3B%20Stanislaus,%20T.D.S.,%3B%20Stock,%20R.,%3B%20Stolpovsky,%20A.,%3B%20Strikhanov,%20M.,%3B%20Stringfellow,%20B.,%3B%20Suaide,%20A.A.P.,%3B%20Sugarbaker,%20E.,%3B%20Suire,%20C.,%3B%20Sumbera,%20M.,%3B%20Surrow,%20B.,%3B%20Symons,%20T.J.M.,%3B%20Szanto%20de%20Toledo,%20A.,%3B%20Szarwas,%20P.,%3B%20Tai,%20A.,%3B%20Takahashi,%20J.,%3B%20Tang,%20A.H.,%3B%20Tarnowsky,%20T.,%3B%20Thein,%20D.,%3B%20Thomas,%20J.H.,%3B%20Timoshenko,%20S.,%3B%20Tokarev,%20M.,%3B%20Trainor,%20T.A.,%3B%20Trentalange,%20S.,%3B%20Tribble,%20R.E.,%3B%20Tsai,%20O.D.,%3B%20Ulery,%20J.,%3B%20Ullrich,%20T.,%3B%20Underwood,%20D.G.,%3B%20Urkinbaev,%20A.,%3B%20Van%20Buren,%20G.,%3B%20van%20Leeuwen,%20M.,%3B%20Vander%20Molen,%20A.M.,%3B%20Varma,%20R.,%3B%20Vasilevski,%20I.M.,%3B%20Vasiliev,%20A.N.,%3B%20Vernet,%20R.,%3B%20Vigdor,%20S.E.,%3B%20Viyogi,%20Y.P.,%3B%20Vokal,%20S.,%3B%20Voloshin,%20S.A.,%3B%20Vznuzdaev,%20M.,%3B%20Waggoner,%20W.T.,%3B%20Wang,%20F.,%3B%20Wang,%20G.,%3B%20Wang,%20G.,%3B%20Wang,%20X.L.,%3B%20Wang,%20Y.,%3B%20Wang,%20Y.,%3B%20Wang,%20Z.M.,%3B%20Ward,%20H.,%3B%20Watson,%20J.W.,%3B%20Webb,%20J.C.,%3B%20Wells,%20R.,%3B%20Westfall,%20G.D.,%3B%20Wetzler,%20A.,%3B%20Whitten,%20C.%20Jr.,%3B%20Wieman,%20H.,%3B%20Wissink,%20S.W.,%3B%20Witt,%20R.,%3B%20Wood,%20J.,%3B%20Wu,%20J.,%3B%20Xu,%20N.,%3B%20Xu,%20Z.,%3B%20Xu,%20Z.Z.,%3B%20Yamamoto,%20E.,%3B%20Yepes,%20P.,%0Awhat:%20Minijet%20Deformation%20and%20Charge-
+independent%20Two-particle%20Correlations%20on%20Momentum%20Subspace%20%28eta,phi%29%20In%20Au-
+Au%20Collisions%20at%20sqrt%28sNN%29%20%3D%20130%20GeV%0Awhen:%202004-11-04%0Awhere:%20ark:/13030/qt0ck5g0tk

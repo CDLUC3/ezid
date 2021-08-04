@@ -1,0 +1,14 @@
+input_json=
+{"mrt.creator":"ucb_lib_oroville","erc":"what: tea pot
+where: ark:/13030/hb0b69n3zx"}
+~~~~~~~~~~
+dict_pp=
+{'erc': 'what: tea pot
+where: ark:/13030/hb0b69n3zx',
+ 'mrt.creator': 'ucb_lib_oroville'}
+~~~~~~~~~~
+keys=
+mrt.creator, erc
+~~~~~~~~~~
+output_exchange=
+mrt.creator ucb_lib_oroville erc what:%20tea%20pot%0Awhere:%20ark:/13030/hb0b69n3zx

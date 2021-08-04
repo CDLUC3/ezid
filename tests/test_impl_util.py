@@ -1,6 +1,9 @@
+import pprint
+
 import pytest
 
 import impl.util
+import tests.util.sample
 
 
 class TestImplUtil:
@@ -56,3 +59,25 @@ class TestImplUtil:
     def test_1020(self, doi_str, minted_id):
         """doi2shadow()"""
         assert impl.util.doi2shadow(doi_str) == minted_id
+
+    # @pytest.mark.parametrize(
+    #     {''}
+    # )
+    def test_1030(self, metadata):
+        """toExchange()"""
+        exchange_str = impl.util.toExchange(metadata.as_dict)
+        meta_dict=metadata._asdict()
+        tests.util.sample.assert_match(
+            'input_json{sep2}{json}{sep}'
+            'dict_pp{sep2}{dict_pp}{sep}'
+            'keys{sep2}{keys}{sep}'
+            'output_exchange{sep2}{as_exchange}'.format(
+                **meta_dict,
+                dict_pp=pprint.pformat(meta_dict['as_dict']),
+                keys=', '.join(meta_dict['as_dict'].keys()),
+                as_exchange=exchange_str,
+                sep=f'\n{"~"*10}\n',
+                sep2='=\n',
+            ),
+            f'to-exchange-{int(metadata.length):06}',
+        )

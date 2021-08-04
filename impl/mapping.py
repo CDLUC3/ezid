@@ -159,7 +159,7 @@ def _mapDataciteItemized(metadata):
     )
 
 
-_rootTagRE = re.compile("{(http://datacite\.org/schema/kernel-[^}]*)}resource$")
+_rootTagRE = re.compile("{(http://datacite\\.org/schema/kernel-[^}]*)}resource$")
 
 
 def _text(n):

@@ -59,7 +59,7 @@ def agentPidOrEmpty(pid):
         agentPid(pid)
 
 
-_crossrefDoiRE = re.compile("doi:10\.[1-9]\d{3,4}/[-\w.;()/]+$")
+_crossrefDoiRE = re.compile("doi:10\\.[1-9]\\d{3,4}/[-\\w.;()/]+$")
 
 
 def crossrefDoi(identifier):
@@ -86,19 +86,19 @@ def datacenterSymbol(symbol):
 
 _timespecs = [
     # fmt:off
-    (4,        re.compile("(\d{4})$"),                                                                 "%Y",                 1),
-    (6,        re.compile("(\d{6})$"),                                                                 "%Y%m",               2),
-    (7,        re.compile("(\d{4}-\d\d)$"),                                                            "%Y-%m",              2),
-    (8,        re.compile("(\d{8})$"),                                                                 "%Y%m%d",             3),
-    (10,       re.compile("(\d{4}-\d\d-\d\d)$"),                                                       "%Y-%m-%d",           3),
-    (16,       re.compile("(\d{4}-\d\d-\d\d \d\d:\d\d)$"),                                             "%Y-%m-%d %H:%M",     3),
-    (16,       re.compile("(\d{4}-\d\d-\d\dT\d\d:\d\d)$"),                                             "%Y-%m-%dT%H:%M",     3),
-    ((19, 26), re.compile("(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d)" + "( ?(Z|[-+][01]\d:?(00|15|30|45)))?$"), "%Y-%m-%d %H:%M:%S",  3,),
-    ((19, 25), re.compile("(\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d)" + "(Z|[-+][01]\d:?(00|15|30|45))?$"),     "%Y-%m-%dT%H:%M:%S",  3,),
-    (21,       re.compile("(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d)\.\d$"),                                    "%Y-%m-%d %H:%M:%S",  3),
-    (21,       re.compile("(\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d)\.\d$"),                                    "%Y-%m-%dT%H:%M:%S",  3),
-    ((8, 14),  re.compile("([a-zA-Z]+ \d{4})$"),                                                       "%B %Y",              2),
-    ((11, 18), re.compile("([a-zA-Z]+ (\d| \d|\d\d), \d{4})$"),                                        "%B %d, %Y",          3),
+    (4,        re.compile("(\\d{4})$"),                                                                 "%Y",                 1),
+    (6,        re.compile("(\\d{6})$"),                                                                 "%Y%m",               2),
+    (7,        re.compile("(\\d{4}-\\d\\d)$"),                                                            "%Y-%m",              2),
+    (8,        re.compile("(\\d{8})$"),                                                                 "%Y%m%d",             3),
+    (10,       re.compile("(\\d{4}-\\d\\d-\\d\\d)$"),                                                       "%Y-%m-%d",           3),
+    (16,       re.compile("(\\d{4}-\\d\\d-\\d\\d \\d\\d:\\d\\d)$"),                                             "%Y-%m-%d %H:%M",     3),
+    (16,       re.compile("(\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d)$"),                                             "%Y-%m-%dT%H:%M",     3),
+    ((19, 26), re.compile("(\\d{4}-\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d)" + "( ?(Z|[-+][01]\\d:?(00|15|30|45)))?$"), "%Y-%m-%d %H:%M:%S",  3,),
+    ((19, 25), re.compile("(\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d)" + "(Z|[-+][01]\\d:?(00|15|30|45))?$"),     "%Y-%m-%dT%H:%M:%S",  3,),
+    (21,       re.compile("(\\d{4}-\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d)\\.\\d$"),                                    "%Y-%m-%d %H:%M:%S",  3),
+    (21,       re.compile("(\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d)\\.\\d$"),                                    "%Y-%m-%dT%H:%M:%S",  3),
+    ((8, 14),  re.compile("([a-zA-Z]+ \\d{4})$"),                                                       "%B %Y",              2),
+    ((11, 18), re.compile("([a-zA-Z]+ (\\d| \\d|\\d\\d), \\d{4})$"),                                        "%B %d, %Y",          3),
     # fmt:on
 ]
 

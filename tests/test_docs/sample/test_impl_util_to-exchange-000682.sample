@@ -1,0 +1,31 @@
+input_json=
+{"dc.date":"circa
+1960","dc.creator":"(:unav)","dc.relation":"http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx","dc.title":"Exhibits during the
+annual Festival of the arts, a student-sponsored event, reflect a growing interest and achievement. Although the Department of Art
+was a part of the Department of Philosophy and Fine Arts until 1958, it is today regarded as one of the best and liveliest on the
+West Coast. Among the departments undertakings is a laboratory for Research in Fine Arts and Museology, established in 1953, which
+offers graduate work in conservation and restoration of works of art. a rare field in American Universities. People examining
+welded sculpture"}
+~~~~~~~~~~
+dict_pp=
+{'dc.creator': '(:unav)',
+ 'dc.date': 'circa 1960',
+ 'dc.relation': 'http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx',
+ 'dc.title': 'Exhibits during the annual Festival of the arts, a '
+             'student-sponsored event, reflect a growing interest and '
+             'achievement. Although the Department of Art was a part of the '
+             'Department of Philosophy and Fine Arts until 1958, it is today '
+             'regarded as one of the best and liveliest on the West Coast. '
+             'Among the departments undertakings is a laboratory for Research '
+             'in Fine Arts and Museology, established in 1953, which offers '
+             'graduate work in conservation and restoration of works of art. a '
+             'rare field in American Universities. People examining welded '
+             'sculpture'}
+~~~~~~~~~~
+keys=
+dc.date, dc.creator, dc.relation, dc.title
+~~~~~~~~~~
+output_exchange=
+dc.date circa%201960 dc.creator %28:unav%29 dc.relation http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx dc.title
+Exhibits%20during%20the%20annual%20Festival%20of%20the%20arts,%20a%20student-
+sponsored%20event,%20reflect%20a%20growing%20interest%20and%20achievement.%20Although%20the%20Department%20of%20Art%20was%20a%20part%20of%20the%20Department%20of%20Philosophy%20and%20Fine%20Arts%20until%201958,%20it%20is%20today%20regarded%20as%20one%20of%20the%20best%20and%20liveliest%20on%20the%20West%20Coast.%20Among%20the%20departments%20undertakings%20is%20a%20laboratory%20for%20Research%20in%20Fine%20Arts%20and%20Museology,%20established%20in%201953,%20which%20offers%20graduate%20work%20in%20conservation%20and%20restoration%20of%20works%20of%20art.%20a%20rare%20field%20in%20American%20Universities.%20People%20examining%20welded%20sculpture

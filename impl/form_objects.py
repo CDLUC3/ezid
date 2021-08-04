@@ -283,7 +283,7 @@ def getAdvancedIdForm(profile, request=None):
 
 
 def _validate_phone(p):
-    r = re.sub(r'[^\d]', '', p)
+    r = re.sub(r'[^\\d]', '', p)
     if len(r) < 8:
         raise django.core.exceptions.ValidationError(
             _("Please enter a valid phone number, minimum 8 digits.")
@@ -1202,7 +1202,7 @@ def _inclMgmtData(fields, prefix):
     i_total = 0
     if fields and prefix in list(fields)[0]:
         for f in fields:
-            m = re.match("^.*-(\d+)-", f)
+            m = re.match("^.*-(\\d+)-", f)
             s = m.group(1)
             i = int(s) + 1  # First form is numbered '0', so add 1 for actual count
             if i > i_total:
@@ -1232,8 +1232,8 @@ def _getNameIdCt(fields, prefix):
     r = [(0, 1)]  # Default one form with two nameIds (when first creating an ID)
     d = {}
     if fields:
-        r1 = re.escape(prefix) + "-(\d+)"
-        r2 = r1 + "-nameIdentifier_(\d+)"
+        r1 = re.escape(prefix) + "-(\\d+)"
+        r2 = r1 + "-nameIdentifier_(\\d+)"
         for f in sorted(fields.keys()):
             nameIdCt = 1  # Each form should by default have 2 nameIds
             m = re.match(r1, f)
@@ -1460,14 +1460,14 @@ class BaseSearchIdForm(django.forms.Form):
     pubyear_from = django.forms.RegexField(
         required=False,
         label=_("From"),
-        regex='^\d{4}$',
+        regex='^\\d{4}$',
         error_messages={'invalid': ERR_4DIGITYEAR},
         widget=django.forms.TextInput(attrs={'placeholder': ABBR_EX + "2015"}),
     )
     pubyear_to = django.forms.RegexField(
         required=False,
         label=_("To"),
-        regex='^\d{4}$',
+        regex='^\\d{4}$',
         error_messages={'invalid': ERR_4DIGITYEAR},
         widget=django.forms.TextInput(attrs={'placeholder': ABBR_EX + "2016"}),
     )
@@ -1525,28 +1525,28 @@ class ManageSearchIdForm(BaseSearchIdForm):
     create_time_from = django.forms.RegexField(
         required=False,
         label=_("From"),
-        regex='^\d{4}-\d{2}-\d{2}$',
+        regex='^\\d{4}-\\d{2}-\\d{2}$',
         error_messages={'invalid': ERR_DATE},
         widget=django.forms.TextInput(attrs={'placeholder': ABBR_EX + "2016-03-30"}),
     )
     create_time_to = django.forms.RegexField(
         required=False,
         label=_("To"),
-        regex='^\d{4}-\d{2}-\d{2}$',
+        regex='^\\d{4}-\\d{2}-\\d{2}$',
         error_messages={'invalid': ERR_DATE},
         widget=django.forms.TextInput(attrs={'placeholder': ABBR_EX + "2016-04-29"}),
     )
     update_time_from = django.forms.RegexField(
         required=False,
         label=_("From"),
-        regex='^\d{4}-\d{2}-\d{2}$',
+        regex='^\\d{4}-\\d{2}-\\d{2}$',
         error_messages={'invalid': ERR_DATE},
         widget=django.forms.TextInput(attrs={'placeholder': ABBR_EX + "2016-03-30"}),
     )
     update_time_to = django.forms.RegexField(
         required=False,
         label=_("To"),
-        regex='^\d{4}-\d{2}-\d{2}$',
+        regex='^\\d{4}-\\d{2}-\\d{2}$',
         error_messages={'invalid': ERR_DATE},
         widget=django.forms.TextInput(attrs={'placeholder': ABBR_EX + "2016-04-29"}),
     )

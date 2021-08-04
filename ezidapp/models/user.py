@@ -240,6 +240,13 @@ class StoreUser(User):
     # Any additional notes.
 
     def clean(self):
+        # Because the Django admin app performs many-to-many operations
+        # only after creating or updating objects, sadly, we can't perform
+        # any validations related to shoulders or proxies here.
+        # Addendum: moreover, because users are displayed inline in group
+        # change pages, they get validated along with groups, before
+        # StoreGroupAdmin.save_model is called.  Therefore we can't check
+        # group-user Crossref-enabled consistency here.
         super(StoreUser, self).clean()
         if self.username == "anonymous":
             raise django.core.validators.ValidationError(
@@ -253,21 +260,24 @@ class StoreUser(User):
         self.notes = self.notes.strip()
         if self.password == "":
             self.setPassword(None)
-        # Because the Django admin app performs many-to-many operations
-        # only after creating or updating objects, sadly, we can't perform
-        # any validations related to shoulders or proxies here.
-        # Addendum: moreover, because users are displayed inline in group
-        # change pages, they get validated along with groups, before
-        # StoreGroupAdmin.save_model is called.  Therefore we can't check
-        # group-user Crossref-enabled consistency here.
 
     def setPassword(self, password):
-        # Sets the user's password; 'password' should be a bare password.
-        # Caution: this method sets the password in the object, but does
-        # not save the object to the database.  However, if there is a
-        # corresponding user in the Django auth app, that user's password
-        # is both set and saved.  Thus calls to this method should
-        # generally be wrapped in a transaction.
+        """Set the user's password
+
+        'password' should be a bare password.
+
+        Caution: this method sets the password in the object, but does
+        not save the object to the database.  However, if there is a
+        corresponding user in the Django auth app, that user's password
+        is both set and saved.  Thus calls to this method should
+        generally be wrapped in a transaction.
+
+        Django's standard password hasher is used. Currently, this is PBKDF
+        (password based key derivation function), with 20,000 iterations.
+
+        The password is salted, so setting the same password multiple times will yield
+        a different hash each time.
+        """
         logger.debug(
             'Setting password for user. displayName="{}"'.format(self.displayName)
         )

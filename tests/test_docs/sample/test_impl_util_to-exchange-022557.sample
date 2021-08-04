@@ -1,0 +1,612 @@
+input_json=
+{"datacite":"<?xml version=\"1.0\"?>
+<resource xmlns=\"http://datacite.org/schema/kernel-3\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+xsi:schemaLocation=\"http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd\">  <identifier
+identifierType=\"DOI\">10.15144/PL-567</identifier>  <creators>    <creator>      <creatorName>Eades, Domenyk (Ed.)</creatorName>
+</creator>  </creators>  <titles>    <title>A grammar of Gayo: A language of Aceh, Sumatra</title>  </titles>  <publisher>Pacific
+Linguistics</publisher>  <publicationYear>2005</publicationYear>  <contributors>    <contributor contributorType=\"Editor\">
+<contributorName>CRCL</contributorName>    </contributor>    <contributor contributorType=\"HostingInstitution\">
+<contributorName>CRCL</contributorName>    </contributor>    <contributor contributorType=\"RightsHolder\">
+<contributorName>Pacific Linguistics and/or the author(s)</contributorName>    </contributor>  </contributors>  <dates>    <date
+dateType=\"Copyrighted\">2005</date>    <date dateType=\"Issued\">2015</date>  </dates>  <language>en</language>  <resourceType
+resourceTypeGeneral=\"Text\">book</resourceType>  <alternateIdentifiers>    <alternateIdentifier
+alternateIdentifierType=\"Series\">PL-567</alternateIdentifier>  </alternateIdentifiers>  <relatedIdentifiers>
+<relatedIdentifier relatedIdentifierType=\"URN\"
+relationType=\"IsIdenticalTo\">urn:md5:9f6a19bdb1f238ac6890e31eb887f06c</relatedIdentifier>    <relatedIdentifier
+relatedIdentifierType=\"URN\" relationType=\"IsIdenticalTo\">urn:sha1:51a7f084b5e805d3ad22cef3c1b2e0c9775c4a33</relatedIdentifier>
+<relatedIdentifier relatedIdentifierType=\"ISBN\" relationType=\"IsIdenticalTo\">0858835533</relatedIdentifier>
+</relatedIdentifiers>  <sizes>    <size>20M</size>    <size>xii + 350 pages</size>  </sizes>  <formats>    <format>PDF</format>
+</formats>  <version>1.0</version>  <rightsList>    <rights rightsURI=\"http://creativecommons.org/licenses/by-sa/4.0\">CC BY-SA
+4.0</rights>  </rightsList>  <descriptions>    <description descriptionType=\"SeriesInformation\">PL-567</description>
+<description descriptionType=\"TableOfContents\">Table of contents\tvii<br/>Preface\txix<br/>Abbreviations and
+conventions\txxi<br/> 1 Introduction\t3<br/> 1.1 General background\t3<br/> 1.1.1 Genetic affiliation\t4<br/> 1.1.2 Economy of the
+Gayo Highlands\t5<br/> 1.1.3 Socio-historical background\t5<br/> 1.1.4 Gayo social structure\t6<br/> 1.1.5 Language and literacy
+in Gayo society\t6<br/> 1.2 Linguistic type\t8<br/> 1.3 Previous studies of Gayo\t17<br/> 1.4 Dialect variation\t18<br/> 1.5
+Methodology and structure of this grammar\t19<br/> 1.5.1 Data collection and corpus\t19<br/> 1.5.2 Aims and structure of this
+grammar\t20<br/> 2 Phonology and morphophonology\t21<br/> 2.1 Phonemes\t21<br/> 2.1.1 Consonants\t21<br/> 2.1.1.1 Consonant
+phonemes and allomorphic variation\t22<br/> 2.1.1.1 Funny nasals\t24<br/> 2.1.1.3 Minimal pairs\t26<br/> 2.1.2 Vowels\t26<br/>
+2.1.2.1 Vowel phonemes and allophonic variation\t27<br/> 2.1.2.1.1 High vowels\t28<br/> 2.1.2.1.2 mid-vowel\t28<br/> 2.1.2.1.3
+High-mid and low-mid vowels\t29<br/> 2.1.2.1.4 low vowel /a/\t30<br/> 2.1.2.2 Vowel phonemes: minimal pairs\t30<br/> 2.2 Non-
+segmental phonology\t31<br/> 2.2.1 Stress assignment\t31<br/> 2.2.1.1 Lexical stress\t31<br/> 2.2.1.2 Phrase stress\t31<br/>
+2.2.1.3 Stress within the clause\t32<br/> 2.2.2 Intonation\t32<br/> 2.2.3 Phonotactics\t33<br/> 2.2.3.1 Distribution of phonemes
+within the syllable\t33<br/> 2.2.3.2 Vowel combinations\t33<br/> 2.2.3.3 Epenthetic schwa\t34<br/> 2.2.4 Phonological variation in
+roots\t35<br/> 2.3 Morphophonemic variation\t35<br/> 2.3.1 Allomorphy\t35<br/> 2.3.1.1 Affixes\t35<br/> 2.3.1.1.1 ber-, ter-, and
+per-\t35<br/> 2.3.1.1.2 mun-\t36<br/> 2.3.1.1.3 pen-\t37<br/> 2.3.1.1.4 mu-\t39<br/> 2.3.1.1.5 -(n)en\t39<br/> 2.3.1.1.6 -(n)en
+and Sandhi\t40<br/> 2.3.1.1.7 mun \u2026 (n)en\t41<br/> 2.3.1.2 Clitics\t41<br/> 2.3.1.2.1 Third person non-subject enclitic
+=\u00e8\t41<br/> 2.3.1.2.2 Third person possessive enclitic =\u00e9\t41<br/> 2.3.1.2.3 First person possessive enclitic
+=(ng)ku\t42<br/> 2.3.1.2.4 Determiner enclitics\t42<br/> 2.4 Orthographic issues\t43<br/> 3 Morphological and syntactic units and
+relations\t44<br/> 3.1 Word\t44<br/> 3.1.1 Root and base\t45<br/> 3.1.2 Affixes\t45<br/> 3.2 Particles\t46<br/> 3.2.1
+Prepositions\t46<br/> 3.2.2 Conjunctions\t47<br/> 3.2.3 Various other particles\t47<br/> 3.3 Clitics\t48<br/> 3.3.1 Pronominal
+clitics\t48<br/> 3.3.2 Reduced-word clitics\t48<br/> 3.4 Compounds\t48<br/> 3.4.1 Compound nouns\t49<br/> 3.4.2 Compound
+verbs\t50<br/> 3.4.2.1 Second element affixed with mun\t51<br/> 3.4.2.2 Second element affixed with mu-\t51<br/> 3.4.2.3 Second
+element affixed with ber-\t51<br/> 3.4.2.4 Second element affixed with bersi \u2026 (n)en\t52<br/> 3.4.2.5 Second element affixed
+with mu / em\t52<br/> 3.4.3 Dvandva compounds\t52<br/> 3.5 Reduplicated forms\t53<br/> 3.5.1 Kinds of reduplicated forms\t54<br/>
+3.5.1.1 Reduplication as an inherent structural feature of words\t54<br/> 3.5.1.2 Reduplication as a word formation
+process\t54<br/> 3.5.1.3 Syntactic reduplication\t54<br/> 3.5.2 Morphophonological features of syntactic reduplication\t55<br/>
+3.5.2.1 Partial reduplication\t55<br/> 3.5.2.2 Total reduplication\t55<br/> 3.5.3 Meanings expressed by syntactic
+reduplication\t56<br/> 3.5.3.1 Plurality\t56<br/> 3.5.3.2 Intensity\t56<br/> 3.5.3.3 Iterativity/durativity\t56<br/> 3.5.3.4
+Approximation\t57<br/> 3.5.3.5 Emphasis\t58<br/> 3.5.3.6 The 'imitative' derivation\t58<br/> 3.6 Grammatical relations\t59<br/>
+3.6.1 Direct and oblique arguments\t59<br/> 3.6.2 Subject\t60<br/> 3.6.3 Actor and undergoer\t61<br/> 4 Word classes\t63<br/> 4.1
+The distinction between noun and verb\t63<br/> 4.2 Nouns\t64<br/> 4.2.1 Defective nouns\t65<br/> 4.2.2 Sub-classes of
+nouns\t65<br/> 4.2.2.1 Common nouns\t65<br/> 4.2.2.2 Names and titles\t66<br/> 4.2.2.3 Pronouns\t66<br/> 4.2.2.4 Local
+nouns\t67<br/> 4.2.2.5 Measure nouns\t68<br/> 4.2.3 Noun-deriving affixes\t68<br/> 4.2.3.1 Instrumental nominalising prefix:
+pen-\t68<br/> 4.2.3.2 Result nominalising infix/confix: -en-\u2026(-(n)en)\t69<br/> 4.2.3.3 Nominalising suffix: (n)en\t70<br/>
+4.2.3.4 Collective nominalising circumfix: per-\u2026-(n)en\t70<br/> 4.2.3.5 Undergoer nominalising circumfix: pen \u2026
+(n)en\t71<br/> 4.3 Verbs\t71<br/> 4.3.1 Free verb-roots\t72<br/> 4.3.2 Bound verb-roots\t74<br/> 4.3.3 Nominalisation\t76<br/>
+4.3.3.1 Action/state nominalisation\t77<br/> 4.3.3.2 Manner nominalisation\t78<br/> 4.3.3.3 Exclamations\t79<br/> 4.3.3.4 Abstract
+activities\t79<br/> 4.3.4 The absence of adjectives\t80<br/> 4.4 Minor word-classes\t81<br/> 4.4.1 Adverbs\t81<br/> 4.4.1.1
+Adverbs of time\t81<br/> 4.4.1.2 Adverbs of frequency\t82<br/> 4.4.1.3 Sentence adverbs\t83<br/> 4.4.1.4 Aspectual and modal
+adverbs\t83<br/> 4.4.1.5 Various adverbial particles\t84<br/> 4.4.2 Epistememes\t84<br/> 4.4.2.1 Formal properties of
+epistememes\t84<br/> 4.4.2.2 Epistememes in complement constructions\t85<br/> 4.4.2.3 Indefinite pronominal functions with the
+particle p\u00e8 'also/even'\t85<br/> 4.4.2.4 Sana 'what' in lists\t86<br/> 4.4.3 Numerals\t86<br/> 4.4.3.1 Complex
+numerals\t87<br/> 4.4.3.2 Ordinal numbers and fractions\t87<br/> 4.4.4. Quantifiers\t88<br/> 4.4.4.1 A-quantifiers\t88<br/>
+4.4.4.2 D-quantifiers\t90<br/> 4.4.5 Demonstratives\t90<br/> 4.4.5.1 Locational demonstratives\t90<br/> 4.4.5.2 Similative
+demonstratives\t93<br/> 4.4.5.3 The demonstrative particle mana\t93<br/> 4.4.6 Interjections\t94<br/> 5 Simple clause
+types\t97<br/> 5.1 Non-verbal clauses\t97<br/> 5.1.1 NPs as predicates: equative clauses\t97<br/> 5.1.2 PPs as predicates\t99<br/>
+5.2 Verbal clauses\t99<br/> 5.2.1 Grammatical relations\t99<br/> 5.2.1.1 Direct arguments\t100<br/> 5.2.1.1.1 Split-subject
+properties in Gayo\t100<br/> 5.2.1.1.2 Subject and non-subject\t102<br/> 5.2.1.1.3 Actor and undergoer\t104<br/> 5.2.1.2 Oblique
+arguments\t106<br/> 5.2.2 Transitivity in Gayo\t109<br/> 5.2.3 Ambient clauses\t111<br/> 5.2.4 Intransitive clauses\t111<br/>
+5.2.4.1 Existential clauses\t112<br/> 5.2.4.1.1 Stative existential clauses\t112<br/> 5.2.4.1.1.1 With subjects denoting temporal
+or spatial extent\t113<br/> 5.2.4.1.1.2 Existential predicates specifying ownership\t113<br/> 5.2.4.1.1.3 Ara with clausal
+complements\t114<br/> 5.2.4.1.2 Inceptive existential clauses\t114<br/> 5.2.4.1.2.1 Inceptive existential clauses specifying
+ownership\t115<br/> 5.2.4.1.2.2 Jadi with clausal complements\t115<br/> 5.2.4.1.2.3 Mu-jadi 'become'\t115<br/> 5.2.4.2 Phrasal-
+verb constructions\t116<br/> 5.2.4.2.1 Verbs in phrasal verb constructions\t117<br/> 5.2.4.2.2 Emotion-denoting predicates where
+at\u00e9 'liver' is VP-external\t119<br/> 5.2.5 Transitive clauses\t120<br/> 6 Other aspects of the clauses\t122<br/> 6.1
+Incorporation\t122<br/> 6.1.1 Undergoer incorporation\t122<br/> 6.1.2 Actor incorporation\t124<br/> 6.1.3 External
+possession\t126<br/> 6.2 Fronting\t127<br/> 6.2.1 Fronted adjuncts and oblique arguments\t127<br/> 6.2.2 Fronted core
+arguments\t127<br/> 6.3 Left and right dislocation\t129<br/> 6.3.1 Left dislocation\t129<br/> 6.3.1.1 Morphosyntax of left
+dislocation\t129<br/> 6.3.1.2 Functions of left dislocation\t130<br/> 6.3.2 Right dislocation\t131<br/> 6.4 Reflexives\t131<br/>
+6.4.1 The reflexive clause\t131<br/> 6.4.2 Reflexive expressions\t133<br/> 6.5 Comparison\t133<br/> 6.5.1 Comparative suffix:
+-(n)en\t134<br/> 6.5.2 lebih 'more'\t134<br/> 6.5.3 dis 'same' and l\u00e8n 'different'\t135<br/> 6.6 Serialisation\t136<br/>
+6.6.1 Formal properties of serialisation\t136<br/> 6.6.2 Functional types of serial verb constructions\t137<br/> 6.6.2.1
+Simultaneous states of affairs\t137<br/> 6.6.2.2 Purpose\t138<br/> 6.6.2.3 Reason/result\t138<br/> 6.7 Ellipsis\t139<br/> 6.7.1
+Ellipsis of subjects\t139<br/> 6.7.2 Ellipsis of VPs\t140<br/> 7 Intransitive verb affixes\t143<br/> 7.1 Actor prefix:
+mun-\t143<br/> 7.1.1 With verbal bases\t144<br/> 7.1.2 With nominal bases\t144<br/> 7.1.2.1 'make or prepare N'\t145<br/> 7.1.2.2
+'use N'\t145<br/> 7.1.2.3 'remove or expel N'\t145<br/> 7.2 Middle prefix: ber\t146<br/> 7.2.1 Intransitive bases: specifying
+multiple participants\t146<br/> 7.2.2 Middle actions\t147<br/> 7.2.3 Middle verbs of saying\t147<br/> 7.2.4 Signalling that an
+event has not occurred or will never occur\t148<br/> 7.2.5 Undergoer-oriented resultatives\t148<br/> 7.2.6 Meanings associated
+exclusively with nominal bases\t149<br/> 7.2.6.1 'cultivate N'\t150<br/> 7.2.6.2 'search/hunt for N'\t150<br/> 7.2.5.3 'use
+N'\t150<br/> 7.2.6.4 'attend N'\t151<br/> 7.2.6.5 Ambient meanings\t152<br/> 7.2.6.6 With nominal bases specifying personal
+relationships\t152<br/> 7.2.6.7 With onomatopoeia\t152<br/> 7.3 Middle plural circumfix: ber-\u2026-(n)en\t153<br/> 7.4
+Intransitive prefix/infix: mu-/-em-\t154<br/> 7.4.1 Controlled mu-\t154<br/> 7.4.1.1 Controlled actions\t155<br/> 7.4.1.2 Acts of
+ingestion\t155<br/> 7.4.1.3 Producing sounds or speaking\t156<br/> 7.4.1.4 Ideophones\t156<br/> 7.4.2 Non-controlled mu-\t157<br/>
+7.4.2.1 Non-controlled mu with verbal bases\t157<br/> 7.4.2.2 Nominal bases: verbal possession\t159<br/> 7.4.3 Infixed variant:
+em\t159<br/> 7.5 Temporal extension prefix: per-\t160<br/> 7.5.1 'be intrinsically V'\t160<br/> 7.5.2 Durative/habitual
+meanings\t160<br/> 7.5.3 Pe loah 'vomit'\t161<br/> 7.5.4 Reduplicated verb bases\t161<br/> 7.6 Reciprocal circumfix: bersi \u2026
+(n)en\t162<br/> 7.7 Adversative circumfix: ke \u2026 (n)en\t163<br/> 8 Voice\t165<br/> 8.1 Voice and grammatical
+relations\t166<br/> 8.2 Undergoer orientation: i-\t168<br/> 8.2.1 Aspectual function of undergoer orientation\t168<br/> 8.2.2
+Macrorole-signalling function of undergoer orientation\t171<br/> 8.3 Actor orientation: mun-\t172<br/> 8.3.1 Aspectual
+(intransitive) function of actor orientation\t172<br/> 8.3.2 Macrorole-signalling function of actor orientation (transitive
+clauses)\t174<br/> 8.4 Voice selection and discourse\t175<br/> 8.5 Decontrol undergoer-orientation: ter\t177<br/> 8.5.1
+Inability\t177<br/> 8.5.2 Unintentional acts\t178<br/> 9 Valence-increasing affixes\t181<br/> 9.1 Functions of the valence-
+increasing affixes\t181<br/> 9.2 Locative suffix: -i\t182<br/> 9.2.1 With intransitive roots\t182<br/> 9.2.1.1 Licensing locative
+undergoers\t182<br/> 9.2.1.2 Licensing direct stimulus undergoers\t184<br/> 9.2.2 With transitive roots\t184<br/> 9.2.2.1 With
+transitive roots denoting volitional acts and acts of perception\t184<br/> 9.2.2.2 With transitive verbs of knowing\t185<br/>
+9.2.2.3 With roots marked by the decontrol undergoer-orientation prefix ter-\t186<br/> 9.2.3 With nominal roots\t186<br/> 9.3
+Causative suffix: -(n)en\t186<br/> 9.3.1 With intransitive roots\t187<br/> 9.3.2 With transitive roots\t188<br/> 9.3.2.1
+Specifying causative meanings\t188<br/> 9.3.2.2 Specifying increased volition\t189<br/> 9.3.3 With nominal roots\t191<br/> 9.4
+Causative prefix: per-\t192<br/> 9.4.1 With verbal roots\t193<br/> 9.4.2 With reduplicated bases\t194<br/> 9.4.3 Co-occurrence of
+causative per with i and (n)en\t195<br/> 9.5 Facilitative circumfix: peti-\u2026-(n)en\t196<br/> 10 Noun phrases\t201<br/> 10.1
+The NP head\t202<br/> 10.1.1 Names and titles\t202<br/> 10.1.2 Pronouns\t203<br/> 10.1.2.1 First person\t204<br/> 10.1.2.2 Second
+person\t205<br/> 10.1.2.3 Third person\t206<br/> 10.1.2.4 Independent possessive pronouns\t207<br/> 10.1.3 Local nouns\t208<br/>
+10.1.3.1 Deictic local nouns\t208<br/> 10.1.3.2 Temporal local nouns\t210<br/> 10.1.3.3 Local nouns specifying physical location
+or direction\t211<br/> 10.1.4 Measure nouns\t213<br/> 10.2 Measure slot\t214<br/> 10.2.1 Number phrases\t214<br/> 10.2.2
+Modification of number phrases\t215<br/> 10.2.3 Floating measure phrases\t215<br/> 10.3 Possessive slot\t216<br/> 10.3.1 Formal
+properties of ni\t216<br/> 10.3.2 Semantic relationships between possessive phrases and the NP head\t217<br/> 10.3.2.1 True
+possession\t218<br/> 10.3.2.2 Associative function of the possessive\t219<br/> 10.3.3 Reciprocal possession\t221<br/> 10.3.4
+Embedding of possessives\t221<br/> 10.3.5 The possessive noun empu\t221<br/> 10.4 Descriptive slot\t222<br/> 10.5 Determiner
+slot\t223<br/> 10.5.1 Demonstratives as determiners\t223<br/> 10.5.2 The adverb sine/=ne 'earlier' as a determiner\t223<br/>
+10.5.3 Co-occurrence of the demonstratives and sine/=ne\t225<br/> 10.6 Apposition slot\t225<br/> 10.7 Conjoining NPs\t226<br/> 11
+Prepositional phrases\t228<br/> 11.1 Local prepositions\t228<br/> 11.1.1 Location: i\t228<br/> 11.1.2 Location:
+p\u00ebde/pada\t229<br/> 11.1.3 Proximal location: ter\t230<br/> 11.1.4 Goal: ku\t230<br/> 11.1.5 Source: ari\t231<br/> 11.1.5.1
+Local meanings of ari\t231<br/> 11.1.5.2 Non-local meanings of ari\t232<br/> 11.2 Non-local prepositions\t232<br/> 11.1.2 Urum
+'with'\t233<br/> 11.2.2 Kin 'as, for'\t234<br/> 11.2.2.1 Attribute\t234<br/> 11.2.2.2 Result of becoming\t234<br/> 11.2.2.3
+Benefactor\t235<br/> 11.2.3 Tentang 'about'\t235<br/> 11.2.4 Mel\u00e8ngkan 'except'\t236<br/> 12 Clausal modifications\t239<br/>
+12.1 Aspect\t239<br/> 12.1.1 Continuative aspect: tengah\t239<br/> 12.1.2 Perfect aspect: nge\t240<br/> 12.1.3 Immediate perfect:
+ben and teku\t241<br/> 12.1.4 Aspect with phasal meanings\t241<br/> 12.2 Modality\t242<br/> 12.2.1 turah 'must'\t242<br/> 12.2.2
+mal\u00e8 'will'\t243<br/> 12.2.3 mera 'want'\t244<br/> 12.2.4 ng\u00f4k 'can'\t245<br/> 12.2.5 pan\u00e9 'clever, can' (skilled
+ability)\t246<br/> 12.3 Predicate-modifying adverbial particles\t246<br/> 12.3.1 Temporal adverbial particles\t246<br/> 12.3.1.1
+ilen 'still, yet'\t246<br/> 12.3.1.2 n\u00e8 'anymore, evermore'\t247<br/> 12.3.1.3 Pernah/penah 'ever, before'\t247<br/> 12.3.1.4
+mien 'again'\t248<br/> 12.3.2 Intensifying adverbial particles\t249<br/> 12.3.2.1 Intensive: pedih 'very'\t249<br/> 12.3.2.2
+Superlative: paling 'most'\t249<br/> 12.3.2.3 Excessive degree: tu 'too (much)'\t249<br/> 12.4 Discourse particles\t249<br/> 2.4.1
+Focus particles\t250<br/> 12.4.1.1 Focus particle: le\t250<br/> 12.4.1.2 Emphatic particle: we\t250<br/> 12.4.1.3 p\u00e8
+'also/even'\t251<br/> 12.4.1.4 padih/dih 'just'\t252<br/> 12.4.1.5 pel\u00e9n 'just'\t252<br/> 12.4.2 Modal particle:
+bang\t253<br/> 12.4.3 Softening particle: mi\t253<br/> 12.4.4 Backgrounding particle: ke\t254<br/> 12.4.5 Clarificatory particle:
+te\t255<br/> 12.4.6 Ordering of discourse particles in combination\t255<br/> 13 Speech acts: imperatives, interrogatives,
+exclamations, negation\t257<br/> 13.1 Imperatives\t257<br/> 13.1.1 The basic pattern\t257<br/> 13.1.2 Imperative markers\t259<br/>
+13.1.2.1 entah 'come on!'\t259<br/> 13.1.2.2 gelah 'let'\t259<br/> 13.1.2.3 Encouragement particle: cube\t260<br/> 13.2
+Interrogatives\t261<br/> 13.2.1 Polar questions\t261<br/> 13.2.1.1 Sentence tags\t262<br/> 13.2.1.2 Responses\t262<br/> 13.2.1.3
+Affirmation\t263<br/> 13.2.2 Content questions\t263<br/> 13.2.2.1 Questioned core constituents\t264<br/> 13.2.2.2 Questioned
+adjuncts\t265<br/> 13.2.3 Rhetorical questions\t266<br/> 13.2.4 Focus particle: kin(en)\t267<br/> 13.3 Exclamations\t268<br/> 13.4
+Negation\t269<br/> 13.4.1 g\u00ebre 'not'\t269<br/> 13.4.2 nume 'not'\t270<br/> 13.4.3 enti 'don't'\t271<br/> 13.4.4 Negative
+responses\t272<br/> 14 Relative clauses and other descriptive phrases\t277<br/> 14.1 Types of relativisation\t277<br/> 14.2 Verbal
+relative clauses\t279<br/> 14.2.1 Relativising core arguments\t279<br/> 14.2.1.1 Relative clauses containing intransitive
+predicates\t279<br/> 14.2.1.2 Relative clauses containing transitive predicates\t280<br/> 14.2.1.3 Relativising oblique core
+arguments\t281<br/> 14.2.2 Relativisation of possessors\t282<br/> 14.2.3 Relativising peripheral constituents\t283<br/> 14.3 Non-
+verbal relative clauses\t284<br/> 14.3.1 Relative clauses containing measure phrases\t285<br/> 14.3.2 Relative clauses containing
+adverbs\t285<br/> 14.3.3 Relative clauses containing NPs\t285<br/> 14.3.4 Relative clauses containing PPs\t286<br/> 14.3.4.1 PPs
+that can occur within relative clauses\t286<br/> 14.3.4.2 Modifying instrumental nouns\t286<br/> 14.4 Headless relative
+clauses\t287<br/> 14.5 Stacking of relative clauses\t288<br/> 14.6 Descriptive modification with strategies other than
+relativisation\t288<br/> 14.6.1 Locations\t288<br/> 14.6.2 Comitatives\t289<br/> 14.7 Clefting\t289<br/> 15 Complement
+clauses\t291<br/> 15.1 The complementiser bahwa\t291<br/> 15.2 Complement-taking predicates\t292<br/> 15.2.1 Intransitive
+predicates\t292<br/> 15.2.1.1 Existentials\t292<br/> 15.2.1.2 Controlled intransitive predicates\t293<br/> 15.2.1.2.1 Predicates
+specifying abilitative meanings\t293<br/> 15.2.1.2.2 Predicates specifying pretence\t294<br/> 15.2.1.3 Complements of oblique
+argument taking predicates\t294<br/> 15.2.1.4 Intransitive predicates of saying\t296<br/> 15.2.1.4.1 Indirectly reported
+speech\t296<br/> 15.2.1.4.2 Directly reported speech\t297<br/> 15.2.2 Transitive complement taking predicates\t298<br/> 15.2.2.1
+The syntax of transitive complement-taking predicates\t298<br/> 15.2.2.2 Transitive predicates of perception and
+cognition\t299<br/> 15.2.2.2.1 Predicates of immediate perception\t299<br/> 15.2.2.2.2 Derived nominal perception
+predicates\t300<br/> 15.2.2.3 Predicates of trying\t300<br/> 15.2.2.4 Predicates of manipulation\t301<br/> 15.2.2.5 Transitive
+predicates of saying\t303<br/> 15.3 Nouns that take complements\t304<br/> 16 Conjunctions and parataxis\t306<br/> 16.1
+Subordinating conjunctions\t306<br/> 16.1.1 Time\t306<br/> 16.1.2 Reason\t307<br/> 16.1.3 Purpose\t308<br/> 16.1.4
+Condition\t309<br/> 16.1.5 Concession\t309<br/> 16.2 Co-dependent conjunctions\t310<br/> 16.3 Coordinating conjunctions\t310<br/>
+16.3.1 urum 'and'\t310<br/> 16.3.2 den 'and'\t311<br/> 16.3.3 atawa 'or'\t311<br/> 16.3.4 tap\u00e8 'but'\t312<br/> 16.3.5 keta,
+baru 'then'\t312<br/> 16.4 Discourse connectors\t313<br/> 16.4.1 jadi 'so'\t313<br/> 16.4.2 tap\u00e8 'but'\t313<br/> 16.4.3
+umpama\u00e9 'for example'\t314<br/> 16.4.4 ah\u00e8r\u00e8 'finally, eventually'\t314<br/> 16.4.5 maksut\u00e9 'the point is
+\u2026'\t314<br/> 16.5 Parataxis\t314<br/> 16.5.1 Concurrent events\t315<br/> 16.5.2 Sequences of events\t315<br/> 16.5.3
+Elaboration\t316<br/>Appendix A: 'Geluni item' or 'Depik'\t317<br/>Appendix B: The story of the mousedeer, the elephant and the
+shellfish\t325<br/>Appendix C: Measure nouns\t333<br/>Appendix D: Names and kinship terms\t337<br/>Appendix E: Compound
+nouns\t340<br/>Appendix F: Core vocabulary list\t343<br/>References\t345<br/>Maps:<br/>Map 1-1: The Gayo highlands (shaded area)
+within Aceh\t4<br/>Tables:<br/>1-1: Intransitive verbal affixes\t11<br/>1-2: Voice prefixes\t12<br/>1-3: Functions of actor and
+undergoer orientation\t13<br/>1-4: Valence-increasing affixes\t14<br/>2-1: Consonant phonemes\t21<br/>2-2: Vowel
+phonemes\t27<br/>2-3: Diphthong variants across dialects with examples\t27<br/>2-4: Syllable structure\t33<br/>2-5: Co-occurrence
+restrictions on vowels\t34<br/>4-1: Pronouns\t66<br/>4-2: Noun-deriving affixes\t68<br/>4-3: Adverbs of time\t81<br/>4-4: Adverbs
+of frequency\t82<br/>4-5: Epistememes\t84<br/>4-6: Cardinal numbers in Gayo, 'Malayised Gayo' and Malay/Bahasa
+Indonesia\t86<br/>4-7: Complex numerals\t87<br/>4-8: Ordinal numbers\t88<br/>4-9: A-quantifiers\t88<br/>4-10: The universal
+quantifier b\u00e8w\u00e8n 'all of \u2026'\t89<br/>4-11: D-quantifiers\t90<br/>4-12: Locational demonstratives\t91<br/>7-1:
+Affixes that derive intransitive verbs\t143<br/>8-1: Voice prefixes\t165<br/>8-2: Structure of undergoer oriented
+VPs\t168<br/>8-3: Structure of actor-oriented VPs in transitive clauses\t174<br/>8-4: Structure of decontrol undergoer-oriented
+VPs\t177<br/>9-1: Valence-increasing affixes\t180<br/>9-2: Functions of -i\t182<br/>9-3: Functions of -(n)en\t187<br/>9-4:
+Distinctions between (n)en and per- causatives\t193<br/>10-1: Pronouns\t203<br/>10-2: Polite first person reference\t204<br/>10-3:
+Third person reference\t206<br/>10-4: Deictic local nouns\t208<br/>10-5: Deictic local nouns within adjuncts of
+direction\t209<br/>10-6: Local nouns with space-relational meanings\t211<br/>10-7: Demonstratives\t223<br/>11-1: Local
+prepositions\t228<br/>11-2: Non-local prepositions\t233<br/>12-1: Ordering of particles in combination\t256<br/>13-1:
+Epistememes\t264<br/>14-1: Subordinating conjunctions of time\t306<br/>14-2: Coordinating conjunctions\t310<br/>14-3: Discourse
+connectors\t313</description>  </descriptions></resource>"}
+~~~~~~~~~~
+dict_pp=
+{'datacite': '<?xml version="1.0"?>
+'
+             '<resource xmlns="http://datacite.org/schema/kernel-3" '
+             'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
+             'xsi:schemaLocation="http://datacite.org/schema/kernel-3 '
+             'http://schema.datacite.org/meta/kernel-3/metadata.xsd">  '
+             '<identifier identifierType="DOI">10.15144/PL-567</identifier>  '
+             '<creators>    <creator>      <creatorName>Eades, Domenyk '
+             '(Ed.)</creatorName>    </creator>  </creators>  <titles>    '
+             '<title>A grammar of Gayo: A language of Aceh, Sumatra</title>  '
+             '</titles>  <publisher>Pacific Linguistics</publisher>  '
+             '<publicationYear>2005</publicationYear>  <contributors>    '
+             '<contributor contributorType="Editor">      '
+             '<contributorName>CRCL</contributorName>    </contributor>    '
+             '<contributor contributorType="HostingInstitution">      '
+             '<contributorName>CRCL</contributorName>    </contributor>    '
+             '<contributor contributorType="RightsHolder">      '
+             '<contributorName>Pacific Linguistics and/or the '
+             'author(s)</contributorName>    </contributor>  </contributors>  '
+             '<dates>    <date dateType="Copyrighted">2005</date>    <date '
+             'dateType="Issued">2015</date>  </dates>  '
+             '<language>en</language>  <resourceType '
+             'resourceTypeGeneral="Text">book</resourceType>  '
+             '<alternateIdentifiers>    <alternateIdentifier '
+             'alternateIdentifierType="Series">PL-567</alternateIdentifier>  '
+             '</alternateIdentifiers>  <relatedIdentifiers>    '
+             '<relatedIdentifier relatedIdentifierType="URN" '
+             'relationType="IsIdenticalTo">urn:md5:9f6a19bdb1f238ac6890e31eb887f06c</relatedIdentifier>    '
+             '<relatedIdentifier relatedIdentifierType="URN" '
+             'relationType="IsIdenticalTo">urn:sha1:51a7f084b5e805d3ad22cef3c1b2e0c9775c4a33</relatedIdentifier>    '
+             '<relatedIdentifier relatedIdentifierType="ISBN" '
+             'relationType="IsIdenticalTo">0858835533</relatedIdentifier>  '
+             '</relatedIdentifiers>  <sizes>    <size>20M</size>    <size>xii '
+             '+ 350 pages</size>  </sizes>  <formats>    <format>PDF</format>  '
+             '</formats>  <version>1.0</version>  <rightsList>    <rights '
+             'rightsURI="http://creativecommons.org/licenses/by-sa/4.0">CC '
+             'BY-SA 4.0</rights>  </rightsList>  <descriptions>    '
+             '<description '
+             'descriptionType="SeriesInformation">PL-567</description>    '
+             '<description descriptionType="TableOfContents">Table of '
+             'contents\tvii<br/>Preface\txix<br/>Abbreviations and '
+             'conventions\txxi<br/> 1 Introduction\t3<br/> 1.1 General '
+             'background\t3<br/> 1.1.1 Genetic affiliation\t4<br/> 1.1.2 '
+             'Economy of the Gayo Highlands\t5<br/> 1.1.3 Socio-historical '
+             'background\t5<br/> 1.1.4 Gayo social structure\t6<br/> 1.1.5 '
+             'Language and literacy in Gayo society\t6<br/> 1.2 Linguistic '
+             'type\t8<br/> 1.3 Previous studies of Gayo\t17<br/> 1.4 Dialect '
+             'variation\t18<br/> 1.5 Methodology and structure of this '
+             'grammar\t19<br/> 1.5.1 Data collection and corpus\t19<br/> 1.5.2 '
+             'Aims and structure of this grammar\t20<br/> 2 Phonology and '
+             'morphophonology\t21<br/> 2.1 Phonemes\t21<br/> 2.1.1 Consonants\t'
+             '21<br/> 2.1.1.1 Consonant phonemes and allomorphic variation\t'
+             '22<br/> 2.1.1.1 Funny nasals\t24<br/> 2.1.1.3 Minimal pairs\t'
+             '26<br/> 2.1.2 Vowels\t26<br/> 2.1.2.1 Vowel phonemes and '
+             'allophonic variation\t27<br/> 2.1.2.1.1 High vowels\t28<br/> '
+             '2.1.2.1.2 mid-vowel\t28<br/> 2.1.2.1.3 High-mid and low-mid '
+             'vowels\t29<br/> 2.1.2.1.4 low vowel /a/\t30<br/> 2.1.2.2 Vowel '
+             'phonemes: minimal pairs\t30<br/> 2.2 Non-segmental phonology\t'
+             '31<br/> 2.2.1 Stress assignment\t31<br/> 2.2.1.1 Lexical stress\t'
+             '31<br/> 2.2.1.2 Phrase stress\t31<br/> 2.2.1.3 Stress within the '
+             'clause\t32<br/> 2.2.2 Intonation\t32<br/> 2.2.3 Phonotactics\t'
+             '33<br/> 2.2.3.1 Distribution of phonemes within the syllable\t'
+             '33<br/> 2.2.3.2 Vowel combinations\t33<br/> 2.2.3.3 Epenthetic '
+             'schwa\t34<br/> 2.2.4 Phonological variation in roots\t35<br/> '
+             '2.3 Morphophonemic variation\t35<br/> 2.3.1 Allomorphy\t35<br/> '
+             '2.3.1.1 Affixes\t35<br/> 2.3.1.1.1 ber-, ter-, and per-\t35<br/> '
+             '2.3.1.1.2 mun-\t36<br/> 2.3.1.1.3 pen-\t37<br/> 2.3.1.1.4 mu-\t'
+             '39<br/> 2.3.1.1.5 -(n)en\t39<br/> 2.3.1.1.6 -(n)en and Sandhi\t'
+             '40<br/> 2.3.1.1.7 mun … (n)en\t41<br/> 2.3.1.2 Clitics\t41<br/> '
+             '2.3.1.2.1 Third person non-subject enclitic =è\t41<br/> '
+             '2.3.1.2.2 Third person possessive enclitic =é\t41<br/> 2.3.1.2.3 '
+             'First person possessive enclitic =(ng)ku\t42<br/> 2.3.1.2.4 '
+             'Determiner enclitics\t42<br/> 2.4 Orthographic issues\t43<br/> 3 '
+             'Morphological and syntactic units and relations\t44<br/> 3.1 '
+             'Word\t44<br/> 3.1.1 Root and base\t45<br/> 3.1.2 Affixes\t'
+             '45<br/> 3.2 Particles\t46<br/> 3.2.1 Prepositions\t46<br/> 3.2.2 '
+             'Conjunctions\t47<br/> 3.2.3 Various other particles\t47<br/> 3.3 '
+             'Clitics\t48<br/> 3.3.1 Pronominal clitics\t48<br/> 3.3.2 '
+             'Reduced-word clitics\t48<br/> 3.4 Compounds\t48<br/> 3.4.1 '
+             'Compound nouns\t49<br/> 3.4.2 Compound verbs\t50<br/> 3.4.2.1 '
+             'Second element affixed with mun\t51<br/> 3.4.2.2 Second element '
+             'affixed with mu-\t51<br/> 3.4.2.3 Second element affixed with '
+             'ber-\t51<br/> 3.4.2.4 Second element affixed with bersi … (n)en\t'
+             '52<br/> 3.4.2.5 Second element affixed with mu / em\t52<br/> '
+             '3.4.3 Dvandva compounds\t52<br/> 3.5 Reduplicated forms\t53<br/> '
+             '3.5.1 Kinds of reduplicated forms\t54<br/> 3.5.1.1 Reduplication '
+             'as an inherent structural feature of words\t54<br/> 3.5.1.2 '
+             'Reduplication as a word formation process\t54<br/> 3.5.1.3 '
+             'Syntactic reduplication\t54<br/> 3.5.2 Morphophonological '
+             'features of syntactic reduplication\t55<br/> 3.5.2.1 Partial '
+             'reduplication\t55<br/> 3.5.2.2 Total reduplication\t55<br/> '
+             '3.5.3 Meanings expressed by syntactic reduplication\t56<br/> '
+             '3.5.3.1 Plurality\t56<br/> 3.5.3.2 Intensity\t56<br/> 3.5.3.3 '
+             'Iterativity/durativity\t56<br/> 3.5.3.4 Approximation\t57<br/> '
+             "3.5.3.5 Emphasis\t58<br/> 3.5.3.6 The 'imitative' derivation\t"
+             '58<br/> 3.6 Grammatical relations\t59<br/> 3.6.1 Direct and '
+             'oblique arguments\t59<br/> 3.6.2 Subject\t60<br/> 3.6.3 Actor '
+             'and undergoer\t61<br/> 4 Word classes\t63<br/> 4.1 The '
+             'distinction between noun and verb\t63<br/> 4.2 Nouns\t64<br/> '
+             '4.2.1 Defective nouns\t65<br/> 4.2.2 Sub-classes of nouns\t'
+             '65<br/> 4.2.2.1 Common nouns\t65<br/> 4.2.2.2 Names and titles\t'
+             '66<br/> 4.2.2.3 Pronouns\t66<br/> 4.2.2.4 Local nouns\t67<br/> '
+             '4.2.2.5 Measure nouns\t68<br/> 4.2.3 Noun-deriving affixes\t'
+             '68<br/> 4.2.3.1 Instrumental nominalising prefix: pen-\t68<br/> '
+             '4.2.3.2 Result nominalising infix/confix: -en-…(-(n)en)\t69<br/> '
+             '4.2.3.3 Nominalising suffix: (n)en\t70<br/> 4.2.3.4 Collective '
+             'nominalising circumfix: per-…-(n)en\t70<br/> 4.2.3.5 Undergoer '
+             'nominalising circumfix: pen … (n)en\t71<br/> 4.3 Verbs\t71<br/> '
+             '4.3.1 Free verb-roots\t72<br/> 4.3.2 Bound verb-roots\t74<br/> '
+             '4.3.3 Nominalisation\t76<br/> 4.3.3.1 Action/state '
+             'nominalisation\t77<br/> 4.3.3.2 Manner nominalisation\t78<br/> '
+             '4.3.3.3 Exclamations\t79<br/> 4.3.3.4 Abstract activities\t'
+             '79<br/> 4.3.4 The absence of adjectives\t80<br/> 4.4 Minor '
+             'word-classes\t81<br/> 4.4.1 Adverbs\t81<br/> 4.4.1.1 Adverbs of '
+             'time\t81<br/> 4.4.1.2 Adverbs of frequency\t82<br/> 4.4.1.3 '
+             'Sentence adverbs\t83<br/> 4.4.1.4 Aspectual and modal adverbs\t'
+             '83<br/> 4.4.1.5 Various adverbial particles\t84<br/> 4.4.2 '
+             'Epistememes\t84<br/> 4.4.2.1 Formal properties of epistememes\t'
+             '84<br/> 4.4.2.2 Epistememes in complement constructions\t85<br/> '
+             '4.4.2.3 Indefinite pronominal functions with the particle pè '
+             "'also/even'\t85<br/> 4.4.2.4 Sana 'what' in lists\t86<br/> 4.4.3 "
+             'Numerals\t86<br/> 4.4.3.1 Complex numerals\t87<br/> 4.4.3.2 '
+             'Ordinal numbers and fractions\t87<br/> 4.4.4. Quantifiers\t'
+             '88<br/> 4.4.4.1 A-quantifiers\t88<br/> 4.4.4.2 D-quantifiers\t'
+             '90<br/> 4.4.5 Demonstratives\t90<br/> 4.4.5.1 Locational '
+             'demonstratives\t90<br/> 4.4.5.2 Similative demonstratives\t'
+             '93<br/> 4.4.5.3 The demonstrative particle mana\t93<br/> 4.4.6 '
+             'Interjections\t94<br/> 5 Simple clause types\t97<br/> 5.1 '
+             'Non-verbal clauses\t97<br/> 5.1.1 NPs as predicates: equative '
+             'clauses\t97<br/> 5.1.2 PPs as predicates\t99<br/> 5.2 Verbal '
+             'clauses\t99<br/> 5.2.1 Grammatical relations\t99<br/> 5.2.1.1 '
+             'Direct arguments\t100<br/> 5.2.1.1.1 Split-subject properties in '
+             'Gayo\t100<br/> 5.2.1.1.2 Subject and non-subject\t102<br/> '
+             '5.2.1.1.3 Actor and undergoer\t104<br/> 5.2.1.2 Oblique '
+             'arguments\t106<br/> 5.2.2 Transitivity in Gayo\t109<br/> 5.2.3 '
+             'Ambient clauses\t111<br/> 5.2.4 Intransitive clauses\t111<br/> '
+             '5.2.4.1 Existential clauses\t112<br/> 5.2.4.1.1 Stative '
+             'existential clauses\t112<br/> 5.2.4.1.1.1 With subjects denoting '
+             'temporal or spatial extent\t113<br/> 5.2.4.1.1.2 Existential '
+             'predicates specifying ownership\t113<br/> 5.2.4.1.1.3 Ara with '
+             'clausal complements\t114<br/> 5.2.4.1.2 Inceptive existential '
+             'clauses\t114<br/> 5.2.4.1.2.1 Inceptive existential clauses '
+             'specifying ownership\t115<br/> 5.2.4.1.2.2 Jadi with clausal '
+             "complements\t115<br/> 5.2.4.1.2.3 Mu-jadi 'become'\t115<br/> "
+             '5.2.4.2 Phrasal-verb constructions\t116<br/> 5.2.4.2.1 Verbs in '
+             'phrasal verb constructions\t117<br/> 5.2.4.2.2 Emotion-denoting '
+             "predicates where até 'liver' is VP-external\t119<br/> 5.2.5 "
+             'Transitive clauses\t120<br/> 6 Other aspects of the clauses\t'
+             '122<br/> 6.1 Incorporation\t122<br/> 6.1.1 Undergoer '
+             'incorporation\t122<br/> 6.1.2 Actor incorporation\t124<br/> '
+             '6.1.3 External possession\t126<br/> 6.2 Fronting\t127<br/> 6.2.1 '
+             'Fronted adjuncts and oblique arguments\t127<br/> 6.2.2 Fronted '
+             'core arguments\t127<br/> 6.3 Left and right dislocation\t'
+             '129<br/> 6.3.1 Left dislocation\t129<br/> 6.3.1.1 Morphosyntax '
+             'of left dislocation\t129<br/> 6.3.1.2 Functions of left '
+             'dislocation\t130<br/> 6.3.2 Right dislocation\t131<br/> 6.4 '
+             'Reflexives\t131<br/> 6.4.1 The reflexive clause\t131<br/> 6.4.2 '
+             'Reflexive expressions\t133<br/> 6.5 Comparison\t133<br/> 6.5.1 '
+             "Comparative suffix: -(n)en\t134<br/> 6.5.2 lebih 'more'\t"
+             "134<br/> 6.5.3 dis 'same' and lèn 'different'\t135<br/> 6.6 "
+             'Serialisation\t136<br/> 6.6.1 Formal properties of '
+             'serialisation\t136<br/> 6.6.2 Functional types of serial verb '
+             'constructions\t137<br/> 6.6.2.1 Simultaneous states of affairs\t'
+             '137<br/> 6.6.2.2 Purpose\t138<br/> 6.6.2.3 Reason/result\t'
+             '138<br/> 6.7 Ellipsis\t139<br/> 6.7.1 Ellipsis of subjects\t'
+             '139<br/> 6.7.2 Ellipsis of VPs\t140<br/> 7 Intransitive verb '
+             'affixes\t143<br/> 7.1 Actor prefix: mun-\t143<br/> 7.1.1 With '
+             'verbal bases\t144<br/> 7.1.2 With nominal bases\t144<br/> '
+             "7.1.2.1 'make or prepare N'\t145<br/> 7.1.2.2 'use N'\t145<br/> "
+             "7.1.2.3 'remove or expel N'\t145<br/> 7.2 Middle prefix: ber\t"
+             '146<br/> 7.2.1 Intransitive bases: specifying multiple '
+             'participants\t146<br/> 7.2.2 Middle actions\t147<br/> 7.2.3 '
+             'Middle verbs of saying\t147<br/> 7.2.4 Signalling that an event '
+             'has not occurred or will never occur\t148<br/> 7.2.5 '
+             'Undergoer-oriented resultatives\t148<br/> 7.2.6 Meanings '
+             'associated exclusively with nominal bases\t149<br/> 7.2.6.1 '
+             "'cultivate N'\t150<br/> 7.2.6.2 'search/hunt for N'\t150<br/> "
+             "7.2.5.3 'use N'\t150<br/> 7.2.6.4 'attend N'\t151<br/> 7.2.6.5 "
+             'Ambient meanings\t152<br/> 7.2.6.6 With nominal bases specifying '
+             'personal relationships\t152<br/> 7.2.6.7 With onomatopoeia\t'
+             '152<br/> 7.3 Middle plural circumfix: ber-…-(n)en\t153<br/> 7.4 '
+             'Intransitive prefix/infix: mu-/-em-\t154<br/> 7.4.1 Controlled '
+             'mu-\t154<br/> 7.4.1.1 Controlled actions\t155<br/> 7.4.1.2 Acts '
+             'of ingestion\t155<br/> 7.4.1.3 Producing sounds or speaking\t'
+             '156<br/> 7.4.1.4 Ideophones\t156<br/> 7.4.2 Non-controlled mu-\t'
+             '157<br/> 7.4.2.1 Non-controlled mu with verbal bases\t157<br/> '
+             '7.4.2.2 Nominal bases: verbal possession\t159<br/> 7.4.3 Infixed '
+             'variant: em\t159<br/> 7.5 Temporal extension prefix: per-\t'
+             "160<br/> 7.5.1 'be intrinsically V'\t160<br/> 7.5.2 "
+             "Durative/habitual meanings\t160<br/> 7.5.3 Pe loah 'vomit'\t"
+             '161<br/> 7.5.4 Reduplicated verb bases\t161<br/> 7.6 Reciprocal '
+             'circumfix: bersi … (n)en\t162<br/> 7.7 Adversative circumfix: ke '
+             '… (n)en\t163<br/> 8 Voice\t165<br/> 8.1 Voice and grammatical '
+             'relations\t166<br/> 8.2 Undergoer orientation: i-\t168<br/> '
+             '8.2.1 Aspectual function of undergoer orientation\t168<br/> '
+             '8.2.2 Macrorole-signalling function of undergoer orientation\t'
+             '171<br/> 8.3 Actor orientation: mun-\t172<br/> 8.3.1 Aspectual '
+             '(intransitive) function of actor orientation\t172<br/> 8.3.2 '
+             'Macrorole-signalling function of actor orientation (transitive '
+             'clauses)\t174<br/> 8.4 Voice selection and discourse\t175<br/> '
+             '8.5 Decontrol undergoer-orientation: ter\t177<br/> 8.5.1 '
+             'Inability\t177<br/> 8.5.2 Unintentional acts\t178<br/> 9 '
+             'Valence-increasing affixes\t181<br/> 9.1 Functions of the '
+             'valence-increasing affixes\t181<br/> 9.2 Locative suffix: -i\t'
+             '182<br/> 9.2.1 With intransitive roots\t182<br/> 9.2.1.1 '
+             'Licensing locative undergoers\t182<br/> 9.2.1.2 Licensing direct '
+             'stimulus undergoers\t184<br/> 9.2.2 With transitive roots\t'
+             '184<br/> 9.2.2.1 With transitive roots denoting volitional acts '
+             'and acts of perception\t184<br/> 9.2.2.2 With transitive verbs '
+             'of knowing\t185<br/> 9.2.2.3 With roots marked by the decontrol '
+             'undergoer-orientation prefix ter-\t186<br/> 9.2.3 With nominal '
+             'roots\t186<br/> 9.3 Causative suffix: -(n)en\t186<br/> 9.3.1 '
+             'With intransitive roots\t187<br/> 9.3.2 With transitive roots\t'
+             '188<br/> 9.3.2.1 Specifying causative meanings\t188<br/> 9.3.2.2 '
+             'Specifying increased volition\t189<br/> 9.3.3 With nominal '
+             'roots\t191<br/> 9.4 Causative prefix: per-\t192<br/> 9.4.1 With '
+             'verbal roots\t193<br/> 9.4.2 With reduplicated bases\t194<br/> '
+             '9.4.3 Co-occurrence of causative per with i and (n)en\t195<br/> '
+             '9.5 Facilitative circumfix: peti-…-(n)en\t196<br/> 10 Noun '
+             'phrases\t201<br/> 10.1 The NP head\t202<br/> 10.1.1 Names and '
+             'titles\t202<br/> 10.1.2 Pronouns\t203<br/> 10.1.2.1 First '
+             'person\t204<br/> 10.1.2.2 Second person\t205<br/> 10.1.2.3 Third '
+             'person\t206<br/> 10.1.2.4 Independent possessive pronouns\t'
+             '207<br/> 10.1.3 Local nouns\t208<br/> 10.1.3.1 Deictic local '
+             'nouns\t208<br/> 10.1.3.2 Temporal local nouns\t210<br/> 10.1.3.3 '
+             'Local nouns specifying physical location or direction\t211<br/> '
+             '10.1.4 Measure nouns\t213<br/> 10.2 Measure slot\t214<br/> '
+             '10.2.1 Number phrases\t214<br/> 10.2.2 Modification of number '
+             'phrases\t215<br/> 10.2.3 Floating measure phrases\t215<br/> 10.3 '
+             'Possessive slot\t216<br/> 10.3.1 Formal properties of ni\t'
+             '216<br/> 10.3.2 Semantic relationships between possessive '
+             'phrases and the NP head\t217<br/> 10.3.2.1 True possession\t'
+             '218<br/> 10.3.2.2 Associative function of the possessive\t'
+             '219<br/> 10.3.3 Reciprocal possession\t221<br/> 10.3.4 Embedding '
+             'of possessives\t221<br/> 10.3.5 The possessive noun empu\t'
+             '221<br/> 10.4 Descriptive slot\t222<br/> 10.5 Determiner slot\t'
+             '223<br/> 10.5.1 Demonstratives as determiners\t223<br/> 10.5.2 '
+             "The adverb sine/=ne 'earlier' as a determiner\t223<br/> 10.5.3 "
+             'Co-occurrence of the demonstratives and sine/=ne\t225<br/> 10.6 '
+             'Apposition slot\t225<br/> 10.7 Conjoining NPs\t226<br/> 11 '
+             'Prepositional phrases\t228<br/> 11.1 Local prepositions\t'
+             '228<br/> 11.1.1 Location: i\t228<br/> 11.1.2 Location: '
+             'pëde/pada\t229<br/> 11.1.3 Proximal location: ter\t230<br/> '
+             '11.1.4 Goal: ku\t230<br/> 11.1.5 Source: ari\t231<br/> 11.1.5.1 '
+             'Local meanings of ari\t231<br/> 11.1.5.2 Non-local meanings of '
+             'ari\t232<br/> 11.2 Non-local prepositions\t232<br/> 11.1.2 Urum '
+             "'with'\t233<br/> 11.2.2 Kin 'as, for'\t234<br/> 11.2.2.1 "
+             'Attribute\t234<br/> 11.2.2.2 Result of becoming\t234<br/> '
+             "11.2.2.3 Benefactor\t235<br/> 11.2.3 Tentang 'about'\t235<br/> "
+             "11.2.4 Melèngkan 'except'\t236<br/> 12 Clausal modifications\t"
+             '239<br/> 12.1 Aspect\t239<br/> 12.1.1 Continuative aspect: '
+             'tengah\t239<br/> 12.1.2 Perfect aspect: nge\t240<br/> 12.1.3 '
+             'Immediate perfect: ben and teku\t241<br/> 12.1.4 Aspect with '
+             'phasal meanings\t241<br/> 12.2 Modality\t242<br/> 12.2.1 turah '
+             "'must'\t242<br/> 12.2.2 malè 'will'\t243<br/> 12.2.3 mera "
+             "'want'\t244<br/> 12.2.4 ngôk 'can'\t245<br/> 12.2.5 pané "
+             "'clever, can' (skilled ability)\t246<br/> 12.3 "
+             'Predicate-modifying adverbial particles\t246<br/> 12.3.1 '
+             "Temporal adverbial particles\t246<br/> 12.3.1.1 ilen 'still, "
+             "yet'\t246<br/> 12.3.1.2 nè 'anymore, evermore'\t247<br/> "
+             "12.3.1.3 Pernah/penah 'ever, before'\t247<br/> 12.3.1.4 mien "
+             "'again'\t248<br/> 12.3.2 Intensifying adverbial particles\t"
+             "249<br/> 12.3.2.1 Intensive: pedih 'very'\t249<br/> 12.3.2.2 "
+             "Superlative: paling 'most'\t249<br/> 12.3.2.3 Excessive degree: "
+             "tu 'too (much)'\t249<br/> 12.4 Discourse particles\t249<br/> "
+             '2.4.1 Focus particles\t250<br/> 12.4.1.1 Focus particle: le\t'
+             '250<br/> 12.4.1.2 Emphatic particle: we\t250<br/> 12.4.1.3 pè '
+             "'also/even'\t251<br/> 12.4.1.4 padih/dih 'just'\t252<br/> "
+             "12.4.1.5 pelén 'just'\t252<br/> 12.4.2 Modal particle: bang\t"
+             '253<br/> 12.4.3 Softening particle: mi\t253<br/> 12.4.4 '
+             'Backgrounding particle: ke\t254<br/> 12.4.5 Clarificatory '
+             'particle: te\t255<br/> 12.4.6 Ordering of discourse particles in '
+             'combination\t255<br/> 13 Speech acts: imperatives, '
+             'interrogatives, exclamations, negation\t257<br/> 13.1 '
+             'Imperatives\t257<br/> 13.1.1 The basic pattern\t257<br/> 13.1.2 '
+             "Imperative markers\t259<br/> 13.1.2.1 entah 'come on!'\t259<br/> "
+             "13.1.2.2 gelah 'let'\t259<br/> 13.1.2.3 Encouragement particle: "
+             'cube\t260<br/> 13.2 Interrogatives\t261<br/> 13.2.1 Polar '
+             'questions\t261<br/> 13.2.1.1 Sentence tags\t262<br/> 13.2.1.2 '
+             'Responses\t262<br/> 13.2.1.3 Affirmation\t263<br/> 13.2.2 '
+             'Content questions\t263<br/> 13.2.2.1 Questioned core '
+             'constituents\t264<br/> 13.2.2.2 Questioned adjuncts\t265<br/> '
+             '13.2.3 Rhetorical questions\t266<br/> 13.2.4 Focus particle: '
+             'kin(en)\t267<br/> 13.3 Exclamations\t268<br/> 13.4 Negation\t'
+             "269<br/> 13.4.1 gëre 'not'\t269<br/> 13.4.2 nume 'not'\t270<br/> "
+             "13.4.3 enti 'don't'\t271<br/> 13.4.4 Negative responses\t"
+             '272<br/> 14 Relative clauses and other descriptive phrases\t'
+             '277<br/> 14.1 Types of relativisation\t277<br/> 14.2 Verbal '
+             'relative clauses\t279<br/> 14.2.1 Relativising core arguments\t'
+             '279<br/> 14.2.1.1 Relative clauses containing intransitive '
+             'predicates\t279<br/> 14.2.1.2 Relative clauses containing '
+             'transitive predicates\t280<br/> 14.2.1.3 Relativising oblique '
+             'core arguments\t281<br/> 14.2.2 Relativisation of possessors\t'
+             '282<br/> 14.2.3 Relativising peripheral constituents\t283<br/> '
+             '14.3 Non-verbal relative clauses\t284<br/> 14.3.1 Relative '
+             'clauses containing measure phrases\t285<br/> 14.3.2 Relative '
+             'clauses containing adverbs\t285<br/> 14.3.3 Relative clauses '
+             'containing NPs\t285<br/> 14.3.4 Relative clauses containing PPs\t'
+             '286<br/> 14.3.4.1 PPs that can occur within relative clauses\t'
+             '286<br/> 14.3.4.2 Modifying instrumental nouns\t286<br/> 14.4 '
+             'Headless relative clauses\t287<br/> 14.5 Stacking of relative '
+             'clauses\t288<br/> 14.6 Descriptive modification with strategies '
+             'other than relativisation\t288<br/> 14.6.1 Locations\t288<br/> '
+             '14.6.2 Comitatives\t289<br/> 14.7 Clefting\t289<br/> 15 '
+             'Complement clauses\t291<br/> 15.1 The complementiser bahwa\t'
+             '291<br/> 15.2 Complement-taking predicates\t292<br/> 15.2.1 '
+             'Intransitive predicates\t292<br/> 15.2.1.1 Existentials\t'
+             '292<br/> 15.2.1.2 Controlled intransitive predicates\t293<br/> '
+             '15.2.1.2.1 Predicates specifying abilitative meanings\t293<br/> '
+             '15.2.1.2.2 Predicates specifying pretence\t294<br/> 15.2.1.3 '
+             'Complements of oblique argument taking predicates\t294<br/> '
+             '15.2.1.4 Intransitive predicates of saying\t296<br/> 15.2.1.4.1 '
+             'Indirectly reported speech\t296<br/> 15.2.1.4.2 Directly '
+             'reported speech\t297<br/> 15.2.2 Transitive complement taking '
+             'predicates\t298<br/> 15.2.2.1 The syntax of transitive '
+             'complement-taking predicates\t298<br/> 15.2.2.2 Transitive '
+             'predicates of perception and cognition\t299<br/> 15.2.2.2.1 '
+             'Predicates of immediate perception\t299<br/> 15.2.2.2.2 Derived '
+             'nominal perception predicates\t300<br/> 15.2.2.3 Predicates of '
+             'trying\t300<br/> 15.2.2.4 Predicates of manipulation\t301<br/> '
+             '15.2.2.5 Transitive predicates of saying\t303<br/> 15.3 Nouns '
+             'that take complements\t304<br/> 16 Conjunctions and parataxis\t'
+             '306<br/> 16.1 Subordinating conjunctions\t306<br/> 16.1.1 Time\t'
+             '306<br/> 16.1.2 Reason\t307<br/> 16.1.3 Purpose\t308<br/> 16.1.4 '
+             'Condition\t309<br/> 16.1.5 Concession\t309<br/> 16.2 '
+             'Co-dependent conjunctions\t310<br/> 16.3 Coordinating '
+             "conjunctions\t310<br/> 16.3.1 urum 'and'\t310<br/> 16.3.2 den "
+             "'and'\t311<br/> 16.3.3 atawa 'or'\t311<br/> 16.3.4 tapè 'but'\t"
+             "312<br/> 16.3.5 keta, baru 'then'\t312<br/> 16.4 Discourse "
+             "connectors\t313<br/> 16.4.1 jadi 'so'\t313<br/> 16.4.2 tapè "
+             "'but'\t313<br/> 16.4.3 umpamaé 'for example'\t314<br/> 16.4.4 "
+             "ahèrè 'finally, eventually'\t314<br/> 16.4.5 maksuté 'the point "
+             "is …'\t314<br/> 16.5 Parataxis\t314<br/> 16.5.1 Concurrent "
+             'events\t315<br/> 16.5.2 Sequences of events\t315<br/> 16.5.3 '
+             "Elaboration\t316<br/>Appendix A: 'Geluni item' or 'Depik'\t"
+             '317<br/>Appendix B: The story of the mousedeer, the elephant and '
+             'the shellfish\t325<br/>Appendix C: Measure nouns\t'
+             '333<br/>Appendix D: Names and kinship terms\t337<br/>Appendix E: '
+             'Compound nouns\t340<br/>Appendix F: Core vocabulary list\t'
+             '343<br/>References\t345<br/>Maps:<br/>Map 1-1: The Gayo '
+             'highlands (shaded area) within Aceh\t4<br/>Tables:<br/>1-1: '
+             'Intransitive verbal affixes\t11<br/>1-2: Voice prefixes\t'
+             '12<br/>1-3: Functions of actor and undergoer orientation\t'
+             '13<br/>1-4: Valence-increasing affixes\t14<br/>2-1: Consonant '
+             'phonemes\t21<br/>2-2: Vowel phonemes\t27<br/>2-3: Diphthong '
+             'variants across dialects with examples\t27<br/>2-4: Syllable '
+             'structure\t33<br/>2-5: Co-occurrence restrictions on vowels\t'
+             '34<br/>4-1: Pronouns\t66<br/>4-2: Noun-deriving affixes\t'
+             '68<br/>4-3: Adverbs of time\t81<br/>4-4: Adverbs of frequency\t'
+             '82<br/>4-5: Epistememes\t84<br/>4-6: Cardinal numbers in Gayo, '
+             "'Malayised Gayo' and Malay/Bahasa Indonesia\t86<br/>4-7: Complex "
+             'numerals\t87<br/>4-8: Ordinal numbers\t88<br/>4-9: '
+             "A-quantifiers\t88<br/>4-10: The universal quantifier bèwèn 'all "
+             "of …'\t89<br/>4-11: D-quantifiers\t90<br/>4-12: Locational "
+             'demonstratives\t91<br/>7-1: Affixes that derive intransitive '
+             'verbs\t143<br/>8-1: Voice prefixes\t165<br/>8-2: Structure of '
+             'undergoer oriented VPs\t168<br/>8-3: Structure of actor-oriented '
+             'VPs in transitive clauses\t174<br/>8-4: Structure of decontrol '
+             'undergoer-oriented VPs\t177<br/>9-1: Valence-increasing affixes\t'
+             '180<br/>9-2: Functions of -i\t182<br/>9-3: Functions of -(n)en\t'
+             '187<br/>9-4: Distinctions between (n)en and per- causatives\t'
+             '193<br/>10-1: Pronouns\t203<br/>10-2: Polite first person '
+             'reference\t204<br/>10-3: Third person reference\t206<br/>10-4: '
+             'Deictic local nouns\t208<br/>10-5: Deictic local nouns within '
+             'adjuncts of direction\t209<br/>10-6: Local nouns with '
+             'space-relational meanings\t211<br/>10-7: Demonstratives\t'
+             '223<br/>11-1: Local prepositions\t228<br/>11-2: Non-local '
+             'prepositions\t233<br/>12-1: Ordering of particles in '
+             'combination\t256<br/>13-1: Epistememes\t264<br/>14-1: '
+             'Subordinating conjunctions of time\t306<br/>14-2: Coordinating '
+             'conjunctions\t310<br/>14-3: Discourse connectors\t'
+             '313</description>  </descriptions></resource>'}
+~~~~~~~~~~
+keys=
+datacite
+~~~~~~~~~~
+output_exchange=
+datacite
+<?xml%20version%3D%221.0%22?>%0A<resource%20xmlns%3D%22http://datacite.org/schema/kernel-3%22%20xmlns:xsi%3D%22http://www.w3.org/2001/XMLSchema-
+instance%22%20xsi:schemaLocation%3D%22http://datacite.org/schema/kernel-3%20http://schema.datacite.org/meta/kernel-3/metadata.xsd%22>%20%20<identifier%20identifierType%3D%22DOI%22>10.15144/PL-567</identifier>%20%20<creators>%20%20%20%20<creator>%20%20%20%20%20%20<creatorName>Eades,%20Domenyk%20%28Ed.%29</creatorName>%20%20%20%20</creator>%20%20</creators>%20%20<titles>%20%20%20%20<title>A%20grammar%20of%20Gayo:%20A%20language%20of%20Aceh,%20Sumatra</title>%20%20</titles>%20%20<publisher>Pacific%20Linguistics</publisher>%20%20<publicationYear>2005</publicationYear>%20%20<contributors>%20%20%20%20<contributor%20contributorType%3D%22Editor%22>%20%20%20%20%20%20<contributorName>CRCL</contributorName>%20%20%20%20</contributor>%20%20%20%20<contributor%20contributorType%3D%22HostingInstitution%22>%20%20%20%20%20%20<contributorName>CRCL</contributorName>%20%20%20%20</contributor>%20%20%20%20<contributor%20contributorType%3D%22RightsHolder%22>%20%20%20%20%20%20<contributorName>Pacific%20Linguistics%20and/or%20the%20author%28s%29</contributorName>%20%20%20%20</contributor>%20%20</contributors>%20%20<dates>%20%20%20%20<date%20dateType%3D%22Copyrighted%22>2005</date>%20%20%20%20<date%20dateType%3D%22Issued%22>2015</date>%20%20</dates>%20%20<language>en</language>%20%20<resourceType%20resourceTypeGeneral%3D%22Text%22>book</resourceType>%20%20<alternateIdentifiers>%20%20%20%20<alternateIdentifier%20alternateIdentifierType%3D%22Series%22>PL-567</alternateIdentifier>%20%20</alternateIdentifiers>%20%20<relatedIdentifiers>%20%20%20%20<relatedIdentifier%20relatedIdentifierType%3D%22URN%22%20relationType%3D%22IsIdenticalTo%22>urn:md5:9f6a19bdb1f238ac6890e31eb887f06c</relatedIdentifier>%20%20%20%20<relatedIdentifier%20relatedIdentifierType%3D%22URN%22%20relationType%3D%22IsIdenticalTo%22>urn:sha1:51a7f084b5e805d3ad22cef3c1b2e0c9775c4a33</relatedIdentifier>%20%20%20%20<relatedIdentifier%20relatedIdentifierType%3D%22ISBN%22%20relationType%3D%22IsIdenticalTo%22>0858835533</relatedIdentifier>%20%20</relatedIdentifiers>%20%20<sizes>%20%20%20%20<size>20M</size>%20%20%20%20<size>xii%20+%20350%20pages</size>%20%20</sizes>%20%20<formats>%20%20%20%20<format>PDF</format>%20%20</formats>%20%20<version>1.0</version>%20%20<rightsList>%20%20%20%20<rights%20rightsURI%3D%22http://creativecommons.org/licenses/by-
+sa/4.0%22>CC%20BY-
+SA%204.0</rights>%20%20</rightsList>%20%20<descriptions>%20%20%20%20<description%20descriptionType%3D%22SeriesInformation%22>PL-567</description>%20%20%20%20<description%20descriptionType%3D%22TableOfContents%22>Table%20of%20contents%09vii<br/>Preface%09xix<br/>Abbreviations%20and%20conventions%09xxi<br/>%201%20Introduction%093<br/>%201.1%20General%20background%093<br/>%201.1.1%20Genetic%20affiliation%094<br/>%201.1.2%20Economy%20of%20the%20Gayo%20Highlands%095<br/>%201.1.3%20Socio-
+historical%20background%095<br/>%201.1.4%20Gayo%20social%20structure%096<br/>%201.1.5%20Language%20and%20literacy%20in%20Gayo%20society%096<br/>%201.2%20Linguistic%20type%098<br/>%201.3%20Previous%20studies%20of%20Gayo%0917<br/>%201.4%20Dialect%20variation%0918<br/>%201.5%20Methodology%20and%20structure%20of%20this%20grammar%0919<br/>%201.5.1%20Data%20collection%20and%20corpus%0919<br/>%201.5.2%20Aims%20and%20structure%20of%20this%20grammar%0920<br/>%202%20Phonology%20and%20morphophonology%0921<br/>%202.1%20Phonemes%0921<br/>%202.1.1%20Consonants%0921<br/>%202.1.1.1%20Consonant%20phonemes%20and%20allomorphic%20variation%0922<br/>%202.1.1.1%20Funny%20nasals%0924<br/>%202.1.1.3%20Minimal%20pairs%0926<br/>%202.1.2%20Vowels%0926<br/>%202.1.2.1%20Vowel%20phonemes%20and%20allophonic%20variation%0927<br/>%202.1.2.1.1%20High%20vowels%0928<br/>%202.1.2.1.2%20mid-
+vowel%0928<br/>%202.1.2.1.3%20High-mid%20and%20low-
+mid%20vowels%0929<br/>%202.1.2.1.4%20low%20vowel%20/a/%0930<br/>%202.1.2.2%20Vowel%20phonemes:%20minimal%20pairs%0930<br/>%202.2%20Non-
+segmental%20phonology%0931<br/>%202.2.1%20Stress%20assignment%0931<br/>%202.2.1.1%20Lexical%20stress%0931<br/>%202.2.1.2%20Phrase%20stress%0931<br/>%202.2.1.3%20Stress%20within%20the%20clause%0932<br/>%202.2.2%20Intonation%0932<br/>%202.2.3%20Phonotactics%0933<br/>%202.2.3.1%20Distribution%20of%20phonemes%20within%20the%20syllable%0933<br/>%202.2.3.2%20Vowel%20combinations%0933<br/>%202.2.3.3%20Epenthetic%20schwa%0934<br/>%202.2.4%20Phonological%20variation%20in%20roots%0935<br/>%202.3%20Morphophonemic%20variation%0935<br/>%202.3.1%20Allomorphy%0935<br/>%202.3.1.1%20Affixes%0935<br/>%202.3.1.1.1%20ber-,%20ter-,%20and%20per-%0935<br/>%202.3.1.1.2%20mun-%0936<br/>%202.3.1.1.3%20pen-%0937<br/>%202.3.1.1.4%20mu-%0939<br/>%202.3.1.1.5%20-%28n%29en%0939<br/>%202.3.1.1.6%20-%28n%29en%20and%20Sandhi%0940<br/>%202.3.1.1.7%20mun%20%2026%20%28n%29en%0941<br/>%202.3.1.2%20Clitics%0941<br/>%202.3.1.2.1%20Third%20person%20non-
+subject%20enclitic%20%3D%E8%0941<br/>%202.3.1.2.2%20Third%20person%20possessive%20enclitic%20%3D%E9%0941<br/>%202.3.1.2.3%20First%20person%20possessive%20enclitic%20%3D%28ng%29ku%0942<br/>%202.3.1.2.4%20Determiner%20enclitics%0942<br/>%202.4%20Orthographic%20issues%0943<br/>%203%20Morphological%20and%20syntactic%20units%20and%20relations%0944<br/>%203.1%20Word%0944<br/>%203.1.1%20Root%20and%20base%0945<br/>%203.1.2%20Affixes%0945<br/>%203.2%20Particles%0946<br/>%203.2.1%20Prepositions%0946<br/>%203.2.2%20Conjunctions%0947<br/>%203.2.3%20Various%20other%20particles%0947<br/>%203.3%20Clitics%0948<br/>%203.3.1%20Pronominal%20clitics%0948<br/>%203.3.2%20Reduced-
+word%20clitics%0948<br/>%203.4%20Compounds%0948<br/>%203.4.1%20Compound%20nouns%0949<br/>%203.4.2%20Compound%20verbs%0950<br/>%203.4.2.1%20Second%20element%20affixed%20with%20mun%0951<br/>%203.4.2.2%20Second%20element%20affixed%20with%20mu-%0951<br/>%203.4.2.3%20Second%20element%20affixed%20with%20ber-%0951<br/>%203.4.2.4%20Second%20element%20affixed%20with%20bersi%20%2026%20%28n%29en%0952<br/>%203.4.2.5%20Second%20element%20affixed%20with%20mu%20/%20em%0952<br/>%203.4.3%20Dvandva%20compounds%0952<br/>%203.5%20Reduplicated%20forms%0953<br/>%203.5.1%20Kinds%20of%20reduplicated%20forms%0954<br/>%203.5.1.1%20Reduplication%20as%20an%20inherent%20structural%20feature%20of%20words%0954<br/>%203.5.1.2%20Reduplication%20as%20a%20word%20formation%20process%0954<br/>%203.5.1.3%20Syntactic%20reduplication%0954<br/>%203.5.2%20Morphophonological%20features%20of%20syntactic%20reduplication%0955<br/>%203.5.2.1%20Partial%20reduplication%0955<br/>%203.5.2.2%20Total%20reduplication%0955<br/>%203.5.3%20Meanings%20expressed%20by%20syntactic%20reduplication%0956<br/>%203.5.3.1%20Plurality%0956<br/>%203.5.3.2%20Intensity%0956<br/>%203.5.3.3%20Iterativity/durativity%0956<br/>%203.5.3.4%20Approximation%0957<br/>%203.5.3.5%20Emphasis%0958<br/>%203.5.3.6%20The%20%27imitative%27%20derivation%0958<br/>%203.6%20Grammatical%20relations%0959<br/>%203.6.1%20Direct%20and%20oblique%20arguments%0959<br/>%203.6.2%20Subject%0960<br/>%203.6.3%20Actor%20and%20undergoer%0961<br/>%204%20Word%20classes%0963<br/>%204.1%20The%20distinction%20between%20noun%20and%20verb%0963<br/>%204.2%20Nouns%0964<br/>%204.2.1%20Defective%20nouns%0965<br/>%204.2.2%20Sub-
+classes%20of%20nouns%0965<br/>%204.2.2.1%20Common%20nouns%0965<br/>%204.2.2.2%20Names%20and%20titles%0966<br/>%204.2.2.3%20Pronouns%0966<br/>%204.2.2.4%20Local%20nouns%0967<br/>%204.2.2.5%20Measure%20nouns%0968<br/>%204.2.3%20Noun-
+deriving%20affixes%0968<br/>%204.2.3.1%20Instrumental%20nominalising%20prefix:%20pen-%0968<br/>%204.2.3.2%20Result%20nominalising%20infix/confix:%20-en-%2026%28-%28n%29en%29%0969<br/>%204.2.3.3%20Nominalising%20suffix:%20%28n%29en%0970<br/>%204.2.3.4%20Collective%20nominalising%20circumfix:%20per-%2026-%28n%29en%0970<br/>%204.2.3.5%20Undergoer%20nominalising%20circumfix:%20pen%20%2026%20%28n%29en%0971<br/>%204.3%20Verbs%0971<br/>%204.3.1%20Free%20verb-
+roots%0972<br/>%204.3.2%20Bound%20verb-
+roots%0974<br/>%204.3.3%20Nominalisation%0976<br/>%204.3.3.1%20Action/state%20nominalisation%0977<br/>%204.3.3.2%20Manner%20nominalisation%0978<br/>%204.3.3.3%20Exclamations%0979<br/>%204.3.3.4%20Abstract%20activities%0979<br/>%204.3.4%20The%20absence%20of%20adjectives%0980<br/>%204.4%20Minor%20word-
+classes%0981<br/>%204.4.1%20Adverbs%0981<br/>%204.4.1.1%20Adverbs%20of%20time%0981<br/>%204.4.1.2%20Adverbs%20of%20frequency%0982<br/>%204.4.1.3%20Sentence%20adverbs%0983<br/>%204.4.1.4%20Aspectual%20and%20modal%20adverbs%0983<br/>%204.4.1.5%20Various%20adverbial%20particles%0984<br/>%204.4.2%20Epistememes%0984<br/>%204.4.2.1%20Formal%20properties%20of%20epistememes%0984<br/>%204.4.2.2%20Epistememes%20in%20complement%20constructions%0985<br/>%204.4.2.3%20Indefinite%20pronominal%20functions%20with%20the%20particle%20p%E8%20%27also/even%27%0985<br/>%204.4.2.4%20Sana%20%27what%27%20in%20lists%0986<br/>%204.4.3%20Numerals%0986<br/>%204.4.3.1%20Complex%20numerals%0987<br/>%204.4.3.2%20Ordinal%20numbers%20and%20fractions%0987<br/>%204.4.4.%20Quantifiers%0988<br/>%204.4.4.1%20A-quantifiers%0988<br/>%204.4.4.2%20D-quantifiers%0990<br/>%204.4.5%20Demonstratives%0990<br/>%204.4.5.1%20Locational%20demonstratives%0990<br/>%204.4.5.2%20Similative%20demonstratives%0993<br/>%204.4.5.3%20The%20demonstrative%20particle%20mana%0993<br/>%204.4.6%20Interjections%0994<br/>%205%20Simple%20clause%20types%0997<br/>%205.1%20Non-
+verbal%20clauses%0997<br/>%205.1.1%20NPs%20as%20predicates:%20equative%20clauses%0997<br/>%205.1.2%20PPs%20as%20predicates%0999<br/>%205.2%20Verbal%20clauses%0999<br/>%205.2.1%20Grammatical%20relations%0999<br/>%205.2.1.1%20Direct%20arguments%09100<br/>%205.2.1.1.1%20Split-
+subject%20properties%20in%20Gayo%09100<br/>%205.2.1.1.2%20Subject%20and%20non-
+subject%09102<br/>%205.2.1.1.3%20Actor%20and%20undergoer%09104<br/>%205.2.1.2%20Oblique%20arguments%09106<br/>%205.2.2%20Transitivity%20in%20Gayo%09109<br/>%205.2.3%20Ambient%20clauses%09111<br/>%205.2.4%20Intransitive%20clauses%09111<br/>%205.2.4.1%20Existential%20clauses%09112<br/>%205.2.4.1.1%20Stative%20existential%20clauses%09112<br/>%205.2.4.1.1.1%20With%20subjects%20denoting%20temporal%20or%20spatial%20extent%09113<br/>%205.2.4.1.1.2%20Existential%20predicates%20specifying%20ownership%09113<br/>%205.2.4.1.1.3%20Ara%20with%20clausal%20complements%09114<br/>%205.2.4.1.2%20Inceptive%20existential%20clauses%09114<br/>%205.2.4.1.2.1%20Inceptive%20existential%20clauses%20specifying%20ownership%09115<br/>%205.2.4.1.2.2%20Jadi%20with%20clausal%20complements%09115<br/>%205.2.4.1.2.3%20Mu-
+jadi%20%27become%27%09115<br/>%205.2.4.2%20Phrasal-
+verb%20constructions%09116<br/>%205.2.4.2.1%20Verbs%20in%20phrasal%20verb%20constructions%09117<br/>%205.2.4.2.2%20Emotion-
+denoting%20predicates%20where%20at%E9%20%27liver%27%20is%20VP-
+external%09119<br/>%205.2.5%20Transitive%20clauses%09120<br/>%206%20Other%20aspects%20of%20the%20clauses%09122<br/>%206.1%20Incorporation%09122<br/>%206.1.1%20Undergoer%20incorporation%09122<br/>%206.1.2%20Actor%20incorporation%09124<br/>%206.1.3%20External%20possession%09126<br/>%206.2%20Fronting%09127<br/>%206.2.1%20Fronted%20adjuncts%20and%20oblique%20arguments%09127<br/>%206.2.2%20Fronted%20core%20arguments%09127<br/>%206.3%20Left%20and%20right%20dislocation%09129<br/>%206.3.1%20Left%20dislocation%09129<br/>%206.3.1.1%20Morphosyntax%20of%20left%20dislocation%09129<br/>%206.3.1.2%20Functions%20of%20left%20dislocation%09130<br/>%206.3.2%20Right%20dislocation%09131<br/>%206.4%20Reflexives%09131<br/>%206.4.1%20The%20reflexive%20clause%09131<br/>%206.4.2%20Reflexive%20expressions%09133<br/>%206.5%20Comparison%09133<br/>%206.5.1%20Comparative%20suffix:%20-%28n%29en%09134<br/>%206.5.2%20lebih%20%27more%27%09134<br/>%206.5.3%20dis%20%27same%27%20and%20l%E8n%20%27different%27%09135<br/>%206.6%20Serialisation%09136<br/>%206.6.1%20Formal%20properties%20of%20serialisation%09136<br/>%206.6.2%20Functional%20types%20of%20serial%20verb%20constructions%09137<br/>%206.6.2.1%20Simultaneous%20states%20of%20affairs%09137<br/>%206.6.2.2%20Purpose%09138<br/>%206.6.2.3%20Reason/result%09138<br/>%206.7%20Ellipsis%09139<br/>%206.7.1%20Ellipsis%20of%20subjects%09139<br/>%206.7.2%20Ellipsis%20of%20VPs%09140<br/>%207%20Intransitive%20verb%20affixes%09143<br/>%207.1%20Actor%20prefix:%20mun-%09143<br/>%207.1.1%20With%20verbal%20bases%09144<br/>%207.1.2%20With%20nominal%20bases%09144<br/>%207.1.2.1%20%27make%20or%20prepare%20N%27%09145<br/>%207.1.2.2%20%27use%20N%27%09145<br/>%207.1.2.3%20%27remove%20or%20expel%20N%27%09145<br/>%207.2%20Middle%20prefix:%20ber%09146<br/>%207.2.1%20Intransitive%20bases:%20specifying%20multiple%20participants%09146<br/>%207.2.2%20Middle%20actions%09147<br/>%207.2.3%20Middle%20verbs%20of%20saying%09147<br/>%207.2.4%20Signalling%20that%20an%20event%20has%20not%20occurred%20or%20will%20never%20occur%09148<br/>%207.2.5%20Undergoer-
+oriented%20resultatives%09148<br/>%207.2.6%20Meanings%20associated%20exclusively%20with%20nominal%20bases%09149<br/>%207.2.6.1%20%27cultivate%20N%27%09150<br/>%207.2.6.2%20%27search/hunt%20for%20N%27%09150<br/>%207.2.5.3%20%27use%20N%27%09150<br/>%207.2.6.4%20%27attend%20N%27%09151<br/>%207.2.6.5%20Ambient%20meanings%09152<br/>%207.2.6.6%20With%20nominal%20bases%20specifying%20personal%20relationships%09152<br/>%207.2.6.7%20With%20onomatopoeia%09152<br/>%207.3%20Middle%20plural%20circumfix:%20ber-%2026-%28n%29en%09153<br/>%207.4%20Intransitive%20prefix/infix:%20mu-/-em-%09154<br/>%207.4.1%20Controlled%20mu-%09154<br/>%207.4.1.1%20Controlled%20actions%09155<br/>%207.4.1.2%20Acts%20of%20ingestion%09155<br/>%207.4.1.3%20Producing%20sounds%20or%20speaking%09156<br/>%207.4.1.4%20Ideophones%09156<br/>%207.4.2%20Non-
+controlled%20mu-%09157<br/>%207.4.2.1%20Non-
+controlled%20mu%20with%20verbal%20bases%09157<br/>%207.4.2.2%20Nominal%20bases:%20verbal%20possession%09159<br/>%207.4.3%20Infixed%20variant:%20em%09159<br/>%207.5%20Temporal%20extension%20prefix:%20per-%09160<br/>%207.5.1%20%27be%20intrinsically%20V%27%09160<br/>%207.5.2%20Durative/habitual%20meanings%09160<br/>%207.5.3%20Pe%20loah%20%27vomit%27%09161<br/>%207.5.4%20Reduplicated%20verb%20bases%09161<br/>%207.6%20Reciprocal%20circumfix:%20bersi%20%2026%20%28n%29en%09162<br/>%207.7%20Adversative%20circumfix:%20ke%20%2026%20%28n%29en%09163<br/>%208%20Voice%09165<br/>%208.1%20Voice%20and%20grammatical%20relations%09166<br/>%208.2%20Undergoer%20orientation:%20i-%09168<br/>%208.2.1%20Aspectual%20function%20of%20undergoer%20orientation%09168<br/>%208.2.2%20Macrorole-
+signalling%20function%20of%20undergoer%20orientation%09171<br/>%208.3%20Actor%20orientation:%20mun-%09172<br/>%208.3.1%20Aspectual%20%28intransitive%29%20function%20of%20actor%20orientation%09172<br/>%208.3.2%20Macrorole-
+signalling%20function%20of%20actor%20orientation%20%28transitive%20clauses%29%09174<br/>%208.4%20Voice%20selection%20and%20discourse%09175<br/>%208.5%20Decontrol%20undergoer-
+orientation:%20ter%09177<br/>%208.5.1%20Inability%09177<br/>%208.5.2%20Unintentional%20acts%09178<br/>%209%20Valence-
+increasing%20affixes%09181<br/>%209.1%20Functions%20of%20the%20valence-
+increasing%20affixes%09181<br/>%209.2%20Locative%20suffix:%20-i%09182<br/>%209.2.1%20With%20intransitive%20roots%09182<br/>%209.2.1.1%20Licensing%20locative%20undergoers%09182<br/>%209.2.1.2%20Licensing%20direct%20stimulus%20undergoers%09184<br/>%209.2.2%20With%20transitive%20roots%09184<br/>%209.2.2.1%20With%20transitive%20roots%20denoting%20volitional%20acts%20and%20acts%20of%20perception%09184<br/>%209.2.2.2%20With%20transitive%20verbs%20of%20knowing%09185<br/>%209.2.2.3%20With%20roots%20marked%20by%20the%20decontrol%20undergoer-
+orientation%20prefix%20ter-%09186<br/>%209.2.3%20With%20nominal%20roots%09186<br/>%209.3%20Causative%20suffix:%20-%28n%29en%09186<br/>%209.3.1%20With%20intransitive%20roots%09187<br/>%209.3.2%20With%20transitive%20roots%09188<br/>%209.3.2.1%20Specifying%20causative%20meanings%09188<br/>%209.3.2.2%20Specifying%20increased%20volition%09189<br/>%209.3.3%20With%20nominal%20roots%09191<br/>%209.4%20Causative%20prefix:%20per-%09192<br/>%209.4.1%20With%20verbal%20roots%09193<br/>%209.4.2%20With%20reduplicated%20bases%09194<br/>%209.4.3%20Co-
+occurrence%20of%20causative%20per%20with%20i%20and%20%28n%29en%09195<br/>%209.5%20Facilitative%20circumfix:%20peti-%2026-%28n%29en%09196<br/>%2010%20Noun%20phrases%09201<br/>%2010.1%20The%20NP%20head%09202<br/>%2010.1.1%20Names%20and%20titles%09202<br/>%2010.1.2%20Pronouns%09203<br/>%2010.1.2.1%20First%20person%09204<br/>%2010.1.2.2%20Second%20person%09205<br/>%2010.1.2.3%20Third%20person%09206<br/>%2010.1.2.4%20Independent%20possessive%20pronouns%09207<br/>%2010.1.3%20Local%20nouns%09208<br/>%2010.1.3.1%20Deictic%20local%20nouns%09208<br/>%2010.1.3.2%20Temporal%20local%20nouns%09210<br/>%2010.1.3.3%20Local%20nouns%20specifying%20physical%20location%20or%20direction%09211<br/>%2010.1.4%20Measure%20nouns%09213<br/>%2010.2%20Measure%20slot%09214<br/>%2010.2.1%20Number%20phrases%09214<br/>%2010.2.2%20Modification%20of%20number%20phrases%09215<br/>%2010.2.3%20Floating%20measure%20phrases%09215<br/>%2010.3%20Possessive%20slot%09216<br/>%2010.3.1%20Formal%20properties%20of%20ni%09216<br/>%2010.3.2%20Semantic%20relationships%20between%20possessive%20phrases%20and%20the%20NP%20head%09217<br/>%2010.3.2.1%20True%20possession%09218<br/>%2010.3.2.2%20Associative%20function%20of%20the%20possessive%09219<br/>%2010.3.3%20Reciprocal%20possession%09221<br/>%2010.3.4%20Embedding%20of%20possessives%09221<br/>%2010.3.5%20The%20possessive%20noun%20empu%09221<br/>%2010.4%20Descriptive%20slot%09222<br/>%2010.5%20Determiner%20slot%09223<br/>%2010.5.1%20Demonstratives%20as%20determiners%09223<br/>%2010.5.2%20The%20adverb%20sine/%3Dne%20%27earlier%27%20as%20a%20determiner%09223<br/>%2010.5.3%20Co-
+occurrence%20of%20the%20demonstratives%20and%20sine/%3Dne%09225<br/>%2010.6%20Apposition%20slot%09225<br/>%2010.7%20Conjoining%20NPs%09226<br/>%2011%20Prepositional%20phrases%09228<br/>%2011.1%20Local%20prepositions%09228<br/>%2011.1.1%20Location:%20i%09228<br/>%2011.1.2%20Location:%20p%EBde/pada%09229<br/>%2011.1.3%20Proximal%20location:%20ter%09230<br/>%2011.1.4%20Goal:%20ku%09230<br/>%2011.1.5%20Source:%20ari%09231<br/>%2011.1.5.1%20Local%20meanings%20of%20ari%09231<br/>%2011.1.5.2%20Non-
+local%20meanings%20of%20ari%09232<br/>%2011.2%20Non-
+local%20prepositions%09232<br/>%2011.1.2%20Urum%20%27with%27%09233<br/>%2011.2.2%20Kin%20%27as,%20for%27%09234<br/>%2011.2.2.1%20Attribute%09234<br/>%2011.2.2.2%20Result%20of%20becoming%09234<br/>%2011.2.2.3%20Benefactor%09235<br/>%2011.2.3%20Tentang%20%27about%27%09235<br/>%2011.2.4%20Mel%E8ngkan%20%27except%27%09236<br/>%2012%20Clausal%20modifications%09239<br/>%2012.1%20Aspect%09239<br/>%2012.1.1%20Continuative%20aspect:%20tengah%09239<br/>%2012.1.2%20Perfect%20aspect:%20nge%09240<br/>%2012.1.3%20Immediate%20perfect:%20ben%20and%20teku%09241<br/>%2012.1.4%20Aspect%20with%20phasal%20meanings%09241<br/>%2012.2%20Modality%09242<br/>%2012.2.1%20turah%20%27must%27%09242<br/>%2012.2.2%20mal%E8%20%27will%27%09243<br/>%2012.2.3%20mera%20%27want%27%09244<br/>%2012.2.4%20ng%F4k%20%27can%27%09245<br/>%2012.2.5%20pan%E9%20%27clever,%20can%27%20%28skilled%20ability%29%09246<br/>%2012.3%20Predicate-
+modifying%20adverbial%20particles%09246<br/>%2012.3.1%20Temporal%20adverbial%20particles%09246<br/>%2012.3.1.1%20ilen%20%27still,%20yet%27%09246<br/>%2012.3.1.2%20n%E8%20%27anymore,%20evermore%27%09247<br/>%2012.3.1.3%20Pernah/penah%20%27ever,%20before%27%09247<br/>%2012.3.1.4%20mien%20%27again%27%09248<br/>%2012.3.2%20Intensifying%20adverbial%20particles%09249<br/>%2012.3.2.1%20Intensive:%20pedih%20%27very%27%09249<br/>%2012.3.2.2%20Superlative:%20paling%20%27most%27%09249<br/>%2012.3.2.3%20Excessive%20degree:%20tu%20%27too%20%28much%29%27%09249<br/>%2012.4%20Discourse%20particles%09249<br/>%202.4.1%20Focus%20particles%09250<br/>%2012.4.1.1%20Focus%20particle:%20le%09250<br/>%2012.4.1.2%20Emphatic%20particle:%20we%09250<br/>%2012.4.1.3%20p%E8%20%27also/even%27%09251<br/>%2012.4.1.4%20padih/dih%20%27just%27%09252<br/>%2012.4.1.5%20pel%E9n%20%27just%27%09252<br/>%2012.4.2%20Modal%20particle:%20bang%09253<br/>%2012.4.3%20Softening%20particle:%20mi%09253<br/>%2012.4.4%20Backgrounding%20particle:%20ke%09254<br/>%2012.4.5%20Clarificatory%20particle:%20te%09255<br/>%2012.4.6%20Ordering%20of%20discourse%20particles%20in%20combination%09255<br/>%2013%20Speech%20acts:%20imperatives,%20interrogatives,%20exclamations,%20negation%09257<br/>%2013.1%20Imperatives%09257<br/>%2013.1.1%20The%20basic%20pattern%09257<br/>%2013.1.2%20Imperative%20markers%09259<br/>%2013.1.2.1%20entah%20%27come%20on!%27%09259<br/>%2013.1.2.2%20gelah%20%27let%27%09259<br/>%2013.1.2.3%20Encouragement%20particle:%20cube%09260<br/>%2013.2%20Interrogatives%09261<br/>%2013.2.1%20Polar%20questions%09261<br/>%2013.2.1.1%20Sentence%20tags%09262<br/>%2013.2.1.2%20Responses%09262<br/>%2013.2.1.3%20Affirmation%09263<br/>%2013.2.2%20Content%20questions%09263<br/>%2013.2.2.1%20Questioned%20core%20constituents%09264<br/>%2013.2.2.2%20Questioned%20adjuncts%09265<br/>%2013.2.3%20Rhetorical%20questions%09266<br/>%2013.2.4%20Focus%20particle:%20kin%28en%29%09267<br/>%2013.3%20Exclamations%09268<br/>%2013.4%20Negation%09269<br/>%2013.4.1%20g%EBre%20%27not%27%09269<br/>%2013.4.2%20nume%20%27not%27%09270<br/>%2013.4.3%20enti%20%27don%27t%27%09271<br/>%2013.4.4%20Negative%20responses%09272<br/>%2014%20Relative%20clauses%20and%20other%20descriptive%20phrases%09277<br/>%2014.1%20Types%20of%20relativisation%09277<br/>%2014.2%20Verbal%20relative%20clauses%09279<br/>%2014.2.1%20Relativising%20core%20arguments%09279<br/>%2014.2.1.1%20Relative%20clauses%20containing%20intransitive%20predicates%09279<br/>%2014.2.1.2%20Relative%20clauses%20containing%20transitive%20predicates%09280<br/>%2014.2.1.3%20Relativising%20oblique%20core%20arguments%09281<br/>%2014.2.2%20Relativisation%20of%20possessors%09282<br/>%2014.2.3%20Relativising%20peripheral%20constituents%09283<br/>%2014.3%20Non-
+verbal%20relative%20clauses%09284<br/>%2014.3.1%20Relative%20clauses%20containing%20measure%20phrases%09285<br/>%2014.3.2%20Relative%20clauses%20containing%20adverbs%09285<br/>%2014.3.3%20Relative%20clauses%20containing%20NPs%09285<br/>%2014.3.4%20Relative%20clauses%20containing%20PPs%09286<br/>%2014.3.4.1%20PPs%20that%20can%20occur%20within%20relative%20clauses%09286<br/>%2014.3.4.2%20Modifying%20instrumental%20nouns%09286<br/>%2014.4%20Headless%20relative%20clauses%09287<br/>%2014.5%20Stacking%20of%20relative%20clauses%09288<br/>%2014.6%20Descriptive%20modification%20with%20strategies%20other%20than%20relativisation%09288<br/>%2014.6.1%20Locations%09288<br/>%2014.6.2%20Comitatives%09289<br/>%2014.7%20Clefting%09289<br/>%2015%20Complement%20clauses%09291<br/>%2015.1%20The%20complementiser%20bahwa%09291<br/>%2015.2%20Complement-
+taking%20predicates%09292<br/>%2015.2.1%20Intransitive%20predicates%09292<br/>%2015.2.1.1%20Existentials%09292<br/>%2015.2.1.2%20Controlled%20intransitive%20predicates%09293<br/>%2015.2.1.2.1%20Predicates%20specifying%20abilitative%20meanings%09293<br/>%2015.2.1.2.2%20Predicates%20specifying%20pretence%09294<br/>%2015.2.1.3%20Complements%20of%20oblique%20argument%20taking%20predicates%09294<br/>%2015.2.1.4%20Intransitive%20predicates%20of%20saying%09296<br/>%2015.2.1.4.1%20Indirectly%20reported%20speech%09296<br/>%2015.2.1.4.2%20Directly%20reported%20speech%09297<br/>%2015.2.2%20Transitive%20complement%20taking%20predicates%09298<br/>%2015.2.2.1%20The%20syntax%20of%20transitive%20complement-
+taking%20predicates%09298<br/>%2015.2.2.2%20Transitive%20predicates%20of%20perception%20and%20cognition%09299<br/>%2015.2.2.2.1%20Predicates%20of%20immediate%20perception%09299<br/>%2015.2.2.2.2%20Derived%20nominal%20perception%20predicates%09300<br/>%2015.2.2.3%20Predicates%20of%20trying%09300<br/>%2015.2.2.4%20Predicates%20of%20manipulation%09301<br/>%2015.2.2.5%20Transitive%20predicates%20of%20saying%09303<br/>%2015.3%20Nouns%20that%20take%20complements%09304<br/>%2016%20Conjunctions%20and%20parataxis%09306<br/>%2016.1%20Subordinating%20conjunctions%09306<br/>%2016.1.1%20Time%09306<br/>%2016.1.2%20Reason%09307<br/>%2016.1.3%20Purpose%09308<br/>%2016.1.4%20Condition%09309<br/>%2016.1.5%20Concession%09309<br/>%2016.2%20Co-
+dependent%20conjunctions%09310<br/>%2016.3%20Coordinating%20conjunctions%09310<br/>%2016.3.1%20urum%20%27and%27%09310<br/>%2016.3.2%20den%20%27and%27%09311<br/>%2016.3.3%20atawa%20%27or%27%09311<br/>%2016.3.4%20tap%E8%20%27but%27%09312<br/>%2016.3.5%20keta,%20baru%20%27then%27%09312<br/>%2016.4%20Discourse%20connectors%09313<br/>%2016.4.1%20jadi%20%27so%27%09313<br/>%2016.4.2%20tap%E8%20%27but%27%09313<br/>%2016.4.3%20umpama%E9%20%27for%20example%27%09314<br/>%2016.4.4%20ah%E8r%E8%20%27finally,%20eventually%27%09314<br/>%2016.4.5%20maksut%E9%20%27the%20point%20is%20%2026%27%09314<br/>%2016.5%20Parataxis%09314<br/>%2016.5.1%20Concurrent%20events%09315<br/>%2016.5.2%20Sequences%20of%20events%09315<br/>%2016.5.3%20Elaboration%09316<br/>Appendix%20A:%20%27Geluni%20item%27%20or%20%27Depik%27%09317<br/>Appendix%20B:%20The%20story%20of%20the%20mousedeer,%20the%20elephant%20and%20the%20shellfish%09325<br/>Appendix%20C:%20Measure%20nouns%09333<br/>Appendix%20D:%20Names%20and%20kinship%20terms%09337<br/>Appendix%20E:%20Compound%20nouns%09340<br/>Appendix%20F:%20Core%20vocabulary%20list%09343<br/>References%09345<br/>Maps:<br/>Map%201-1:%20The%20Gayo%20highlands%20%28shaded%20area%29%20within%20Aceh%094<br/>Tables:<br/>1-1:%20Intransitive%20verbal%20affixes%0911<br/>1-2:%20Voice%20prefixes%0912<br/>1-3:%20Functions%20of%20actor%20and%20undergoer%20orientation%0913<br/>1-4:%20Valence-
+increasing%20affixes%0914<br/>2-1:%20Consonant%20phonemes%0921<br/>2-2:%20Vowel%20phonemes%0927<br/>2-3:%20Diphthong%20variants%20across%20dialects%20with%20examples%0927<br/>2-4:%20Syllable%20structure%0933<br/>2-5:%20Co-
+occurrence%20restrictions%20on%20vowels%0934<br/>4-1:%20Pronouns%0966<br/>4-2:%20Noun-
+deriving%20affixes%0968<br/>4-3:%20Adverbs%20of%20time%0981<br/>4-4:%20Adverbs%20of%20frequency%0982<br/>4-5:%20Epistememes%0984<br/>4-6:%20Cardinal%20numbers%20in%20Gayo,%20%27Malayised%20Gayo%27%20and%20Malay/Bahasa%20Indonesia%0986<br/>4-7:%20Complex%20numerals%0987<br/>4-8:%20Ordinal%20numbers%0988<br/>4-9:%20A-quantifiers%0988<br/>4-10:%20The%20universal%20quantifier%20b%E8w%E8n%20%27all%20of%20%2026%27%0989<br/>4-11:%20D-quantifiers%0990<br/>4-12:%20Locational%20demonstratives%0991<br/>7-1:%20Affixes%20that%20derive%20intransitive%20verbs%09143<br/>8-1:%20Voice%20prefixes%09165<br/>8-2:%20Structure%20of%20undergoer%20oriented%20VPs%09168<br/>8-3:%20Structure%20of%20actor-
+oriented%20VPs%20in%20transitive%20clauses%09174<br/>8-4:%20Structure%20of%20decontrol%20undergoer-
+oriented%20VPs%09177<br/>9-1:%20Valence-
+increasing%20affixes%09180<br/>9-2:%20Functions%20of%20-i%09182<br/>9-3:%20Functions%20of%20-%28n%29en%09187<br/>9-4:%20Distinctions%20between%20%28n%29en%20and%20per-%20causatives%09193<br/>10-1:%20Pronouns%09203<br/>10-2:%20Polite%20first%20person%20reference%09204<br/>10-3:%20Third%20person%20reference%09206<br/>10-4:%20Deictic%20local%20nouns%09208<br/>10-5:%20Deictic%20local%20nouns%20within%20adjuncts%20of%20direction%09209<br/>10-6:%20Local%20nouns%20with%20space-
+relational%20meanings%09211<br/>10-7:%20Demonstratives%09223<br/>11-1:%20Local%20prepositions%09228<br/>11-2:%20Non-
+local%20prepositions%09233<br/>12-1:%20Ordering%20of%20particles%20in%20combination%09256<br/>13-1:%20Epistememes%09264<br/>14-1:%20Subordinating%20conjunctions%20of%20time%09306<br/>14-2:%20Coordinating%20conjunctions%09310<br/>14-3:%20Discourse%20connectors%09313</description>%20%20</descriptions></resource>

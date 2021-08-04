@@ -1,10 +1,12 @@
+import django.db.models
+
 import ast
 import base64
 
 # import functools
+import contextlib
 import json
 import logging
-import zlib
 
 import django.core.exceptions
 import django.core.serializers
@@ -20,19 +22,29 @@ log = logging.getLogger(__name__)
 import django.core.serializers.json
 
 
+class NonValidatingForeignKey(django.db.models.ForeignKey):
+    """A ForeignKey that doesn't perform any validation."""
+
+    def validate(self, obj, model_instance):
+        pass
+
+
 class CompressedJsonField(django.db.models.BinaryField):
     """Field containing a nested Python object as a gzipped JSON string. Object must consist of
     basic types that can be represented in JSON. The top level object is typically a list or a
     dict, which nested objects being list, dict, str, int or float. Other types can be added by
-    adding a class with coding/decoding methods to the JSON
+    adding a class with coding/decoding methods to the JSON codec.
 
     https://docs.djangoproject.com/en/3.2/howto/custom-model-fields/
+
+    TODO: JSON or Python?
     """
 
     description = 'Field containing arbitrary gzipped JSON'
 
     def __str__(self):
         return f'{self.__class__.__name__}: {len(super().__str__())} bytes (compressed)'
+        # return f'{self.__class__.__name__}({self.pk}, {self.identifier})'
 
     def get_db_prep_save(self, obj, connection):
         """Serialize a Django model (ORM) instance for storage in the database.
@@ -62,7 +74,9 @@ class CompressedJsonField(django.db.models.BinaryField):
 
     def from_db_value(self, obj, expression, connection):
         impl.util.log_obj(obj, connection, msg='CompressedJsonField.from_db_value()')
-        return _compressed_json_to_field(obj)
+        return _decode(obj)
+        # return _compressed_bytes_to_py(obj)
+        # return _compressed_json_to_field(obj)
 
     def to_python(self, obj):
         """https://docs.djangoproject.com/en/3.2/howto/custom-model-fields/#converting-values-to-python-objects
@@ -71,17 +85,14 @@ class CompressedJsonField(django.db.models.BinaryField):
         - An instance of the correct model type
         - A string
         """
-        # if obj is None or _is_orm(obj):
-        #     return obj
+        if obj is None or _is_orm(obj):
+            return obj
         impl.util.log_obj(obj, msg='CompressedJsonField.to_python()')
         return _base64_to_py(obj)
 
 
-class NonValidatingForeignKey(django.db.models.ForeignKey):
-    """A ForeignKey that doesn't perform any validation."""
 
-    def validate(self, obj, model_instance):
-        pass
+
 
 
 class StoreIdentifierObjectField(django.db.models.BinaryField):
@@ -181,18 +192,18 @@ class StoreIdentifierObjectField(django.db.models.BinaryField):
         serialized for queries. We use it so that we can compress the objects before storing them in
         the database, while still keeping in the clear for queries.
         """
-        # if obj is None or _is_orm(obj):
-        #     return obj
-        # impl.util.log_obj(obj, connection, msg='CompressedJsonField.get_db_prep_save()')
-        # return _field_to_compressed_json(obj)
+        if obj is None or _is_orm(obj):
+            return obj
+        impl.util.log_obj(obj, connection, msg='CompressedJsonField.get_db_prep_save()')
+        return _field_to_compressed_json(obj)
 
     def get_prep_value(self, obj):
         """Python object to query value."""
-        if obj is None or _is_orm(obj):
-            return obj
+        # if obj is None or _is_orm(obj):
+        #     return obj
         impl.util.log_obj(obj, msg='StoreIdentifierObjectField.get_prep_value()')
-        return _field_to_compressed_json(obj)
-        # return self.serialize_field(obj)
+        # return _field_to_compressed_json(obj)
+        return self.serialize_field(obj)
 
     # def get_db_prep_save(self, obj, connection):
     #     """StoreIdentifier model instance -> gzipped JSON
@@ -236,8 +247,11 @@ class StoreIdentifierObjectField(django.db.models.BinaryField):
         # obj.cm = _compressed_bytes_to_py(obj.cm)
 
         impl.util.log_obj(obj, msg='StoreIdentifierObjectField.from_db_value()')
-        obj = _compressed_json_to_field(obj)
-        obj.cm = _base64_to_py(obj.cm)
+        # obj = _compressed_json_to_field(obj)
+        # obj.cm = _base64_to_py(obj.cm)
+        obj = _decode(obj)
+        with contextlib.suppress(Exception):
+            obj.cm = _decode(obj.cm)
         return obj
 
     def to_python(self, obj):
@@ -247,7 +261,7 @@ class StoreIdentifierObjectField(django.db.models.BinaryField):
         - An instance of the correct model type
         - A string
         """
-        impl.util.log_obj(obj, msg='StoreIdentifierObjectField.to_python()')
+        # impl.util.log_obj(obj, msg='StoreIdentifierObjectField.to_python()')
         if obj is None or _is_orm(obj):
             return obj
         return _base64_to_py(obj)
@@ -257,7 +271,7 @@ class StoreIdentifierObjectField(django.db.models.BinaryField):
         return _field_to_compressed_json(obj)
 
 
-@impl.util.log_inout()
+# @impl.util.log_inout()
 def _field_to_compressed_json(obj):
     assert _is_orm(obj), f'Unexpected type: {obj!r}'
     obj = django.core.serializers.serialize("json", [obj])
@@ -265,39 +279,53 @@ def _field_to_compressed_json(obj):
     return obj
 
 
-@impl.util.log_inout()
+# @impl.util.log_inout()
 def _compressed_json_to_field(obj):
     if obj is None or _is_orm(obj):
         return obj
-    assert isinstance(obj, bytes)
-    obj = _decompress(obj)
-    # obj = _trim_json_list(obj)
-    obj = next(django.core.serializers.deserialize("json", obj))
-    assert isinstance(obj, django.core.serializers.base.DeserializedObject)
-    obj = obj.object
-    assert _is_orm(obj)
-    return obj
+    return _decode(obj)
+    # assert_type(obj, bytes)
+    # obj = _decompress(obj)
+    # # obj = _trim_json_list(obj)
+    # obj = next(django.core.serializers.deserialize("json", obj))
+    # assert_type(obj, django.core.serializers.base.DeserializedObject)
+    # obj = obj.object
+    # assert _is_orm(obj)
+    # return obj
 
 
-@impl.util.log_inout()
+# @impl.util.log_inout()
 def _py_to_compressed_bytes(obj):
     obj = repr(obj)
     obj = _compress(obj)
     return obj
 
 
-@impl.util.log_inout()
+# @impl.util.log_inout()
 def _compressed_bytes_to_py(obj):
-    assert isinstance(obj, bytes)
+    assert_type(obj, bytes)
     obj = _decompress(obj)
     obj = _to_str(obj)
     obj = ast.literal_eval(obj)
+    # Old EZID had a bug in which it serialized a literal str representation of dict ('"{}"')
+    # instead of the dict representation directly ('{}'). If we get a string, we have to manipulate
+    # it directly, stripping off the quotes, then eval'ing the result again in order to get to the
+    # real object. We have already checked that only compound objects have been serialized, no
+    # simple strings.
+    #
+    # TODO: Many of the nested strings also contain literal newlines ('\n'). We don't strip those here.
+    # We should do a one-time conversion where we replace all objects serialized as Python code, with
+    # JSON, and clean them up at that time.
+    if isinstance(obj, str):
+        obj = ast.literal_eval(obj)
+
+    assert_type(obj, dict)
     return obj
 
 
-@impl.util.log_inout()
+# @impl.util.log_inout()
 def _base64_to_py(obj):
-    """Compressed (?) Base64 str or bytes -> arbitrarily nested Python objects."""
+    """Base64'ed then compressed str or bytes -> arbitrarily nested Python object(s)."""
     if _is_orm(obj):
         return obj
     obj = _to_bytes(obj)
@@ -308,30 +336,7 @@ def _base64_to_py(obj):
     return obj
 
 
-@impl.util.log_inout()
-def _compress(obj):
-    """str, memoryview or bytes -> compressed bytes
-    None -> None
-    """
-    obj = _to_bytes(obj)
-    obj = zlib.compress(obj)
-    assert isinstance(obj, bytes)
-    return obj
-
-
-@impl.util.log_inout()
-def _decompress(obj):
-    """Compressed bytes -> clear bytes"""
-    assert isinstance(obj, bytes)
-    # if isinstance(obj, memoryview):
-    #     return obj.tobytes()
-    # else:
-    #     obj = _to_bytes(obj)
-    obj = zlib.decompress(obj)
-    return obj
-
-
-@impl.util.log_inout()
+# @impl.util.log_inout()
 def _to_bytes(obj):
     if obj is None:
         return None
@@ -345,28 +350,75 @@ def _to_bytes(obj):
         raise AssertionError(f'Unexpected type: {obj!r}')
 
 
-@impl.util.log_inout()
+# @impl.util.log_inout()
 def _to_str(obj):
-    return _to_bytes(obj).decode('utf-8', errors='replace')
-
-
-@impl.util.log_inout()
-def _trim_json_list(obj):
-    if obj is None:
-        obj = b'{}'
-    if isinstance(obj, str):
-        obj = obj.encode('utf-8', errors='replace')
-    assert isinstance(obj, bytes), f'Unexpected type: {obj!r}'
-    obj = json.loads(obj)
-    if isinstance(obj, list) and len(obj) == 1:
-        obj = obj[0]
-    obj = json.dumps(obj)
+    obj = _to_bytes(obj)
+    obj = obj.decode('utf-8', errors='replace')
     return obj
 
 
-@impl.util.log_inout()
+# @impl.util.log_inout()
+# def _trim_json_list(obj):
+#     if obj is None:
+#         obj = b'{}'
+#     if isinstance(obj, str):
+#         obj = obj.encode('utf-8', errors='replace')
+#     assert_type(obj, bytes)
+#     obj = json.loads(obj)
+#     if isinstance(obj, list) and len(obj) == 1:
+#         obj = obj[0]
+#     obj = json.dumps(obj)
+#     return obj
+#
+#
+# @impl.util.log_inout()
 def _is_orm(obj):
     return obj is None or isinstance(
         obj,
         (django.db.models.Model, django.db.models.Field),
     )
+
+
+
+
+def assert_type(obj, *type_list):
+    assert isinstance(obj, type_list), (
+        f'Expected type(s), "{", ".join(t.__name__ for t in type_list)}", '
+        f'not "{obj.__class__.__name__}"'
+    )
+
+
+# # noinspection PyTypeChecker
+# # @impl.util.log_inout()
+# def _decode(obj):
+#     """Decode all blob formats used in previous and current EZID"""
+#     @contextlib.contextmanager
+#     def w(obj, op_str):
+#         # impl.util.log_obj(obj, msg=f'Before "{op_str}"')
+#         with contextlib.suppress(Exception):
+#             yield
+#
+#     if not obj or _is_orm(obj):
+#         return obj
+#     with w(obj, 'to bytes'):
+#         obj = _to_bytes(obj)
+#     with w(obj, 'decompress'):
+#         obj = zlib.decompress(obj)
+#     with w(obj, 'str'):
+#         obj = obj.decode('utf-8', errors='replace')
+#     # with w(obj, 'decode'):
+#     #     obj = obj.decode('utf-8', errors='replace')
+#     with w(obj, 'base64'):
+#         obj = base64.b64decode(obj, validate=True)
+#     with w(obj, 'deserialize model'):
+#         obj = next(django.core.serializers.deserialize("json", obj))
+#     with w(obj, 'deserialize python'):
+#         obj = ast.literal_eval(obj)
+#     if isinstance(obj, str):
+#         with w(obj, 'deserialize python str'):
+#             obj = ast.literal_eval(obj)
+#     with w(obj, 'deserialize json'):
+#         obj = json.loads(obj)
+#     # if not isinstance(obj, dict):
+#     log.error(f'FINAL: {type(obj)}: {obj!r}')
+#     return obj

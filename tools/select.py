@@ -433,7 +433,7 @@ def consumeRegexp(consumed, query):
 
 
 def consumeInteger(consumed, query):
-    assert len(query) > 0 and re.match("\d+$", query[0]), "expecting integer"
+    assert len(query) > 0 and re.match("\\d+$", query[0]), "expecting integer"
     i = int(query[0])
     consumed.append(query[0])
     del query[0]

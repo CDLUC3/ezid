@@ -158,7 +158,7 @@ class IdNamespace(
 
     @staticmethod
     def _split_ns_to_tup(ns_str):
-        m = re.match('(?:(ark)(?::/))|(?:(doi)(?::10\.))', str(ns_str))
+        m = re.match('(?:(ark)(?::/))|(?:(doi)(?::10\\.))', str(ns_str))
         if not m:
             IdNamespace._raise_invalid_ns('DOI or ARK', ns_str)
         if m.group(1) == 'ark':

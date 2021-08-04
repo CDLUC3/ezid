@@ -70,9 +70,9 @@ class Profile(object):
         raise KeyError(name)
 
 
-_empty = re.compile("\s*$")
+_empty = re.compile("\\s*$")
 _pattern = re.compile(
-    "\s*^element:([^\n]*)\ndisplayname:([^\n]*)\ndisplaytype:([^\n]*)\n"
+    "\\s*^element:([^\n]*)\ndisplayname:([^\n]*)\ndisplaytype:([^\n]*)\n"
     + "tooltip:(.*?)\n\n",
     re.M | re.S,
 )

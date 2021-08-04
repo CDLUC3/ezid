@@ -120,7 +120,7 @@ def identifierExists(id_str):
         and s[-3].startswith("# elements bound under")
         and s[-2] == "egg-status: 0\n"
     ), _error("fetch", s)
-    m = re.search(": (\d+)\n$", s[-3])
+    m = re.search(": (\\d+)\n$", s[-3])
     assert m, _error("fetch", s)
     return m.group(1) != "0"
 
@@ -171,7 +171,7 @@ def getElements(identifier):
         and s[-3].startswith("# elements bound under")
         and s[-2] == "egg-status: 0\n"
     ), _error("fetch", s)
-    m = re.search(": (\d+)\n$", s[-3])
+    m = re.search(": (\\d+)\n$", s[-3])
     assert m, _error("fetch", s)
     c = int(m.group(1))
     assert len(s) == c + 4, _error("fetch", s)

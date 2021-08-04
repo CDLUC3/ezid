@@ -23,6 +23,7 @@ import django.db.transaction
 import django.db.utils
 
 import ezidapp.models.identifier
+
 # import ezidapp.models.identifier
 import ezidapp.models.model_util
 import ezidapp.models.shoulder
@@ -30,6 +31,7 @@ import ezidapp.models.update_queue
 import ezidapp.models.user
 import ezidapp.models.util
 import impl.log
+
 # import noid_nog
 import impl.nog.minter
 import impl.policy
@@ -37,7 +39,6 @@ import impl.util
 import impl.util2
 
 logger = logging.getLogger(__name__)
-
 
 # Simple locking mechanism to ensure that, in a multi-threaded
 # environment, no given identifier is operated on by two threads
@@ -73,8 +74,7 @@ def _acquireIdentifierLock(identifier, user):
     while (
         _paused
         or identifier in _lockedIdentifiers
-        or _activeUsers.get(user, 0)
-        >= int(django.conf.settings.MAX_CONCURRENT_OPERATIONS_PER_USER)
+        or _activeUsers.get(user, 0) >= int(django.conf.settings.MAX_CONCURRENT_OPERATIONS_PER_USER)
     ):
         # noinspection PyTypeChecker
         if _activeUsers.get(user, 0) + _waitingUsers.get(user, 0) >= int(
@@ -136,16 +136,12 @@ def pause(newValue):
 
 # noinspection PyDefaultArgument
 def mintIdentifier(shoulder, user, metadata={}):
-    if not _acquireIdentifierLock(
-        shoulder + '.shoulder_lock', user.username + '.shoulder_lock'
-    ):
+    if not _acquireIdentifierLock(shoulder + '.shoulder_lock', user.username + '.shoulder_lock'):
         return "error: concurrency limit exceeded"
     try:
         return _mintIdentifier(shoulder, user, metadata)
     finally:
-        _releaseIdentifierLock(
-            shoulder + '.shoulder_lock', user.username + '.shoulder_lock'
-        )
+        _releaseIdentifierLock(shoulder + '.shoulder_lock', user.username + '.shoulder_lock')
 
 
 # noinspection PyDefaultArgument
@@ -211,9 +207,7 @@ def _mintIdentifier(shoulder, user, metadata={}):
         elif shoulder_model.prefix.startswith('ark:/'):
             identifier = shoulder_model.prefix + identifier.lower()
         else:
-            raise ValueError(
-                'Expected ARK or DOI prefix, not "{}"'.format(shoulder_model.prefix)
-            )
+            raise ValueError('Expected ARK or DOI prefix, not "{}"'.format(shoulder_model.prefix))
 
         logger.debug('Final shoulder + identifier: {}'.format(identifier))
 
@@ -269,6 +263,7 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
         if not impl.policy.authorizeCreate(user, nqidentifier):
             impl.log.forbidden(tid)
             return "error: forbidden"
+
         si = ezidapp.models.identifier.StoreIdentifier(
             identifier=nqidentifier,
             owner=(None if user == ezidapp.models.util.AnonymousUser else user),
@@ -284,13 +279,9 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
             elif s.isCrossref:
                 if not si.isCrossref:
                     if si.isReserved:
-                        si.crossrefStatus = (
-                            ezidapp.models.identifier.StoreIdentifier.CR_RESERVED
-                        )
+                        si.crossrefStatus = ezidapp.models.identifier.StoreIdentifier.CR_RESERVED
                     else:
-                        si.crossrefStatus = (
-                            ezidapp.models.identifier.StoreIdentifier.CR_WORKING
-                        )
+                        si.crossrefStatus = ezidapp.models.identifier.StoreIdentifier.CR_WORKING
             else:
                 assert False, "unhandled case"
         si.my_full_clean()
@@ -299,8 +290,10 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
                 impl.log.badRequest(tid)
                 return "error: bad request - ownership change prohibited"
         with django.db.transaction.atomic():
+            ri = getRefIdentifier(si)
             si.save()
-            ezidapp.models.update_queue.enqueue(si, "create")
+            ezidapp.models.update_queue.enqueue(ri, "create")
+
     except django.core.exceptions.ValidationError as e:
         impl.log.badRequest(tid)
         return "error: bad request - " + impl.util.formatValidationError(e)
@@ -392,9 +385,7 @@ def getMetadata(identifier, user=ezidapp.models.util.AnonymousUser, prefixMatch=
         _releaseIdentifierLock(nqidentifier, user.username)
 
 
-def setMetadata(
-    identifier, user, metadata, updateExternalServices=True, internalCall=False
-):
+def setMetadata(identifier, user, metadata, updateExternalServices=True, internalCall=False):
     """Sets metadata elements of a given qualified identifier, e.g.,
     "doi:10.5060/FOO".  'user' is the requestor and should be an authenticated
     StoreUser object.  'metadata' should be a dictionary of element (name,
@@ -433,6 +424,7 @@ def setMetadata(
             user.group.pid,
             *[a for p in list(metadata.items()) for a in p],
         )
+
         si = ezidapp.models.identifier.getIdentifier(nqidentifier)
         if not impl.policy.authorizeUpdate(user, si):
             impl.log.forbidden(tid)
@@ -450,8 +442,10 @@ def setMetadata(
                 impl.log.badRequest(tid)
                 return "error: bad request - ownership change prohibited"
         with django.db.transaction.atomic():
+            ri = getRefIdentifier(si)
             si.save()
-            ezidapp.models.update_queue.enqueue(si, "update", updateExternalServices)
+            ezidapp.models.update_queue.enqueue(ri, "update", updateExternalServices)
+
     except ezidapp.models.identifier.StoreIdentifier.DoesNotExist:
         impl.log.badRequest(tid)
         return "error: bad request - no such identifier"
@@ -502,6 +496,7 @@ def deleteIdentifier(identifier, user, updateExternalServices=True):
             user.group.groupname,
             user.group.pid,
         )
+
         si = ezidapp.models.identifier.getIdentifier(nqidentifier)
         if not impl.policy.authorizeDelete(user, si):
             impl.log.forbidden(tid)
@@ -510,8 +505,10 @@ def deleteIdentifier(identifier, user, updateExternalServices=True):
             impl.log.badRequest(tid)
             return "error: bad request - identifier status does not support deletion"
         with django.db.transaction.atomic():
+            ri = getRefIdentifier(si)
             si.delete()
-            ezidapp.models.update_queue.enqueue(si, "delete", updateExternalServices)
+            ezidapp.models.update_queue.enqueue(ri, "delete", updateExternalServices)
+
     except ezidapp.models.identifier.StoreIdentifier.DoesNotExist:
         impl.log.badRequest(tid)
         return "error: bad request - no such identifier"
@@ -525,3 +522,15 @@ def deleteIdentifier(identifier, user, updateExternalServices=True):
         return "success: " + nqidentifier
     finally:
         _releaseIdentifierLock(nqidentifier, user.username)
+
+
+def getRefIdentifier(storeIdentifier):
+    """Create a RefIdentifier with values from a storeIdentifier"""
+    si: ezidapp.models.identifier.Identifier = storeIdentifier
+    ri = ezidapp.models.identifier.RefIdentifier()
+    # noinspection PyProtectedMember
+    for field in si._meta.fields:
+        field_value = getattr(si, field.name)
+        setattr(ri, field.name, field_value)
+    logger.debug(f'refIdentifier()="{ri}"')
+    return ri

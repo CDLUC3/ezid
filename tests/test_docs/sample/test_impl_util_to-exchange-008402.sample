@@ -1,0 +1,217 @@
+input_json=
+{"mrt.creator":"escholarship","erc":"who: Aubert, B,; Barate, R,; Boutigny, D,; Couderc, F,; Karyotakis, Y,; Lees, JP,; Poireau,
+V,; Tisserand, V,; Zghiche, A,; Grauges, E,; Palano, A,; Pappagallo, M,; Pompili, A,; Chen, JC,; Qi, ND,; Rong, G,; Wang, P,; Zhu,
+YS,; Eigen, G,; Ofte, I,; Stugu, B,; Abrams, GS,; Battaglia, M,; Breon, AB,; Brown, DN,; Button-Shafer, J,; Cahn, RN,; Charles,
+E,; Day, CT,; Gill, MS,; Gritsan, AV,; Groysman, Y,; Jacobsen, RG,; Kadel, RW,; Kadyk, J,; Kerth, LT,; Kolomensky, YG,; Kukartsev,
+G,; Lynch, G,; Mir, LM,; Oddone, PJ,; Orimoto, TJ,; Pripstein, M,; Roe, NA,; Ronan, MT,; Wenzel, WA,; Barrett, M,; Ford, KE,;
+Harrison, TJ,; Hart, AJ,; Hawkes, CM,; Morgan, SE,; Watson, AT,; Fritsch, M,; Goetzen, K,; Held, T,; Koch, H,; Lewandowski, B,;
+Pelizaeus, M,; Peters, K,; Schroeder, T,; Steinke, M,; Boyd, JT,; Burke, JP,; Chevalier, N,; Cottingham, WN,; Kelly, MP,; Cuhadar-
+Donszelmann, T,; Fulsom, BG,; Hearty, C,; Knecht, NS,; Mattison, TS,; McKenna, JA,; Khan, A,; Kyberd, P,; Saleem, M,; Teodorescu,
+L,; Blinov, AE,; Blinov, VE,; Bukin, AD,; Druzhinin, VP,; Golubev, VB,; Kravchenko, EA,; Onuchin, AP,; Serednyakov, SI,; Skovpen,
+YI,; Solodov, EP,; Yushkov, AN,; Best, D,; Bondioli, M,; Bruinsma, M,; Chao, M,; Eschrich, I,; Kirkby, D,; Lankford, AJ,;
+Mandelkern, M,; Mommsen, RK,; Roethel, W,; Stoker, DP,; Buchanan, C,; Hartfiel, BL,; Weinstein, AJR,; Foulkes, SD,; Gary, JW,;
+Long, O,; Shen, BC,; Wang, K,; Zhang, L,; del Re, D,; Hadavand, HK,; Hill, EJ,; MacFarlane, DB,; Paar, HP,; Rahatlou, S,; Sharma,
+V,; Berryhill, JW,; Campagnari, C,; Cunha, A,; Dahmes, B,; Hong, TM,; Mazur, MA,; Richman, JD,; Verkerke, W,; Beck, TW,; Eisner,
+AM,; Flacco, CJ,; Heusch, CA,; Kroseberg, J,; Lockman, WS,; Nesom, G,; Schalk, T,; Schumm, BA,; Seiden, A,; Spradlin, P,;
+Williams, DC,; Wilson, MG,; Albert, J,; Chen, E,; Dubois-Felsmann, GP,; Dvoretskii, A,; Hitlin, DG,; Narsky, I,; Piatenko, T,;
+Porter, FC,; Ryd, A,; Samuel, A,; Andreassen, R,; Jayatilleke, S,; Mancinelli, G,; Meadows, BT,; Sokoloff, MD,; Blanc, F,; Bloom,
+P,; Chen, S,; Ford, WT,; Nauenberg, U,; Olivas, A,; Rankin, P,; Ruddick, WO,; Smith, JG,; Ulmer, KA,; Wagner, SR,; Zhang, J,;
+Chen, A,; Eckhart, EA,; Soffer, A,; Toki, WH,; Wilson, RJ,; Zeng, Q,; Altenburg, D,; Feltresi, E,; Hauke, A,; Spaan, B,; Brandt,
+T,; Brose, J,; Dickopp, M,; Klose, V,; Lacker, HM,; Nogowski, R,; Otto, S,; Petzold, A,; Schott, G,; Schubert, J,; Schubert, KR,;
+Schwierz, R,; Sundermann, JE,; Bernard, D,; Bonneaud, GR,; Grenier, P,; Schrenk, S,; Thiebaux, C,; Vasileiadis, G,; Verderi, M,;
+Bard, DJ,; Clark, PJ,; Gradl, W,; Muheim, F,; Playfer, S,; Xie, Y,; Andreotti, M,; Azzolini, V,; Bettoni, D,; Bozzi, C,;
+Calabrese, R,; Cibinetto, G,; Luppi, E,; Negrini, M,; Piemontese, L,; Anulli, F,; Baldini-Ferroli, R,; Calcaterra, A,; de Sangro,
+R,; Finocchiaro, G,; Patteri, P,; Peruzzi, IM,; Piccolo, M,; Zallo, A,; Buzzo, A,; Capra, R,; Contri, R,; Lo Vetere, M,; Macri,
+M,; Monge, MR,; Passaggio, S,; Patrignani, C,; Robutti, E,; Santroni, A,; Tosi, S,; Bailey, S,; Brandenburg, G,; Chaisanguanthum,
+KS,; Morii, M,; Won, E,; Wu, J,; Dubitzky, RS,; Langenegger, U,; Marks, J,; Schenk, S,; Uwer, U,; Bhimji, W,; Bowerman, DA,;
+Dauncey, PD,; Egede, U,; Flack, RL,; Gaillard, JR,; Morton, GW,; Nash, JA,; Nikolich, MB,; Taylor, GP,; Vazquez, WP,; Charles,
+MJ,; Mader, WF,; Mallik, U,; Mohapatra, AK,; Cochran, J,; Crawley, HB,; Eyges, V,; Meyer, WT,; Prell, S,; Rosenberg, EI,; Rubin,
+AE,; Yi, J,; Arnaud, N,; Davier, M,; Giroux, X,; Grosdidier, G,; Hocker, A,; Le Diberder, F,; Lepeltier, V,; Lutz, AM,; Oyanguren,
+A,; Petersen, TC,; Pierini, M,; Plaszczynski, S,; Rodier, S,; Roudeau, P,; Schune, MH,; Stocchi, A,; Wormser, G,; Cheng, CH,;
+Lange, DJ,; Simani, MC,; Wright, DM,; Bevan, AJ,; Chavez, CA,; Coleman, JP,; Forster, IJ,; Fry, JR,; Gabathuler, E,; Gamet, R,;
+George, KA,; Hutchcroft, DE,; Parry, RJ,; Payne, DJ,; Schofield, KC,; Touramanis, C,; Cormack, CM,; Di Lodovico, F,; Sacco, R,;
+Brown, CL,; Cowan, G,; Flaecher, HU,; Green, MG,; Hopkins, DA,; Jackson, PS,; McMahon, TR,; Ricciardi, S,; Salvatore, F,; Brown,
+D,; Davis, CL,; Allison, J,; Barlow, NR,; Barlow, RJ,; Hodgkinson, MC,; Lafferty, GD,; Naisbit, MT,; Williams, JC,; Chen, C,;
+Farbin, A,; Hulsbergen, WD,; Jawahery, A,; Kovalskyi, D,; Lae, CK,; Lillard, V,; Roberts, DA,; Simi, G,; Blaylock, G,;
+Dallapiccola, C,; Hertzbach, SS,; Kofler, R,; Koptchev, VB,; Li, X,; Moore, TB,; Saremi, S,; Staengle, H,; Willocq, S,; Cowan, R,;
+Koeneke, K,; Sciolla, G,; Sekula, SJ,; Spitznagel, M,; Taylor, F,; Yamamoto, RK,; Kim, H,; Patel, PM,; Robertson, SH,; Lazzaro,
+A,; Lombardo, V,; Palombo, F,; Bauer, JM,; Cremaldi, L,; Eschenburg, V,; Godang, R,; Kroeger, R,; Reidy, J,; Sanders, DA,;
+Summers, DJ,; Zhao, HW,; Brunet, S,; Cote, D,; Taras, P,; Viaud, B,; Nicholson, H,; Cavallo, N,; De Nardo, G,; Fabozzi, F,; Gatto,
+C,; Lista, L,; Monorchio, D,; Paolucci, P,; Piccolo, D,; Sciacca, C,; Baak, M,; Bulten, H,; Raven, G,; Snoek, HL,; Wilden, L,;
+Jessop, CP,; LoSecco, JM,; Allmendinger, T,; Benelli, G,; Gan, KK,; Honscheid, K,; Hufnagel, D,; Jackson, PD,; Kagan, H,; Kass,
+R,; Pulliam, T,; Rahimi, AM,; Ter-Antonyan, R,; Wong, QK,; Brau, J,; Frey, R,; Igonkina, O,; Lu, M,; Potter, CT,; Sinev, NB,;
+Strom, D,; Strube, J,; Torrence, E,; Dorigo, A,; Galeazzi, F,; Margoni, M,; Morandin, M,; Posocco, M,; Rotondo, M,; Simonetto, F,;
+Stroili, R,; Voci, C,; Benayoun, M,; Briand, H,; Chauveau, J,; David, P,; Buono, LD,; de la Vaissiere, C,; Hamon, O,; John, MJJ,;
+Leruste, P,; Malcles, J,; Ocariz, J,; Roos, L,; Therin, G,; Behera, PK,; Gladney, L,; Guo, QH,; Panetta, J,; Biasini, M,;
+Covarelli, R,; Pacetti, S,; Pioppi, M,; Angelini, C,; Batignani, G,; Bettarini, S,; Bucci, F,; Calderini, G,; Carpinelli, M,;
+Cenci, R,; Forti, F,; Giorgi, MA,; Lusiani, A,; Marchiori, G,; Morganti, M,; Neri, N,; Paoloni, E,; Rama, M,; Rizzo, G,; Walsh,
+J,; Haire, M,; Judd, D,; Wagoner, DE,; Biesiada, J,; Danielson, N,; Elmer, P,; Lau, YP,; Lu, C,; Olsen, J,; Smith, AJS,; Telnov,
+AV,; Bellini, F,; Cavoto, G,; D'Orazio, A,; Di Marco, E,; Faccini, R,; Ferrarotto, F,; Ferroni, F,; Gaspero, M,; Li Gioi, L,;
+Mazzoni, MA,; Morganti, S,; Piredda, G,; Polci, F,; Tehrani, FS,; Voena, C,; Schroder, H,; Wagner, G,; Waldi, R,; Adye, T,; De
+Groot, N,; Franek, B,; Gopal, GP,; Olaiya, EO,; Wilson, FF,; Aleksan, R,; Emery, S,; Gaidot, A,; Ganzhur, SF,; Giraud, PF,;
+Graziani, G,; de Monchenault, GH,; Kozanecki, W,; Legendre, M,; London, GW,; Mayer, B,; Vasseur, G,; Yeche, C,; Zito, M,; Purohit,
+MV,; Weidemann, AW,; Wilson, JR,; Yumiceva, FX,; Abe, T,; Allen, MT,; Aston, D,; Bartoldus, R,; Berger, N,; Boyarski, AM,;
+Buchmueller, OL,; Claus, R,; Convery, MR,; Cristinziani, M,; Dingfelder, JC,; Dong, D,; Dorfan, J,; Dujmic, D,; Dunwoodie, W,;
+Fan, S,; Field, RC,; Glanzman, T,; Gowdy, SJ,; Hadig, T,; Halyo, V,; Hast, C,; Hryn'ova, T,; Innes, WR,; Kelsey, MH,; Kim, P,;
+Kocian, ML,; Leith, DWGS,; Libby, J,; Luitz, S,; Luth, V,; Lynch, HL,; Marsiske, H,; Messner, R,; Muller, DR,; O'Grady, CP,;
+Ozcan, VE,; Perazzo, A,; Perl, M,; Ratcliff, BN,; Roodman, A,; Salnikov, AA,; Schindler, RH,; Schwiening, J,; Snyder, A,; Stelzer,
+J,; Su, D,; Sullivan, MK,; Suzuki, K,; Swain, S,; Thompson, JM,; Va'vra, J,; Weaver, M,; Wisniewski, WJ,; Wittgen, M,; Wright,
+DH,; Yarritu, AK,; Yi, K,; Young, CC,; Burchat, PR,; Edwards, AJ,; Majewski, SA,; Petersen, BA,; Roat, C,; Ahmed, M,; Ahmed, S,;
+Alam, MS,; Ernst, JA,; Saeed, MA,; Wappler, FR,; Zain, SB,; Bugg, W,; Krishnamurthy, M,; Spanier, SM,; Eckmann, R,; Ritchie, JL,;
+Satpathy, A,; Schwitters, RF,; Izen, JM,; Kitayama, I,; Lou, XC,; Williams, G,; Ye, S,; Bianchi, F,; Bona, M,; Gallo, F,; Gamba,
+D,; Bomben, M,; Bosisio, L,; Cartaro, C,; Cossutti, F,; Ricca, GD,; Dittongo, S,; Grancagnolo, S,; Lanceri, L,; Vitale, L,;
+Martinez-Vidal, F,; Panvini, RS,; Banerjee, S,; Bhuyan, B,; Brown, CM,; Fortin, D,; Hamano, K,; Kowalewski, R,; Roney, JM,; Sobie,
+RJ,; Back, JJ,; Harrison, PF,; Latham, TE,; Mohanty, GB,; Band, HR,; Chen, X,; Cheng, B,; Dasu, S,; Datta, M,; Eichenbaum, AM,;
+Flood, KT,; Graham, M,; Hollar, JJ,; Johnson, JR,; Kutter, PE,; Li, H,; Liu, R,; Mellado, B,; Mihalyi, A,; Pan, Y,; Prepost, R,;
+Tan, P,; von Wimmersperg-Toeller, JH,; Wu, SL,; Yu, Z,; Neal, H,; Collaboration, BABAR,
+what: Measurement of double charmonium production in e(+)e(-) annihilations at root s=10.6 GeV
+when: 2016-04-01
+where: ark:/13030/qt0ks592cc"}
+~~~~~~~~~~
+dict_pp=
+{'erc': 'who: Aubert, B,; Barate, R,; Boutigny, D,; Couderc, F,; Karyotakis, '
+        'Y,; Lees, JP,; Poireau, V,; Tisserand, V,; Zghiche, A,; Grauges, E,; '
+        'Palano, A,; Pappagallo, M,; Pompili, A,; Chen, JC,; Qi, ND,; Rong, '
+        'G,; Wang, P,; Zhu, YS,; Eigen, G,; Ofte, I,; Stugu, B,; Abrams, GS,; '
+        'Battaglia, M,; Breon, AB,; Brown, DN,; Button-Shafer, J,; Cahn, RN,; '
+        'Charles, E,; Day, CT,; Gill, MS,; Gritsan, AV,; Groysman, Y,; '
+        'Jacobsen, RG,; Kadel, RW,; Kadyk, J,; Kerth, LT,; Kolomensky, YG,; '
+        'Kukartsev, G,; Lynch, G,; Mir, LM,; Oddone, PJ,; Orimoto, TJ,; '
+        'Pripstein, M,; Roe, NA,; Ronan, MT,; Wenzel, WA,; Barrett, M,; Ford, '
+        'KE,; Harrison, TJ,; Hart, AJ,; Hawkes, CM,; Morgan, SE,; Watson, AT,; '
+        'Fritsch, M,; Goetzen, K,; Held, T,; Koch, H,; Lewandowski, B,; '
+        'Pelizaeus, M,; Peters, K,; Schroeder, T,; Steinke, M,; Boyd, JT,; '
+        'Burke, JP,; Chevalier, N,; Cottingham, WN,; Kelly, MP,; '
+        'Cuhadar-Donszelmann, T,; Fulsom, BG,; Hearty, C,; Knecht, NS,; '
+        'Mattison, TS,; McKenna, JA,; Khan, A,; Kyberd, P,; Saleem, M,; '
+        'Teodorescu, L,; Blinov, AE,; Blinov, VE,; Bukin, AD,; Druzhinin, VP,; '
+        'Golubev, VB,; Kravchenko, EA,; Onuchin, AP,; Serednyakov, SI,; '
+        'Skovpen, YI,; Solodov, EP,; Yushkov, AN,; Best, D,; Bondioli, M,; '
+        'Bruinsma, M,; Chao, M,; Eschrich, I,; Kirkby, D,; Lankford, AJ,; '
+        'Mandelkern, M,; Mommsen, RK,; Roethel, W,; Stoker, DP,; Buchanan, C,; '
+        'Hartfiel, BL,; Weinstein, AJR,; Foulkes, SD,; Gary, JW,; Long, O,; '
+        'Shen, BC,; Wang, K,; Zhang, L,; del Re, D,; Hadavand, HK,; Hill, EJ,; '
+        'MacFarlane, DB,; Paar, HP,; Rahatlou, S,; Sharma, V,; Berryhill, JW,; '
+        'Campagnari, C,; Cunha, A,; Dahmes, B,; Hong, TM,; Mazur, MA,; '
+        'Richman, JD,; Verkerke, W,; Beck, TW,; Eisner, AM,; Flacco, CJ,; '
+        'Heusch, CA,; Kroseberg, J,; Lockman, WS,; Nesom, G,; Schalk, T,; '
+        'Schumm, BA,; Seiden, A,; Spradlin, P,; Williams, DC,; Wilson, MG,; '
+        'Albert, J,; Chen, E,; Dubois-Felsmann, GP,; Dvoretskii, A,; Hitlin, '
+        'DG,; Narsky, I,; Piatenko, T,; Porter, FC,; Ryd, A,; Samuel, A,; '
+        'Andreassen, R,; Jayatilleke, S,; Mancinelli, G,; Meadows, BT,; '
+        'Sokoloff, MD,; Blanc, F,; Bloom, P,; Chen, S,; Ford, WT,; Nauenberg, '
+        'U,; Olivas, A,; Rankin, P,; Ruddick, WO,; Smith, JG,; Ulmer, KA,; '
+        'Wagner, SR,; Zhang, J,; Chen, A,; Eckhart, EA,; Soffer, A,; Toki, '
+        'WH,; Wilson, RJ,; Zeng, Q,; Altenburg, D,; Feltresi, E,; Hauke, A,; '
+        'Spaan, B,; Brandt, T,; Brose, J,; Dickopp, M,; Klose, V,; Lacker, '
+        'HM,; Nogowski, R,; Otto, S,; Petzold, A,; Schott, G,; Schubert, J,; '
+        'Schubert, KR,; Schwierz, R,; Sundermann, JE,; Bernard, D,; Bonneaud, '
+        'GR,; Grenier, P,; Schrenk, S,; Thiebaux, C,; Vasileiadis, G,; '
+        'Verderi, M,; Bard, DJ,; Clark, PJ,; Gradl, W,; Muheim, F,; Playfer, '
+        'S,; Xie, Y,; Andreotti, M,; Azzolini, V,; Bettoni, D,; Bozzi, C,; '
+        'Calabrese, R,; Cibinetto, G,; Luppi, E,; Negrini, M,; Piemontese, L,; '
+        'Anulli, F,; Baldini-Ferroli, R,; Calcaterra, A,; de Sangro, R,; '
+        'Finocchiaro, G,; Patteri, P,; Peruzzi, IM,; Piccolo, M,; Zallo, A,; '
+        'Buzzo, A,; Capra, R,; Contri, R,; Lo Vetere, M,; Macri, M,; Monge, '
+        'MR,; Passaggio, S,; Patrignani, C,; Robutti, E,; Santroni, A,; Tosi, '
+        'S,; Bailey, S,; Brandenburg, G,; Chaisanguanthum, KS,; Morii, M,; '
+        'Won, E,; Wu, J,; Dubitzky, RS,; Langenegger, U,; Marks, J,; Schenk, '
+        'S,; Uwer, U,; Bhimji, W,; Bowerman, DA,; Dauncey, PD,; Egede, U,; '
+        'Flack, RL,; Gaillard, JR,; Morton, GW,; Nash, JA,; Nikolich, MB,; '
+        'Taylor, GP,; Vazquez, WP,; Charles, MJ,; Mader, WF,; Mallik, U,; '
+        'Mohapatra, AK,; Cochran, J,; Crawley, HB,; Eyges, V,; Meyer, WT,; '
+        'Prell, S,; Rosenberg, EI,; Rubin, AE,; Yi, J,; Arnaud, N,; Davier, '
+        'M,; Giroux, X,; Grosdidier, G,; Hocker, A,; Le Diberder, F,; '
+        'Lepeltier, V,; Lutz, AM,; Oyanguren, A,; Petersen, TC,; Pierini, M,; '
+        'Plaszczynski, S,; Rodier, S,; Roudeau, P,; Schune, MH,; Stocchi, A,; '
+        'Wormser, G,; Cheng, CH,; Lange, DJ,; Simani, MC,; Wright, DM,; Bevan, '
+        'AJ,; Chavez, CA,; Coleman, JP,; Forster, IJ,; Fry, JR,; Gabathuler, '
+        'E,; Gamet, R,; George, KA,; Hutchcroft, DE,; Parry, RJ,; Payne, DJ,; '
+        'Schofield, KC,; Touramanis, C,; Cormack, CM,; Di Lodovico, F,; Sacco, '
+        'R,; Brown, CL,; Cowan, G,; Flaecher, HU,; Green, MG,; Hopkins, DA,; '
+        'Jackson, PS,; McMahon, TR,; Ricciardi, S,; Salvatore, F,; Brown, D,; '
+        'Davis, CL,; Allison, J,; Barlow, NR,; Barlow, RJ,; Hodgkinson, MC,; '
+        'Lafferty, GD,; Naisbit, MT,; Williams, JC,; Chen, C,; Farbin, A,; '
+        'Hulsbergen, WD,; Jawahery, A,; Kovalskyi, D,; Lae, CK,; Lillard, V,; '
+        'Roberts, DA,; Simi, G,; Blaylock, G,; Dallapiccola, C,; Hertzbach, '
+        'SS,; Kofler, R,; Koptchev, VB,; Li, X,; Moore, TB,; Saremi, S,; '
+        'Staengle, H,; Willocq, S,; Cowan, R,; Koeneke, K,; Sciolla, G,; '
+        'Sekula, SJ,; Spitznagel, M,; Taylor, F,; Yamamoto, RK,; Kim, H,; '
+        'Patel, PM,; Robertson, SH,; Lazzaro, A,; Lombardo, V,; Palombo, F,; '
+        'Bauer, JM,; Cremaldi, L,; Eschenburg, V,; Godang, R,; Kroeger, R,; '
+        'Reidy, J,; Sanders, DA,; Summers, DJ,; Zhao, HW,; Brunet, S,; Cote, '
+        'D,; Taras, P,; Viaud, B,; Nicholson, H,; Cavallo, N,; De Nardo, G,; '
+        'Fabozzi, F,; Gatto, C,; Lista, L,; Monorchio, D,; Paolucci, P,; '
+        'Piccolo, D,; Sciacca, C,; Baak, M,; Bulten, H,; Raven, G,; Snoek, '
+        'HL,; Wilden, L,; Jessop, CP,; LoSecco, JM,; Allmendinger, T,; '
+        'Benelli, G,; Gan, KK,; Honscheid, K,; Hufnagel, D,; Jackson, PD,; '
+        'Kagan, H,; Kass, R,; Pulliam, T,; Rahimi, AM,; Ter-Antonyan, R,; '
+        'Wong, QK,; Brau, J,; Frey, R,; Igonkina, O,; Lu, M,; Potter, CT,; '
+        'Sinev, NB,; Strom, D,; Strube, J,; Torrence, E,; Dorigo, A,; '
+        'Galeazzi, F,; Margoni, M,; Morandin, M,; Posocco, M,; Rotondo, M,; '
+        'Simonetto, F,; Stroili, R,; Voci, C,; Benayoun, M,; Briand, H,; '
+        'Chauveau, J,; David, P,; Buono, LD,; de la Vaissiere, C,; Hamon, O,; '
+        'John, MJJ,; Leruste, P,; Malcles, J,; Ocariz, J,; Roos, L,; Therin, '
+        'G,; Behera, PK,; Gladney, L,; Guo, QH,; Panetta, J,; Biasini, M,; '
+        'Covarelli, R,; Pacetti, S,; Pioppi, M,; Angelini, C,; Batignani, G,; '
+        'Bettarini, S,; Bucci, F,; Calderini, G,; Carpinelli, M,; Cenci, R,; '
+        'Forti, F,; Giorgi, MA,; Lusiani, A,; Marchiori, G,; Morganti, M,; '
+        'Neri, N,; Paoloni, E,; Rama, M,; Rizzo, G,; Walsh, J,; Haire, M,; '
+        'Judd, D,; Wagoner, DE,; Biesiada, J,; Danielson, N,; Elmer, P,; Lau, '
+        'YP,; Lu, C,; Olsen, J,; Smith, AJS,; Telnov, AV,; Bellini, F,; '
+        "Cavoto, G,; D'Orazio, A,; Di Marco, E,; Faccini, R,; Ferrarotto, F,; "
+        'Ferroni, F,; Gaspero, M,; Li Gioi, L,; Mazzoni, MA,; Morganti, S,; '
+        'Piredda, G,; Polci, F,; Tehrani, FS,; Voena, C,; Schroder, H,; '
+        'Wagner, G,; Waldi, R,; Adye, T,; De Groot, N,; Franek, B,; Gopal, '
+        'GP,; Olaiya, EO,; Wilson, FF,; Aleksan, R,; Emery, S,; Gaidot, A,; '
+        'Ganzhur, SF,; Giraud, PF,; Graziani, G,; de Monchenault, GH,; '
+        'Kozanecki, W,; Legendre, M,; London, GW,; Mayer, B,; Vasseur, G,; '
+        'Yeche, C,; Zito, M,; Purohit, MV,; Weidemann, AW,; Wilson, JR,; '
+        'Yumiceva, FX,; Abe, T,; Allen, MT,; Aston, D,; Bartoldus, R,; Berger, '
+        'N,; Boyarski, AM,; Buchmueller, OL,; Claus, R,; Convery, MR,; '
+        'Cristinziani, M,; Dingfelder, JC,; Dong, D,; Dorfan, J,; Dujmic, D,; '
+        'Dunwoodie, W,; Fan, S,; Field, RC,; Glanzman, T,; Gowdy, SJ,; Hadig, '
+        "T,; Halyo, V,; Hast, C,; Hryn'ova, T,; Innes, WR,; Kelsey, MH,; Kim, "
+        'P,; Kocian, ML,; Leith, DWGS,; Libby, J,; Luitz, S,; Luth, V,; Lynch, '
+        "HL,; Marsiske, H,; Messner, R,; Muller, DR,; O'Grady, CP,; Ozcan, "
+        'VE,; Perazzo, A,; Perl, M,; Ratcliff, BN,; Roodman, A,; Salnikov, '
+        'AA,; Schindler, RH,; Schwiening, J,; Snyder, A,; Stelzer, J,; Su, D,; '
+        "Sullivan, MK,; Suzuki, K,; Swain, S,; Thompson, JM,; Va'vra, J,; "
+        'Weaver, M,; Wisniewski, WJ,; Wittgen, M,; Wright, DH,; Yarritu, AK,; '
+        'Yi, K,; Young, CC,; Burchat, PR,; Edwards, AJ,; Majewski, SA,; '
+        'Petersen, BA,; Roat, C,; Ahmed, M,; Ahmed, S,; Alam, MS,; Ernst, JA,; '
+        'Saeed, MA,; Wappler, FR,; Zain, SB,; Bugg, W,; Krishnamurthy, M,; '
+        'Spanier, SM,; Eckmann, R,; Ritchie, JL,; Satpathy, A,; Schwitters, '
+        'RF,; Izen, JM,; Kitayama, I,; Lou, XC,; Williams, G,; Ye, S,; '
+        'Bianchi, F,; Bona, M,; Gallo, F,; Gamba, D,; Bomben, M,; Bosisio, L,; '
+        'Cartaro, C,; Cossutti, F,; Ricca, GD,; Dittongo, S,; Grancagnolo, S,; '
+        'Lanceri, L,; Vitale, L,; Martinez-Vidal, F,; Panvini, RS,; Banerjee, '
+        'S,; Bhuyan, B,; Brown, CM,; Fortin, D,; Hamano, K,; Kowalewski, R,; '
+        'Roney, JM,; Sobie, RJ,; Back, JJ,; Harrison, PF,; Latham, TE,; '
+        'Mohanty, GB,; Band, HR,; Chen, X,; Cheng, B,; Dasu, S,; Datta, M,; '
+        'Eichenbaum, AM,; Flood, KT,; Graham, M,; Hollar, JJ,; Johnson, JR,; '
+        'Kutter, PE,; Li, H,; Liu, R,; Mellado, B,; Mihalyi, A,; Pan, Y,; '
+        'Prepost, R,; Tan, P,; von Wimmersperg-Toeller, JH,; Wu, SL,; Yu, Z,; '
+        'Neal, H,; Collaboration, BABAR,
+'
+        'what: Measurement of double charmonium production in e(+)e(-) '
+        'annihilations at root s=10.6 GeV
+'
+        'when: 2016-04-01
+'
+        'where: ark:/13030/qt0ks592cc',
+ 'mrt.creator': 'escholarship'}
+~~~~~~~~~~
+keys=
+mrt.creator, erc
+~~~~~~~~~~
+output_exchange=
+mrt.creator escholarship erc
+who:%20Aubert,%20B,%3B%20Barate,%20R,%3B%20Boutigny,%20D,%3B%20Couderc,%20F,%3B%20Karyotakis,%20Y,%3B%20Lees,%20JP,%3B%20Poireau,%20V,%3B%20Tisserand,%20V,%3B%20Zghiche,%20A,%3B%20Grauges,%20E,%3B%20Palano,%20A,%3B%20Pappagallo,%20M,%3B%20Pompili,%20A,%3B%20Chen,%20JC,%3B%20Qi,%20ND,%3B%20Rong,%20G,%3B%20Wang,%20P,%3B%20Zhu,%20YS,%3B%20Eigen,%20G,%3B%20Ofte,%20I,%3B%20Stugu,%20B,%3B%20Abrams,%20GS,%3B%20Battaglia,%20M,%3B%20Breon,%20AB,%3B%20Brown,%20DN,%3B%20Button-
+Shafer,%20J,%3B%20Cahn,%20RN,%3B%20Charles,%20E,%3B%20Day,%20CT,%3B%20Gill,%20MS,%3B%20Gritsan,%20AV,%3B%20Groysman,%20Y,%3B%20Jacobsen,%20RG,%3B%20Kadel,%20RW,%3B%20Kadyk,%20J,%3B%20Kerth,%20LT,%3B%20Kolomensky,%20YG,%3B%20Kukartsev,%20G,%3B%20Lynch,%20G,%3B%20Mir,%20LM,%3B%20Oddone,%20PJ,%3B%20Orimoto,%20TJ,%3B%20Pripstein,%20M,%3B%20Roe,%20NA,%3B%20Ronan,%20MT,%3B%20Wenzel,%20WA,%3B%20Barrett,%20M,%3B%20Ford,%20KE,%3B%20Harrison,%20TJ,%3B%20Hart,%20AJ,%3B%20Hawkes,%20CM,%3B%20Morgan,%20SE,%3B%20Watson,%20AT,%3B%20Fritsch,%20M,%3B%20Goetzen,%20K,%3B%20Held,%20T,%3B%20Koch,%20H,%3B%20Lewandowski,%20B,%3B%20Pelizaeus,%20M,%3B%20Peters,%20K,%3B%20Schroeder,%20T,%3B%20Steinke,%20M,%3B%20Boyd,%20JT,%3B%20Burke,%20JP,%3B%20Chevalier,%20N,%3B%20Cottingham,%20WN,%3B%20Kelly,%20MP,%3B%20Cuhadar-
+Donszelmann,%20T,%3B%20Fulsom,%20BG,%3B%20Hearty,%20C,%3B%20Knecht,%20NS,%3B%20Mattison,%20TS,%3B%20McKenna,%20JA,%3B%20Khan,%20A,%3B%20Kyberd,%20P,%3B%20Saleem,%20M,%3B%20Teodorescu,%20L,%3B%20Blinov,%20AE,%3B%20Blinov,%20VE,%3B%20Bukin,%20AD,%3B%20Druzhinin,%20VP,%3B%20Golubev,%20VB,%3B%20Kravchenko,%20EA,%3B%20Onuchin,%20AP,%3B%20Serednyakov,%20SI,%3B%20Skovpen,%20YI,%3B%20Solodov,%20EP,%3B%20Yushkov,%20AN,%3B%20Best,%20D,%3B%20Bondioli,%20M,%3B%20Bruinsma,%20M,%3B%20Chao,%20M,%3B%20Eschrich,%20I,%3B%20Kirkby,%20D,%3B%20Lankford,%20AJ,%3B%20Mandelkern,%20M,%3B%20Mommsen,%20RK,%3B%20Roethel,%20W,%3B%20Stoker,%20DP,%3B%20Buchanan,%20C,%3B%20Hartfiel,%20BL,%3B%20Weinstein,%20AJR,%3B%20Foulkes,%20SD,%3B%20Gary,%20JW,%3B%20Long,%20O,%3B%20Shen,%20BC,%3B%20Wang,%20K,%3B%20Zhang,%20L,%3B%20del%20Re,%20D,%3B%20Hadavand,%20HK,%3B%20Hill,%20EJ,%3B%20MacFarlane,%20DB,%3B%20Paar,%20HP,%3B%20Rahatlou,%20S,%3B%20Sharma,%20V,%3B%20Berryhill,%20JW,%3B%20Campagnari,%20C,%3B%20Cunha,%20A,%3B%20Dahmes,%20B,%3B%20Hong,%20TM,%3B%20Mazur,%20MA,%3B%20Richman,%20JD,%3B%20Verkerke,%20W,%3B%20Beck,%20TW,%3B%20Eisner,%20AM,%3B%20Flacco,%20CJ,%3B%20Heusch,%20CA,%3B%20Kroseberg,%20J,%3B%20Lockman,%20WS,%3B%20Nesom,%20G,%3B%20Schalk,%20T,%3B%20Schumm,%20BA,%3B%20Seiden,%20A,%3B%20Spradlin,%20P,%3B%20Williams,%20DC,%3B%20Wilson,%20MG,%3B%20Albert,%20J,%3B%20Chen,%20E,%3B%20Dubois-
+Felsmann,%20GP,%3B%20Dvoretskii,%20A,%3B%20Hitlin,%20DG,%3B%20Narsky,%20I,%3B%20Piatenko,%20T,%3B%20Porter,%20FC,%3B%20Ryd,%20A,%3B%20Samuel,%20A,%3B%20Andreassen,%20R,%3B%20Jayatilleke,%20S,%3B%20Mancinelli,%20G,%3B%20Meadows,%20BT,%3B%20Sokoloff,%20MD,%3B%20Blanc,%20F,%3B%20Bloom,%20P,%3B%20Chen,%20S,%3B%20Ford,%20WT,%3B%20Nauenberg,%20U,%3B%20Olivas,%20A,%3B%20Rankin,%20P,%3B%20Ruddick,%20WO,%3B%20Smith,%20JG,%3B%20Ulmer,%20KA,%3B%20Wagner,%20SR,%3B%20Zhang,%20J,%3B%20Chen,%20A,%3B%20Eckhart,%20EA,%3B%20Soffer,%20A,%3B%20Toki,%20WH,%3B%20Wilson,%20RJ,%3B%20Zeng,%20Q,%3B%20Altenburg,%20D,%3B%20Feltresi,%20E,%3B%20Hauke,%20A,%3B%20Spaan,%20B,%3B%20Brandt,%20T,%3B%20Brose,%20J,%3B%20Dickopp,%20M,%3B%20Klose,%20V,%3B%20Lacker,%20HM,%3B%20Nogowski,%20R,%3B%20Otto,%20S,%3B%20Petzold,%20A,%3B%20Schott,%20G,%3B%20Schubert,%20J,%3B%20Schubert,%20KR,%3B%20Schwierz,%20R,%3B%20Sundermann,%20JE,%3B%20Bernard,%20D,%3B%20Bonneaud,%20GR,%3B%20Grenier,%20P,%3B%20Schrenk,%20S,%3B%20Thiebaux,%20C,%3B%20Vasileiadis,%20G,%3B%20Verderi,%20M,%3B%20Bard,%20DJ,%3B%20Clark,%20PJ,%3B%20Gradl,%20W,%3B%20Muheim,%20F,%3B%20Playfer,%20S,%3B%20Xie,%20Y,%3B%20Andreotti,%20M,%3B%20Azzolini,%20V,%3B%20Bettoni,%20D,%3B%20Bozzi,%20C,%3B%20Calabrese,%20R,%3B%20Cibinetto,%20G,%3B%20Luppi,%20E,%3B%20Negrini,%20M,%3B%20Piemontese,%20L,%3B%20Anulli,%20F,%3B%20Baldini-
+Ferroli,%20R,%3B%20Calcaterra,%20A,%3B%20de%20Sangro,%20R,%3B%20Finocchiaro,%20G,%3B%20Patteri,%20P,%3B%20Peruzzi,%20IM,%3B%20Piccolo,%20M,%3B%20Zallo,%20A,%3B%20Buzzo,%20A,%3B%20Capra,%20R,%3B%20Contri,%20R,%3B%20Lo%20Vetere,%20M,%3B%20Macri,%20M,%3B%20Monge,%20MR,%3B%20Passaggio,%20S,%3B%20Patrignani,%20C,%3B%20Robutti,%20E,%3B%20Santroni,%20A,%3B%20Tosi,%20S,%3B%20Bailey,%20S,%3B%20Brandenburg,%20G,%3B%20Chaisanguanthum,%20KS,%3B%20Morii,%20M,%3B%20Won,%20E,%3B%20Wu,%20J,%3B%20Dubitzky,%20RS,%3B%20Langenegger,%20U,%3B%20Marks,%20J,%3B%20Schenk,%20S,%3B%20Uwer,%20U,%3B%20Bhimji,%20W,%3B%20Bowerman,%20DA,%3B%20Dauncey,%20PD,%3B%20Egede,%20U,%3B%20Flack,%20RL,%3B%20Gaillard,%20JR,%3B%20Morton,%20GW,%3B%20Nash,%20JA,%3B%20Nikolich,%20MB,%3B%20Taylor,%20GP,%3B%20Vazquez,%20WP,%3B%20Charles,%20MJ,%3B%20Mader,%20WF,%3B%20Mallik,%20U,%3B%20Mohapatra,%20AK,%3B%20Cochran,%20J,%3B%20Crawley,%20HB,%3B%20Eyges,%20V,%3B%20Meyer,%20WT,%3B%20Prell,%20S,%3B%20Rosenberg,%20EI,%3B%20Rubin,%20AE,%3B%20Yi,%20J,%3B%20Arnaud,%20N,%3B%20Davier,%20M,%3B%20Giroux,%20X,%3B%20Grosdidier,%20G,%3B%20Hocker,%20A,%3B%20Le%20Diberder,%20F,%3B%20Lepeltier,%20V,%3B%20Lutz,%20AM,%3B%20Oyanguren,%20A,%3B%20Petersen,%20TC,%3B%20Pierini,%20M,%3B%20Plaszczynski,%20S,%3B%20Rodier,%20S,%3B%20Roudeau,%20P,%3B%20Schune,%20MH,%3B%20Stocchi,%20A,%3B%20Wormser,%20G,%3B%20Cheng,%20CH,%3B%20Lange,%20DJ,%3B%20Simani,%20MC,%3B%20Wright,%20DM,%3B%20Bevan,%20AJ,%3B%20Chavez,%20CA,%3B%20Coleman,%20JP,%3B%20Forster,%20IJ,%3B%20Fry,%20JR,%3B%20Gabathuler,%20E,%3B%20Gamet,%20R,%3B%20George,%20KA,%3B%20Hutchcroft,%20DE,%3B%20Parry,%20RJ,%3B%20Payne,%20DJ,%3B%20Schofield,%20KC,%3B%20Touramanis,%20C,%3B%20Cormack,%20CM,%3B%20Di%20Lodovico,%20F,%3B%20Sacco,%20R,%3B%20Brown,%20CL,%3B%20Cowan,%20G,%3B%20Flaecher,%20HU,%3B%20Green,%20MG,%3B%20Hopkins,%20DA,%3B%20Jackson,%20PS,%3B%20McMahon,%20TR,%3B%20Ricciardi,%20S,%3B%20Salvatore,%20F,%3B%20Brown,%20D,%3B%20Davis,%20CL,%3B%20Allison,%20J,%3B%20Barlow,%20NR,%3B%20Barlow,%20RJ,%3B%20Hodgkinson,%20MC,%3B%20Lafferty,%20GD,%3B%20Naisbit,%20MT,%3B%20Williams,%20JC,%3B%20Chen,%20C,%3B%20Farbin,%20A,%3B%20Hulsbergen,%20WD,%3B%20Jawahery,%20A,%3B%20Kovalskyi,%20D,%3B%20Lae,%20CK,%3B%20Lillard,%20V,%3B%20Roberts,%20DA,%3B%20Simi,%20G,%3B%20Blaylock,%20G,%3B%20Dallapiccola,%20C,%3B%20Hertzbach,%20SS,%3B%20Kofler,%20R,%3B%20Koptchev,%20VB,%3B%20Li,%20X,%3B%20Moore,%20TB,%3B%20Saremi,%20S,%3B%20Staengle,%20H,%3B%20Willocq,%20S,%3B%20Cowan,%20R,%3B%20Koeneke,%20K,%3B%20Sciolla,%20G,%3B%20Sekula,%20SJ,%3B%20Spitznagel,%20M,%3B%20Taylor,%20F,%3B%20Yamamoto,%20RK,%3B%20Kim,%20H,%3B%20Patel,%20PM,%3B%20Robertson,%20SH,%3B%20Lazzaro,%20A,%3B%20Lombardo,%20V,%3B%20Palombo,%20F,%3B%20Bauer,%20JM,%3B%20Cremaldi,%20L,%3B%20Eschenburg,%20V,%3B%20Godang,%20R,%3B%20Kroeger,%20R,%3B%20Reidy,%20J,%3B%20Sanders,%20DA,%3B%20Summers,%20DJ,%3B%20Zhao,%20HW,%3B%20Brunet,%20S,%3B%20Cote,%20D,%3B%20Taras,%20P,%3B%20Viaud,%20B,%3B%20Nicholson,%20H,%3B%20Cavallo,%20N,%3B%20De%20Nardo,%20G,%3B%20Fabozzi,%20F,%3B%20Gatto,%20C,%3B%20Lista,%20L,%3B%20Monorchio,%20D,%3B%20Paolucci,%20P,%3B%20Piccolo,%20D,%3B%20Sciacca,%20C,%3B%20Baak,%20M,%3B%20Bulten,%20H,%3B%20Raven,%20G,%3B%20Snoek,%20HL,%3B%20Wilden,%20L,%3B%20Jessop,%20CP,%3B%20LoSecco,%20JM,%3B%20Allmendinger,%20T,%3B%20Benelli,%20G,%3B%20Gan,%20KK,%3B%20Honscheid,%20K,%3B%20Hufnagel,%20D,%3B%20Jackson,%20PD,%3B%20Kagan,%20H,%3B%20Kass,%20R,%3B%20Pulliam,%20T,%3B%20Rahimi,%20AM,%3B%20Ter-
+Antonyan,%20R,%3B%20Wong,%20QK,%3B%20Brau,%20J,%3B%20Frey,%20R,%3B%20Igonkina,%20O,%3B%20Lu,%20M,%3B%20Potter,%20CT,%3B%20Sinev,%20NB,%3B%20Strom,%20D,%3B%20Strube,%20J,%3B%20Torrence,%20E,%3B%20Dorigo,%20A,%3B%20Galeazzi,%20F,%3B%20Margoni,%20M,%3B%20Morandin,%20M,%3B%20Posocco,%20M,%3B%20Rotondo,%20M,%3B%20Simonetto,%20F,%3B%20Stroili,%20R,%3B%20Voci,%20C,%3B%20Benayoun,%20M,%3B%20Briand,%20H,%3B%20Chauveau,%20J,%3B%20David,%20P,%3B%20Buono,%20LD,%3B%20de%20la%20Vaissiere,%20C,%3B%20Hamon,%20O,%3B%20John,%20MJJ,%3B%20Leruste,%20P,%3B%20Malcles,%20J,%3B%20Ocariz,%20J,%3B%20Roos,%20L,%3B%20Therin,%20G,%3B%20Behera,%20PK,%3B%20Gladney,%20L,%3B%20Guo,%20QH,%3B%20Panetta,%20J,%3B%20Biasini,%20M,%3B%20Covarelli,%20R,%3B%20Pacetti,%20S,%3B%20Pioppi,%20M,%3B%20Angelini,%20C,%3B%20Batignani,%20G,%3B%20Bettarini,%20S,%3B%20Bucci,%20F,%3B%20Calderini,%20G,%3B%20Carpinelli,%20M,%3B%20Cenci,%20R,%3B%20Forti,%20F,%3B%20Giorgi,%20MA,%3B%20Lusiani,%20A,%3B%20Marchiori,%20G,%3B%20Morganti,%20M,%3B%20Neri,%20N,%3B%20Paoloni,%20E,%3B%20Rama,%20M,%3B%20Rizzo,%20G,%3B%20Walsh,%20J,%3B%20Haire,%20M,%3B%20Judd,%20D,%3B%20Wagoner,%20DE,%3B%20Biesiada,%20J,%3B%20Danielson,%20N,%3B%20Elmer,%20P,%3B%20Lau,%20YP,%3B%20Lu,%20C,%3B%20Olsen,%20J,%3B%20Smith,%20AJS,%3B%20Telnov,%20AV,%3B%20Bellini,%20F,%3B%20Cavoto,%20G,%3B%20D%27Orazio,%20A,%3B%20Di%20Marco,%20E,%3B%20Faccini,%20R,%3B%20Ferrarotto,%20F,%3B%20Ferroni,%20F,%3B%20Gaspero,%20M,%3B%20Li%20Gioi,%20L,%3B%20Mazzoni,%20MA,%3B%20Morganti,%20S,%3B%20Piredda,%20G,%3B%20Polci,%20F,%3B%20Tehrani,%20FS,%3B%20Voena,%20C,%3B%20Schroder,%20H,%3B%20Wagner,%20G,%3B%20Waldi,%20R,%3B%20Adye,%20T,%3B%20De%20Groot,%20N,%3B%20Franek,%20B,%3B%20Gopal,%20GP,%3B%20Olaiya,%20EO,%3B%20Wilson,%20FF,%3B%20Aleksan,%20R,%3B%20Emery,%20S,%3B%20Gaidot,%20A,%3B%20Ganzhur,%20SF,%3B%20Giraud,%20PF,%3B%20Graziani,%20G,%3B%20de%20Monchenault,%20GH,%3B%20Kozanecki,%20W,%3B%20Legendre,%20M,%3B%20London,%20GW,%3B%20Mayer,%20B,%3B%20Vasseur,%20G,%3B%20Yeche,%20C,%3B%20Zito,%20M,%3B%20Purohit,%20MV,%3B%20Weidemann,%20AW,%3B%20Wilson,%20JR,%3B%20Yumiceva,%20FX,%3B%20Abe,%20T,%3B%20Allen,%20MT,%3B%20Aston,%20D,%3B%20Bartoldus,%20R,%3B%20Berger,%20N,%3B%20Boyarski,%20AM,%3B%20Buchmueller,%20OL,%3B%20Claus,%20R,%3B%20Convery,%20MR,%3B%20Cristinziani,%20M,%3B%20Dingfelder,%20JC,%3B%20Dong,%20D,%3B%20Dorfan,%20J,%3B%20Dujmic,%20D,%3B%20Dunwoodie,%20W,%3B%20Fan,%20S,%3B%20Field,%20RC,%3B%20Glanzman,%20T,%3B%20Gowdy,%20SJ,%3B%20Hadig,%20T,%3B%20Halyo,%20V,%3B%20Hast,%20C,%3B%20Hryn%27ova,%20T,%3B%20Innes,%20WR,%3B%20Kelsey,%20MH,%3B%20Kim,%20P,%3B%20Kocian,%20ML,%3B%20Leith,%20DWGS,%3B%20Libby,%20J,%3B%20Luitz,%20S,%3B%20Luth,%20V,%3B%20Lynch,%20HL,%3B%20Marsiske,%20H,%3B%20Messner,%20R,%3B%20Muller,%20DR,%3B%20O%27Grady,%20CP,%3B%20Ozcan,%20VE,%3B%20Perazzo,%20A,%3B%20Perl,%20M,%3B%20Ratcliff,%20BN,%3B%20Roodman,%20A,%3B%20Salnikov,%20AA,%3B%20Schindler,%20RH,%3B%20Schwiening,%20J,%3B%20Snyder,%20A,%3B%20Stelzer,%20J,%3B%20Su,%20D,%3B%20Sullivan,%20MK,%3B%20Suzuki,%20K,%3B%20Swain,%20S,%3B%20Thompson,%20JM,%3B%20Va%27vra,%20J,%3B%20Weaver,%20M,%3B%20Wisniewski,%20WJ,%3B%20Wittgen,%20M,%3B%20Wright,%20DH,%3B%20Yarritu,%20AK,%3B%20Yi,%20K,%3B%20Young,%20CC,%3B%20Burchat,%20PR,%3B%20Edwards,%20AJ,%3B%20Majewski,%20SA,%3B%20Petersen,%20BA,%3B%20Roat,%20C,%3B%20Ahmed,%20M,%3B%20Ahmed,%20S,%3B%20Alam,%20MS,%3B%20Ernst,%20JA,%3B%20Saeed,%20MA,%3B%20Wappler,%20FR,%3B%20Zain,%20SB,%3B%20Bugg,%20W,%3B%20Krishnamurthy,%20M,%3B%20Spanier,%20SM,%3B%20Eckmann,%20R,%3B%20Ritchie,%20JL,%3B%20Satpathy,%20A,%3B%20Schwitters,%20RF,%3B%20Izen,%20JM,%3B%20Kitayama,%20I,%3B%20Lou,%20XC,%3B%20Williams,%20G,%3B%20Ye,%20S,%3B%20Bianchi,%20F,%3B%20Bona,%20M,%3B%20Gallo,%20F,%3B%20Gamba,%20D,%3B%20Bomben,%20M,%3B%20Bosisio,%20L,%3B%20Cartaro,%20C,%3B%20Cossutti,%20F,%3B%20Ricca,%20GD,%3B%20Dittongo,%20S,%3B%20Grancagnolo,%20S,%3B%20Lanceri,%20L,%3B%20Vitale,%20L,%3B%20Martinez-
+Vidal,%20F,%3B%20Panvini,%20RS,%3B%20Banerjee,%20S,%3B%20Bhuyan,%20B,%3B%20Brown,%20CM,%3B%20Fortin,%20D,%3B%20Hamano,%20K,%3B%20Kowalewski,%20R,%3B%20Roney,%20JM,%3B%20Sobie,%20RJ,%3B%20Back,%20JJ,%3B%20Harrison,%20PF,%3B%20Latham,%20TE,%3B%20Mohanty,%20GB,%3B%20Band,%20HR,%3B%20Chen,%20X,%3B%20Cheng,%20B,%3B%20Dasu,%20S,%3B%20Datta,%20M,%3B%20Eichenbaum,%20AM,%3B%20Flood,%20KT,%3B%20Graham,%20M,%3B%20Hollar,%20JJ,%3B%20Johnson,%20JR,%3B%20Kutter,%20PE,%3B%20Li,%20H,%3B%20Liu,%20R,%3B%20Mellado,%20B,%3B%20Mihalyi,%20A,%3B%20Pan,%20Y,%3B%20Prepost,%20R,%3B%20Tan,%20P,%3B%20von%20Wimmersperg-
+Toeller,%20JH,%3B%20Wu,%20SL,%3B%20Yu,%20Z,%3B%20Neal,%20H,%3B%20Collaboration,%20BABAR,%0Awhat:%20Measurement%20of%20double%20charmonium%20production%20in%20e%28+%29e%28-%29%20annihilations%20at%20root%20s%3D10.6%20GeV%0Awhen:%202016-04-01%0Awhere:%20ark:/13030/qt0ks592cc

@@ -1,0 +1,11 @@
+input_json=
+{"erc.who":"SUPPRIME","erc.when":"SUPPRIME","erc.what":"SUPPRIME"}
+~~~~~~~~~~
+dict_pp=
+{'erc.what': 'SUPPRIME', 'erc.when': 'SUPPRIME', 'erc.who': 'SUPPRIME'}
+~~~~~~~~~~
+keys=
+erc.who, erc.when, erc.what
+~~~~~~~~~~
+output_exchange=
+erc.who SUPPRIME erc.when SUPPRIME erc.what SUPPRIME

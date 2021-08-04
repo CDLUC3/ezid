@@ -238,11 +238,11 @@ def getTargetUrl(doi, datacenter=None):
 
 
 _prologRE: Pattern[str] = re.compile(
-    '(<\?xml\s+version\s*=\s*[\'"]([-\w.:]+)["\'])'
-    '(\s+encoding\s*=\s*[\'"]([-\w.]+)["\'])?'
+    '(<\\?xml\\s+version\\s*=\\s*[\'"]([-\\w.:]+)["\'])'
+    '(\\s+encoding\\s*=\\s*[\'"]([-\\w.]+)["\'])?'
 )
 _utf8RE = re.compile("UTF-?8$", re.I)
-_rootTagRE = re.compile("{(http://datacite\.org/schema/kernel-([^}]*))}resource$")
+_rootTagRE = re.compile("{(http://datacite\\.org/schema/kernel-([^}]*))}resource$")
 
 
 def validateDcmsRecord(identifier, record, schemaValidate=True):
@@ -757,7 +757,7 @@ def crossrefToDatacite(record, overrides={}):
     )
 
 
-_schemaVersionRE = re.compile("{http://datacite\.org/schema/kernel-([^}]*)}resource$")
+_schemaVersionRE = re.compile("{http://datacite\\.org/schema/kernel-([^}]*)}resource$")
 
 
 def upgradeDcmsRecord(record, parseString=True, returnString=True):

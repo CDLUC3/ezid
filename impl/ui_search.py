@@ -577,7 +577,7 @@ def _buildQuerySyntax(c):
             vu = value.upper()
             # Just simply include 'AND' only when user hasn't used quotes or AND/OR
             if not quoteOccurred and " AND " not in vu and " OR " not in vu:
-                value = re.sub(r'\s+', ' AND ', value)
+                value = re.sub(r'\\s+', ' AND ', value)
             r += value + ")"
         dlength -= 1
         if dlength >= 1:

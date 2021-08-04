@@ -13,6 +13,10 @@
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
+import types
+
+import impl.nog.tb
+import impl.nog.tb
 import base64
 import calendar
 import datetime
@@ -24,13 +28,12 @@ import shutil
 import sys
 import time
 import xml.sax.saxutils
-import zlib
 
 import lxml.etree
 
 maxIdentifierLength = 255
 
-_doiPattern = re.compile('10\.[1-9]\d{3,4}/[!"$->@-~]+$')
+_doiPattern = re.compile('10\\.[1-9]\\d{3,4}/[!"$->@-~]+$')
 
 logger = logging.getLogger(__name__)
 
@@ -73,8 +76,8 @@ def validateDoi(doi):
     return doi.upper()
 
 
-_arkPattern1 = re.compile("((?:\d{5}(?:\d{4})?|[bcdfghjkmnpqrstvwxz]\d{4})/)([!-~]+)$")
-_arkPattern2 = re.compile("\./|/\.")
+_arkPattern1 = re.compile("((?:\\d{5}(?:\\d{4})?|[bcdfghjkmnpqrstvwxz]\\d{4})/)([!-~]+)$")
+_arkPattern2 = re.compile("\\./|/\\.")
 _arkPattern3 = re.compile("([./])[./]+")
 _arkPattern4 = re.compile("^[./]|[./]$")
 _arkPattern5 = re.compile("%[0-9a-fA-F][0-9a-fA-F]|.")
@@ -226,17 +229,15 @@ def inferredShoulder(identifier):
     following the NAAN- or prefix-separating slash.
     """
     if identifier.startswith("ark:/"):
-        return re.match(
-            "ark:/(\d{5}(\d{4})?|[b-k]\d{4})/[0-9a-zA-Z]{0,2}", identifier
-        ).group(0)
+        return re.match("ark:/(\\d{5}(\\d{4})?|[b-k]\\d{4})/[0-9a-zA-Z]{0,2}", identifier).group(0)
     elif identifier.startswith("doi:"):
-        return re.match("doi:10\.[1-9]\d{3,4}/[0-9A-Z]{0,2}", identifier).group(0)
+        return re.match("doi:10\\.[1-9]\\d{3,4}/[0-9A-Z]{0,2}", identifier).group(0)
     else:
         return identifier.split(":")[0] + ":"
 
 
 datacenterSymbolRE = re.compile(
-    "^([A-Z][-A-Z0-9]{0,6}[A-Z0-9])\.([A-Z][-A-Z0-9]{0,6}[A-Z0-9])$", re.I
+    "^([A-Z][-A-Z0-9]{0,6}[A-Z0-9])\\.([A-Z][-A-Z0-9]{0,6}[A-Z0-9])$", re.I
 )
 maxDatacenterSymbolLength = 17
 
@@ -294,10 +295,8 @@ def doi2shadow(doi):
             p = beta_numeric_char[(ord(doi[3]) - ord("0"))] + doi[4:i]
         elif i == 10:
             p = (
-                    beta_numeric_char[
-                        ((ord(doi[3]) - ord("0")) * 10) + (ord(doi[4]) - ord("0"))
-                        ]
-                    + doi[5:i]
+                beta_numeric_char[((ord(doi[3]) - ord("0")) * 10) + (ord(doi[4]) - ord("0"))]
+                + doi[5:i]
             )
     s = doi[i:].replace("%", "%25").replace("-", "%2d").lower()
     s = _arkPattern4.sub(lambda c: f"%{ord(c.group(0)):02x}", s)
@@ -424,8 +423,8 @@ _pattern3 = re.compile('[%\'"\\\\&@|;()[\\]=]|[^!-~]')
 
 
 def encode3(s):
-    """Like encode2, but percent-encodes ('), ("), (\), (&), (@), (|), (;) ((),
-    ()), ([), (]), and (=) as well.
+    """
+    Like encode2, but also percent-encodes: ' " \\ & @ | ; ( ) [ ] =
 
     This form of encoding is used for noid element values.
     """
@@ -437,7 +436,7 @@ _pattern4 = re.compile('[%\'"\\\\&@|;()[\\]=:<]|[^!-~]')
 
 
 def encode4(s):
-    """Like encode3, but percent-encodes (:) and (<) as well.
+    """Like encode3, but also percent-encodes: : <
 
     This form of encoding is used for noid identifiers and noid element
     names.
@@ -530,31 +529,10 @@ def fromExchange(line, identifierEmbedded=False):
         return d
 
 
-def blobify(metadata):
-    """Converts a metadata dictionary to a binary, compressed string, or
-    "blob."  Labels and values are stripped; labels with empty values are
-    discarded."""
-    assert isinstance(metadata, dict)
-    return zlib.compress(toExchange(metadata).encode('utf-8'))
-
-
-def deblobify(blob, decompressOnly=False):
-    """Converts a blob back to a metadata dictionary.
-
-    If 'decompressOnly' is True, the metadata is returned in exchange
-    representation form.
-    """
-    v = zlib.decompress(blob)
-    if decompressOnly:
-        return v
-    else:
-        return fromExchange(v)
-
-
 def oneLine(s):
     """Replaces newlines in a string with spaces."""
     assert isinstance(s, str)
-    return re.sub("\s", " ", s)
+    return re.sub("\\s", " ", s)
 
 
 def formatException(exception):
@@ -704,10 +682,7 @@ else:
 
 _illegalUnichrsPlusSuppPlanesRE = re.compile(
     "[{}]".format(
-        "".join(
-            "%s-%s" % (chr(low), chr(high))
-            for low, high in _illegalUnichrsPlusSuppPlanes
-        )
+        "".join("%s-%s" % (chr(low), chr(high)) for low, high in _illegalUnichrsPlusSuppPlanes)
     )
 )
 
@@ -720,9 +695,9 @@ def validateXmlSafeCharsetBmpOnly(s):
 
 
 xmlDeclarationRE = re.compile(
-    '<\?xml\s+version\s*=\s*([\'"])([-\w.:]+)\\1'
-    '(\s+encoding\s*=\s*([\'"])([a-zA-Z][-\w.]*)\\4)?'
-    '(\s+standalone\s*=\s*([\'"])(yes|no)\\7)?\s*\?>\s*'
+    '<\\?xml\\s+version\\s*=\\s*([\'"])([-\\w.:]+)\\1'
+    '(\\s+encoding\\s*=\\s*([\'"])([a-zA-Z][-\\w.]*)\\4)?'
+    '(\\s+standalone\\s*=\\s*([\'"])(yes|no)\\7)?\\s*\\?>\\s*'
 )
 
 
@@ -731,7 +706,7 @@ def removeXmlEncodingDeclaration(document):
     assert isinstance(document, str)
     m = xmlDeclarationRE.match(document)
     if m and m.group(3) is not None:
-        return document[: m.start(3)] + document[m.end(3):]
+        return document[: m.start(3)] + document[m.end(3) :]
     else:
         return document
 
@@ -741,7 +716,7 @@ def removeXmlDeclaration(document):
     assert isinstance(document, str)
     m = xmlDeclarationRE.match(document)
     if m:
-        return document[len(m.group(0)):]
+        return document[len(m.group(0)) :]
     else:
         return document
 
@@ -759,11 +734,7 @@ def insertXmlEncodingDeclaration(document):
     m = xmlDeclarationRE.match(document)
     if m:
         if m.group(3) is None:
-            return (
-                    document[: m.end(2) + 1]
-                    + ' encoding="utf-8"'
-                    + document[m.end(2) + 1:]
-            )
+            return document[: m.end(2) + 1] + ' encoding="utf-8"' + document[m.end(2) + 1 :]
         else:
             return document
     else:
@@ -833,7 +804,7 @@ def extractXmlContent(document):
     return str(_extractTransform(document)).strip()[:-2]
 
 
-_datespecRE = re.compile("(\d{4})(?:-(\d\d)(?:-(\d\d))?)?$")
+_datespecRE = re.compile("(\\d{4})(?:-(\\d\\d)(?:-(\\d\\d))?)?$")
 
 
 def xmlEscape(s):
@@ -891,13 +862,9 @@ def dateToUpperTimestamp(date):
         else:
             m = int(rm.group(2))
             if rm.group(3) is None:
-                date = (datetime.date(y, m, 1) + datetime.timedelta(days=31)).replace(
-                    day=1
-                )
+                date = (datetime.date(y, m, 1) + datetime.timedelta(days=31)).replace(day=1)
             else:
-                date = datetime.date(y, m, int(rm.group(3))) + datetime.timedelta(
-                    days=1
-                )
+                date = datetime.date(y, m, int(rm.group(3))) + datetime.timedelta(days=1)
         return calendar.timegm(date.timetuple()) - 1
     except ValueError:
         return None
@@ -930,36 +897,44 @@ def parseTimestampZulu(s, allowDateOnly=False):
 def basic_auth(username, password):
     """Create a HTTP Basic Authentication tuple"""
     return 'Basic ' + base64.b64encode(
-        b"".join(
-            x.encode("utf-8") if isinstance(x, str) else x
-            for x in (username, b":", password)
-        )
+        b"".join(x.encode("utf-8") if isinstance(x, str) else x for x in (username, b":", password))
     ).decode('utf-8')
 
 
 def parse_basic_auth(auth):
-    try:
-        b = auth.encode('ascii') if isinstance(auth, str) else auth
-        basic_b, base64_b = b.split()
-        if basic_b.strip() != b'Basic':
-            raise Exception()
-        clear_b = base64.decodebytes(base64_b)
-        user_b, pw_b = b":".split(clear_b)
-        return user_b.decode('utf-8'), pw_b.decode('utf-8')
-    except Exception as e:
-        raise ValueError(
-            f'Invalid basic auth: {auth.decode("utf-8")}. Error: {repr(e)}'
-        )
+    logger.debug(f'Parsing basic auth: {auth}')
+    # try:
+    b = auth.encode('ascii') if isinstance(auth, str) else auth
+    basic_b, base64_b = b.split()
+    if basic_b.strip() != b'Basic':
+        raise Exception()
+    clear_b = base64.decodebytes(base64_b)
+    user_b, pw_b = clear_b.split(b':')
+    # user_b, pw_b = b":".split(clear_b)
+    return user_b.decode('utf-8'), pw_b.decode('utf-8')
+    # except Exception as e:
+    #     raise ValueError(
+    #         f'Invalid basic auth: {auth.decode("utf-8")}. Error: {repr(e)}'
+    #     )
 
 
-def log_obj(*obj_list, msg=None, logger=logging.info, sep=True, sep_before=None, sep_after=None,
-            w=None, attrs=False):
+def log_obj(
+    *obj_list,
+    msg=None,
+    logger=logging.debug,
+    sep=True,
+    sep_before=None,
+    sep_after=None,
+    width=None,
+    attrs=False,
+):
     """Pretty print an object to a logger"""
     # Hard coding the width of the logger context for now.
     #     INFO     root util 25626 140207058034816
+    # return
     log_ctx_w = 46
-    w = w or shutil.get_terminal_size().columns - log_ctx_w - 1
-    sep_str = '-' * w
+    width = width or shutil.get_terminal_size().columns - log_ctx_w - 1
+    sep_str = '-' * width
     sep_before = sep if sep_before is None else sep_before
     sep_after = sep if sep_after is None else sep_after
     # if sep_before:
@@ -970,14 +945,16 @@ def log_obj(*obj_list, msg=None, logger=logging.info, sep=True, sep_before=None,
         logger(f'  {obj.__class__.__name__}:')
         if attrs:
             logger(f'  dir={",".join(s for s in dir(obj) if not s.startswith("_"))}')
-        obj_str = pprint.pformat(obj, width=w, indent=2)
+        if isinstance(obj, types.SimpleNamespace):
+            obj = vars(obj)
+        obj_str = pprint.pformat(obj, width=width, indent=2)
         tuple(map(logger, tuple(f"    {line}" for line in obj_str.splitlines())))
     # logger(sep_str if sep_after else '')
     if sep_after:
         logger(sep_str)
 
 
-def log_inout(msg_str=None):
+def log_inout(msg_str=None, out_fn=logging.debug):
     """The wrapped function must take at least one argument. The return value will be logged if
     present, and show as None if not.
     """
@@ -989,11 +966,16 @@ def log_inout(msg_str=None):
             msg_list.append(msg_str)
 
         def wrapper(obj, *a, **kw):
-            log_obj(obj, msg=f'{" ".join(msg_list)}: input')
+            log_obj(obj, msg=f'{" ".join(msg_list)}: input', logger=out_fn)
             obj = f(obj, *a, **kw)
-            log_obj(obj, msg=f'{" ".join(msg_list)}: return')
+            log_obj(obj, msg=f'{" ".join(msg_list)}: return', logger=out_fn)
             return obj
 
         return wrapper
 
     return decorator
+
+
+def my_excepthook(type, value, traceback):
+    impl.nog.tb.traceback_with_local_vars(type, value, traceback)
+    # print ('Unhandled error:', type, value)

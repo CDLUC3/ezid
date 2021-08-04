@@ -1,6 +1,6 @@
 """EZID settings
 """
-
+import collections
 import logging.config
 import os
 import pathlib
@@ -170,7 +170,6 @@ EMAIL_ERROR_SUPPRESSION_WINDOW = 3600
 EMAIL_ERROR_LIFETIME = 14400
 EMAIL_ERROR_SIMILARITY_THRESHOLD = 0.6
 
-
 # EZID errors are automatically emailed to this list.
 MANAGERS = ADMINS = []
 
@@ -234,7 +233,11 @@ logging.config.dictConfig(
                 'level': 'ERROR',
             },
             'botocore': {'level': 'ERROR'},
-        },
+            # Suppress 'Using selector: EpollSelector'
+            'asyncio': {
+                'level': 'WARNING',
+            },
+        }
     }
 )
 
@@ -490,4 +493,28 @@ TEMPLATES = [
             ]
         },
     }
+]
+
+# Django 3.2 transitions from using a 32-bit counter for the automatically generated primary
+# key, to using a 64-bit counter. To prevent
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+
+QUERY_PAGE_SIZE = 10000
+
+BlobField = collections.namedtuple(
+    'BlobField', ['model', 'field', 'is_queue']
+)
+
+BLOB_FIELD_LIST = [
+    # metadata = Python or JSON, compound objects
+    BlobField('BinderQueue', 'metadata', True),
+    BlobField('CrossrefQueue', 'metadata', True),
+    BlobField('DataciteQueue', 'metadata', True),
+    # object = StoreIdentifier (Model)
+    BlobField('DownloadQueue', 'object', True),
+    BlobField('UpdateQueue', 'object', True),
+    # cm = CompressedJsonField (Field)
+    BlobField('SearchIdentifier', 'cm', False),
+    BlobField('StoreIdentifier', 'cm', False),
 ]

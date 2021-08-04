@@ -330,8 +330,8 @@ def parseTimestamp(timestamp):
 
 
 pattern = re.compile(
-    "(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) "
-    + "(([\da-fA-F]{32}) (BEGIN|PROGRESS|END) |- (STATUS|ERROR) )(.*)"
+    "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}) "
+    + "(([\\da-fA-F]{32}) (BEGIN|PROGRESS|END) |- (STATUS|ERROR) )(.*)"
 )
 
 # Below, 'records' holds Record objects which are complete (i.e.,

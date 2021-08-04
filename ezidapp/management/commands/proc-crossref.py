@@ -35,8 +35,9 @@ import impl.nog.util
 import impl.util
 import impl.util2
 
-log = logging.getLogger(__name__)
 import ezidapp.models.crossref_queue
+
+log = logging.getLogger(__name__)
 
 
 class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
@@ -145,7 +146,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         only).  If 'bodyOnly' is true, only the body is returned.
         """
         body = lxml.etree.XML(body)
-        m = self._tagRE.match(body.tag)
+        m = self.TAG_REGEX.match(body.tag)
         namespace = m.group(1)
         version = m.group(2)
         ns = {"N": namespace}
@@ -182,7 +183,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         e = lxml.etree.SubElement(root, q("body"))
         del body.attrib[self._schemaLocation]
         if withdrawTitles:
-            for p in self._titlePaths:
+            for p in self.TITLE_PATH_LIST:
                 for t in doiData.xpath(p, namespaces=ns):
                     if t.text is not None:
                         t.text = "WITHDRAWN: " + t.text

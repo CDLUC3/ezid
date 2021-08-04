@@ -125,8 +125,8 @@ class Shoulder(django.db.models.Model):
     def isDatacite(self):
         return self.isDoi and not self.crossrefEnabled
 
-    isTest = django.db.models.BooleanField(editable=False)
     # Computed value.  True if the shoulder is a test shoulder.
+    isTest = django.db.models.BooleanField(editable=False)
 
     # Fields previously only in master_shoulders.txt
     shoulder_type = django.db.models.ForeignKey(

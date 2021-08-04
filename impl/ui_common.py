@@ -97,6 +97,8 @@ def csvResponse(message, filename):
 # Our development version of Python (2.5) doesn't have the standard
 # JSON module (introduced in 2.6), so we provide our own encoder here.
 
+# TODO: Move to standard JSON codec
+
 _jsonRe = re.compile('[\\x00-\\x1F"\\\\\\xFF]')
 
 

@@ -85,8 +85,11 @@ import django.conf
 import django.core.management
 
 import ezidapp.management.commands.proc_base
+
 import ezidapp.models.identifier
+
 import ezidapp.models.link_checker
+
 import impl
 import impl.nog.util
 import impl.util
@@ -245,6 +248,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     log.exception(' ValueError')
                     assert False, "syntax error on line %d" % n
                 assert flag in ["permanent", "temporary"], "syntax error on line %d" % n
+
                 # search_user_model = django.apps.apps.get_model('ezidapp', 'SearchUser')
                 import ezidapp.models.user
 
@@ -296,6 +300,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         good = [0, 0, self.nowi()]  # [total, to visit, oldest timestamp]
         bad = [0, 0, self.nowi()]
         # noinspection PyTypeChecker
+        import ezidapp.models.link_checker
         lcGenerator = self.harvest(ezidapp.models.link_checker.LinkChecker)
         # link_checker_model = django.apps.apps.get_model('ezidapp', 'LinkChecker')
         # lcGenerator = self.harvest(link_checker_model)

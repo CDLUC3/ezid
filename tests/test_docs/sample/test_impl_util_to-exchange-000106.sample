@@ -1,0 +1,13 @@
+input_json=
+{"erc.who":"Kunze, John; Rodgers, Richard","erc.when":"2008.05.22","erc.what":"The ARK Identifier Scheme"}
+~~~~~~~~~~
+dict_pp=
+{'erc.what': 'The ARK Identifier Scheme',
+ 'erc.when': '2008.05.22',
+ 'erc.who': 'Kunze, John; Rodgers, Richard'}
+~~~~~~~~~~
+keys=
+erc.who, erc.when, erc.what
+~~~~~~~~~~
+output_exchange=
+erc.who Kunze,%20John%3B%20Rodgers,%20Richard erc.when 2008.05.22 erc.what The%20ARK%20Identifier%20Scheme

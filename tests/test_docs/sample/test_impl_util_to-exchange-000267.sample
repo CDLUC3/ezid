@@ -1,0 +1,20 @@
+input_json=
+{"erc.who":"Kunze, John; Cruse, Patricia; Hu, Rachael; Abrams, Stephen; Hastings, Kirk; Mitchell, Catherine; Schiff,
+Lisa","erc.when":"2011-01-18","erc.what":"Practices, Trends, and Recommendations in Technical Appendix Usage for Selected Data-
+Intensive Disciplines"}
+~~~~~~~~~~
+dict_pp=
+{'erc.what': 'Practices, Trends, and Recommendations in Technical Appendix '
+             'Usage for Selected Data-Intensive Disciplines',
+ 'erc.when': '2011-01-18',
+ 'erc.who': 'Kunze, John; Cruse, Patricia; Hu, Rachael; Abrams, Stephen; '
+            'Hastings, Kirk; Mitchell, Catherine; Schiff, Lisa'}
+~~~~~~~~~~
+keys=
+erc.who, erc.when, erc.what
+~~~~~~~~~~
+output_exchange=
+erc.who
+Kunze,%20John%3B%20Cruse,%20Patricia%3B%20Hu,%20Rachael%3B%20Abrams,%20Stephen%3B%20Hastings,%20Kirk%3B%20Mitchell,%20Catherine%3B%20Schiff,%20Lisa
+erc.when 2011-01-18 erc.what
+Practices,%20Trends,%20and%20Recommendations%20in%20Technical%20Appendix%20Usage%20for%20Selected%20Data-Intensive%20Disciplines

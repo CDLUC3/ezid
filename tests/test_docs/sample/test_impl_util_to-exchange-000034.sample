@@ -1,0 +1,11 @@
+input_json=
+{"erc.what":"L\u2019ILLUSTRATION"}
+~~~~~~~~~~
+dict_pp=
+{'erc.what': 'L’ILLUSTRATION'}
+~~~~~~~~~~
+keys=
+erc.what
+~~~~~~~~~~
+output_exchange=
+erc.what L%2019ILLUSTRATION

@@ -1,0 +1,11 @@
+input_json=
+{"mrt.creator":"cdl_oac","erc":"where: ark:/13030/m54t6m3z"}
+~~~~~~~~~~
+dict_pp=
+{'erc': 'where: ark:/13030/m54t6m3z', 'mrt.creator': 'cdl_oac'}
+~~~~~~~~~~
+keys=
+mrt.creator, erc
+~~~~~~~~~~
+output_exchange=
+mrt.creator cdl_oac erc where:%20ark:/13030/m54t6m3z

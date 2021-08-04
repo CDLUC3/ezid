@@ -31,14 +31,13 @@ import django.core.mail
 import ezidapp.models.link_checker
 import ezidapp.models.identifier
 import ezidapp.models.user
-import ezidapp.models.user
 from impl import config
 from impl import util
 
 
 def encode(s):
     # There seems to be no way to safely encode a multi-line value in CSV.
-    return re.sub("\s", " ", s).encode("UTF-8")
+    return re.sub("\\s", " ", s).encode("UTF-8")
 
 
 def gatherFailures(owner_id, threshold):

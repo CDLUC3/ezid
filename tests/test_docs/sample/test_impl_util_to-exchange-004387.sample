@@ -1,0 +1,126 @@
+input_json=
+{"erc.who":"Hunt, PW; Aaij, R; Adeva, B; Adinolfi, M; Adrover, C; Affolder, A; Ajaltouni, Z; Albrecht, J; Alessio, F; Alexander,
+M; Ali, S; Alkhazov, G; Alvarez, P; Alves, AA; Amato, S; Amerio, S; Amhis, Y; Anderlini, L; Anderson, J; Andreassen, R; Andrews,
+JE; Appleby, RB; Aquines, O; Archilli, F; Artamonov, A; Artuso, M; Aslanides, E; Auriemma, G; Baalouch, M; Bachmann, S; Back, JJ;
+Badalov, A; Baesso, C; Balagura, V; Baldini, W; Barlow, RJ; Barschel, C; Barsuk, S; Barter, W; Bauer, T; Bay, A; Beddow, J;
+Bedeschi, F; Bediaga, I; Belogurov, S; Belous, K; Belyaev, I; Ben-Haim, E; Bencivenni, G; Benson, S; Benton, J; Berezhnoy, A;
+Bernet, R; Bettler, MO; van, M; Bien, A; Bifani, S; Bird, T; Bizzeti, A; Bjornstad, PM; Blake, T; Blanc, F; Blouw, J; Blusk, S;
+Bocci, V; Bondar, A; Bondar, N; Bonivento, W; Borghi, S; Borgia, A; Bowcock, TJ; Bowen, E; Bozzi, C; Brambach, T; van, J;
+Bressieux, J; Brett, D; Britsch, M; Britton, T; Brook, NH; Brown, H; Bursche, A; Busetto, G; Buytaert, J; Cadeddu, S; Callot, O;
+Calvi, M; Calvo, M; Camboni, A; Campana, P; Campora, D; Carbone, A; Carboni, G; Cardinale, R; Cardini, A; Carranza-Mejia, H;
+Carson, L; Carvalho, K; Casse, G; Castillo, L; Cattaneo, M; Cauet, Ch; Cenci, R; Charles, M; Charpentier, P; Cheung, SF;
+Chiapolini, N; Chrzaszcz, M; Ciba, K; Cid, X; Ciezarek, G; Clarke, PE; Clemencic, M; Cliff, HV; Closier, J; Coca, C; Coco, V;
+Cogan, J; Cogneras, E; Collins, P; Comerma-Montells, A; Contu, A; Cook, A; Coombes, M; Coquereau, S; Corti, G; Couturier, B;
+Cowan, GA; Craik, DC; Cruz, M; Cunliffe, S; Currie, R; D'Ambrosio, C; David, P; David, PN; Davis, A; De, I; De, K; De, S; De, M;
+De, JM; De, L; De, W; De, P; Decamp, D; Deckenhoff, M; Del, L; Deleage, N; Derkach, D; Deschamps, O; Dettori, F; Di, A; Dijkstra,
+H; Dogaru, M; Donleavy, S; Dordei, F; Dornan, P; Dosil, A; Dossett, D; Dovbnya, A; Dupertuis, F; Durante, P; Dzhelyadin, R;
+Dziurda, A; Dzyuba, A; Easo, S; Egede, U; Egorychev, V; Eidelman, S; van, D; Eisenhardt, S; Eitschberger, U; Ekelhof, R; Eklund,
+L; El, I; Elsasser, Ch; Falabella, A; Farber, C; Farinelli, C; Farry, S; Ferguson, D; Fernandez, V; Ferreira, F; Ferro-Luzzi, M;
+Filippov, S; Fiore, M; Fitzpatrick, C; Fontana, M; Fontanelli, F; Forty, R; Francisco, O; Frank, M; Frei, C; Frosini, M; Furfaro,
+E; Gallas, A; Galli, D; Gandelman, M; Gandini, P; Gao, Y; Garofoli, J; Garosi, P; Garra, J; Garrido, L; Gaspar, C; Gauld, R;
+Gersabeck, E; Gersabeck, M; Gershon, T; Ghez, P; Gibson, V; Giubega, L; Gligorov, VV; Gobel, C; Golubkov, D; Golutvin, A; Gomes,
+A; Gorbounov, P; Gordon, H; Grabalosa, M; Graciani, R; Granado, LA; Grauges, E; Graziani, G; Grecu, A; Greening, E; Gregson, S;
+Griffith, P; Grillo, L; Grunberg, O; Gui, B; Gushchin, E; Guz, Y; Gys, T; Hadjivasiliou, C; Haefeli, G; Haen, C; Haines, SC; Hall,
+S; Hamilton, B; Hampson, T; Hansmann-Menzemer, S; Harnew, N; Harnew, ST; Harrison, J; Hartmann, T; He, J; Head, T; Heijne, V;
+Hennessy, K; Henrard, P; Hernando, JA; van, E; He., M; Hicheur, A; Hicks, E; Hill, D; Hoballah, M; Hombach, C; Hulsbergen, W;
+Huse, T; Hussain, N; Hutchcroft, D; Hynds, D; Iakovenko, V; Idzik, M; Ilten, P; Jacobsson, R; Jaeger, A; Jans, E; Jaton, P;
+Jawahery, A; Jing, F; John, M; Johnson, D; Jones, CR; Joram, C; Jost, B; Kaballo, M; Kandybei, S; Kanso, W; Karacson, M; Karbach,
+TM; Kenyon, IR; Ketel, T; Khanji, B; Kochebina, O; Komarov, I; Koopman, RF; Koppenburg, P; Korolev, M; Kozlinskiy, A; Kravchuk, L;
+Kreplin, K; Kreps, M; Krocker, G; Krokovny, P; Kruse, F; Kucharczyk, M; Kudryavtsev, V; Kurek, K; Kvaratskheliya, T; La, VN;
+Lacarrere, D; Lafferty, G; Lai, A; Lambert, D; Lambert, RW; Lanciotti, E; Lanfranchi, G; Langenbruch, C; Latham, T; Lazzeroni, C;
+Le, R; van, J; Lees, JP; Lefevre, R; Leflat, A; Lefrancois, J; Leo, S; Leroy, O; Lesiak, T; Leverington, B; Li, Y; Li, L; Liles,
+M; Lindner, R; Linn, C; Liu, B; Liu, G; Lohn, S; Longstaff, I; Lopes, JH; Lopez-March, N; Lu, H; Lucchesi, D; Luisier, J; Luo, H;
+Lupton, O; Machefert, F; Machikhiliyan, IV; Maciuc, F; Maev, O; Malde, S; Manca, G; Mancinelli, G; Maratas, J; Marconi, U; Marino,
+P; Marki, R; Marks, J; et, al","erc.when":"2014-10-18T02:29:23-07:00","erc.what":"Grouped OA Publication record for 'Measurement
+of D^{0}-D[over .]^{0} Mixing Parameters and Search for CP Violation Using D^{0}?K^{+}p^{-} Decays.' [IDs c-ucsf-
+id::http://profiles.ucsf.edu/profile/40824861 pubmed::24483738]"}
+~~~~~~~~~~
+dict_pp=
+{'erc.what': "Grouped OA Publication record for 'Measurement of D^{0}-D[over "
+             '.]^{0} Mixing Parameters and Search for CP Violation Using '
+             "D^{0}?K^{+}p^{-} Decays.' [IDs "
+             'c-ucsf-id::http://profiles.ucsf.edu/profile/40824861 '
+             'pubmed::24483738]',
+ 'erc.when': '2014-10-18T02:29:23-07:00',
+ 'erc.who': 'Hunt, PW; Aaij, R; Adeva, B; Adinolfi, M; Adrover, C; Affolder, '
+            'A; Ajaltouni, Z; Albrecht, J; Alessio, F; Alexander, M; Ali, S; '
+            'Alkhazov, G; Alvarez, P; Alves, AA; Amato, S; Amerio, S; Amhis, '
+            'Y; Anderlini, L; Anderson, J; Andreassen, R; Andrews, JE; '
+            'Appleby, RB; Aquines, O; Archilli, F; Artamonov, A; Artuso, M; '
+            'Aslanides, E; Auriemma, G; Baalouch, M; Bachmann, S; Back, JJ; '
+            'Badalov, A; Baesso, C; Balagura, V; Baldini, W; Barlow, RJ; '
+            'Barschel, C; Barsuk, S; Barter, W; Bauer, T; Bay, A; Beddow, J; '
+            'Bedeschi, F; Bediaga, I; Belogurov, S; Belous, K; Belyaev, I; '
+            'Ben-Haim, E; Bencivenni, G; Benson, S; Benton, J; Berezhnoy, A; '
+            'Bernet, R; Bettler, MO; van, M; Bien, A; Bifani, S; Bird, T; '
+            'Bizzeti, A; Bjornstad, PM; Blake, T; Blanc, F; Blouw, J; Blusk, '
+            'S; Bocci, V; Bondar, A; Bondar, N; Bonivento, W; Borghi, S; '
+            'Borgia, A; Bowcock, TJ; Bowen, E; Bozzi, C; Brambach, T; van, J; '
+            'Bressieux, J; Brett, D; Britsch, M; Britton, T; Brook, NH; Brown, '
+            'H; Bursche, A; Busetto, G; Buytaert, J; Cadeddu, S; Callot, O; '
+            'Calvi, M; Calvo, M; Camboni, A; Campana, P; Campora, D; Carbone, '
+            'A; Carboni, G; Cardinale, R; Cardini, A; Carranza-Mejia, H; '
+            'Carson, L; Carvalho, K; Casse, G; Castillo, L; Cattaneo, M; '
+            'Cauet, Ch; Cenci, R; Charles, M; Charpentier, P; Cheung, SF; '
+            'Chiapolini, N; Chrzaszcz, M; Ciba, K; Cid, X; Ciezarek, G; '
+            'Clarke, PE; Clemencic, M; Cliff, HV; Closier, J; Coca, C; Coco, '
+            'V; Cogan, J; Cogneras, E; Collins, P; Comerma-Montells, A; Contu, '
+            'A; Cook, A; Coombes, M; Coquereau, S; Corti, G; Couturier, B; '
+            'Cowan, GA; Craik, DC; Cruz, M; Cunliffe, S; Currie, R; '
+            "D'Ambrosio, C; David, P; David, PN; Davis, A; De, I; De, K; De, "
+            'S; De, M; De, JM; De, L; De, W; De, P; Decamp, D; Deckenhoff, M; '
+            'Del, L; Deleage, N; Derkach, D; Deschamps, O; Dettori, F; Di, A; '
+            'Dijkstra, H; Dogaru, M; Donleavy, S; Dordei, F; Dornan, P; Dosil, '
+            'A; Dossett, D; Dovbnya, A; Dupertuis, F; Durante, P; Dzhelyadin, '
+            'R; Dziurda, A; Dzyuba, A; Easo, S; Egede, U; Egorychev, V; '
+            'Eidelman, S; van, D; Eisenhardt, S; Eitschberger, U; Ekelhof, R; '
+            'Eklund, L; El, I; Elsasser, Ch; Falabella, A; Farber, C; '
+            'Farinelli, C; Farry, S; Ferguson, D; Fernandez, V; Ferreira, F; '
+            'Ferro-Luzzi, M; Filippov, S; Fiore, M; Fitzpatrick, C; Fontana, '
+            'M; Fontanelli, F; Forty, R; Francisco, O; Frank, M; Frei, C; '
+            'Frosini, M; Furfaro, E; Gallas, A; Galli, D; Gandelman, M; '
+            'Gandini, P; Gao, Y; Garofoli, J; Garosi, P; Garra, J; Garrido, L; '
+            'Gaspar, C; Gauld, R; Gersabeck, E; Gersabeck, M; Gershon, T; '
+            'Ghez, P; Gibson, V; Giubega, L; Gligorov, VV; Gobel, C; Golubkov, '
+            'D; Golutvin, A; Gomes, A; Gorbounov, P; Gordon, H; Grabalosa, M; '
+            'Graciani, R; Granado, LA; Grauges, E; Graziani, G; Grecu, A; '
+            'Greening, E; Gregson, S; Griffith, P; Grillo, L; Grunberg, O; '
+            'Gui, B; Gushchin, E; Guz, Y; Gys, T; Hadjivasiliou, C; Haefeli, '
+            'G; Haen, C; Haines, SC; Hall, S; Hamilton, B; Hampson, T; '
+            'Hansmann-Menzemer, S; Harnew, N; Harnew, ST; Harrison, J; '
+            'Hartmann, T; He, J; Head, T; Heijne, V; Hennessy, K; Henrard, P; '
+            'Hernando, JA; van, E; He., M; Hicheur, A; Hicks, E; Hill, D; '
+            'Hoballah, M; Hombach, C; Hulsbergen, W; Huse, T; Hussain, N; '
+            'Hutchcroft, D; Hynds, D; Iakovenko, V; Idzik, M; Ilten, P; '
+            'Jacobsson, R; Jaeger, A; Jans, E; Jaton, P; Jawahery, A; Jing, F; '
+            'John, M; Johnson, D; Jones, CR; Joram, C; Jost, B; Kaballo, M; '
+            'Kandybei, S; Kanso, W; Karacson, M; Karbach, TM; Kenyon, IR; '
+            'Ketel, T; Khanji, B; Kochebina, O; Komarov, I; Koopman, RF; '
+            'Koppenburg, P; Korolev, M; Kozlinskiy, A; Kravchuk, L; Kreplin, '
+            'K; Kreps, M; Krocker, G; Krokovny, P; Kruse, F; Kucharczyk, M; '
+            'Kudryavtsev, V; Kurek, K; Kvaratskheliya, T; La, VN; Lacarrere, '
+            'D; Lafferty, G; Lai, A; Lambert, D; Lambert, RW; Lanciotti, E; '
+            'Lanfranchi, G; Langenbruch, C; Latham, T; Lazzeroni, C; Le, R; '
+            'van, J; Lees, JP; Lefevre, R; Leflat, A; Lefrancois, J; Leo, S; '
+            'Leroy, O; Lesiak, T; Leverington, B; Li, Y; Li, L; Liles, M; '
+            'Lindner, R; Linn, C; Liu, B; Liu, G; Lohn, S; Longstaff, I; '
+            'Lopes, JH; Lopez-March, N; Lu, H; Lucchesi, D; Luisier, J; Luo, '
+            'H; Lupton, O; Machefert, F; Machikhiliyan, IV; Maciuc, F; Maev, '
+            'O; Malde, S; Manca, G; Mancinelli, G; Maratas, J; Marconi, U; '
+            'Marino, P; Marki, R; Marks, J; et, al'}
+~~~~~~~~~~
+keys=
+erc.who, erc.when, erc.what
+~~~~~~~~~~
+output_exchange=
+erc.who
+Hunt,%20PW%3B%20Aaij,%20R%3B%20Adeva,%20B%3B%20Adinolfi,%20M%3B%20Adrover,%20C%3B%20Affolder,%20A%3B%20Ajaltouni,%20Z%3B%20Albrecht,%20J%3B%20Alessio,%20F%3B%20Alexander,%20M%3B%20Ali,%20S%3B%20Alkhazov,%20G%3B%20Alvarez,%20P%3B%20Alves,%20AA%3B%20Amato,%20S%3B%20Amerio,%20S%3B%20Amhis,%20Y%3B%20Anderlini,%20L%3B%20Anderson,%20J%3B%20Andreassen,%20R%3B%20Andrews,%20JE%3B%20Appleby,%20RB%3B%20Aquines,%20O%3B%20Archilli,%20F%3B%20Artamonov,%20A%3B%20Artuso,%20M%3B%20Aslanides,%20E%3B%20Auriemma,%20G%3B%20Baalouch,%20M%3B%20Bachmann,%20S%3B%20Back,%20JJ%3B%20Badalov,%20A%3B%20Baesso,%20C%3B%20Balagura,%20V%3B%20Baldini,%20W%3B%20Barlow,%20RJ%3B%20Barschel,%20C%3B%20Barsuk,%20S%3B%20Barter,%20W%3B%20Bauer,%20T%3B%20Bay,%20A%3B%20Beddow,%20J%3B%20Bedeschi,%20F%3B%20Bediaga,%20I%3B%20Belogurov,%20S%3B%20Belous,%20K%3B%20Belyaev,%20I%3B%20Ben-
+Haim,%20E%3B%20Bencivenni,%20G%3B%20Benson,%20S%3B%20Benton,%20J%3B%20Berezhnoy,%20A%3B%20Bernet,%20R%3B%20Bettler,%20MO%3B%20van,%20M%3B%20Bien,%20A%3B%20Bifani,%20S%3B%20Bird,%20T%3B%20Bizzeti,%20A%3B%20Bjornstad,%20PM%3B%20Blake,%20T%3B%20Blanc,%20F%3B%20Blouw,%20J%3B%20Blusk,%20S%3B%20Bocci,%20V%3B%20Bondar,%20A%3B%20Bondar,%20N%3B%20Bonivento,%20W%3B%20Borghi,%20S%3B%20Borgia,%20A%3B%20Bowcock,%20TJ%3B%20Bowen,%20E%3B%20Bozzi,%20C%3B%20Brambach,%20T%3B%20van,%20J%3B%20Bressieux,%20J%3B%20Brett,%20D%3B%20Britsch,%20M%3B%20Britton,%20T%3B%20Brook,%20NH%3B%20Brown,%20H%3B%20Bursche,%20A%3B%20Busetto,%20G%3B%20Buytaert,%20J%3B%20Cadeddu,%20S%3B%20Callot,%20O%3B%20Calvi,%20M%3B%20Calvo,%20M%3B%20Camboni,%20A%3B%20Campana,%20P%3B%20Campora,%20D%3B%20Carbone,%20A%3B%20Carboni,%20G%3B%20Cardinale,%20R%3B%20Cardini,%20A%3B%20Carranza-
+Mejia,%20H%3B%20Carson,%20L%3B%20Carvalho,%20K%3B%20Casse,%20G%3B%20Castillo,%20L%3B%20Cattaneo,%20M%3B%20Cauet,%20Ch%3B%20Cenci,%20R%3B%20Charles,%20M%3B%20Charpentier,%20P%3B%20Cheung,%20SF%3B%20Chiapolini,%20N%3B%20Chrzaszcz,%20M%3B%20Ciba,%20K%3B%20Cid,%20X%3B%20Ciezarek,%20G%3B%20Clarke,%20PE%3B%20Clemencic,%20M%3B%20Cliff,%20HV%3B%20Closier,%20J%3B%20Coca,%20C%3B%20Coco,%20V%3B%20Cogan,%20J%3B%20Cogneras,%20E%3B%20Collins,%20P%3B%20Comerma-
+Montells,%20A%3B%20Contu,%20A%3B%20Cook,%20A%3B%20Coombes,%20M%3B%20Coquereau,%20S%3B%20Corti,%20G%3B%20Couturier,%20B%3B%20Cowan,%20GA%3B%20Craik,%20DC%3B%20Cruz,%20M%3B%20Cunliffe,%20S%3B%20Currie,%20R%3B%20D%27Ambrosio,%20C%3B%20David,%20P%3B%20David,%20PN%3B%20Davis,%20A%3B%20De,%20I%3B%20De,%20K%3B%20De,%20S%3B%20De,%20M%3B%20De,%20JM%3B%20De,%20L%3B%20De,%20W%3B%20De,%20P%3B%20Decamp,%20D%3B%20Deckenhoff,%20M%3B%20Del,%20L%3B%20Deleage,%20N%3B%20Derkach,%20D%3B%20Deschamps,%20O%3B%20Dettori,%20F%3B%20Di,%20A%3B%20Dijkstra,%20H%3B%20Dogaru,%20M%3B%20Donleavy,%20S%3B%20Dordei,%20F%3B%20Dornan,%20P%3B%20Dosil,%20A%3B%20Dossett,%20D%3B%20Dovbnya,%20A%3B%20Dupertuis,%20F%3B%20Durante,%20P%3B%20Dzhelyadin,%20R%3B%20Dziurda,%20A%3B%20Dzyuba,%20A%3B%20Easo,%20S%3B%20Egede,%20U%3B%20Egorychev,%20V%3B%20Eidelman,%20S%3B%20van,%20D%3B%20Eisenhardt,%20S%3B%20Eitschberger,%20U%3B%20Ekelhof,%20R%3B%20Eklund,%20L%3B%20El,%20I%3B%20Elsasser,%20Ch%3B%20Falabella,%20A%3B%20Farber,%20C%3B%20Farinelli,%20C%3B%20Farry,%20S%3B%20Ferguson,%20D%3B%20Fernandez,%20V%3B%20Ferreira,%20F%3B%20Ferro-
+Luzzi,%20M%3B%20Filippov,%20S%3B%20Fiore,%20M%3B%20Fitzpatrick,%20C%3B%20Fontana,%20M%3B%20Fontanelli,%20F%3B%20Forty,%20R%3B%20Francisco,%20O%3B%20Frank,%20M%3B%20Frei,%20C%3B%20Frosini,%20M%3B%20Furfaro,%20E%3B%20Gallas,%20A%3B%20Galli,%20D%3B%20Gandelman,%20M%3B%20Gandini,%20P%3B%20Gao,%20Y%3B%20Garofoli,%20J%3B%20Garosi,%20P%3B%20Garra,%20J%3B%20Garrido,%20L%3B%20Gaspar,%20C%3B%20Gauld,%20R%3B%20Gersabeck,%20E%3B%20Gersabeck,%20M%3B%20Gershon,%20T%3B%20Ghez,%20P%3B%20Gibson,%20V%3B%20Giubega,%20L%3B%20Gligorov,%20VV%3B%20Gobel,%20C%3B%20Golubkov,%20D%3B%20Golutvin,%20A%3B%20Gomes,%20A%3B%20Gorbounov,%20P%3B%20Gordon,%20H%3B%20Grabalosa,%20M%3B%20Graciani,%20R%3B%20Granado,%20LA%3B%20Grauges,%20E%3B%20Graziani,%20G%3B%20Grecu,%20A%3B%20Greening,%20E%3B%20Gregson,%20S%3B%20Griffith,%20P%3B%20Grillo,%20L%3B%20Grunberg,%20O%3B%20Gui,%20B%3B%20Gushchin,%20E%3B%20Guz,%20Y%3B%20Gys,%20T%3B%20Hadjivasiliou,%20C%3B%20Haefeli,%20G%3B%20Haen,%20C%3B%20Haines,%20SC%3B%20Hall,%20S%3B%20Hamilton,%20B%3B%20Hampson,%20T%3B%20Hansmann-
+Menzemer,%20S%3B%20Harnew,%20N%3B%20Harnew,%20ST%3B%20Harrison,%20J%3B%20Hartmann,%20T%3B%20He,%20J%3B%20Head,%20T%3B%20Heijne,%20V%3B%20Hennessy,%20K%3B%20Henrard,%20P%3B%20Hernando,%20JA%3B%20van,%20E%3B%20He.,%20M%3B%20Hicheur,%20A%3B%20Hicks,%20E%3B%20Hill,%20D%3B%20Hoballah,%20M%3B%20Hombach,%20C%3B%20Hulsbergen,%20W%3B%20Huse,%20T%3B%20Hussain,%20N%3B%20Hutchcroft,%20D%3B%20Hynds,%20D%3B%20Iakovenko,%20V%3B%20Idzik,%20M%3B%20Ilten,%20P%3B%20Jacobsson,%20R%3B%20Jaeger,%20A%3B%20Jans,%20E%3B%20Jaton,%20P%3B%20Jawahery,%20A%3B%20Jing,%20F%3B%20John,%20M%3B%20Johnson,%20D%3B%20Jones,%20CR%3B%20Joram,%20C%3B%20Jost,%20B%3B%20Kaballo,%20M%3B%20Kandybei,%20S%3B%20Kanso,%20W%3B%20Karacson,%20M%3B%20Karbach,%20TM%3B%20Kenyon,%20IR%3B%20Ketel,%20T%3B%20Khanji,%20B%3B%20Kochebina,%20O%3B%20Komarov,%20I%3B%20Koopman,%20RF%3B%20Koppenburg,%20P%3B%20Korolev,%20M%3B%20Kozlinskiy,%20A%3B%20Kravchuk,%20L%3B%20Kreplin,%20K%3B%20Kreps,%20M%3B%20Krocker,%20G%3B%20Krokovny,%20P%3B%20Kruse,%20F%3B%20Kucharczyk,%20M%3B%20Kudryavtsev,%20V%3B%20Kurek,%20K%3B%20Kvaratskheliya,%20T%3B%20La,%20VN%3B%20Lacarrere,%20D%3B%20Lafferty,%20G%3B%20Lai,%20A%3B%20Lambert,%20D%3B%20Lambert,%20RW%3B%20Lanciotti,%20E%3B%20Lanfranchi,%20G%3B%20Langenbruch,%20C%3B%20Latham,%20T%3B%20Lazzeroni,%20C%3B%20Le,%20R%3B%20van,%20J%3B%20Lees,%20JP%3B%20Lefevre,%20R%3B%20Leflat,%20A%3B%20Lefrancois,%20J%3B%20Leo,%20S%3B%20Leroy,%20O%3B%20Lesiak,%20T%3B%20Leverington,%20B%3B%20Li,%20Y%3B%20Li,%20L%3B%20Liles,%20M%3B%20Lindner,%20R%3B%20Linn,%20C%3B%20Liu,%20B%3B%20Liu,%20G%3B%20Lohn,%20S%3B%20Longstaff,%20I%3B%20Lopes,%20JH%3B%20Lopez-
+March,%20N%3B%20Lu,%20H%3B%20Lucchesi,%20D%3B%20Luisier,%20J%3B%20Luo,%20H%3B%20Lupton,%20O%3B%20Machefert,%20F%3B%20Machikhiliyan,%20IV%3B%20Maciuc,%20F%3B%20Maev,%20O%3B%20Malde,%20S%3B%20Manca,%20G%3B%20Mancinelli,%20G%3B%20Maratas,%20J%3B%20Marconi,%20U%3B%20Marino,%20P%3B%20Marki,%20R%3B%20Marks,%20J%3B%20et,%20al
+erc.when 2014-10-18T02:29:23-07:00 erc.what
+Grouped%20OA%20Publication%20record%20for%20%27Measurement%20of%20D^{0}-D%5Bover%20.%5D^{0}%20Mixing%20Parameters%20and%20Search%20for%20CP%20Violation%20Using%20D^{0}?K^{+}p^{-}%20Decays.%27%20%5BIDs%20c-ucsf-
+id::http://profiles.ucsf.edu/profile/40824861%20pubmed::24483738%5D

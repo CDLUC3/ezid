@@ -177,10 +177,10 @@ def enqueueRequest(state, user, request):
             requestor=requestor,
             format=_formatCode[format],
             compression=_compressionCode[compression],
-            columns=_encode(columns),
-            constraints=_encode(d),
-            options=_encode(options),
-            notify=_encode(notify),
+            columns=encode(columns),
+            constraints=encode(d),
+            options=encode(options),
+            notify=encode(notify),
             filename=filename,
             toHarvest=",".join(toHarvest),
         )
@@ -260,7 +260,7 @@ def _escape(s):
     return re.sub("[%,=]", lambda c: f"%{ord(c.group(0)):02X}", s)
 
 
-def _encode(o):
+def encode(o):
     if type(o) is bool:
         return "B" + str(o)
     elif type(o) is int:
@@ -268,11 +268,11 @@ def _encode(o):
     elif type(o) in [str, str]:
         return "S" + o
     elif type(o) is list:
-        return "L" + ",".join([_escape(_encode(i)) for i in o])
+        return "L" + ",".join([_escape(encode(i)) for i in o])
     elif type(o) is dict:
         return "D" + ",".join(
             map(
-                lambda kv: f"{_escape(_encode(kv[0]))}={_escape(_encode(kv[1]))}",
+                lambda kv: f"{_escape(encode(kv[0]))}={_escape(encode(kv[1]))}",
                 list(o.items()),
             )
         )

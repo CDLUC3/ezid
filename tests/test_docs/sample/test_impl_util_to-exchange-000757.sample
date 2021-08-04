@@ -1,0 +1,31 @@
+input_json=
+{"dc.date":"undated","dc.creator":"(:unav)","dc.relation":"http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx","dc.title":"Everson
+Hall, the South and West wings of the new Home Economics Building on the Davis campus of the University of California, showing
+permanent sun shades to protect offices and laboratories from direct rays of the sun. The vertical projecting fins also help shade
+the two-story concrete structure. The right wing contains offices on the lower floor, and the foods and nutrition laboratories on
+the upper floor. The left wing contains the social living laboratory, decorative arts and home furnishings laboratories, and
+lecture rooms on the ground floor; and home management, clothing, and textiles laboratories on the upper floor."}
+~~~~~~~~~~
+dict_pp=
+{'dc.creator': '(:unav)',
+ 'dc.date': 'undated',
+ 'dc.relation': 'http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx',
+ 'dc.title': 'Everson Hall, the South and West wings of the new Home Economics '
+             'Building on the Davis campus of the University of California, '
+             'showing permanent sun shades to protect offices and laboratories '
+             'from direct rays of the sun. The vertical projecting fins also '
+             'help shade the two-story concrete structure. The right wing '
+             'contains offices on the lower floor, and the foods and nutrition '
+             'laboratories on the upper floor. The left wing contains the '
+             'social living laboratory, decorative arts and home furnishings '
+             'laboratories, and lecture rooms on the ground floor; and home '
+             'management, clothing, and textiles laboratories on the upper '
+             'floor.'}
+~~~~~~~~~~
+keys=
+dc.date, dc.creator, dc.relation, dc.title
+~~~~~~~~~~
+output_exchange=
+dc.date undated dc.creator %28:unav%29 dc.relation http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx dc.title
+Everson%20Hall,%20the%20South%20and%20West%20wings%20of%20the%20new%20Home%20Economics%20Building%20on%20the%20Davis%20campus%20of%20the%20University%20of%20California,%20showing%20permanent%20sun%20shades%20to%20protect%20offices%20and%20laboratories%20from%20direct%20rays%20of%20the%20sun.%20The%20vertical%20projecting%20fins%20also%20help%20shade%20the%20two-
+story%20concrete%20structure.%20The%20right%20wing%20contains%20offices%20on%20the%20lower%20floor,%20and%20the%20foods%20and%20nutrition%20laboratories%20on%20the%20upper%20floor.%20The%20left%20wing%20contains%20the%20social%20living%20laboratory,%20decorative%20arts%20and%20home%20furnishings%20laboratories,%20and%20lecture%20rooms%20on%20the%20ground%20floor%3B%20and%20home%20management,%20clothing,%20and%20textiles%20laboratories%20on%20the%20upper%20floor.

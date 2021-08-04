@@ -32,18 +32,19 @@ class Group(django.db.models.Model):
     class Meta:
         abstract = True
 
-    pid = django.db.models.CharField(
-        max_length=impl.util.maxIdentifierLength,
-        unique=True,
-        validators=[ezidapp.models.validation.agentPidOrEmpty],
-    )
     # The group's persistent identifier, e.g., "ark:/99166/foo".  The
     # field will in practice never be empty; rather, if empty, a new
     # persistent identifier is minted (but not created).  Note that the
     # uniqueness requirement is actually stronger than indicated here:
     # it is expected that all agent (i.e., all user and group)
     # persistent identifiers are unique.
+    pid = django.db.models.CharField(
+        max_length=impl.util.maxIdentifierLength,
+        unique=True,
+        validators=[ezidapp.models.validation.agentPidOrEmpty],
+    )
 
+    # The group's groupname, e.g., "dryad".
     groupname = django.db.models.CharField(
         max_length=32,
         unique=True,
@@ -53,8 +54,6 @@ class Group(django.db.models.Model):
             )
         ],
     )
-
-    # The group's groupname, e.g., "dryad".
 
     # A note on foreign keys: since the store and search databases are
     # completely separate, foreign keys must reference different target
@@ -132,22 +131,21 @@ class StoreGroup(Group):
         ],
         blank=True,
     )
-    agreementOnFile = django.db.models.BooleanField("agreement on file", default=False)
     # Fields for business purposes only; not used by EZID.
+    agreementOnFile = django.db.models.BooleanField("agreement on file", default=False)
 
-    crossrefEnabled = django.db.models.BooleanField("Crossref enabled", default=False)
     # Deprecated and not used at present.  (Former usage:
     # Determines if users in the group may register identifiers with
     # Crossref.  Note that Crossref registration requires the enablement
     # of both the user and the shoulder.)
+    crossrefEnabled = django.db.models.BooleanField("Crossref enabled", default=False)
 
-    shoulders = django.db.models.ManyToManyField('ezidapp.Shoulder', blank=True)
     # The shoulders to which users in the group have access.  The test
     # shoulders are not included in this relation.
-
-    notes = django.db.models.TextField(blank=True)
+    shoulders = django.db.models.ManyToManyField('ezidapp.Shoulder', blank=True)
 
     # Any additional notes.
+    notes = django.db.models.TextField(blank=True)
 
     @property
     def users(self):
@@ -173,8 +171,8 @@ class StoreGroup(Group):
     def __str__(self):
         return f"{self.groupname} ({self.organizationName})"
 
-    isAnonymous = False
     # See below.
+    isAnonymous = False
 
 
 # The following caches are only added to or replaced entirely;

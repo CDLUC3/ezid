@@ -1,0 +1,102 @@
+input_json=
+{"datacite":"<?xml version=\"1.0\"?>
+<resource xmlns=\"http://datacite.org/schema/kernel-3\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+xsi:schemaLocation=\"http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd\"><identifier
+identifierType=\"ARK\">13030/m5m9099t</identifier><creators><creator><creatorName>Zhang,
+Yu</creatorName></creator></creators><titles><title>White matter damage in frontotemporal dementia and Alzheimer's disease
+measured by diffusion MRI.</title></titles><publisher>University of California, San
+Francisco</publisher><publicationYear>2012</publicationYear><contributors><contributor
+contributorType=\"ResearchGroup\"><contributorName>UCSF Center for Imaging of Neurodegenerative
+Diseases</contributorName></contributor></contributors><resourceType
+resourceTypeGeneral=\"Dataset\">Dataset</resourceType><descriptions><description descriptionType=\"Abstract\">Frontotemporal
+dementia (FTD) and Alzheimer's disease are sometimes difficult to differentiate clinically because of overlapping symptoms. Using
+diffusion tensor imaging (DTI) measurements of fractional anisotropy (FA) can be useful in distinguishing the different patterns
+of white matter degradation between the two dementias. In this study, we performed MRI scans in a 4 Tesla MRI machine including
+T1-weighted structural images and diffusion tensor images in 18 patients with FTD, 18 patients with Alzheimer's disease and 19
+cognitively normal (CN) controls. FA was measured selectively in specific fibre tracts (including corpus callosum, cingulum,
+uncinate and corticospinal tracts) as well as globally in a voxel-by-voxel analysis. Patients with FTD were associated with
+reductions of FA in frontal and temporal regions including the anterior corpus callosum (P &lt; 0.001), bilateral anterior (left P
+&lt; 0.001; right P = 0.005), descending (left P &lt; 0.001; right P = 0.003) cingulum tracts, and uncinate tracts (left P &lt;
+0.001; right P = 0.005), compared to controls. Patients with Alzheimer's disease were associated with reductions of FA in
+parietal, temporal and frontal regions including the left anterior (P = 0.003) and posterior (P = 0.002) cingulum tracts,
+bilateral descending cingulum tracts (P &lt; 0.001) and left uncinate tracts (P &lt; 0.001) compared to controls. When compared
+with Alzheimer's disease, FTD was associated with greater reductions of FA in frontal brain regions, whereas no region in
+Alzheimer's disease showed greater reductions of FA when compared to FTD. In conclusion, the regional patterns of anisotropy
+reduction in FTD and Alzheimer's disease compared to controls suggest a characteristic distribution of white matter degradation in
+each disease. Moreover, the white matter degradation seems to be more prominent in FTD than in Alzheimer's disease. Taken
+together, the results suggest that white matter degradation measured with DTI may improve the diagnostic differentiation between
+FTD and Alzheimer's disease.</description></descriptions></resource>","mrt.creator":"ucsf_datashare","erc":"who: Zhang, Yu
+what: White matter damage in frontotemporal dementia and Alzheimer's disease measured by diffusion MRI.
+where: ark:/13030/m5m9099t"}
+~~~~~~~~~~
+dict_pp=
+{'datacite': '<?xml version="1.0"?>
+'
+             '<resource xmlns="http://datacite.org/schema/kernel-3" '
+             'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
+             'xsi:schemaLocation="http://datacite.org/schema/kernel-3 '
+             'http://schema.datacite.org/meta/kernel-3/metadata.xsd"><identifier '
+             'identifierType="ARK">13030/m5m9099t</identifier><creators><creator><creatorName>Zhang, '
+             'Yu</creatorName></creator></creators><titles><title>White matter '
+             "damage in frontotemporal dementia and Alzheimer's disease "
+             'measured by diffusion MRI.</title></titles><publisher>University '
+             'of California, San '
+             'Francisco</publisher><publicationYear>2012</publicationYear><contributors><contributor '
+             'contributorType="ResearchGroup"><contributorName>UCSF Center for '
+             'Imaging of Neurodegenerative '
+             'Diseases</contributorName></contributor></contributors><resourceType '
+             'resourceTypeGeneral="Dataset">Dataset</resourceType><descriptions><description '
+             'descriptionType="Abstract">Frontotemporal dementia (FTD) and '
+             "Alzheimer's disease are sometimes difficult to differentiate "
+             'clinically because of overlapping symptoms. Using diffusion '
+             'tensor imaging (DTI) measurements of fractional anisotropy (FA) '
+             'can be useful in distinguishing the different patterns of white '
+             'matter degradation between the two dementias. In this study, we '
+             'performed MRI scans in a 4 Tesla MRI machine including '
+             'T1-weighted structural images and diffusion tensor images in 18 '
+             "patients with FTD, 18 patients with Alzheimer's disease and 19 "
+             'cognitively normal (CN) controls. FA was measured selectively in '
+             'specific fibre tracts (including corpus callosum, cingulum, '
+             'uncinate and corticospinal tracts) as well as globally in a '
+             'voxel-by-voxel analysis. Patients with FTD were associated with '
+             'reductions of FA in frontal and temporal regions including the '
+             'anterior corpus callosum (P &lt; 0.001), bilateral anterior '
+             '(left P &lt; 0.001; right P = 0.005), descending (left P &lt; '
+             '0.001; right P = 0.003) cingulum tracts, and uncinate tracts '
+             '(left P &lt; 0.001; right P = 0.005), compared to controls. '
+             "Patients with Alzheimer's disease were associated with "
+             'reductions of FA in parietal, temporal and frontal regions '
+             'including the left anterior (P = 0.003) and posterior (P = '
+             '0.002) cingulum tracts, bilateral descending cingulum tracts (P '
+             '&lt; 0.001) and left uncinate tracts (P &lt; 0.001) compared to '
+             "controls. When compared with Alzheimer's disease, FTD was "
+             'associated with greater reductions of FA in frontal brain '
+             "regions, whereas no region in Alzheimer's disease showed greater "
+             'reductions of FA when compared to FTD. In conclusion, the '
+             "regional patterns of anisotropy reduction in FTD and Alzheimer's "
+             'disease compared to controls suggest a characteristic '
+             'distribution of white matter degradation in each disease. '
+             'Moreover, the white matter degradation seems to be more '
+             "prominent in FTD than in Alzheimer's disease. Taken together, "
+             'the results suggest that white matter degradation measured with '
+             'DTI may improve the diagnostic differentiation between FTD and '
+             "Alzheimer's disease.</description></descriptions></resource>",
+ 'erc': 'who: Zhang, Yu
+'
+        "what: White matter damage in frontotemporal dementia and Alzheimer's "
+        'disease measured by diffusion MRI.
+'
+        'where: ark:/13030/m5m9099t',
+ 'mrt.creator': 'ucsf_datashare'}
+~~~~~~~~~~
+keys=
+datacite, mrt.creator, erc
+~~~~~~~~~~
+output_exchange=
+datacite
+<?xml%20version%3D%221.0%22?>%0A<resource%20xmlns%3D%22http://datacite.org/schema/kernel-3%22%20xmlns:xsi%3D%22http://www.w3.org/2001/XMLSchema-
+instance%22%20xsi:schemaLocation%3D%22http://datacite.org/schema/kernel-3%20http://schema.datacite.org/meta/kernel-3/metadata.xsd%22><identifier%20identifierType%3D%22ARK%22>13030/m5m9099t</identifier><creators><creator><creatorName>Zhang,%20Yu</creatorName></creator></creators><titles><title>White%20matter%20damage%20in%20frontotemporal%20dementia%20and%20Alzheimer%27s%20disease%20measured%20by%20diffusion%20MRI.</title></titles><publisher>University%20of%20California,%20San%20Francisco</publisher><publicationYear>2012</publicationYear><contributors><contributor%20contributorType%3D%22ResearchGroup%22><contributorName>UCSF%20Center%20for%20Imaging%20of%20Neurodegenerative%20Diseases</contributorName></contributor></contributors><resourceType%20resourceTypeGeneral%3D%22Dataset%22>Dataset</resourceType><descriptions><description%20descriptionType%3D%22Abstract%22>Frontotemporal%20dementia%20%28FTD%29%20and%20Alzheimer%27s%20disease%20are%20sometimes%20difficult%20to%20differentiate%20clinically%20because%20of%20overlapping%20symptoms.%20Using%20diffusion%20tensor%20imaging%20%28DTI%29%20measurements%20of%20fractional%20anisotropy%20%28FA%29%20can%20be%20useful%20in%20distinguishing%20the%20different%20patterns%20of%20white%20matter%20degradation%20between%20the%20two%20dementias.%20In%20this%20study,%20we%20performed%20MRI%20scans%20in%20a%204%20Tesla%20MRI%20machine%20including%20T1-weighted%20structural%20images%20and%20diffusion%20tensor%20images%20in%2018%20patients%20with%20FTD,%2018%20patients%20with%20Alzheimer%27s%20disease%20and%2019%20cognitively%20normal%20%28CN%29%20controls.%20FA%20was%20measured%20selectively%20in%20specific%20fibre%20tracts%20%28including%20corpus%20callosum,%20cingulum,%20uncinate%20and%20corticospinal%20tracts%29%20as%20well%20as%20globally%20in%20a%20voxel-
+by-
+voxel%20analysis.%20Patients%20with%20FTD%20were%20associated%20with%20reductions%20of%20FA%20in%20frontal%20and%20temporal%20regions%20including%20the%20anterior%20corpus%20callosum%20%28P%20%26lt%3B%200.001%29,%20bilateral%20anterior%20%28left%20P%20%26lt%3B%200.001%3B%20right%20P%20%3D%200.005%29,%20descending%20%28left%20P%20%26lt%3B%200.001%3B%20right%20P%20%3D%200.003%29%20cingulum%20tracts,%20and%20uncinate%20tracts%20%28left%20P%20%26lt%3B%200.001%3B%20right%20P%20%3D%200.005%29,%20compared%20to%20controls.%20Patients%20with%20Alzheimer%27s%20disease%20were%20associated%20with%20reductions%20of%20FA%20in%20parietal,%20temporal%20and%20frontal%20regions%20including%20the%20left%20anterior%20%28P%20%3D%200.003%29%20and%20posterior%20%28P%20%3D%200.002%29%20cingulum%20tracts,%20bilateral%20descending%20cingulum%20tracts%20%28P%20%26lt%3B%200.001%29%20and%20left%20uncinate%20tracts%20%28P%20%26lt%3B%200.001%29%20compared%20to%20controls.%20When%20compared%20with%20Alzheimer%27s%20disease,%20FTD%20was%20associated%20with%20greater%20reductions%20of%20FA%20in%20frontal%20brain%20regions,%20whereas%20no%20region%20in%20Alzheimer%27s%20disease%20showed%20greater%20reductions%20of%20FA%20when%20compared%20to%20FTD.%20In%20conclusion,%20the%20regional%20patterns%20of%20anisotropy%20reduction%20in%20FTD%20and%20Alzheimer%27s%20disease%20compared%20to%20controls%20suggest%20a%20characteristic%20distribution%20of%20white%20matter%20degradation%20in%20each%20disease.%20Moreover,%20the%20white%20matter%20degradation%20seems%20to%20be%20more%20prominent%20in%20FTD%20than%20in%20Alzheimer%27s%20disease.%20Taken%20together,%20the%20results%20suggest%20that%20white%20matter%20degradation%20measured%20with%20DTI%20may%20improve%20the%20diagnostic%20differentiation%20between%20FTD%20and%20Alzheimer%27s%20disease.</description></descriptions></resource>
+mrt.creator ucsf_datashare erc
+who:%20Zhang,%20Yu%0Awhat:%20White%20matter%20damage%20in%20frontotemporal%20dementia%20and%20Alzheimer%27s%20disease%20measured%20by%20diffusion%20MRI.%0Awhere:%20ark:/13030/m5m9099t

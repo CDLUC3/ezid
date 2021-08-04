@@ -344,7 +344,7 @@ def formElementsToDataciteXml(d, shoulder=None, identifier=None):
 
     def sortValue(node):
         v = tagName(node.tag)
-        m = re.match(".*_(\d+)$", v)
+        m = re.match(".*_(\\d+)$", v)
         if m:
             return _elements[v.split("_", 1)[0]], int(m.group(1))
         else:

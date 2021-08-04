@@ -1,7 +1,39 @@
+import re
+import time
+import uuid
+
 import impl.util
 import lxml.etree
 import lxml
 import impl.datacite
+
+import logging
+import re
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+import uuid
+
+import django.conf
+import django.core.mail
+import django.core.management
+import django.db
+import django.db.models
+import lxml.etree
+
+import ezidapp.management.commands.proc_base
+import ezidapp.models.crossref_queue
+import ezidapp.models.identifier
+import ezidapp.models.user
+import ezidapp.models.util
+import impl.ezid
+import impl.log
+import impl.nog.util
+import impl.util
+import impl.util2
+
+import ezidapp.models.crossref_queue
 
 ROOT_TAGS = [
     "journal",
@@ -17,13 +49,29 @@ ROOT_TAGS = [
 ]
 
 
-_titlePaths = [
+TITLE_PATH_LIST = [
     "../N:titles/N:title",
     "../N:titles/N:original_language_title",
     "../N:proceedings_title",
     "../N:full_title",
     "../N:abbrev_title",
 ]
+
+_prologRE = re.compile("<\\?xml\\s+version\\s*=\\s*['\"]([-\\w.:]+)[\"']" +\
+  "(\\s+encoding\\s*=\\s*['\"]([-\\w.]+)[\"'])?" +\
+  "(\\s+standalone\\s*=\\s*['\"](yes|no)[\"'])?\\s*\\?>\\s*")
+_utf8RE = re.compile("UTF-?8$", re.I)
+_schemaLocation = "{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"
+_schemaLocationTemplate =\
+  "http://www.crossref.org/schema/deposit/crossref%s.xsd"
+_tagRE =\
+  re.compile("\\{(http://www\\.crossref\\.org/schema/(4\\.[34]\\.\\d))\\}([-\\w.]+)$")
+_rootTags = ["journal", "book", "conference", "sa_component", "dissertation",
+  "report-paper", "standard", "database"]
+
+
+# noinspection HttpUrlsUsage
+TAG_REGEX = re.compile("{(http://www\\.crossref\\.org/schema/(4\\.[34]\\.\\d))}([-\\w.]+)$")
 
 
 # noinspection PyUnresolvedReferences
@@ -40,20 +88,20 @@ def validateBody(body):
     normalizing the one and only <doi_data> element.
     """
     # Strip off any prolog.
-    m = impl.datacite._prologRE.match(body)
+    m = _prologRE.match(body)
     if m:
         assert m.group(1) == "1.0", "unsupported XML version"
         if m.group(2) is not None:
-            assert impl.datacite._utf8RE.match(m.group(3)), "XML encoding must be utf-8"
+            assert _utf8RE.match(m.group(3)), "XML encoding must be utf-8"
         if m.group(4) is not None:
             assert m.group(5) == "yes", "XML document must be standalone"
-        body = body[len(m.group(0)):]
+        body = body[len(m.group(0)) :]
     # Parse the document.
     try:
         root = lxml.etree.XML(body)
     except Exception as e:
         assert False, "XML parse error: " + str(e)
-    m = impl.datacite._tagRE.match(root.tag)
+    m = TAG_REGEX.match(root.tag)
     assert m is not None, "not Crossref submission metadata"
     namespace = m.group(1)
     version = m.group(2)
@@ -62,31 +110,29 @@ def validateBody(body):
     if m.group(3) == "doi_batch":
         root = root.find("N:body", namespaces=ns)
         assert root is not None, "malformed Crossref submission metadata"
-        m = impl.datacite._tagRE.match(root.tag)
+        m = TAG_REGEX.match(root.tag)
     if m.group(3) == "body":
         assert len(list(root)) == 1, "malformed Crossref submission metadata"
         root = root[0]
-        m = impl.datacite._tagRE.match(root.tag)
+        m = TAG_REGEX.match(root.tag)
         assert m is not None, "malformed Crossref submission metadata"
-    assert (
-        m.group(3) in ROOT_TAGS
-    ), "XML document root is not a Crossref <body> child element"
+    assert m.group(3) in ROOT_TAGS, "XML document root is not a Crossref <body> child element"
     # Locate and normalize the one and only <doi_data> element.
     doiData = root.xpath("//N:doi_data", namespaces=ns)
     assert len(doiData) == 1, "XML document contains {} <doi_data> element".format(
-        impl.datacite._notOne(len(doiData))
+        _notOne(len(doiData))
     )
     doiData = doiData[0]
     doi = doiData.findall("N:doi", namespaces=ns)
     assert len(doi) == 1, "<doi_data> element contains {} <doi> subelement".format(
-        impl.datacite._notOne(len(doi))
+        _notOne(len(doi))
     )
     doi = doi[0]
     doi.text = "(:tba)"
     resource = doiData.findall("N:resource", namespaces=ns)
     assert (
         len(resource) == 1
-    ), f"<doi_data> element contains {impl.datacite._notOne(len(resource))} <resource> subelement"
+    ), f"<doi_data> element contains {_notOne(len(resource))} <resource> subelement"
     resource = resource[0]
     resource.text = "(:tba)"
     assert (
@@ -99,19 +145,18 @@ def validateBody(body):
         doiData.find("N:timestamp", namespaces=ns) is None
     ), "<doi_data> element contains more than one <timestamp> subelement"
     # Normalize schema declarations.
-    root.attrib[impl.datacite._schemaLocation] = (
-        namespace + " " + (impl.datacite._schemaLocationTemplate.format(version))
+    root.attrib[_schemaLocation] = (
+        namespace + " " + (_schemaLocationTemplate.format(version))
     )
     try:
         # We re-sanitize the document because unacceptable characters can
         # be (and have been) introduced via XML character entities.
-        return impl.datacite._addDeclaration(
-            impl.util.sanitizeXmlSafeCharset(
-                lxml.etree.tostring(root, encoding="unicode")
-            )
+        return _addDeclaration(
+            impl.util.sanitizeXmlSafeCharset(lxml.etree.tostring(root, encoding="unicode"))
         )
     except Exception as e:
         assert False, "XML serialization error: " + str(e)
+
 
 # In the Crossref deposit schema, version 4.3.4, the <doi_data>
 # element can occur in 20 different places.  An analysis shows that
@@ -129,4 +174,110 @@ def replaceTbas(body, doi, targetUrl):
     above.  'doi' should be a scheme-less DOI identifier (e.g.,
     "10.5060/FOO").  The return is a Unicode string.
     """
-    return impl.datacite._buildDeposit(body, None, doi, targetUrl, bodyOnly=True)
+    return _buildDeposit(body, None, doi, targetUrl, bodyOnly=True)
+
+
+def _buildDeposit(
+    body, registrant, doi, targetUrl, withdrawTitles=False, bodyOnly=False
+):
+    """Builds a Crossref metadata submission document.
+
+    'body' should be a
+    Crossref <body> child element as a Unicode string, and is assumed to
+    have been validated and normalized per validateBody above.
+    'registrant' is inserted in the header.  'doi' should be a
+    scheme-less DOI identifier (e.g., "10.5060/FOO").  The return is a
+    tuple (document, body, batchId) where 'document' is the entire
+    submission document as a serialized Unicode string (with the DOI and
+    target URL inserted), 'body' is the same but just the <body> child
+    element, and 'batchId' is the submission batch identifier.
+    Options: if 'withdrawTitles' is true, the title(s) corresponding to
+    the DOI being defined are prepended with "WITHDRAWN:" (in 'document'
+    only).  If 'bodyOnly' is true, only the body is returned.
+    """
+    body = lxml.etree.XML(body)
+    m = TAG_REGEX.match(body.tag)
+    namespace = m.group(1)
+    version = m.group(2)
+    ns = {"N": namespace}
+    doiData = body.xpath("//N:doi_data", namespaces=ns)[0]
+    doiElement = doiData.find("N:doi", namespaces=ns)
+    doiElement.text = doi
+    doiData.find("N:resource", namespaces=ns).text = targetUrl
+    d1 = _addDeclaration(lxml.etree.tostring(body, encoding="unicode"))
+    if bodyOnly:
+        return d1
+
+    def q(elementName):
+        return f"{{{namespace}}}{elementName}"
+
+    root = lxml.etree.Element(q("doi_batch"), version=version)
+    root.attrib[_schemaLocation] = body.attrib[_schemaLocation]
+    head = lxml.etree.SubElement(root, q("head"))
+    batchId = str(uuid.uuid1())
+    lxml.etree.SubElement(head, q("doi_batch_id")).text = batchId
+    lxml.etree.SubElement(head, q("timestamp")).text = str(int(time.time() * 100))
+    e = lxml.etree.SubElement(head, q("depositor"))
+    if version >= "4.3.4":
+        lxml.etree.SubElement(
+            e, q("depositor_name")
+        ).text = django.conf.settings.CROSSREF_DEPOSITOR_NAME
+    else:
+        lxml.etree.SubElement(
+            e, q("name")
+        ).text = django.conf.settings.CROSSREF_DEPOSITOR_NAME
+    lxml.etree.SubElement(
+        e, q("email_address")
+    ).text = django.conf.settings.CROSSREF_DEPOSITOR_EMAIL
+    lxml.etree.SubElement(head, q("registrant")).text = registrant
+    e = lxml.etree.SubElement(root, q("body"))
+    del body.attrib[_schemaLocation]
+    if withdrawTitles:
+        for p in TITLE_PATH_LIST:
+            for t in doiData.xpath(p, namespaces=ns):
+                if t.text is not None:
+                    t.text = "WITHDRAWN: " + t.text
+    e.append(body)
+    d2 = _addDeclaration(lxml.etree.tostring(root, encoding="unicode"))
+    return d2, d1, batchId
+
+
+def _addDeclaration(document):
+    # We don't use lxml's xml_declaration argument because it doesn't
+    # allow us to add a basic declaration without also adding an
+    # encoding declaration, which we don't want.
+    return '<?xml version="1.0"?>\n' + document
+
+
+def _multipartBody(*parts):
+    """Builds a multipart/form-data (RFC 2388) document out of a list of
+    constituent parts.
+
+    Each part is either a 2-tuple (name, value) or a 4-tuple (name,
+    filename, contentType, value).  Returns a tuple (document, boundary).
+    """
+    while True:
+        boundary = f"BOUNDARY_{uuid.uuid1().hex}"
+        collision = False
+        for p in parts:
+            for e in p:
+                if boundary in e:
+                    collision = True
+        if not collision:
+            break
+    body = []
+    for p in parts:
+        body.append("--" + boundary)
+        if len(p) == 2:
+            body.append(f'Content-Disposition: form-data; name="{p[0]}"')
+            body.append("")
+            body.append(p[1])
+        else:
+            body.append(
+                f'Content-Disposition: form-data; name="{p[0]}"; filename="{p[1]}"'
+            )
+            body.append("Content-Type: " + p[2])
+            body.append("")
+            body.append(p[3])
+    body.append(f"--{boundary}--")
+    return "\r\n".join(body), boundary

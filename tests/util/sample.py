@@ -297,21 +297,21 @@ def _clobber_uncontrolled_volatiles(o_str):
     o_str = re.sub(r"(?<=boundary=)[0-9a-fA-F]+", "[BOUNDARY]", o_str)
     o_str = re.sub(r"--[0-9a-f]{32}", "[BOUNDARY]", o_str)
     # entryId is based on a db sequence type
-    o_str = re.sub(r"(?<=<entryId>)\d+", "[ENTRY-ID]", o_str)
+    o_str = re.sub(r"(?<=<entryId>)\\d+", "[ENTRY-ID]", o_str)
     # TODO: This shouldn't be needed...
     o_str = re.sub(r"(?<=Content-Type:).*", "[CONTENT-TYPE]", o_str)
     # The uuid module uses MAC address, etc
     o_str = re.sub(r"(?<=test_fragment_volatile_)[0-9a-fA-F]+", "[UUID]", o_str)
     # ETA depends on how fast the computer is
-    o_str = re.sub(r"\d{1,3}h\d{2}m\d{2}s", "[ETA-HMS]", o_str)
+    o_str = re.sub(r"\\d{1,3}h\\d{2}m\\d{2}s", "[ETA-HMS]", o_str)
     # Disk space
-    o_str = re.sub(r"[\s\d.]+GiB", "[DISK-SPACE]", o_str)
+    o_str = re.sub(r"[\\s\\d.]+GiB", "[DISK-SPACE]", o_str)
     # Memory address
-    o_str = re.sub(r"0x[\da-fA-F]{8,}", "[MEMORY-ADDRESS]", o_str)
+    o_str = re.sub(r"0x[\\da-fA-F]{8,}", "[MEMORY-ADDRESS]", o_str)
     # Temporary filename
-    o_str = re.sub(r"tmp[\w\d]*\.", "[TMP-PATH].", o_str)
+    o_str = re.sub(r"tmp[\\w\\d]*\\.", "[TMP-PATH].", o_str)
     # Command run timer
-    o_str = re.sub(r'(?<=Parse succeeded )\(\d+\.\d+\)', '[RUN-TIMER]', o_str)
+    o_str = re.sub(r'(?<=Parse succeeded )\\(\\d+\\.\\d+\\)', '[RUN-TIMER]', o_str)
     # Travis hostname
     o_str = re.sub(r'(?<=Hostname ).*', '[HOSTNAME]', o_str)
     return o_str

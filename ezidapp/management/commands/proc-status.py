@@ -57,14 +57,14 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 self.log_status(status_sn)
                 impl.log.resetOperationCount()
             except Exception as e:
-            log.exception(' Exception as e')
+                log.exception(' Exception as e')
                 self.otherError(self.name, e)
             else:
                 if django.conf.settings.CLOUDWATCH_ENABLED:
                     try:
                         self.updateCloudwatch(status_sn)
                     except Exception as e:
-                    log.exception(' Exception as e')
+                        log.exception(' Exception as e')
                         log.error(f'Cloudwatch update failed. error="{repr(e)}"')
                         if self.is_debug:
                             raise

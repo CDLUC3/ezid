@@ -1,0 +1,499 @@
+input_json=
+{"datacite":"<?xml version=\"1.0\"?>
+<resource xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://datacite.org/schema/kernel-4\"
+xsi:schemaLocation=\"http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4/metadata.xsd\">
+  <identifier identifierType=\"DOI\">10.7291/D1PP47</identifier>
+  <creators>
+    <creator>
+      <creatorName>Condit, Richard</creatorName>
+      <nameIdentifier nameIdentifierScheme=\"ORCID\" schemeURI=\"http://orcid.org/\">0000-0003-4191-1495</nameIdentifier>
+      <affiliation>UC Santa Cruz</affiliation>
+    </creator>
+    <creator>
+      <creatorName>Morris, Patricia</creatorName>
+      <affiliation>UC Santa Cruz</affiliation>
+    </creator>
+    <creator>
+      <creatorName>Le Boeuf, Burney</creatorName>
+      <affiliation>UC Santa Cruz</affiliation>
+    </creator>
+  </creators>
+  <titles>
+    <title>Pinniped censuses at A\u00f1o Nuevo, California, 1967-2017</title>
+  </titles>
+  <publisher>UC Santa Cruz</publisher>
+  <publicationYear>2017</publicationYear>
+  <fundingReferences>
+    <fundingReference>
+      <funderName>National Science Foundation</funderName>
+      <awardNumber>Many</awardNumber>
+    </fundingReference>
+    <fundingReference>
+      <funderName>UC Santa Cruz Institute for Marine Sciences</funderName>
+    </fundingReference>
+  </fundingReferences>
+  <dates>
+    <date dateType=\"Available\">2017-07-04T07:00:00Z</date>
+  </dates>
+  <language>en</language>
+  <resourceType resourceTypeGeneral=\"Dataset\">dataset</resourceType>
+  <relatedIdentifiers>
+    <relatedIdentifier relationType=\"Documents\" relatedIdentifierType=\"DOI\">10.1578/AM.37.4.2011.486</relatedIdentifier>
+  </relatedIdentifiers>
+  <sizes>
+    <size>50675264 bytes</size>
+  </sizes>
+  <version>7</version>
+  <rightsList>
+    <rights rightsURI=\"https://creativecommons.org/licenses/by/4.0/\">Creative Commons Attribution 4.0 International (CC BY
+4.0)</rights>
+  </rightsList>
+  <descriptions>
+    <description descriptionType=\"Abstract\">
+      Regular pinniped censuses at A\u00f1o Nuevo Island, California, were initiated
+      by our research group in 1967 to support studies of reproductive behavior
+      of male elephant seals, Mirounga angustirostris. Research on elephant
+      seals at the colony has continued since, expanding to cover female
+      behavior, reproductive success, physiology and energetics, migrations and
+      foraging, and more. The other species of pinnipeds, Steller sea lion
+      (Eumetopias jubata), California sea lion (Zalophus californianus), and
+      harbor seal (Phoca vitulina), have been the focus of additional studies.
+......................................................................................................................................................................................................................................................................................................................................................................................
+Censuses were collected to support the wide range of research, but population size of has been an important topic as the elephant
+seal population expanded. We described the initial expansion to the mainland in 1975, and in 2011 described details of long-term
+growth and then stabilization of the breeding elephant seal population over the entire colony. A\u00f1o Nuevo has also been
+central to understanding the entire northern elephant seal population, which has recovered from a remnant population in Mexico
+after overhunting and continues to grow.
+......................................................................................................................................................................................................................................................................................................................................................................................
+The field notebooks in which censuses were recorded from 1967-2005 were saved. They are now archived at the University of
+California Santa Cruz library:
+......................................................................................................................................................................................................................................................................................................................................................................................
+UCSC Elephant Seal and other Pinniped Research records. UA 132. Special Collections and Archives, University Library, University
+of California, Santa Cruz.
+    </description>
+    <description descriptionType=\"Methods\">
+      Field counts of pinnipeds from high ground near the colony. Data were
+      originally written into small notebooks, one census per day. These were
+      transcribed into digital format and organized into a MySQL database over
+      2004-2006. After 2005, data were entered directly into this database via a
+      web interface, and any paper notes used by observers were not stored. The
+      data archived here was extracted from the MySQL database after the census
+      of 25 May 2017.
+    </description>
+    <description descriptionType=\"Other\">
+      Archive of all pinniped census results, A\u00f1o Nuevo, California, 1967-2017
+......................................................................................................................................................................................................................................................................................................................................................................................
+Introduction
+......................................................................................................................................................................................................................................................................................................................................................................................
+Regular pinniped censuses at A\u00f1o Nuevo Island, California, were initiated by our (BJL) research group in 1967 to support
+studies of reproductive behavior of male elephant seals, Mirounga angustirostris. The research expanded to include he other
+species of pinnipeds, Steller sea lion (Eumetopias jubata), California sea lion (Zalophus californianus), and harbor seal (Phoca
+vitulina), by the mid-1970s, and censuses included all the species from the beginning. When elephant seals colonized the mainland
+adjacent to A\u00f1o Nuevo Island in 1975, research and accompanying censuses began on the A\u00f1o Nuevo mainland.
+......................................................................................................................................................................................................................................................................................................................................................................................
+Daily censuses were carried out site-by-site, counting animals in groups on individual beaches, dunes, or rock outcrops. Besides
+counting the species separately, animals were also divided into various age and sex categories that could be distinguished
+visually. The island and two sections of the mainland (called the main point and the north point) were counted separately;
+sometimes one observer would cover both mainland sections in a day, but the island was always counted separately because crossing
+the channel by boat is time-consuming. This means that island censuses and mainland censuses were not routinely done on the same
+day, but in many cases they were.
+......................................................................................................................................................................................................................................................................................................................................................................................
+In the original census data, a single entry consists of one location, one category, a date, and a single count. Those original
+data include 352,702 of these individual records, on 3331 different days. This full table is provided here as Table 5.
+......................................................................................................................................................................................................................................................................................................................................................................................
+A more useful format of the data, involves summing animals by species and age-sex category over all locations on day: these are
+daily censuses, always however separated into the three main regions (island and two mainland sections). In these tables, a single
+row has summed counts of one species on one day in one of the three regions, with several columns separating age-sex categories.
+Those data are included here as tables 1a-1c and 2-4.
+......................................................................................................................................................................................................................................................................................................................................................................................
+Two more supporting tables and two supporting files are included in the archive. One table has abbreviations for individual
+locations (Table 6) and the other has abbreviations for age-sex categories (Table 7). There is a file with descriptions of the
+tables and all columns, and a pdf having more references, maps, and information about the original notebooks that held hand-
+written census data. The latter are now archived in the University of California, Santa Cruz, library. All files are listed below.
+......................................................................................................................................................................................................................................................................................................................................................................................
+......................................................................................................................................................................................................................................................................................................................................................................................
+MaFemalePupCensusArchive.tab Table 1a. Total daily counts of elephant seal females and pups.
+......................................................................................................................................................................................................................................................................................................................................................................................
+MaMaleCensusArchive.tab Table 1b. Total daily counts of elephant seal adult and subadult males.
+......................................................................................................................................................................................................................................................................................................................................................................................
+MaJuvCensusArchive.tab Table 1c. Total daily counts of elephant seal juveniles.
+......................................................................................................................................................................................................................................................................................................................................................................................
+EjCensusArchive.tabTable 2. Total daily counts of Steller sea lions.
+......................................................................................................................................................................................................................................................................................................................................................................................
+PvCensusArchive.tab Table 3. Total daily counts of harbor seals.
+......................................................................................................................................................................................................................................................................................................................................................................................
+ZcCensusArchive.tab Table 4. Total daily counts of California sea lions.
+......................................................................................................................................................................................................................................................................................................................................................................................
+FullCensusArchive.tab Table 5. Every individual count of one age-sex category at a single location on one day.
+......................................................................................................................................................................................................................................................................................................................................................................................
+CensusLocationArchive.tab Table 6. Table of location abbreviations, with coordinates of each.
+......................................................................................................................................................................................................................................................................................................................................................................................
+CensusAgeArchive.tab Table 7. Table of abbreviations for age-sex categories.
+......................................................................................................................................................................................................................................................................................................................................................................................
+Table Descriptions.txt. Descriptions of every table column.
+......................................................................................................................................................................................................................................................................................................................................................................................
+CensusArchiveTables.pdf. A pdf describing original notebooks, with maps of the A\u00f1o Nuevo colony included.
+......................................................................................................................................................................................................................................................................................................................................................................................
+    </description>
+  </descriptions>
+  <geoLocations>
+    <geoLocation>
+      <geoLocationBox>
+        <westBoundLongitude>-122.344437</westBoundLongitude>
+        <eastBoundLongitude>-122.321091</eastBoundLongitude>
+        <southBoundLatitude>37.109955</southBoundLatitude>
+        <northBoundLatitude>37.126929</northBoundLatitude>
+      </geoLocationBox>
+    </geoLocation>
+  </geoLocations>
+</resource>","mrt.creator":"ucsc_dash","erc":"who: Condit, Richard; Morris, Patricia; Le Boeuf, Burney
+what: Pinniped censuses at A\u00f1o Nuevo, California, 1967-2017
+when: 2017
+where: ark:/b7291/d1pp47
+where: doi:10.7291/D1PP47"}
+~~~~~~~~~~
+dict_pp=
+{'datacite': '<?xml version="1.0"?>
+'
+             '<resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
+             'xmlns="http://datacite.org/schema/kernel-4" '
+             'xsi:schemaLocation="http://datacite.org/schema/kernel-4 '
+             'http://schema.datacite.org/meta/kernel-4/metadata.xsd">
+'
+             '  <identifier identifierType="DOI">10.7291/D1PP47</identifier>
+'
+             '  <creators>
+'
+             '    <creator>
+'
+             '      <creatorName>Condit, Richard</creatorName>
+'
+             '      <nameIdentifier nameIdentifierScheme="ORCID" '
+             'schemeURI="http://orcid.org/">0000-0003-4191-1495</nameIdentifier>
+'
+             '      <affiliation>UC Santa Cruz</affiliation>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Morris, Patricia</creatorName>
+'
+             '      <affiliation>UC Santa Cruz</affiliation>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Le Boeuf, Burney</creatorName>
+'
+             '      <affiliation>UC Santa Cruz</affiliation>
+'
+             '    </creator>
+'
+             '  </creators>
+'
+             '  <titles>
+'
+             '    <title>Pinniped censuses at Año Nuevo, California, '
+             '1967-2017</title>
+'
+             '  </titles>
+'
+             '  <publisher>UC Santa Cruz</publisher>
+'
+             '  <publicationYear>2017</publicationYear>
+'
+             '  <fundingReferences>
+'
+             '    <fundingReference>
+'
+             '      <funderName>National Science Foundation</funderName>
+'
+             '      <awardNumber>Many</awardNumber>
+'
+             '    </fundingReference>
+'
+             '    <fundingReference>
+'
+             '      <funderName>UC Santa Cruz Institute for Marine '
+             'Sciences</funderName>
+'
+             '    </fundingReference>
+'
+             '  </fundingReferences>
+'
+             '  <dates>
+'
+             '    <date dateType="Available">2017-07-04T07:00:00Z</date>
+'
+             '  </dates>
+'
+             '  <language>en</language>
+'
+             '  <resourceType '
+             'resourceTypeGeneral="Dataset">dataset</resourceType>
+'
+             '  <relatedIdentifiers>
+'
+             '    <relatedIdentifier relationType="Documents" '
+             'relatedIdentifierType="DOI">10.1578/AM.37.4.2011.486</relatedIdentifier>
+'
+             '  </relatedIdentifiers>
+'
+             '  <sizes>
+'
+             '    <size>50675264 bytes</size>
+'
+             '  </sizes>
+'
+             '  <version>7</version>
+'
+             '  <rightsList>
+'
+             '    <rights '
+             'rightsURI="https://creativecommons.org/licenses/by/4.0/">Creative '
+             'Commons Attribution 4.0 International (CC BY 4.0)</rights>
+'
+             '  </rightsList>
+'
+             '  <descriptions>
+'
+             '    <description descriptionType="Abstract">
+'
+             '      Regular pinniped censuses at Año Nuevo Island, California, '
+             'were initiated
+'
+             '      by our research group in 1967 to support studies of '
+             'reproductive behavior
+'
+             '      of male elephant seals, Mirounga angustirostris. Research '
+             'on elephant
+'
+             '      seals at the colony has continued since, expanding to '
+             'cover female
+'
+             '      behavior, reproductive success, physiology and energetics, '
+             'migrations and
+'
+             '      foraging, and more. The other species of pinnipeds, '
+             'Steller sea lion
+'
+             '      (Eumetopias jubata), California sea lion (Zalophus '
+             'californianus), and
+'
+             '      harbor seal (Phoca vitulina), have been the focus of '
+             'additional studies.
+'
+             '      '
+'......................................................................................................................................................................................................................................................................................................................................................................................
+'
+             'Censuses were collected to support the wide range of research, '
+             'but population size of has been an important topic as the '
+             'elephant seal population expanded. We described the initial '
+             'expansion to the mainland in 1975, and in 2011 described details '
+             'of long-term growth and then stabilization of the breeding '
+             'elephant seal population over the entire colony. Año Nuevo has '
+             'also been central to understanding the entire northern elephant '
+             'seal population, which has recovered from a remnant population '
+             'in Mexico after overhunting and continues to grow. '
+'......................................................................................................................................................................................................................................................................................................................................................................................
+'
+             'The field notebooks in which censuses were recorded from '
+             '1967-2005 were saved. They are now archived at the University of '
+             'California Santa Cruz library: '
+'......................................................................................................................................................................................................................................................................................................................................................................................
+'
+             'UCSC Elephant Seal and other Pinniped Research records. UA 132. '
+             'Special Collections and Archives, University Library, University '
+             'of California, Santa Cruz.
+'
+             '    </description>
+'
+             '    <description descriptionType="Methods">
+'
+             '      Field counts of pinnipeds from high ground near the '
+             'colony. Data were
+'
+             '      originally written into small notebooks, one census per '
+             'day. These were
+'
+             '      transcribed into digital format and organized into a MySQL '
+             'database over
+'
+             '      2004-2006. After 2005, data were entered directly into '
+             'this database via a
+'
+             '      web interface, and any paper notes used by observers were '
+             'not stored. The
+'
+             '      data archived here was extracted from the MySQL database '
+             'after the census
+'
+             '      of 25 May 2017.
+'
+             '    </description>
+'
+             '    <description descriptionType="Other">
+'
+             '      Archive of all pinniped census results, Año Nuevo, '
+             'California, 1967-2017
+'
+             '      '
+'......................................................................................................................................................................................................................................................................................................................................................................................
+'
+             'Introduction '
+'......................................................................................................................................................................................................................................................................................................................................................................................
+'
+             'Regular pinniped censuses at Año Nuevo Island, California, were '
+             'initiated by our (BJL) research group in 1967 to support studies '
+             'of reproductive behavior of male elephant seals, Mirounga '
+             'angustirostris. The research expanded to include he other '
+             'species of pinnipeds, Steller sea lion (Eumetopias jubata), '
+             'California sea lion (Zalophus californianus), and harbor seal '
+             '(Phoca vitulina), by the mid-1970s, and censuses included all '
+             'the species from the beginning. When elephant seals colonized '
+             'the mainland adjacent to Año Nuevo Island in 1975, research and '
+             'accompanying censuses began on the Año Nuevo mainland. '
+'......................................................................................................................................................................................................................................................................................................................................................................................
+'
+             'Daily censuses were carried out site-by-site, counting animals '
+             'in groups on individual beaches, dunes, or rock outcrops. '
+             'Besides counting the species separately, animals were also '
+             'divided into various age and sex categories that could be '
+             'distinguished visually. The island and two sections of the '
+             'mainland (called the main point and the north point) were '
+             'counted separately; sometimes one observer would cover both '
+             'mainland sections in a day, but the island was always counted '
+             'separately because crossing the channel by boat is '
+             'time-consuming. This means that island censuses and mainland '
+             'censuses were not routinely done on the same day, but in many '
+             'cases they were. '
+'......................................................................................................................................................................................................................................................................................................................................................................................
+'
+             'In the original census data, a single entry consists of one '
+             'location, one category, a date, and a single count. Those '
+             'original data include 352,702 of these individual records, on '
+             '3331 different days. This full table is provided here as Table '
+             '5. '
+'......................................................................................................................................................................................................................................................................................................................................................................................
+'
+             'A more useful format of the data, involves summing animals by '
+             'species and age-sex category over all locations on day: these '
+             'are daily censuses, always however separated into the three main '
+             'regions (island and two mainland sections). In these tables, a '
+             'single row has summed counts of one species on one day in one of '
+             'the three regions, with several columns separating age-sex '
+             'categories. Those data are included here as tables 1a-1c and '
+             '2-4. '
+'......................................................................................................................................................................................................................................................................................................................................................................................
+'
+             'Two more supporting tables and two supporting files are included '
+             'in the archive. One table has abbreviations for individual '
+             'locations (Table 6) and the other has abbreviations for age-sex '
+             'categories (Table 7). There is a file with descriptions of the '
+             'tables and all columns, and a pdf having more references, maps, '
+             'and information about the original notebooks that held '
+             'hand-written census data. The latter are now archived in the '
+             'University of California, Santa Cruz, library. All files are '
+             'listed below. '
+'......................................................................................................................................................................................................................................................................................................................................................................................
+'
+'......................................................................................................................................................................................................................................................................................................................................................................................
+'
+             'MaFemalePupCensusArchive.tab Table 1a. Total daily counts of '
+             'elephant seal females and pups. '
+'......................................................................................................................................................................................................................................................................................................................................................................................
+'
+             'MaMaleCensusArchive.tab Table 1b. Total daily counts of elephant '
+             'seal adult and subadult males. '
+'......................................................................................................................................................................................................................................................................................................................................................................................
+'
+             'MaJuvCensusArchive.tab Table 1c. Total daily counts of elephant '
+             'seal juveniles. '
+'......................................................................................................................................................................................................................................................................................................................................................................................
+'
+             'EjCensusArchive.tabTable 2. Total daily counts of Steller sea '
+             'lions. '
+'......................................................................................................................................................................................................................................................................................................................................................................................
+'
+             'PvCensusArchive.tab Table 3. Total daily counts of harbor seals. '
+'......................................................................................................................................................................................................................................................................................................................................................................................
+'
+             'ZcCensusArchive.tab Table 4. Total daily counts of California '
+             'sea lions. '
+'......................................................................................................................................................................................................................................................................................................................................................................................
+'
+             'FullCensusArchive.tab Table 5. Every individual count of one '
+             'age-sex category at a single location on one day. '
+'......................................................................................................................................................................................................................................................................................................................................................................................
+'
+             'CensusLocationArchive.tab Table 6. Table of location '
+             'abbreviations, with coordinates of each. '
+'......................................................................................................................................................................................................................................................................................................................................................................................
+'
+             'CensusAgeArchive.tab Table 7. Table of abbreviations for age-sex '
+             'categories. '
+'......................................................................................................................................................................................................................................................................................................................................................................................
+'
+             'Table Descriptions.txt. Descriptions of every table column. '
+'......................................................................................................................................................................................................................................................................................................................................................................................
+'
+             'CensusArchiveTables.pdf. A pdf describing original notebooks, '
+             'with maps of the Año Nuevo colony included. '
+'......................................................................................................................................................................................................................................................................................................................................................................................
+'
+             '    </description>
+'
+             '  </descriptions>
+'
+             '  <geoLocations>
+'
+             '    <geoLocation>
+'
+             '      <geoLocationBox>
+'
+             '        <westBoundLongitude>-122.344437</westBoundLongitude>
+'
+             '        <eastBoundLongitude>-122.321091</eastBoundLongitude>
+'
+             '        <southBoundLatitude>37.109955</southBoundLatitude>
+'
+             '        <northBoundLatitude>37.126929</northBoundLatitude>
+'
+             '      </geoLocationBox>
+'
+             '    </geoLocation>
+'
+             '  </geoLocations>
+'
+             '</resource>',
+ 'erc': 'who: Condit, Richard; Morris, Patricia; Le Boeuf, Burney
+'
+        'what: Pinniped censuses at Año Nuevo, California, 1967-2017
+'
+        'when: 2017
+'
+        'where: ark:/b7291/d1pp47
+'
+        'where: doi:10.7291/D1PP47',
+ 'mrt.creator': 'ucsc_dash'}
+~~~~~~~~~~
+keys=
+datacite, mrt.creator, erc
+~~~~~~~~~~
+output_exchange=
+datacite <?xml%20version%3D%221.0%22?>%0A<resource%20xmlns:xsi%3D%22http://www.w3.org/2001/XMLSchema-
+instance%22%20xmlns%3D%22http://datacite.org/schema/kernel-4%22%20xsi:schemaLocation%3D%22http://datacite.org/schema/kernel-4%20http://schema.datacite.org/meta/kernel-4/metadata.xsd%22>%0A%20%20<identifier%20identifierType%3D%22DOI%22>10.7291/D1PP47</identifier>%0A%20%20<creators>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Condit,%20Richard</creatorName>%0A%20%20%20%20%20%20<nameIdentifier%20nameIdentifierScheme%3D%22ORCID%22%20schemeURI%3D%22http://orcid.org/%22>0000-0003-4191-1495</nameIdentifier>%0A%20%20%20%20%20%20<affiliation>UC%20Santa%20Cruz</affiliation>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Morris,%20Patricia</creatorName>%0A%20%20%20%20%20%20<affiliation>UC%20Santa%20Cruz</affiliation>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Le%20Boeuf,%20Burney</creatorName>%0A%20%20%20%20%20%20<affiliation>UC%20Santa%20Cruz</affiliation>%0A%20%20%20%20</creator>%0A%20%20</creators>%0A%20%20<titles>%0A%20%20%20%20<title>Pinniped%20censuses%20at%20A%F1o%20Nuevo,%20California,%201967-2017</title>%0A%20%20</titles>%0A%20%20<publisher>UC%20Santa%20Cruz</publisher>%0A%20%20<publicationYear>2017</publicationYear>%0A%20%20<fundingReferences>%0A%20%20%20%20<fundingReference>%0A%20%20%20%20%20%20<funderName>National%20Science%20Foundation</funderName>%0A%20%20%20%20%20%20<awardNumber>Many</awardNumber>%0A%20%20%20%20</fundingReference>%0A%20%20%20%20<fundingReference>%0A%20%20%20%20%20%20<funderName>UC%20Santa%20Cruz%20Institute%20for%20Marine%20Sciences</funderName>%0A%20%20%20%20</fundingReference>%0A%20%20</fundingReferences>%0A%20%20<dates>%0A%20%20%20%20<date%20dateType%3D%22Available%22>2017-07-04T07:00:00Z</date>%0A%20%20</dates>%0A%20%20<language>en</language>%0A%20%20<resourceType%20resourceTypeGeneral%3D%22Dataset%22>dataset</resourceType>%0A%20%20<relatedIdentifiers>%0A%20%20%20%20<relatedIdentifier%20relationType%3D%22Documents%22%20relatedIdentifierType%3D%22DOI%22>10.1578/AM.37.4.2011.486</relatedIdentifier>%0A%20%20</relatedIdentifiers>%0A%20%20<sizes>%0A%20%20%20%20<size>50675264%20bytes</size>%0A%20%20</sizes>%0A%20%20<version>7</version>%0A%20%20<rightsList>%0A%20%20%20%20<rights%20rightsURI%3D%22https://creativecommons.org/licenses/by/4.0/%22>Creative%20Commons%20Attribution%204.0%20International%20%28CC%20BY%204.0%29</rights>%0A%20%20</rightsList>%0A%20%20<descriptions>%0A%20%20%20%20<description%20descriptionType%3D%22Abstract%22>%0A%20%20%20%20%20%20Regular%20pinniped%20censuses%20at%20A%F1o%20Nuevo%20Island,%20California,%20were%20initiated%0A%20%20%20%20%20%20by%20our%20research%20group%20in%201967%20to%20support%20studies%20of%20reproductive%20behavior%0A%20%20%20%20%20%20of%20male%20elephant%20seals,%20Mirounga%20angustirostris.%20Research%20on%20elephant%0A%20%20%20%20%20%20seals%20at%20the%20colony%20has%20continued%20since,%20expanding%20to%20cover%20female%0A%20%20%20%20%20%20behavior,%20reproductive%20success,%20physiology%20and%20energetics,%20migrations%20and%0A%20%20%20%20%20%20foraging,%20and%20more.%20The%20other%20species%20of%20pinnipeds,%20Steller%20sea%20lion%0A%20%20%20%20%20%20%28Eumetopias%20jubata%29,%20California%20sea%20lion%20%28Zalophus%20californianus%29,%20and%0A%20%20%20%20%20%20harbor%20seal%20%28Phoca%20vitulina%29,%20have%20been%20the%20focus%20of%20additional%20studies.%0A%20%20%20%20%20%20......................................................................................................................................................................................................................................................................................................................................................................................%20Censuses%20were%20collected%20to%20support%20the%20wide%20range%20of%20research,%20but%20population%20size%20of%20has%20been%20an%20important%20topic%20as%20the%20elephant%20seal%20population%20expanded.%20We%20described%20the%20initial%20expansion%20to%20the%20mainland%20in%201975,%20and%20in%202011%20described%20details%20of%20long-
+term%20growth%20and%20then%20stabilization%20of%20the%20breeding%20elephant%20seal%20population%20over%20the%20entire%20colony.%20A%F1o%20Nuevo%20has%20also%20been%20central%20to%20understanding%20the%20entire%20northern%20elephant%20seal%20population,%20which%20has%20recovered%20from%20a%20remnant%20population%20in%20Mexico%20after%20overhunting%20and%20continues%20to%20grow.%20......................................................................................................................................................................................................................................................................................................................................................................................%20The%20field%20notebooks%20in%20which%20censuses%20were%20recorded%20from%201967-2005%20were%20saved.%20They%20are%20now%20archived%20at%20the%20University%20of%20California%20Santa%20Cruz%20library:%20......................................................................................................................................................................................................................................................................................................................................................................................%20UCSC%20Elephant%20Seal%20and%20other%20Pinniped%20Research%20records.%20UA%20132.%20Special%20Collections%20and%20Archives,%20University%20Library,%20University%20of%20California,%20Santa%20Cruz.%0A%20%20%20%20</description>%0A%20%20%20%20<description%20descriptionType%3D%22Methods%22>%0A%20%20%20%20%20%20Field%20counts%20of%20pinnipeds%20from%20high%20ground%20near%20the%20colony.%20Data%20were%0A%20%20%20%20%20%20originally%20written%20into%20small%20notebooks,%20one%20census%20per%20day.%20These%20were%0A%20%20%20%20%20%20transcribed%20into%20digital%20format%20and%20organized%20into%20a%20MySQL%20database%20over%0A%20%20%20%20%20%202004-2006.%20After%202005,%20data%20were%20entered%20directly%20into%20this%20database%20via%20a%0A%20%20%20%20%20%20web%20interface,%20and%20any%20paper%20notes%20used%20by%20observers%20were%20not%20stored.%20The%0A%20%20%20%20%20%20data%20archived%20here%20was%20extracted%20from%20the%20MySQL%20database%20after%20the%20census%0A%20%20%20%20%20%20of%2025%20May%202017.%0A%20%20%20%20</description>%0A%20%20%20%20<description%20descriptionType%3D%22Other%22>%0A%20%20%20%20%20%20Archive%20of%20all%20pinniped%20census%20results,%20A%F1o%20Nuevo,%20California,%201967-2017%0A%20%20%20%20%20%20......................................................................................................................................................................................................................................................................................................................................................................................%20Introduction%20......................................................................................................................................................................................................................................................................................................................................................................................%20Regular%20pinniped%20censuses%20at%20A%F1o%20Nuevo%20Island,%20California,%20were%20initiated%20by%20our%20%28BJL%29%20research%20group%20in%201967%20to%20support%20studies%20of%20reproductive%20behavior%20of%20male%20elephant%20seals,%20Mirounga%20angustirostris.%20The%20research%20expanded%20to%20include%20he%20other%20species%20of%20pinnipeds,%20Steller%20sea%20lion%20%28Eumetopias%20jubata%29,%20California%20sea%20lion%20%28Zalophus%20californianus%29,%20and%20harbor%20seal%20%28Phoca%20vitulina%29,%20by%20the%20mid-1970s,%20and%20censuses%20included%20all%20the%20species%20from%20the%20beginning.%20When%20elephant%20seals%20colonized%20the%20mainland%20adjacent%20to%20A%F1o%20Nuevo%20Island%20in%201975,%20research%20and%20accompanying%20censuses%20began%20on%20the%20A%F1o%20Nuevo%20mainland.%20......................................................................................................................................................................................................................................................................................................................................................................................%20Daily%20censuses%20were%20carried%20out%20site-
+by-
+site,%20counting%20animals%20in%20groups%20on%20individual%20beaches,%20dunes,%20or%20rock%20outcrops.%20Besides%20counting%20the%20species%20separately,%20animals%20were%20also%20divided%20into%20various%20age%20and%20sex%20categories%20that%20could%20be%20distinguished%20visually.%20The%20island%20and%20two%20sections%20of%20the%20mainland%20%28called%20the%20main%20point%20and%20the%20north%20point%29%20were%20counted%20separately%3B%20sometimes%20one%20observer%20would%20cover%20both%20mainland%20sections%20in%20a%20day,%20but%20the%20island%20was%20always%20counted%20separately%20because%20crossing%20the%20channel%20by%20boat%20is%20time-
+consuming.%20This%20means%20that%20island%20censuses%20and%20mainland%20censuses%20were%20not%20routinely%20done%20on%20the%20same%20day,%20but%20in%20many%20cases%20they%20were.%20......................................................................................................................................................................................................................................................................................................................................................................................%20In%20the%20original%20census%20data,%20a%20single%20entry%20consists%20of%20one%20location,%20one%20category,%20a%20date,%20and%20a%20single%20count.%20Those%20original%20data%20include%20352,702%20of%20these%20individual%20records,%20on%203331%20different%20days.%20This%20full%20table%20is%20provided%20here%20as%20Table%205.%20......................................................................................................................................................................................................................................................................................................................................................................................%20A%20more%20useful%20format%20of%20the%20data,%20involves%20summing%20animals%20by%20species%20and%20age-
+sex%20category%20over%20all%20locations%20on%20day:%20these%20are%20daily%20censuses,%20always%20however%20separated%20into%20the%20three%20main%20regions%20%28island%20and%20two%20mainland%20sections%29.%20In%20these%20tables,%20a%20single%20row%20has%20summed%20counts%20of%20one%20species%20on%20one%20day%20in%20one%20of%20the%20three%20regions,%20with%20several%20columns%20separating%20age-
+sex%20categories.%20Those%20data%20are%20included%20here%20as%20tables%201a-1c%20and%202-4.%20......................................................................................................................................................................................................................................................................................................................................................................................%20Two%20more%20supporting%20tables%20and%20two%20supporting%20files%20are%20included%20in%20the%20archive.%20One%20table%20has%20abbreviations%20for%20individual%20locations%20%28Table%206%29%20and%20the%20other%20has%20abbreviations%20for%20age-
+sex%20categories%20%28Table%207%29.%20There%20is%20a%20file%20with%20descriptions%20of%20the%20tables%20and%20all%20columns,%20and%20a%20pdf%20having%20more%20references,%20maps,%20and%20information%20about%20the%20original%20notebooks%20that%20held%20hand-
+written%20census%20data.%20The%20latter%20are%20now%20archived%20in%20the%20University%20of%20California,%20Santa%20Cruz,%20library.%20All%20files%20are%20listed%20below.%20......................................................................................................................................................................................................................................................................................................................................................................................%20......................................................................................................................................................................................................................................................................................................................................................................................%20MaFemalePupCensusArchive.tab%20Table%201a.%20Total%20daily%20counts%20of%20elephant%20seal%20females%20and%20pups.%20......................................................................................................................................................................................................................................................................................................................................................................................%20MaMaleCensusArchive.tab%20Table%201b.%20Total%20daily%20counts%20of%20elephant%20seal%20adult%20and%20subadult%20males.%20......................................................................................................................................................................................................................................................................................................................................................................................%20MaJuvCensusArchive.tab%20Table%201c.%20Total%20daily%20counts%20of%20elephant%20seal%20juveniles.%20......................................................................................................................................................................................................................................................................................................................................................................................%20EjCensusArchive.tabTable%202.%20Total%20daily%20counts%20of%20Steller%20sea%20lions.%20......................................................................................................................................................................................................................................................................................................................................................................................%20PvCensusArchive.tab%20Table%203.%20Total%20daily%20counts%20of%20harbor%20seals.%20......................................................................................................................................................................................................................................................................................................................................................................................%20ZcCensusArchive.tab%20Table%204.%20Total%20daily%20counts%20of%20California%20sea%20lions.%20......................................................................................................................................................................................................................................................................................................................................................................................%20FullCensusArchive.tab%20Table%205.%20Every%20individual%20count%20of%20one%20age-
+sex%20category%20at%20a%20single%20location%20on%20one%20day.%20......................................................................................................................................................................................................................................................................................................................................................................................%20CensusLocationArchive.tab%20Table%206.%20Table%20of%20location%20abbreviations,%20with%20coordinates%20of%20each.%20......................................................................................................................................................................................................................................................................................................................................................................................%20CensusAgeArchive.tab%20Table%207.%20Table%20of%20abbreviations%20for%20age-
+sex%20categories.%20......................................................................................................................................................................................................................................................................................................................................................................................%20Table%20Descriptions.txt.%20Descriptions%20of%20every%20table%20column.%20......................................................................................................................................................................................................................................................................................................................................................................................%20CensusArchiveTables.pdf.%20A%20pdf%20describing%20original%20notebooks,%20with%20maps%20of%20the%20A%F1o%20Nuevo%20colony%20included.%20......................................................................................................................................................................................................................................................................................................................................................................................%0A%20%20%20%20</description>%0A%20%20</descriptions>%0A%20%20<geoLocations>%0A%20%20%20%20<geoLocation>%0A%20%20%20%20%20%20<geoLocationBox>%0A%20%20%20%20%20%20%20%20<westBoundLongitude>-122.344437</westBoundLongitude>%0A%20%20%20%20%20%20%20%20<eastBoundLongitude>-122.321091</eastBoundLongitude>%0A%20%20%20%20%20%20%20%20<southBoundLatitude>37.109955</southBoundLatitude>%0A%20%20%20%20%20%20%20%20<northBoundLatitude>37.126929</northBoundLatitude>%0A%20%20%20%20%20%20</geoLocationBox>%0A%20%20%20%20</geoLocation>%0A%20%20</geoLocations>%0A</resource>
+mrt.creator ucsc_dash erc
+who:%20Condit,%20Richard%3B%20Morris,%20Patricia%3B%20Le%20Boeuf,%20Burney%0Awhat:%20Pinniped%20censuses%20at%20A%F1o%20Nuevo,%20California,%201967-2017%0Awhen:%202017%0Awhere:%20ark:/b7291/d1pp47%0Awhere:%20doi:10.7291/D1PP47

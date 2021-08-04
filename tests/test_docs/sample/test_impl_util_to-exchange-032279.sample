@@ -1,0 +1,1209 @@
+input_json=
+{"datacite":"<?xml version=\"1.0\"?>
+<resource xmlns=\"http://datacite.org/schema/kernel-4\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+xsi:schemaLocation=\"http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4/metadata.xsd\">
+  <identifier identifierType=\"DOI\">10.7270/Q25D8S70</identifier>
+  <alternateIdentifiers>
+    <alternateIdentifier alternateIdentifierType=\"CompactIdentifiers\">bindingdb:e50034019</alternateIdentifier>
+  </alternateIdentifiers>
+  <titles>
+    <title>BindingDB Entry 50034019: Comprehensive analysis of kinase inhibitor selectivity.</title>
+  </titles>
+  <creators>
+    <creator>
+      <creatorName>BindingDB</creatorName>
+      <nameIdentifier nameIdentifierScheme=\"RRID\"
+schemeURI=\"https://scicrunch.org/scicrunch/resolver/\">SCR_000390</nameIdentifier>
+      <affiliation>University of California San Diego</affiliation>
+    </creator>
+  </creators>
+  <publisher>BindingDB</publisher>
+  <publicationYear>2012</publicationYear>
+  <resourceType resourceTypeGeneral=\"Dataset\">Protein-ligand binding data</resourceType>
+  <language>en-us</language>
+  <descriptions>
+    <description descriptionType=\"Other\">Small molecule binding data for protein 3-phosphoinositide dependent protein kinase-1,
+5'-AMP-activated protein kinase catalytic subunit alpha-1, AKT/p21CIP1, ALK tyrosine kinase receptor, AMPK subunit alpha-2, AXL
+receptor tyrosine kinase, Activin receptor type-1, Activin receptor type-1B, Activin receptor type-2A, Activin receptor type-2B,
+Activin receptor-like kinase 3 (ALK-3), Adaptor-associated kinase, Ankyrin repeat and protein kinase domain-containing protein 1,
+Apoptosis Signal-regulating Kinase 1 (ASK1), Aurora kinase B/Inner centromere protein, BMP-2-inducible protein kinase, BR
+serine/threonine-protein kinase 1, BR serine/threonine-protein kinase 2, Bone morphogenetic protein receptor type-1B (BMPR1B),
+Bone morphogenetic protein receptor type-2, C-RAF, CAMK2A, CAMK2B, CDC2-like kinase 3 (CLK3), CDK7/Cyclin H/MNAT1, CDK8/Cyclin C,
+CDKL2, CaM kinase I alpha, CaM kinase I delta, CaM kinase I gamma, CaM kinase II, CaM kinase IV, CaM-kinase kinase alpha, CaM-
+kinase kinase beta, Calcium-dependent protein kinase 1, Casein Kinase II, Casein kinase I, Casein kinase I delta/epsilon, Casein
+kinase I isoform alpha (CK1 Alpha), Casein kinase I isoform alpha-like, Casein kinase I isoform delta, Casein kinase I isoform
+gamma-3, Casein kinase II, Cell division control protein 2 homolog, Cell division cycle 2-like protein kinase 6, Chaperone
+activity of bc1 complex-like, mitochondrial, Citron Rho-interacting kinase, Cyclin-Dependent Kinase 5 (CDK5), Cyclin-dependent
+kinase 11A, Cyclin-dependent kinase 13, Cyclin-dependent kinase 15, Cyclin-dependent kinase 2, Cyclin-dependent kinase 3 (CDK3),
+Cyclin-dependent kinase 4, Cyclin-dependent kinase 9, Cyclin-dependent kinase-like 1, Cyclin-dependent kinase-like 3, Cyclin-
+dependent kinase-like 5, Death-associated protein kinase 1, Death-associated protein kinase 2, Death-associated protein kinase 3,
+Discoidin domain-containing receptor 2, Dual serine/threonine and tyrosine protein kinase, Dual specificity mitogen-activated
+protein kinase kinase 1, Dual specificity mitogen-activated protein kinase kinase 2, Dual specificity mitogen-activated protein
+kinase kinase 3, Dual specificity mitogen-activated protein kinase kinase 4, Dual specificity mitogen-activated protein kinase
+kinase 5, Dual specificity mitogen-activated protein kinase kinase 6, Dual specificity mitogen-activated protein kinase kinase 7
+(MAP2K7), Dual specificity protein kinase CLK2, Dual specificity protein kinase CLK4, Dual specificity protein kinase TTK, Dual
+specificity testis-specific protein kinase 1, Dual specificty protein kinase CLK1, Dual-specificity tyrosine-phosphorylation
+regulated kinase 1A, Dual-specificity tyrosine-phosphorylation regulated kinase 2, Dual-specificity tyrosine-regulated kinases 1B,
+EPHB1, Ephrin receptor, Ephrin type-A receptor 1 (EPHA1), Ephrin type-A receptor 3 (EPHA3), Ephrin type-B receptor 3 (EPHB3),
+Ephrin type-B receptor 4 (EphB4), Epidermal growth factor receptor, Epidermal growth factor receptor and ErbB2 (HER1 and HER2),
+Epithelial discoidin domain-containing receptor 1, Eukaryotic translation initiation factor 2-alpha kinase 1, Eukaryotic
+translation initiation factor 2-alpha kinase 4, Extracellular signal-regulated kinase 5 (ERK5), Fibroblast growth factor receptor
+1, Fibroblast growth factor receptor 2, Fibroblast growth factor receptor 3, Fibroblast growth factor receptor 4, Focal adhesion
+kinase 1/vascular endothelial growth factor receptor 3, G protein-coupled receptor kinase 4, G protein-coupled receptor kinase 7,
+Glycogen synthase kinase-3, Hepatocyte growth factor receptor, Homeodomain-interacting protein kinase 1, Homeodomain-interacting
+protein kinase 2 (HIPK2), Homeodomain-interacting protein kinase 3, Homeodomain-interacting protein kinase 4, Hormonally up-
+regulated neu tumor-associated kinase, IKK epsilon/TBK1, Inhibitor of NF-kappa-B kinase (IKK), Insulin receptor, Insulin receptor-
+related protein, Insulin-like growth factor I receptor, Interferon-induced, double-stranded RNA-activated protein kinase,
+Interleukin-1 receptor-associated kinase 1, Interleukin-1 receptor-associated kinase 3, Interleukin-1 receptor-associated kinase
+4, JAK2/TYK2, JAK3/JAK1, Kinesin-1 heavy chain/ Tyrosine-protein kinase receptor RET, LIM domain kinase 1, LIM domain kinase 2,
+Leucine-rich repeat serine/threonine-protein kinase 2 (LRRK2), Leukocyte tyrosine kinase receptor, MAP kinase ERK2, MAP kinase
+p38, MAP kinase signal-integrating kinase 2, MAP kinase-activated protein kinase 2, MAP kinase-activated protein kinase 5, MAP
+kinase-interacting serine/threonine-protein kinase MNK1, MAP/microtubule affinity-regulating kinase 2, MAP/microtubule affinity-
+regulating kinase 4, MAST1/MAST2, MER intracellular domain/EGFR extracellular domain chimera, Macrophage colony stimulating factor
+receptor, Macrophage-stimulating protein receptor, Maternal embryonic leucine zipper kinase (MELK), Misshapen-like kinase 1,
+Mitogen-activated protein kinase 10, Mitogen-activated protein kinase 13 (MAPK13), Mitogen-activated protein kinase 14, Mitogen-
+activated protein kinase 15, Mitogen-activated protein kinase 2, Mitogen-activated protein kinase 3, Mitogen-activated protein
+kinase 4, Mitogen-activated protein kinase 6, Mitogen-activated protein kinase 9, Mitogen-activated protein kinase kinase kinase
+1, Mitogen-activated protein kinase kinase kinase 10, Mitogen-activated protein kinase kinase kinase 11, Mitogen-activated protein
+kinase kinase kinase 12, Mitogen-activated protein kinase kinase kinase 13, Mitogen-activated protein kinase kinase kinase 15,
+Mitogen-activated protein kinase kinase kinase 2, Mitogen-activated protein kinase kinase kinase 3, Mitogen-activated protein
+kinase kinase kinase 4, Mitogen-activated protein kinase kinase kinase 6, Mitogen-activated protein kinase kinase kinase 9 (MLK1),
+Mitogen-activated protein kinase kinase kinase kinase 1, Mitogen-activated protein kinase kinase kinase kinase 3, Mitogen-
+activated protein kinase kinase kinase kinase 4, Mitogen-activated protein kinase kinase kinase kinase 5, Mixed lineage kinase 7,
+Muscle, skeletal receptor tyrosine protein kinase, Myosin IIIA, Myosin light chain kinase, Myosin light chain kinase family member
+4, Myosin-IIIB, Myotonin-protein kinase, NT-3 growth factor receptor, NUAK family SNF1-like kinase 1, NUAK family SNF1-like kinase
+2, Neurotrophic tyrosine kinase receptor, Neurotrophic tyrosine kinase receptor type 2, Non-receptor tyrosine-protein kinase TNK1,
+PAK1, PI3-kinase subunit alpha, PI3-kinase subunit beta, PI3-kinase subunit delta, PI3-kinase subunit gamma, PITSLRE
+serine/threonine-protein kinase CDC2L1, PRP4 kinase (PRP4), PTK2B protein tyrosine kinase 2 beta (PTK2B), Peripheral plasma
+membrane protein CASK, Phosphatidylinositol 4-kinase beta (PIK4KB), Phosphatidylinositol-4-phosphate 3-kinase C2 domain-containing
+beta polypeptide, Phosphatidylinositol-4-phosphate 3-kinase C2 domain-containing subunit gamma, Phosphatidylinositol-4-phosphate
+5-kinase type-1 alpha, Phosphatidylinositol-4-phosphate 5-kinase type-1 gamma, Phosphatidylinositol-5-phosphate 4-kinase type-2
+beta, Phosphatidylinositol-5-phosphate 4-kinase type-2 gamma, Phosphorylase kinase, Platelet-derived growth factor receptor,
+Platelet-derived growth factor receptor beta, Protein kinase C delta type, Protein kinase C iota (PKC&amp;#953;), Protein kinase C
+theta type, Protein kinase C, epsilon, Protein kinase C, eta, Protein kinase N1, Protein kinase N2, Proto-oncogene tyrosine-
+protein kinase ROS, Putative uncharacterized serine/threonine-protein kinase SgK110, RAF serine/threonine protein kinase, Receptor
+tyrosine-protein kinase erbB-4 (HER4), Receptor-interacting serine/threonine-protein kinase 1, Receptor-interacting
+serine/threonine-protein kinase 4, Rho-associated protein kinase, Rhodopsin kinase, Ribosomal protein S6 kinase (P70S6K),
+Ribosomal protein S6 kinase alpha 1, Ribosomal protein S6 kinase alpha 2, Ribosomal protein S6 kinase alpha 3, Ribosomal protein
+S6 kinase alpha 4, Ribosomal protein S6 kinase alpha 5, Ribosomal protein S6 kinase alpha 6, SM myosin light chain kinase
+(smMLCK), SNF-related serine/threonine-protein kinase, SPS1/STE20-related protein kinase YSK4, SRC, STE20/SPS1-related proline-
+alanine-rich protein kinase, Salt-inducible kinase 2 (SIK2), Serine/threonine protein kinase NLK, Serine/threonine-protein kinase
+10, Serine/threonine-protein kinase 11, Serine/threonine-protein kinase 17A, Serine/threonine-protein kinase 17B (STK17B),
+Serine/threonine-protein kinase 2, Serine/threonine-protein kinase 24, Serine/threonine-protein kinase 25, Serine/threonine-
+protein kinase 32A, Serine/threonine-protein kinase 32B, Serine/threonine-protein kinase 32C, Serine/threonine-protein kinase 33,
+Serine/threonine-protein kinase 35, Serine/threonine-protein kinase 36, Serine/threonine-protein kinase 38, Serine/threonine-
+protein kinase 38-like, Serine/threonine-protein kinase 4 (STK4), Serine/threonine-protein kinase AKT, Serine/threonine-protein
+kinase Aurora, Serine/threonine-protein kinase Aurora-C, Serine/threonine-protein kinase Chk1, Serine/threonine-protein kinase
+Chk2, Serine/threonine-protein kinase D1, Serine/threonine-protein kinase D2 (PKD2), Serine/threonine-protein kinase D3,
+Serine/threonine-protein kinase DCLK1, Serine/threonine-protein kinase DCLK2, Serine/threonine-protein kinase DCLK3,
+Serine/threonine-protein kinase GAK, Serine/threonine-protein kinase ICK, Serine/threonine-protein kinase LATS1, Serine/threonine-
+protein kinase LATS2, Serine/threonine-protein kinase MAK, Serine/threonine-protein kinase MARK1, Serine/threonine-protein kinase
+MRCK alpha, Serine/threonine-protein kinase MRCK beta, Serine/threonine-protein kinase MRCK gamma, Serine/threonine-protein kinase
+MST2, Serine/threonine-protein kinase MST4, Serine/threonine-protein kinase NEK6, Serine/threonine-protein kinase NEK7,
+Serine/threonine-protein kinase NEK9, Serine/threonine-protein kinase NIM1, Serine/threonine-protein kinase Nek1,
+Serine/threonine-protein kinase Nek11, Serine/threonine-protein kinase Nek2, Serine/threonine-protein kinase Nek3,
+Serine/threonine-protein kinase Nek4, Serine/threonine-protein kinase Nek5, Serine/threonine-protein kinase OSR1,
+Serine/threonine-protein kinase PAK 4, Serine/threonine-protein kinase PAK6, Serine/threonine-protein kinase PAK7,
+Serine/threonine-protein kinase PCTAIRE-1, Serine/threonine-protein kinase PCTAIRE-2, Serine/threonine-protein kinase PCTAIRE-3,
+Serine/threonine-protein kinase PFTAIRE-1, Serine/threonine-protein kinase PIM, Serine/threonine-protein kinase PLK1,
+Serine/threonine-protein kinase PLK2, Serine/threonine-protein kinase PLK3, Serine/threonine-protein kinase PLK4,
+Serine/threonine-protein kinase PRKX, Serine/threonine-protein kinase RIO1, Serine/threonine-protein kinase RIO2,
+Serine/threonine-protein kinase RIO3, Serine/threonine-protein kinase RIPK2, Serine/threonine-protein kinase SBK1,
+Serine/threonine-protein kinase SIK1, Serine/threonine-protein kinase SIK3, Serine/threonine-protein kinase SRPK1,
+Serine/threonine-protein kinase SRPK2, Serine/threonine-protein kinase SRPK3, Serine/threonine-protein kinase Sgk3,
+Serine/threonine-protein kinase TAO1, Serine/threonine-protein kinase TAO2, Serine/threonine-protein kinase TAO3,
+Serine/threonine-protein kinase ULK1, Serine/threonine-protein kinase ULK2, Serine/threonine-protein kinase ULK3,
+Serine/threonine-protein kinase VRK2, Serine/threonine-protein kinase WEE1, Serine/threonine-protein kinase c-TAK1,
+Serine/threonine-protein kinase mTOR, Serine/threonine-protein kinase pknB, Serine/threonine-protein kinase receptor R3,
+Serine/threonine-protein kinase tousled-like 1, Serine/threonine-protein kinase tousled-like 2, Serine/threonine-protein
+kinase/endoribonuclease IRE1 Alpha, TAK1/TAB1, TGF-beta receptor type I, TGF-beta receptor type II, TNNI3K, TRAF2 and NCK-
+interacting protein kinase (TNIK), Testis-specific serine/threonine-protein kinase 1, Transient receptor potential cation channel
+subfamily M member 6, Tyrosine kinase non-receptor protein 2, Tyrosine- and threonine-specific cdc2-inhibitory kinase, Tyrosine-
+protein kinase ABL, Tyrosine-protein kinase ABL1, Tyrosine-protein kinase BMX, Tyrosine-protein kinase BRK, Tyrosine-protein
+kinase BTK, Tyrosine-protein kinase Blk, Tyrosine-protein kinase CSK, Tyrosine-protein kinase CTK, Tyrosine-protein kinase FER,
+Tyrosine-protein kinase Fes/Fps, Tyrosine-protein kinase ITK/TSK, Tyrosine-protein kinase JAK1, Tyrosine-protein kinase JAK2,
+Tyrosine-protein kinase Kit (Kit), Tyrosine-protein kinase STK16 (STK16), Tyrosine-protein kinase SYK, Tyrosine-protein kinase
+TEC, Tyrosine-protein kinase TXK (TXK), Tyrosine-protein kinase Yes, Tyrosine-protein kinase ZAP-70, Tyrosine-protein kinase
+receptor FLT3, Tyrosine-protein kinase receptor TYRO3, Tyrosine-protein kinase receptor Tie-1, Uncharacterized aarF domain-
+containing protein kinase 4, VEGF-receptor 2 and tyrosine-protein kinase SRC, Vascular endothelial growth factor receptor,
+Vascular endothelial growth factor receptor 2, Vascular endothelial growth factor receptor 2 and tyrosine-protein kinase TIE-2
+(KDR and TIE2), Wee1-like protein kinase 2, c-Jun N-terminal kinase, JNK, cAMP-dependent protein kinase (PKA), cGMP-dependent
+protein kinase, cGMP-dependent protein kinase 2, myosin light chain kinase 2, p21-Activated kinase 2 (PAK2), p21-Activated kinase
+3 (PAK3), and p38 delta/gamma, Uniprot A0A024RDK3, L7RSL3, O00238, O00329, O00444, O00506, O00750, O14578, O14730, O14733, O14757,
+O14920, O14936, O14965, O14976, O15075, O15111, O15146, O15197, O15264, O15530, O43283, O43293, O43318, O43353, O60285, O60331,
+O60674, O75116, O75385, O75460, O75582, O75676, O75716, O75747, O75914, O76039, O94768, O94804, O94806, O94921, O95382, O95747,
+O95819, O95835, O96013, O96017, P00519, P00533, P04049, P04626, P04629, P06213, P06239, P06241, P07332, P07333, P07947, P07948,
+P07949, P08069, P08581, P08631, P08922, P09619, P09769, P0C1S8, P0C264, P10721, P11309, P11362, P11802, P12931, P14616, P15056,
+P15735, P16234, P16591, P17612, P17948, P19525, P19784, P20794, P21127, P21709, P21802, P21860, P22455, P22607, P22694, P23443,
+P23458, P24723, P24941, P27037, P27361, P27448, P28482, P29317, P29320, P29322, P29323, P29376, P29597, P30291, P30530, P31152,
+P31749, P31751, P32298, P33981, P35590, P35916, P35968, P36507, P36888, P36894, P36896, P36897, P37023, P37173, P41240, P41743,
+P42336, P42338, P42345, P42679, P42680, P42681, P42684, P42685, P43403, P43405, P45983, P45984, P45985, P46734, P48729, P48730,
+P48736, P49137, P49336, P49674, P49759, P49760, P49761, P49840, P49841, P50613, P50750, P51451, P51617, P51812, P51813, P51817,
+P51955, P51956, P51957, P52333, P52564, P53350, P53355, P53667, P53671, P53778, P53779, P54646, P54753, P54756, P54760, P54762,
+P54764, P57058, P57059, P57078, P61075, P62343, P68400, P78356, P78362, P78368, P80192, P9WI81, Q00526, Q00535, Q00536, Q00537,
+Q02156, Q02750, Q02763, Q02779, Q04759, Q04771, Q04912, Q05397, Q05655, Q06187, Q06418, Q07912, Q08345, Q08881, Q09013, Q12851,
+Q12852, Q12866, Q13043, Q13131, Q13153, Q13163, Q13164, Q13177, Q13188, Q13233, Q13237, Q13464, Q13470, Q13523, Q13546, Q13554,
+Q13555, Q13557, Q13627, Q13705, Q13873, Q13882, Q13976, Q14004, Q14012, Q14164, Q14289, Q14680, Q15139, Q15208, Q15303, Q15349,
+Q15418, Q15569, Q15746, Q15759, Q15831, Q15835, Q16288, Q16512, Q16513, Q16539, Q16566, Q16584, Q16620, Q16659, Q16816, Q16832,
+Q2M2I8, Q32MK0, Q52WX2, Q541P7, Q56UN5, Q59H18, Q5S007, Q5VT25, Q6DT37, Q6FI23, Q6P3R8, Q6PHR2, Q6XUX3, Q6ZN16, Q7KZI7, Q7L7X3,
+Q86UE8, Q86UX6, Q86V86, Q86Y07, Q86YV6, Q86Z02, Q8IU85, Q8IVH8, Q8IVW4, Q8IW41, Q8IWQ3, Q8IY84, Q8IYT8, Q8N4C8, Q8N568, Q8N5S9,
+Q8N752, Q8NE63, Q8NEV4, Q8NFD2, Q8NG66, Q8NI60, Q8TBX8, Q8TD08, Q8TD19, Q8TDC3, Q8TDR2, Q8TDX7, Q8WTQ7, Q8WU08, Q8WXR4, Q92630,
+Q92772, Q92918, Q96BR1, Q96D53, Q96GD4, Q96L34, Q96NX5, Q96PY6, Q96Q40, Q96RR4, Q96SB4, Q99640, Q99683, Q99755, Q99759, Q9BQI3,
+Q9BRS2, Q9BUB5, Q9BVS4, Q9BWU1, Q9BX84, Q9BXA7, Q9BYT3, Q9BZL6, Q9C098, Q9H093, Q9H0K1, Q9H1R3, Q9H2G2, Q9H2K8, Q9H2X6, Q9H3Y6,
+Q9H422, Q9H4B4, Q9HAZ1, Q9HBH9, Q9HC98, Q9HCP0, Q9NQU5, Q9NRH2, Q9NRM7, Q9NRP7, Q9NSY1, Q9NWZ3, Q9NY57, Q9NYL2, Q9NYY3, Q9P0L2,
+Q9P1W9, Q9P286, Q9P289, Q9P2K8, Q9UBE8, Q9UBF8, Q9UEE5, Q9UEW8, Q9UF33, Q9UHD2, Q9UIK4, Q9UK32, Q9UKE5, Q9UKI8, Q9UL54, Q9UM73,
+Q9UPE1, Q9UPZ9, Q9UQ88, Q9UQB9, Q9UQM7, Q9Y243, Q9Y2H1, Q9Y2H9, Q9Y2U5, Q9Y463, Q9Y5S2, Q9Y616, Q9Y6E0, Q9Y6M4, and
+Q9Y6R4</description>
+  </descriptions>
+  <subjects>
+    <subject>3-phosphoinositide dependent protein kinase-1, 5'-AMP-activated protein kinase catalytic subunit alpha-1,
+AKT/p21CIP1, ALK tyrosine kinase receptor, AMPK subunit alpha-2, AXL receptor tyrosine kinase, Activin receptor type-1, Activin
+receptor type-1B, Activin receptor type-2A, Activin receptor type-2B, Activin receptor-like kinase 3 (ALK-3), Adaptor-associated
+kinase, Ankyrin repeat and protein kinase domain-containing protein 1, Apoptosis Signal-regulating Kinase 1 (ASK1), Aurora kinase
+B/Inner centromere protein, BMP-2-inducible protein kinase, BR serine/threonine-protein kinase 1, BR serine/threonine-protein
+kinase 2, Bone morphogenetic protein receptor type-1B (BMPR1B), Bone morphogenetic protein receptor type-2, C-RAF, CAMK2A, CAMK2B,
+CDC2-like kinase 3 (CLK3), CDK7/Cyclin H/MNAT1, CDK8/Cyclin C, CDKL2, CaM kinase I alpha, CaM kinase I delta, CaM kinase I gamma,
+CaM kinase II, CaM kinase IV, CaM-kinase kinase alpha, CaM-kinase kinase beta, Calcium-dependent protein kinase 1, Casein Kinase
+II, Casein kinase I, Casein kinase I delta/epsilon, Casein kinase I isoform alpha (CK1 Alpha), Casein kinase I isoform alpha-like,
+Casein kinase I isoform delta, Casein kinase I isoform gamma-3, Casein kinase II, Cell division control protein 2 homolog, Cell
+division cycle 2-like protein kinase 6, Chaperone activity of bc1 complex-like, mitochondrial, Citron Rho-interacting kinase,
+Cyclin-Dependent Kinase 5 (CDK5), Cyclin-dependent kinase 11A, Cyclin-dependent kinase 13, Cyclin-dependent kinase 15, Cyclin-
+dependent kinase 2, Cyclin-dependent kinase 3 (CDK3), Cyclin-dependent kinase 4, Cyclin-dependent kinase 9, Cyclin-dependent
+kinase-like 1, Cyclin-dependent kinase-like 3, Cyclin-dependent kinase-like 5, Death-associated protein kinase 1, Death-associated
+protein kinase 2, Death-associated protein kinase 3, Discoidin domain-containing receptor 2, Dual serine/threonine and tyrosine
+protein kinase, Dual specificity mitogen-activated protein kinase kinase 1, Dual specificity mitogen-activated protein kinase
+kinase 2, Dual specificity mitogen-activated protein kinase kinase 3, Dual specificity mitogen-activated protein kinase kinase 4,
+Dual specificity mitogen-activated protein kinase kinase 5, Dual specificity mitogen-activated protein kinase kinase 6, Dual
+specificity mitogen-activated protein kinase kinase 7 (MAP2K7), Dual specificity protein kinase CLK2, Dual specificity protein
+kinase CLK4, Dual specificity protein kinase TTK, Dual specificity testis-specific protein kinase 1, Dual specificty protein
+kinase CLK1, Dual-specificity tyrosine-phosphorylation regulated kinase 1A, Dual-specificity tyrosine-phosphorylation regulated
+kinase 2, Dual-specificity tyrosine-regulated kinases 1B, EPHB1, Ephrin receptor, Ephrin type-A receptor 1 (EPHA1), Ephrin type-A
+receptor 3 (EPHA3), Ephrin type-B receptor 3 (EPHB3), Ephrin type-B receptor 4 (EphB4), Epidermal growth factor receptor,
+Epidermal growth factor receptor and ErbB2 (HER1 and HER2), Epithelial discoidin domain-containing receptor 1, Eukaryotic
+translation initiation factor 2-alpha kinase 1, Eukaryotic translation initiation factor 2-alpha kinase 4, Extracellular signal-
+regulated kinase 5 (ERK5), Fibroblast growth factor receptor 1, Fibroblast growth factor receptor 2, Fibroblast growth factor
+receptor 3, Fibroblast growth factor receptor 4, Focal adhesion kinase 1/vascular endothelial growth factor receptor 3, G protein-
+coupled receptor kinase 4, G protein-coupled receptor kinase 7, Glycogen synthase kinase-3, Hepatocyte growth factor receptor,
+Homeodomain-interacting protein kinase 1, Homeodomain-interacting protein kinase 2 (HIPK2), Homeodomain-interacting protein kinase
+3, Homeodomain-interacting protein kinase 4, Hormonally up-regulated neu tumor-associated kinase, IKK epsilon/TBK1, Inhibitor of
+NF-kappa-B kinase (IKK), Insulin receptor, Insulin receptor-related protein, Insulin-like growth factor I receptor, Interferon-
+induced, double-stranded RNA-activated protein kinase, Interleukin-1 receptor-associated kinase 1, Interleukin-1 receptor-
+associated kinase 3, Interleukin-1 receptor-associated kinase 4, JAK2/TYK2, JAK3/JAK1, Kinesin-1 heavy chain/ Tyrosine-protein
+kinase receptor RET, LIM domain kinase 1, LIM domain kinase 2, Leucine-rich repeat serine/threonine-protein kinase 2 (LRRK2),
+Leukocyte tyrosine kinase receptor, MAP kinase ERK2, MAP kinase p38, MAP kinase signal-integrating kinase 2, MAP kinase-activated
+protein kinase 2, MAP kinase-activated protein kinase 5, MAP kinase-interacting serine/threonine-protein kinase MNK1,
+MAP/microtubule affinity-regulating kinase 2, MAP/microtubule affinity-regulating kinase 4, MAST1/MAST2, MER intracellular
+domain/EGFR extracellular domain chimera, Macrophage colony stimulating factor receptor, Macrophage-stimulating protein receptor,
+Maternal embryonic leucine zipper kinase (MELK), Misshapen-like kinase 1, Mitogen-activated protein kinase 10, Mitogen-activated
+protein kinase 13 (MAPK13), Mitogen-activated protein kinase 14, Mitogen-activated protein kinase 15, Mitogen-activated protein
+kinase 2, Mitogen-activated protein kinase 3, Mitogen-activated protein kinase 4, Mitogen-activated protein kinase 6, Mitogen-
+activated protein kinase 9, Mitogen-activated protein kinase kinase kinase 1, Mitogen-activated protein kinase kinase kinase 10,
+Mitogen-activated protein kinase kinase kinase 11, Mitogen-activated protein kinase kinase kinase 12, Mitogen-activated protein
+kinase kinase kinase 13, Mitogen-activated protein kinase kinase kinase 15, Mitogen-activated protein kinase kinase kinase 2,
+Mitogen-activated protein kinase kinase kinase 3, Mitogen-activated protein kinase kinase kinase 4, Mitogen-activated protein
+kinase kinase kinase 6, Mitogen-activated protein kinase kinase kinase 9 (MLK1), Mitogen-activated protein kinase kinase kinase
+kinase 1, Mitogen-activated protein kinase kinase kinase kinase 3, Mitogen-activated protein kinase kinase kinase kinase 4,
+Mitogen-activated protein kinase kinase kinase kinase 5, Mixed lineage kinase 7, Muscle, skeletal receptor tyrosine protein
+kinase, Myosin IIIA, Myosin light chain kinase, Myosin light chain kinase family member 4, Myosin-IIIB, Myotonin-protein kinase,
+NT-3 growth factor receptor, NUAK family SNF1-like kinase 1, NUAK family SNF1-like kinase 2, Neurotrophic tyrosine kinase
+receptor, Neurotrophic tyrosine kinase receptor type 2, Non-receptor tyrosine-protein kinase TNK1, PAK1, PI3-kinase subunit alpha,
+PI3-kinase subunit beta, PI3-kinase subunit delta, PI3-kinase subunit gamma, PITSLRE serine/threonine-protein kinase CDC2L1, PRP4
+kinase (PRP4), PTK2B protein tyrosine kinase 2 beta (PTK2B), Peripheral plasma membrane protein CASK, Phosphatidylinositol
+4-kinase beta (PIK4KB), Phosphatidylinositol-4-phosphate 3-kinase C2 domain-containing beta polypeptide,
+Phosphatidylinositol-4-phosphate 3-kinase C2 domain-containing subunit gamma, Phosphatidylinositol-4-phosphate 5-kinase type-1
+alpha, Phosphatidylinositol-4-phosphate 5-kinase type-1 gamma, Phosphatidylinositol-5-phosphate 4-kinase type-2 beta,
+Phosphatidylinositol-5-phosphate 4-kinase type-2 gamma, Phosphorylase kinase, Platelet-derived growth factor receptor, Platelet-
+derived growth factor receptor beta, Protein kinase C delta type, Protein kinase C iota (PKC&amp;#953;), Protein kinase C theta
+type, Protein kinase C, epsilon, Protein kinase C, eta, Protein kinase N1, Protein kinase N2, Proto-oncogene tyrosine-protein
+kinase ROS, Putative uncharacterized serine/threonine-protein kinase SgK110, RAF serine/threonine protein kinase, Receptor
+tyrosine-protein kinase erbB-4 (HER4), Receptor-interacting serine/threonine-protein kinase 1, Receptor-interacting
+serine/threonine-protein kinase 4, Rho-associated protein kinase, Rhodopsin kinase, Ribosomal protein S6 kinase (P70S6K),
+Ribosomal protein S6 kinase alpha 1, Ribosomal protein S6 kinase alpha 2, Ribosomal protein S6 kinase alpha 3, Ribosomal protein
+S6 kinase alpha 4, Ribosomal protein S6 kinase alpha 5, Ribosomal protein S6 kinase alpha 6, SM myosin light chain kinase
+(smMLCK), SNF-related serine/threonine-protein kinase, SPS1/STE20-related protein kinase YSK4, SRC, STE20/SPS1-related proline-
+alanine-rich protein kinase, Salt-inducible kinase 2 (SIK2), Serine/threonine protein kinase NLK, Serine/threonine-protein kinase
+10, Serine/threonine-protein kinase 11, Serine/threonine-protein kinase 17A, Serine/threonine-protein kinase 17B (STK17B),
+Serine/threonine-protein kinase 2, Serine/threonine-protein kinase 24, Serine/threonine-protein kinase 25, Serine/threonine-
+protein kinase 32A, Serine/threonine-protein kinase 32B, Serine/threonine-protein kinase 32C, Serine/threonine-protein kinase 33,
+Serine/threonine-protein kinase 35, Serine/threonine-protein kinase 36, Serine/threonine-protein kinase 38, Serine/threonine-
+protein kinase 38-like, Serine/threonine-protein kinase 4 (STK4), Serine/threonine-protein kinase AKT, Serine/threonine-protein
+kinase Aurora, Serine/threonine-protein kinase Aurora-C, Serine/threonine-protein kinase Chk1, Serine/threonine-protein kinase
+Chk2, Serine/threonine-protein kinase D1, Serine/threonine-protein kinase D2 (PKD2), Serine/threonine-protein kinase D3,
+Serine/threonine-protein kinase DCLK1, Serine/threonine-protein kinase DCLK2, Serine/threonine-protein kinase DCLK3,
+Serine/threonine-protein kinase GAK, Serine/threonine-protein kinase ICK, Serine/threonine-protein kinase LATS1, Serine/threonine-
+protein kinase LATS2, Serine/threonine-protein kinase MAK, Serine/threonine-protein kinase MARK1, Serine/threonine-protein kinase
+MRCK alpha, Serine/threonine-protein kinase MRCK beta, Serine/threonine-protein kinase MRCK gamma, Serine/threonine-protein kinase
+MST2, Serine/threonine-protein kinase MST4, Serine/threonine-protein kinase NEK6, Serine/threonine-protein kinase NEK7,
+Serine/threonine-protein kinase NEK9, Serine/threonine-protein kinase NIM1, Serine/threonine-protein kinase Nek1,
+Serine/threonine-protein kinase Nek11, Serine/threonine-protein kinase Nek2, Serine/threonine-protein kinase Nek3,
+Serine/threonine-protein kinase Nek4, Serine/threonine-protein kinase Nek5, Serine/threonine-protein kinase OSR1,
+Serine/threonine-protein kinase PAK 4, Serine/threonine-protein kinase PAK6, Serine/threonine-protein kinase PAK7,
+Serine/threonine-protein kinase PCTAIRE-1, Serine/threonine-protein kinase PCTAIRE-2, Serine/threonine-protein kinase PCTAIRE-3,
+Serine/threonine-protein kinase PFTAIRE-1, Serine/threonine-protein kinase PIM, Serine/threonine-protein kinase PLK1,
+Serine/threonine-protein kinase PLK2, Serine/threonine-protein kinase PLK3, Serine/threonine-protein kinase PLK4,
+Serine/threonine-protein kinase PRKX, Serine/threonine-protein kinase RIO1, Serine/threonine-protein kinase RIO2,
+Serine/threonine-protein kinase RIO3, Serine/threonine-protein kinase RIPK2, Serine/threonine-protein kinase SBK1,
+Serine/threonine-protein kinase SIK1, Serine/threonine-protein kinase SIK3, Serine/threonine-protein kinase SRPK1,
+Serine/threonine-protein kinase SRPK2, Serine/threonine-protein kinase SRPK3, Serine/threonine-protein kinase Sgk3,
+Serine/threonine-protein kinase TAO1, Serine/threonine-protein kinase TAO2, Serine/threonine-protein kinase TAO3,
+Serine/threonine-protein kinase ULK1, Serine/threonine-protein kinase ULK2, Serine/threonine-protein kinase ULK3,
+Serine/threonine-protein kinase VRK2, Serine/threonine-protein kinase WEE1, Serine/threonine-protein kinase c-TAK1,
+Serine/threonine-protein kinase mTOR, Serine/threonine-protein kinase pknB, Serine/threonine-protein kinase receptor R3,
+Serine/threonine-protein kinase tousled-like 1, Serine/threonine-protein kinase tousled-like 2, Serine/threonine-protein
+kinase/endoribonuclease IRE1 Alpha, TAK1/TAB1, TGF-beta receptor type I, TGF-beta receptor type II, TNNI3K, TRAF2 and NCK-
+interacting protein kinase (TNIK), Testis-specific serine/threonine-protein kinase 1, Transient receptor potential cation channel
+subfamily M member 6, Tyrosine kinase non-receptor protein 2, Tyrosine- and threonine-specific cdc2-inhibitory kinase, Tyrosine-
+protein kinase ABL, Tyrosine-protein kinase ABL1, Tyrosine-protein kinase BMX, Tyrosine-protein kinase BRK, Tyrosine-protein
+kinase BTK, Tyrosine-protein kinase Blk, Tyrosine-protein kinase CSK, Tyrosine-protein kinase CTK, Tyrosine-protein kinase FER,
+Tyrosine-protein kinase Fes/Fps, Tyrosine-protein kinase ITK/TSK, Tyrosine-protein kinase JAK1, Tyrosine-protein kinase JAK2,
+Tyrosine-protein kinase Kit (Kit), Tyrosine-protein kinase STK16 (STK16), Tyrosine-protein kinase SYK, Tyrosine-protein kinase
+TEC, Tyrosine-protein kinase TXK (TXK), Tyrosine-protein kinase Yes, Tyrosine-protein kinase ZAP-70, Tyrosine-protein kinase
+receptor FLT3, Tyrosine-protein kinase receptor TYRO3, Tyrosine-protein kinase receptor Tie-1, Uncharacterized aarF domain-
+containing protein kinase 4, VEGF-receptor 2 and tyrosine-protein kinase SRC, Vascular endothelial growth factor receptor,
+Vascular endothelial growth factor receptor 2, Vascular endothelial growth factor receptor 2 and tyrosine-protein kinase TIE-2
+(KDR and TIE2), Wee1-like protein kinase 2, c-Jun N-terminal kinase, JNK, cAMP-dependent protein kinase (PKA), cGMP-dependent
+protein kinase, cGMP-dependent protein kinase 2, myosin light chain kinase 2, p21-Activated kinase 2 (PAK2), p21-Activated kinase
+3 (PAK3), and p38 delta/gamma, Ambit Biosciences, Affinity</subject>
+  </subjects>
+  <dates>
+    <date dateType=\"Collected\">2012-07-19</date>
+  </dates>
+  <contributors>
+    <contributor contributorType=\"DataCurator\">
+      <contributorName>Liu, Tiqing</contributorName>
+      <givenName>Tiqing</givenName>
+      <familyName>Liu</familyName>
+      <affiliation>University of California San Diego</affiliation>
+    </contributor>
+    <contributor contributorType=\"ProjectLeader\">
+      <contributorName>Gilson, Michael</contributorName>
+      <givenName>Michael</givenName>
+      <familyName>Gilson</familyName>
+      <affiliation>University of California San Diego</affiliation>
+    </contributor>
+  </contributors>
+  <relatedIdentifiers>
+    <relatedIdentifier relatedIdentifierType=\"URL\"
+relationType=\"IsDerivedFrom\">https://www.ebi.ac.uk/chembl/</relatedIdentifier>
+  <relatedIdentifier relatedIdentifierType=\"PMID\" relationType=\"IsDerivedFrom\">22037378</relatedIdentifier>
+<relatedIdentifier relatedIdentifierType=\"DOI\" relationType=\"IsDerivedFrom\">10.1038/nbt.1990</relatedIdentifier>
+</relatedIdentifiers>
+  <rightsList>
+    <rights>Attribution 3.0 United States</rights>
+  </rightsList>
+</resource>"}
+~~~~~~~~~~
+dict_pp=
+{'datacite': '<?xml version="1.0"?>
+'
+             '<resource xmlns="http://datacite.org/schema/kernel-4" '
+             'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
+             'xsi:schemaLocation="http://datacite.org/schema/kernel-4 '
+             'http://schema.datacite.org/meta/kernel-4/metadata.xsd">
+'
+             '  <identifier '
+             'identifierType="DOI">10.7270/Q25D8S70</identifier>
+'
+             '  <alternateIdentifiers>
+'
+             '    <alternateIdentifier '
+             'alternateIdentifierType="CompactIdentifiers">bindingdb:e50034019</alternateIdentifier>
+'
+             '  </alternateIdentifiers>
+'
+             '  <titles>
+'
+             '    <title>BindingDB Entry 50034019: Comprehensive analysis of '
+             'kinase inhibitor selectivity.</title>
+'
+             '  </titles>
+'
+             '  <creators>
+'
+             '    <creator>
+'
+             '      <creatorName>BindingDB</creatorName>
+'
+             '      <nameIdentifier nameIdentifierScheme="RRID" '
+             'schemeURI="https://scicrunch.org/scicrunch/resolver/">SCR_000390</nameIdentifier>
+'
+             '      <affiliation>University of California San '
+             'Diego</affiliation>
+'
+             '    </creator>
+'
+             '  </creators>
+'
+             '  <publisher>BindingDB</publisher>
+'
+             '  <publicationYear>2012</publicationYear>
+'
+             '  <resourceType resourceTypeGeneral="Dataset">Protein-ligand '
+             'binding data</resourceType>
+'
+             '  <language>en-us</language>
+'
+             '  <descriptions>
+'
+             '    <description descriptionType="Other">Small molecule binding '
+             'data for protein 3-phosphoinositide dependent protein kinase-1, '
+             "5'-AMP-activated protein kinase catalytic subunit alpha-1, "
+             'AKT/p21CIP1, ALK tyrosine kinase receptor, AMPK subunit alpha-2, '
+             'AXL receptor tyrosine kinase, Activin receptor type-1, Activin '
+             'receptor type-1B, Activin receptor type-2A, Activin receptor '
+             'type-2B, Activin receptor-like kinase 3 (ALK-3), '
+             'Adaptor-associated kinase, Ankyrin repeat and protein kinase '
+             'domain-containing protein 1, Apoptosis Signal-regulating Kinase '
+             '1 (ASK1), Aurora kinase B/Inner centromere protein, '
+             'BMP-2-inducible protein kinase, BR serine/threonine-protein '
+             'kinase 1, BR serine/threonine-protein kinase 2, Bone '
+             'morphogenetic protein receptor type-1B (BMPR1B), Bone '
+             'morphogenetic protein receptor type-2, C-RAF, CAMK2A, CAMK2B, '
+             'CDC2-like kinase 3 (CLK3), CDK7/Cyclin H/MNAT1, CDK8/Cyclin C, '
+             'CDKL2, CaM kinase I alpha, CaM kinase I delta, CaM kinase I '
+             'gamma, CaM kinase II, CaM kinase IV, CaM-kinase kinase alpha, '
+             'CaM-kinase kinase beta, Calcium-dependent protein kinase 1, '
+             'Casein Kinase II, Casein kinase I, Casein kinase I '
+             'delta/epsilon, Casein kinase I isoform alpha (CK1 Alpha), Casein '
+             'kinase I isoform alpha-like, Casein kinase I isoform delta, '
+             'Casein kinase I isoform gamma-3, Casein kinase II, Cell division '
+             'control protein 2 homolog, Cell division cycle 2-like protein '
+             'kinase 6, Chaperone activity of bc1 complex-like, mitochondrial, '
+             'Citron Rho-interacting kinase, Cyclin-Dependent Kinase 5 (CDK5), '
+             'Cyclin-dependent kinase 11A, Cyclin-dependent kinase 13, '
+             'Cyclin-dependent kinase 15, Cyclin-dependent kinase 2, '
+             'Cyclin-dependent kinase 3 (CDK3), Cyclin-dependent kinase 4, '
+             'Cyclin-dependent kinase 9, Cyclin-dependent kinase-like 1, '
+             'Cyclin-dependent kinase-like 3, Cyclin-dependent kinase-like 5, '
+             'Death-associated protein kinase 1, Death-associated protein '
+             'kinase 2, Death-associated protein kinase 3, Discoidin '
+             'domain-containing receptor 2, Dual serine/threonine and tyrosine '
+             'protein kinase, Dual specificity mitogen-activated protein '
+             'kinase kinase 1, Dual specificity mitogen-activated protein '
+             'kinase kinase 2, Dual specificity mitogen-activated protein '
+             'kinase kinase 3, Dual specificity mitogen-activated protein '
+             'kinase kinase 4, Dual specificity mitogen-activated protein '
+             'kinase kinase 5, Dual specificity mitogen-activated protein '
+             'kinase kinase 6, Dual specificity mitogen-activated protein '
+             'kinase kinase 7 (MAP2K7), Dual specificity protein kinase CLK2, '
+             'Dual specificity protein kinase CLK4, Dual specificity protein '
+             'kinase TTK, Dual specificity testis-specific protein kinase 1, '
+             'Dual specificty protein kinase CLK1, Dual-specificity '
+             'tyrosine-phosphorylation regulated kinase 1A, Dual-specificity '
+             'tyrosine-phosphorylation regulated kinase 2, Dual-specificity '
+             'tyrosine-regulated kinases 1B, EPHB1, Ephrin receptor, Ephrin '
+             'type-A receptor 1 (EPHA1), Ephrin type-A receptor 3 (EPHA3), '
+             'Ephrin type-B receptor 3 (EPHB3), Ephrin type-B receptor 4 '
+             '(EphB4), Epidermal growth factor receptor, Epidermal growth '
+             'factor receptor and ErbB2 (HER1 and HER2), Epithelial discoidin '
+             'domain-containing receptor 1, Eukaryotic translation initiation '
+             'factor 2-alpha kinase 1, Eukaryotic translation initiation '
+             'factor 2-alpha kinase 4, Extracellular signal-regulated kinase 5 '
+             '(ERK5), Fibroblast growth factor receptor 1, Fibroblast growth '
+             'factor receptor 2, Fibroblast growth factor receptor 3, '
+             'Fibroblast growth factor receptor 4, Focal adhesion kinase '
+             '1/vascular endothelial growth factor receptor 3, G '
+             'protein-coupled receptor kinase 4, G protein-coupled receptor '
+             'kinase 7, Glycogen synthase kinase-3, Hepatocyte growth factor '
+             'receptor, Homeodomain-interacting protein kinase 1, '
+             'Homeodomain-interacting protein kinase 2 (HIPK2), '
+             'Homeodomain-interacting protein kinase 3, '
+             'Homeodomain-interacting protein kinase 4, Hormonally '
+             'up-regulated neu tumor-associated kinase, IKK epsilon/TBK1, '
+             'Inhibitor of NF-kappa-B kinase (IKK), Insulin receptor, Insulin '
+             'receptor-related protein, Insulin-like growth factor I receptor, '
+             'Interferon-induced, double-stranded RNA-activated protein '
+             'kinase, Interleukin-1 receptor-associated kinase 1, '
+             'Interleukin-1 receptor-associated kinase 3, Interleukin-1 '
+             'receptor-associated kinase 4, JAK2/TYK2, JAK3/JAK1, Kinesin-1 '
+             'heavy chain/ Tyrosine-protein kinase receptor RET, LIM domain '
+             'kinase 1, LIM domain kinase 2, Leucine-rich repeat '
+             'serine/threonine-protein kinase 2 (LRRK2), Leukocyte tyrosine '
+             'kinase receptor, MAP kinase ERK2, MAP kinase p38, MAP kinase '
+             'signal-integrating kinase 2, MAP kinase-activated protein kinase '
+             '2, MAP kinase-activated protein kinase 5, MAP kinase-interacting '
+             'serine/threonine-protein kinase MNK1, MAP/microtubule '
+             'affinity-regulating kinase 2, MAP/microtubule '
+             'affinity-regulating kinase 4, MAST1/MAST2, MER intracellular '
+             'domain/EGFR extracellular domain chimera, Macrophage colony '
+             'stimulating factor receptor, Macrophage-stimulating protein '
+             'receptor, Maternal embryonic leucine zipper kinase (MELK), '
+             'Misshapen-like kinase 1, Mitogen-activated protein kinase 10, '
+             'Mitogen-activated protein kinase 13 (MAPK13), Mitogen-activated '
+             'protein kinase 14, Mitogen-activated protein kinase 15, '
+             'Mitogen-activated protein kinase 2, Mitogen-activated protein '
+             'kinase 3, Mitogen-activated protein kinase 4, Mitogen-activated '
+             'protein kinase 6, Mitogen-activated protein kinase 9, '
+             'Mitogen-activated protein kinase kinase kinase 1, '
+             'Mitogen-activated protein kinase kinase kinase 10, '
+             'Mitogen-activated protein kinase kinase kinase 11, '
+             'Mitogen-activated protein kinase kinase kinase 12, '
+             'Mitogen-activated protein kinase kinase kinase 13, '
+             'Mitogen-activated protein kinase kinase kinase 15, '
+             'Mitogen-activated protein kinase kinase kinase 2, '
+             'Mitogen-activated protein kinase kinase kinase 3, '
+             'Mitogen-activated protein kinase kinase kinase 4, '
+             'Mitogen-activated protein kinase kinase kinase 6, '
+             'Mitogen-activated protein kinase kinase kinase 9 (MLK1), '
+             'Mitogen-activated protein kinase kinase kinase kinase 1, '
+             'Mitogen-activated protein kinase kinase kinase kinase 3, '
+             'Mitogen-activated protein kinase kinase kinase kinase 4, '
+             'Mitogen-activated protein kinase kinase kinase kinase 5, Mixed '
+             'lineage kinase 7, Muscle, skeletal receptor tyrosine protein '
+             'kinase, Myosin IIIA, Myosin light chain kinase, Myosin light '
+             'chain kinase family member 4, Myosin-IIIB, Myotonin-protein '
+             'kinase, NT-3 growth factor receptor, NUAK family SNF1-like '
+             'kinase 1, NUAK family SNF1-like kinase 2, Neurotrophic tyrosine '
+             'kinase receptor, Neurotrophic tyrosine kinase receptor type 2, '
+             'Non-receptor tyrosine-protein kinase TNK1, PAK1, PI3-kinase '
+             'subunit alpha, PI3-kinase subunit beta, PI3-kinase subunit '
+             'delta, PI3-kinase subunit gamma, PITSLRE '
+             'serine/threonine-protein kinase CDC2L1, PRP4 kinase (PRP4), '
+             'PTK2B protein tyrosine kinase 2 beta (PTK2B), Peripheral plasma '
+             'membrane protein CASK, Phosphatidylinositol 4-kinase beta '
+             '(PIK4KB), Phosphatidylinositol-4-phosphate 3-kinase C2 '
+             'domain-containing beta polypeptide, '
+             'Phosphatidylinositol-4-phosphate 3-kinase C2 domain-containing '
+             'subunit gamma, Phosphatidylinositol-4-phosphate 5-kinase type-1 '
+             'alpha, Phosphatidylinositol-4-phosphate 5-kinase type-1 gamma, '
+             'Phosphatidylinositol-5-phosphate 4-kinase type-2 beta, '
+             'Phosphatidylinositol-5-phosphate 4-kinase type-2 gamma, '
+             'Phosphorylase kinase, Platelet-derived growth factor receptor, '
+             'Platelet-derived growth factor receptor beta, Protein kinase C '
+             'delta type, Protein kinase C iota (PKC&amp;#953;), Protein '
+             'kinase C theta type, Protein kinase C, epsilon, Protein kinase '
+             'C, eta, Protein kinase N1, Protein kinase N2, Proto-oncogene '
+             'tyrosine-protein kinase ROS, Putative uncharacterized '
+             'serine/threonine-protein kinase SgK110, RAF serine/threonine '
+             'protein kinase, Receptor tyrosine-protein kinase erbB-4 (HER4), '
+             'Receptor-interacting serine/threonine-protein kinase 1, '
+             'Receptor-interacting serine/threonine-protein kinase 4, '
+             'Rho-associated protein kinase, Rhodopsin kinase, Ribosomal '
+             'protein S6 kinase (P70S6K), Ribosomal protein S6 kinase alpha 1, '
+             'Ribosomal protein S6 kinase alpha 2, Ribosomal protein S6 kinase '
+             'alpha 3, Ribosomal protein S6 kinase alpha 4, Ribosomal protein '
+             'S6 kinase alpha 5, Ribosomal protein S6 kinase alpha 6, SM '
+             'myosin light chain kinase (smMLCK), SNF-related '
+             'serine/threonine-protein kinase, SPS1/STE20-related protein '
+             'kinase YSK4, SRC, STE20/SPS1-related proline-alanine-rich '
+             'protein kinase, Salt-inducible kinase 2 (SIK2), Serine/threonine '
+             'protein kinase NLK, Serine/threonine-protein kinase 10, '
+             'Serine/threonine-protein kinase 11, Serine/threonine-protein '
+             'kinase 17A, Serine/threonine-protein kinase 17B (STK17B), '
+             'Serine/threonine-protein kinase 2, Serine/threonine-protein '
+             'kinase 24, Serine/threonine-protein kinase 25, '
+             'Serine/threonine-protein kinase 32A, Serine/threonine-protein '
+             'kinase 32B, Serine/threonine-protein kinase 32C, '
+             'Serine/threonine-protein kinase 33, Serine/threonine-protein '
+             'kinase 35, Serine/threonine-protein kinase 36, '
+             'Serine/threonine-protein kinase 38, Serine/threonine-protein '
+             'kinase 38-like, Serine/threonine-protein kinase 4 (STK4), '
+             'Serine/threonine-protein kinase AKT, Serine/threonine-protein '
+             'kinase Aurora, Serine/threonine-protein kinase Aurora-C, '
+             'Serine/threonine-protein kinase Chk1, Serine/threonine-protein '
+             'kinase Chk2, Serine/threonine-protein kinase D1, '
+             'Serine/threonine-protein kinase D2 (PKD2), '
+             'Serine/threonine-protein kinase D3, Serine/threonine-protein '
+             'kinase DCLK1, Serine/threonine-protein kinase DCLK2, '
+             'Serine/threonine-protein kinase DCLK3, Serine/threonine-protein '
+             'kinase GAK, Serine/threonine-protein kinase ICK, '
+             'Serine/threonine-protein kinase LATS1, Serine/threonine-protein '
+             'kinase LATS2, Serine/threonine-protein kinase MAK, '
+             'Serine/threonine-protein kinase MARK1, Serine/threonine-protein '
+             'kinase MRCK alpha, Serine/threonine-protein kinase MRCK beta, '
+             'Serine/threonine-protein kinase MRCK gamma, '
+             'Serine/threonine-protein kinase MST2, Serine/threonine-protein '
+             'kinase MST4, Serine/threonine-protein kinase NEK6, '
+             'Serine/threonine-protein kinase NEK7, Serine/threonine-protein '
+             'kinase NEK9, Serine/threonine-protein kinase NIM1, '
+             'Serine/threonine-protein kinase Nek1, Serine/threonine-protein '
+             'kinase Nek11, Serine/threonine-protein kinase Nek2, '
+             'Serine/threonine-protein kinase Nek3, Serine/threonine-protein '
+             'kinase Nek4, Serine/threonine-protein kinase Nek5, '
+             'Serine/threonine-protein kinase OSR1, Serine/threonine-protein '
+             'kinase PAK 4, Serine/threonine-protein kinase PAK6, '
+             'Serine/threonine-protein kinase PAK7, Serine/threonine-protein '
+             'kinase PCTAIRE-1, Serine/threonine-protein kinase PCTAIRE-2, '
+             'Serine/threonine-protein kinase PCTAIRE-3, '
+             'Serine/threonine-protein kinase PFTAIRE-1, '
+             'Serine/threonine-protein kinase PIM, Serine/threonine-protein '
+             'kinase PLK1, Serine/threonine-protein kinase PLK2, '
+             'Serine/threonine-protein kinase PLK3, Serine/threonine-protein '
+             'kinase PLK4, Serine/threonine-protein kinase PRKX, '
+             'Serine/threonine-protein kinase RIO1, Serine/threonine-protein '
+             'kinase RIO2, Serine/threonine-protein kinase RIO3, '
+             'Serine/threonine-protein kinase RIPK2, Serine/threonine-protein '
+             'kinase SBK1, Serine/threonine-protein kinase SIK1, '
+             'Serine/threonine-protein kinase SIK3, Serine/threonine-protein '
+             'kinase SRPK1, Serine/threonine-protein kinase SRPK2, '
+             'Serine/threonine-protein kinase SRPK3, Serine/threonine-protein '
+             'kinase Sgk3, Serine/threonine-protein kinase TAO1, '
+             'Serine/threonine-protein kinase TAO2, Serine/threonine-protein '
+             'kinase TAO3, Serine/threonine-protein kinase ULK1, '
+             'Serine/threonine-protein kinase ULK2, Serine/threonine-protein '
+             'kinase ULK3, Serine/threonine-protein kinase VRK2, '
+             'Serine/threonine-protein kinase WEE1, Serine/threonine-protein '
+             'kinase c-TAK1, Serine/threonine-protein kinase mTOR, '
+             'Serine/threonine-protein kinase pknB, Serine/threonine-protein '
+             'kinase receptor R3, Serine/threonine-protein kinase tousled-like '
+             '1, Serine/threonine-protein kinase tousled-like 2, '
+             'Serine/threonine-protein kinase/endoribonuclease IRE1 Alpha, '
+             'TAK1/TAB1, TGF-beta receptor type I, TGF-beta receptor type II, '
+             'TNNI3K, TRAF2 and NCK-interacting protein kinase (TNIK), '
+             'Testis-specific serine/threonine-protein kinase 1, Transient '
+             'receptor potential cation channel subfamily M member 6, Tyrosine '
+             'kinase non-receptor protein 2, Tyrosine- and threonine-specific '
+             'cdc2-inhibitory kinase, Tyrosine-protein kinase ABL, '
+             'Tyrosine-protein kinase ABL1, Tyrosine-protein kinase BMX, '
+             'Tyrosine-protein kinase BRK, Tyrosine-protein kinase BTK, '
+             'Tyrosine-protein kinase Blk, Tyrosine-protein kinase CSK, '
+             'Tyrosine-protein kinase CTK, Tyrosine-protein kinase FER, '
+             'Tyrosine-protein kinase Fes/Fps, Tyrosine-protein kinase '
+             'ITK/TSK, Tyrosine-protein kinase JAK1, Tyrosine-protein kinase '
+             'JAK2, Tyrosine-protein kinase Kit (Kit), Tyrosine-protein kinase '
+             'STK16 (STK16), Tyrosine-protein kinase SYK, Tyrosine-protein '
+             'kinase TEC, Tyrosine-protein kinase TXK (TXK), Tyrosine-protein '
+             'kinase Yes, Tyrosine-protein kinase ZAP-70, Tyrosine-protein '
+             'kinase receptor FLT3, Tyrosine-protein kinase receptor TYRO3, '
+             'Tyrosine-protein kinase receptor Tie-1, Uncharacterized aarF '
+             'domain-containing protein kinase 4, VEGF-receptor 2 and '
+             'tyrosine-protein kinase SRC, Vascular endothelial growth factor '
+             'receptor, Vascular endothelial growth factor receptor 2, '
+             'Vascular endothelial growth factor receptor 2 and '
+             'tyrosine-protein kinase TIE-2 (KDR and TIE2), Wee1-like protein '
+             'kinase 2, c-Jun N-terminal kinase, JNK, cAMP-dependent protein '
+             'kinase (PKA), cGMP-dependent protein kinase, cGMP-dependent '
+             'protein kinase 2, myosin light chain kinase 2, p21-Activated '
+             'kinase 2 (PAK2), p21-Activated kinase 3 (PAK3), and p38 '
+             'delta/gamma, Uniprot A0A024RDK3, L7RSL3, O00238, O00329, O00444, '
+             'O00506, O00750, O14578, O14730, O14733, O14757, O14920, O14936, '
+             'O14965, O14976, O15075, O15111, O15146, O15197, O15264, O15530, '
+             'O43283, O43293, O43318, O43353, O60285, O60331, O60674, O75116, '
+             'O75385, O75460, O75582, O75676, O75716, O75747, O75914, O76039, '
+             'O94768, O94804, O94806, O94921, O95382, O95747, O95819, O95835, '
+             'O96013, O96017, P00519, P00533, P04049, P04626, P04629, P06213, '
+             'P06239, P06241, P07332, P07333, P07947, P07948, P07949, P08069, '
+             'P08581, P08631, P08922, P09619, P09769, P0C1S8, P0C264, P10721, '
+             'P11309, P11362, P11802, P12931, P14616, P15056, P15735, P16234, '
+             'P16591, P17612, P17948, P19525, P19784, P20794, P21127, P21709, '
+             'P21802, P21860, P22455, P22607, P22694, P23443, P23458, P24723, '
+             'P24941, P27037, P27361, P27448, P28482, P29317, P29320, P29322, '
+             'P29323, P29376, P29597, P30291, P30530, P31152, P31749, P31751, '
+             'P32298, P33981, P35590, P35916, P35968, P36507, P36888, P36894, '
+             'P36896, P36897, P37023, P37173, P41240, P41743, P42336, P42338, '
+             'P42345, P42679, P42680, P42681, P42684, P42685, P43403, P43405, '
+             'P45983, P45984, P45985, P46734, P48729, P48730, P48736, P49137, '
+             'P49336, P49674, P49759, P49760, P49761, P49840, P49841, P50613, '
+             'P50750, P51451, P51617, P51812, P51813, P51817, P51955, P51956, '
+             'P51957, P52333, P52564, P53350, P53355, P53667, P53671, P53778, '
+             'P53779, P54646, P54753, P54756, P54760, P54762, P54764, P57058, '
+             'P57059, P57078, P61075, P62343, P68400, P78356, P78362, P78368, '
+             'P80192, P9WI81, Q00526, Q00535, Q00536, Q00537, Q02156, Q02750, '
+             'Q02763, Q02779, Q04759, Q04771, Q04912, Q05397, Q05655, Q06187, '
+             'Q06418, Q07912, Q08345, Q08881, Q09013, Q12851, Q12852, Q12866, '
+             'Q13043, Q13131, Q13153, Q13163, Q13164, Q13177, Q13188, Q13233, '
+             'Q13237, Q13464, Q13470, Q13523, Q13546, Q13554, Q13555, Q13557, '
+             'Q13627, Q13705, Q13873, Q13882, Q13976, Q14004, Q14012, Q14164, '
+             'Q14289, Q14680, Q15139, Q15208, Q15303, Q15349, Q15418, Q15569, '
+             'Q15746, Q15759, Q15831, Q15835, Q16288, Q16512, Q16513, Q16539, '
+             'Q16566, Q16584, Q16620, Q16659, Q16816, Q16832, Q2M2I8, Q32MK0, '
+             'Q52WX2, Q541P7, Q56UN5, Q59H18, Q5S007, Q5VT25, Q6DT37, Q6FI23, '
+             'Q6P3R8, Q6PHR2, Q6XUX3, Q6ZN16, Q7KZI7, Q7L7X3, Q86UE8, Q86UX6, '
+             'Q86V86, Q86Y07, Q86YV6, Q86Z02, Q8IU85, Q8IVH8, Q8IVW4, Q8IW41, '
+             'Q8IWQ3, Q8IY84, Q8IYT8, Q8N4C8, Q8N568, Q8N5S9, Q8N752, Q8NE63, '
+             'Q8NEV4, Q8NFD2, Q8NG66, Q8NI60, Q8TBX8, Q8TD08, Q8TD19, Q8TDC3, '
+             'Q8TDR2, Q8TDX7, Q8WTQ7, Q8WU08, Q8WXR4, Q92630, Q92772, Q92918, '
+             'Q96BR1, Q96D53, Q96GD4, Q96L34, Q96NX5, Q96PY6, Q96Q40, Q96RR4, '
+             'Q96SB4, Q99640, Q99683, Q99755, Q99759, Q9BQI3, Q9BRS2, Q9BUB5, '
+             'Q9BVS4, Q9BWU1, Q9BX84, Q9BXA7, Q9BYT3, Q9BZL6, Q9C098, Q9H093, '
+             'Q9H0K1, Q9H1R3, Q9H2G2, Q9H2K8, Q9H2X6, Q9H3Y6, Q9H422, Q9H4B4, '
+             'Q9HAZ1, Q9HBH9, Q9HC98, Q9HCP0, Q9NQU5, Q9NRH2, Q9NRM7, Q9NRP7, '
+             'Q9NSY1, Q9NWZ3, Q9NY57, Q9NYL2, Q9NYY3, Q9P0L2, Q9P1W9, Q9P286, '
+             'Q9P289, Q9P2K8, Q9UBE8, Q9UBF8, Q9UEE5, Q9UEW8, Q9UF33, Q9UHD2, '
+             'Q9UIK4, Q9UK32, Q9UKE5, Q9UKI8, Q9UL54, Q9UM73, Q9UPE1, Q9UPZ9, '
+             'Q9UQ88, Q9UQB9, Q9UQM7, Q9Y243, Q9Y2H1, Q9Y2H9, Q9Y2U5, Q9Y463, '
+             'Q9Y5S2, Q9Y616, Q9Y6E0, Q9Y6M4, and Q9Y6R4</description>
+'
+             '  </descriptions>
+'
+             '  <subjects>
+'
+             '    <subject>3-phosphoinositide dependent protein kinase-1, '
+             "5'-AMP-activated protein kinase catalytic subunit alpha-1, "
+             'AKT/p21CIP1, ALK tyrosine kinase receptor, AMPK subunit alpha-2, '
+             'AXL receptor tyrosine kinase, Activin receptor type-1, Activin '
+             'receptor type-1B, Activin receptor type-2A, Activin receptor '
+             'type-2B, Activin receptor-like kinase 3 (ALK-3), '
+             'Adaptor-associated kinase, Ankyrin repeat and protein kinase '
+             'domain-containing protein 1, Apoptosis Signal-regulating Kinase '
+             '1 (ASK1), Aurora kinase B/Inner centromere protein, '
+             'BMP-2-inducible protein kinase, BR serine/threonine-protein '
+             'kinase 1, BR serine/threonine-protein kinase 2, Bone '
+             'morphogenetic protein receptor type-1B (BMPR1B), Bone '
+             'morphogenetic protein receptor type-2, C-RAF, CAMK2A, CAMK2B, '
+             'CDC2-like kinase 3 (CLK3), CDK7/Cyclin H/MNAT1, CDK8/Cyclin C, '
+             'CDKL2, CaM kinase I alpha, CaM kinase I delta, CaM kinase I '
+             'gamma, CaM kinase II, CaM kinase IV, CaM-kinase kinase alpha, '
+             'CaM-kinase kinase beta, Calcium-dependent protein kinase 1, '
+             'Casein Kinase II, Casein kinase I, Casein kinase I '
+             'delta/epsilon, Casein kinase I isoform alpha (CK1 Alpha), Casein '
+             'kinase I isoform alpha-like, Casein kinase I isoform delta, '
+             'Casein kinase I isoform gamma-3, Casein kinase II, Cell division '
+             'control protein 2 homolog, Cell division cycle 2-like protein '
+             'kinase 6, Chaperone activity of bc1 complex-like, mitochondrial, '
+             'Citron Rho-interacting kinase, Cyclin-Dependent Kinase 5 (CDK5), '
+             'Cyclin-dependent kinase 11A, Cyclin-dependent kinase 13, '
+             'Cyclin-dependent kinase 15, Cyclin-dependent kinase 2, '
+             'Cyclin-dependent kinase 3 (CDK3), Cyclin-dependent kinase 4, '
+             'Cyclin-dependent kinase 9, Cyclin-dependent kinase-like 1, '
+             'Cyclin-dependent kinase-like 3, Cyclin-dependent kinase-like 5, '
+             'Death-associated protein kinase 1, Death-associated protein '
+             'kinase 2, Death-associated protein kinase 3, Discoidin '
+             'domain-containing receptor 2, Dual serine/threonine and tyrosine '
+             'protein kinase, Dual specificity mitogen-activated protein '
+             'kinase kinase 1, Dual specificity mitogen-activated protein '
+             'kinase kinase 2, Dual specificity mitogen-activated protein '
+             'kinase kinase 3, Dual specificity mitogen-activated protein '
+             'kinase kinase 4, Dual specificity mitogen-activated protein '
+             'kinase kinase 5, Dual specificity mitogen-activated protein '
+             'kinase kinase 6, Dual specificity mitogen-activated protein '
+             'kinase kinase 7 (MAP2K7), Dual specificity protein kinase CLK2, '
+             'Dual specificity protein kinase CLK4, Dual specificity protein '
+             'kinase TTK, Dual specificity testis-specific protein kinase 1, '
+             'Dual specificty protein kinase CLK1, Dual-specificity '
+             'tyrosine-phosphorylation regulated kinase 1A, Dual-specificity '
+             'tyrosine-phosphorylation regulated kinase 2, Dual-specificity '
+             'tyrosine-regulated kinases 1B, EPHB1, Ephrin receptor, Ephrin '
+             'type-A receptor 1 (EPHA1), Ephrin type-A receptor 3 (EPHA3), '
+             'Ephrin type-B receptor 3 (EPHB3), Ephrin type-B receptor 4 '
+             '(EphB4), Epidermal growth factor receptor, Epidermal growth '
+             'factor receptor and ErbB2 (HER1 and HER2), Epithelial discoidin '
+             'domain-containing receptor 1, Eukaryotic translation initiation '
+             'factor 2-alpha kinase 1, Eukaryotic translation initiation '
+             'factor 2-alpha kinase 4, Extracellular signal-regulated kinase 5 '
+             '(ERK5), Fibroblast growth factor receptor 1, Fibroblast growth '
+             'factor receptor 2, Fibroblast growth factor receptor 3, '
+             'Fibroblast growth factor receptor 4, Focal adhesion kinase '
+             '1/vascular endothelial growth factor receptor 3, G '
+             'protein-coupled receptor kinase 4, G protein-coupled receptor '
+             'kinase 7, Glycogen synthase kinase-3, Hepatocyte growth factor '
+             'receptor, Homeodomain-interacting protein kinase 1, '
+             'Homeodomain-interacting protein kinase 2 (HIPK2), '
+             'Homeodomain-interacting protein kinase 3, '
+             'Homeodomain-interacting protein kinase 4, Hormonally '
+             'up-regulated neu tumor-associated kinase, IKK epsilon/TBK1, '
+             'Inhibitor of NF-kappa-B kinase (IKK), Insulin receptor, Insulin '
+             'receptor-related protein, Insulin-like growth factor I receptor, '
+             'Interferon-induced, double-stranded RNA-activated protein '
+             'kinase, Interleukin-1 receptor-associated kinase 1, '
+             'Interleukin-1 receptor-associated kinase 3, Interleukin-1 '
+             'receptor-associated kinase 4, JAK2/TYK2, JAK3/JAK1, Kinesin-1 '
+             'heavy chain/ Tyrosine-protein kinase receptor RET, LIM domain '
+             'kinase 1, LIM domain kinase 2, Leucine-rich repeat '
+             'serine/threonine-protein kinase 2 (LRRK2), Leukocyte tyrosine '
+             'kinase receptor, MAP kinase ERK2, MAP kinase p38, MAP kinase '
+             'signal-integrating kinase 2, MAP kinase-activated protein kinase '
+             '2, MAP kinase-activated protein kinase 5, MAP kinase-interacting '
+             'serine/threonine-protein kinase MNK1, MAP/microtubule '
+             'affinity-regulating kinase 2, MAP/microtubule '
+             'affinity-regulating kinase 4, MAST1/MAST2, MER intracellular '
+             'domain/EGFR extracellular domain chimera, Macrophage colony '
+             'stimulating factor receptor, Macrophage-stimulating protein '
+             'receptor, Maternal embryonic leucine zipper kinase (MELK), '
+             'Misshapen-like kinase 1, Mitogen-activated protein kinase 10, '
+             'Mitogen-activated protein kinase 13 (MAPK13), Mitogen-activated '
+             'protein kinase 14, Mitogen-activated protein kinase 15, '
+             'Mitogen-activated protein kinase 2, Mitogen-activated protein '
+             'kinase 3, Mitogen-activated protein kinase 4, Mitogen-activated '
+             'protein kinase 6, Mitogen-activated protein kinase 9, '
+             'Mitogen-activated protein kinase kinase kinase 1, '
+             'Mitogen-activated protein kinase kinase kinase 10, '
+             'Mitogen-activated protein kinase kinase kinase 11, '
+             'Mitogen-activated protein kinase kinase kinase 12, '
+             'Mitogen-activated protein kinase kinase kinase 13, '
+             'Mitogen-activated protein kinase kinase kinase 15, '
+             'Mitogen-activated protein kinase kinase kinase 2, '
+             'Mitogen-activated protein kinase kinase kinase 3, '
+             'Mitogen-activated protein kinase kinase kinase 4, '
+             'Mitogen-activated protein kinase kinase kinase 6, '
+             'Mitogen-activated protein kinase kinase kinase 9 (MLK1), '
+             'Mitogen-activated protein kinase kinase kinase kinase 1, '
+             'Mitogen-activated protein kinase kinase kinase kinase 3, '
+             'Mitogen-activated protein kinase kinase kinase kinase 4, '
+             'Mitogen-activated protein kinase kinase kinase kinase 5, Mixed '
+             'lineage kinase 7, Muscle, skeletal receptor tyrosine protein '
+             'kinase, Myosin IIIA, Myosin light chain kinase, Myosin light '
+             'chain kinase family member 4, Myosin-IIIB, Myotonin-protein '
+             'kinase, NT-3 growth factor receptor, NUAK family SNF1-like '
+             'kinase 1, NUAK family SNF1-like kinase 2, Neurotrophic tyrosine '
+             'kinase receptor, Neurotrophic tyrosine kinase receptor type 2, '
+             'Non-receptor tyrosine-protein kinase TNK1, PAK1, PI3-kinase '
+             'subunit alpha, PI3-kinase subunit beta, PI3-kinase subunit '
+             'delta, PI3-kinase subunit gamma, PITSLRE '
+             'serine/threonine-protein kinase CDC2L1, PRP4 kinase (PRP4), '
+             'PTK2B protein tyrosine kinase 2 beta (PTK2B), Peripheral plasma '
+             'membrane protein CASK, Phosphatidylinositol 4-kinase beta '
+             '(PIK4KB), Phosphatidylinositol-4-phosphate 3-kinase C2 '
+             'domain-containing beta polypeptide, '
+             'Phosphatidylinositol-4-phosphate 3-kinase C2 domain-containing '
+             'subunit gamma, Phosphatidylinositol-4-phosphate 5-kinase type-1 '
+             'alpha, Phosphatidylinositol-4-phosphate 5-kinase type-1 gamma, '
+             'Phosphatidylinositol-5-phosphate 4-kinase type-2 beta, '
+             'Phosphatidylinositol-5-phosphate 4-kinase type-2 gamma, '
+             'Phosphorylase kinase, Platelet-derived growth factor receptor, '
+             'Platelet-derived growth factor receptor beta, Protein kinase C '
+             'delta type, Protein kinase C iota (PKC&amp;#953;), Protein '
+             'kinase C theta type, Protein kinase C, epsilon, Protein kinase '
+             'C, eta, Protein kinase N1, Protein kinase N2, Proto-oncogene '
+             'tyrosine-protein kinase ROS, Putative uncharacterized '
+             'serine/threonine-protein kinase SgK110, RAF serine/threonine '
+             'protein kinase, Receptor tyrosine-protein kinase erbB-4 (HER4), '
+             'Receptor-interacting serine/threonine-protein kinase 1, '
+             'Receptor-interacting serine/threonine-protein kinase 4, '
+             'Rho-associated protein kinase, Rhodopsin kinase, Ribosomal '
+             'protein S6 kinase (P70S6K), Ribosomal protein S6 kinase alpha 1, '
+             'Ribosomal protein S6 kinase alpha 2, Ribosomal protein S6 kinase '
+             'alpha 3, Ribosomal protein S6 kinase alpha 4, Ribosomal protein '
+             'S6 kinase alpha 5, Ribosomal protein S6 kinase alpha 6, SM '
+             'myosin light chain kinase (smMLCK), SNF-related '
+             'serine/threonine-protein kinase, SPS1/STE20-related protein '
+             'kinase YSK4, SRC, STE20/SPS1-related proline-alanine-rich '
+             'protein kinase, Salt-inducible kinase 2 (SIK2), Serine/threonine '
+             'protein kinase NLK, Serine/threonine-protein kinase 10, '
+             'Serine/threonine-protein kinase 11, Serine/threonine-protein '
+             'kinase 17A, Serine/threonine-protein kinase 17B (STK17B), '
+             'Serine/threonine-protein kinase 2, Serine/threonine-protein '
+             'kinase 24, Serine/threonine-protein kinase 25, '
+             'Serine/threonine-protein kinase 32A, Serine/threonine-protein '
+             'kinase 32B, Serine/threonine-protein kinase 32C, '
+             'Serine/threonine-protein kinase 33, Serine/threonine-protein '
+             'kinase 35, Serine/threonine-protein kinase 36, '
+             'Serine/threonine-protein kinase 38, Serine/threonine-protein '
+             'kinase 38-like, Serine/threonine-protein kinase 4 (STK4), '
+             'Serine/threonine-protein kinase AKT, Serine/threonine-protein '
+             'kinase Aurora, Serine/threonine-protein kinase Aurora-C, '
+             'Serine/threonine-protein kinase Chk1, Serine/threonine-protein '
+             'kinase Chk2, Serine/threonine-protein kinase D1, '
+             'Serine/threonine-protein kinase D2 (PKD2), '
+             'Serine/threonine-protein kinase D3, Serine/threonine-protein '
+             'kinase DCLK1, Serine/threonine-protein kinase DCLK2, '
+             'Serine/threonine-protein kinase DCLK3, Serine/threonine-protein '
+             'kinase GAK, Serine/threonine-protein kinase ICK, '
+             'Serine/threonine-protein kinase LATS1, Serine/threonine-protein '
+             'kinase LATS2, Serine/threonine-protein kinase MAK, '
+             'Serine/threonine-protein kinase MARK1, Serine/threonine-protein '
+             'kinase MRCK alpha, Serine/threonine-protein kinase MRCK beta, '
+             'Serine/threonine-protein kinase MRCK gamma, '
+             'Serine/threonine-protein kinase MST2, Serine/threonine-protein '
+             'kinase MST4, Serine/threonine-protein kinase NEK6, '
+             'Serine/threonine-protein kinase NEK7, Serine/threonine-protein '
+             'kinase NEK9, Serine/threonine-protein kinase NIM1, '
+             'Serine/threonine-protein kinase Nek1, Serine/threonine-protein '
+             'kinase Nek11, Serine/threonine-protein kinase Nek2, '
+             'Serine/threonine-protein kinase Nek3, Serine/threonine-protein '
+             'kinase Nek4, Serine/threonine-protein kinase Nek5, '
+             'Serine/threonine-protein kinase OSR1, Serine/threonine-protein '
+             'kinase PAK 4, Serine/threonine-protein kinase PAK6, '
+             'Serine/threonine-protein kinase PAK7, Serine/threonine-protein '
+             'kinase PCTAIRE-1, Serine/threonine-protein kinase PCTAIRE-2, '
+             'Serine/threonine-protein kinase PCTAIRE-3, '
+             'Serine/threonine-protein kinase PFTAIRE-1, '
+             'Serine/threonine-protein kinase PIM, Serine/threonine-protein '
+             'kinase PLK1, Serine/threonine-protein kinase PLK2, '
+             'Serine/threonine-protein kinase PLK3, Serine/threonine-protein '
+             'kinase PLK4, Serine/threonine-protein kinase PRKX, '
+             'Serine/threonine-protein kinase RIO1, Serine/threonine-protein '
+             'kinase RIO2, Serine/threonine-protein kinase RIO3, '
+             'Serine/threonine-protein kinase RIPK2, Serine/threonine-protein '
+             'kinase SBK1, Serine/threonine-protein kinase SIK1, '
+             'Serine/threonine-protein kinase SIK3, Serine/threonine-protein '
+             'kinase SRPK1, Serine/threonine-protein kinase SRPK2, '
+             'Serine/threonine-protein kinase SRPK3, Serine/threonine-protein '
+             'kinase Sgk3, Serine/threonine-protein kinase TAO1, '
+             'Serine/threonine-protein kinase TAO2, Serine/threonine-protein '
+             'kinase TAO3, Serine/threonine-protein kinase ULK1, '
+             'Serine/threonine-protein kinase ULK2, Serine/threonine-protein '
+             'kinase ULK3, Serine/threonine-protein kinase VRK2, '
+             'Serine/threonine-protein kinase WEE1, Serine/threonine-protein '
+             'kinase c-TAK1, Serine/threonine-protein kinase mTOR, '
+             'Serine/threonine-protein kinase pknB, Serine/threonine-protein '
+             'kinase receptor R3, Serine/threonine-protein kinase tousled-like '
+             '1, Serine/threonine-protein kinase tousled-like 2, '
+             'Serine/threonine-protein kinase/endoribonuclease IRE1 Alpha, '
+             'TAK1/TAB1, TGF-beta receptor type I, TGF-beta receptor type II, '
+             'TNNI3K, TRAF2 and NCK-interacting protein kinase (TNIK), '
+             'Testis-specific serine/threonine-protein kinase 1, Transient '
+             'receptor potential cation channel subfamily M member 6, Tyrosine '
+             'kinase non-receptor protein 2, Tyrosine- and threonine-specific '
+             'cdc2-inhibitory kinase, Tyrosine-protein kinase ABL, '
+             'Tyrosine-protein kinase ABL1, Tyrosine-protein kinase BMX, '
+             'Tyrosine-protein kinase BRK, Tyrosine-protein kinase BTK, '
+             'Tyrosine-protein kinase Blk, Tyrosine-protein kinase CSK, '
+             'Tyrosine-protein kinase CTK, Tyrosine-protein kinase FER, '
+             'Tyrosine-protein kinase Fes/Fps, Tyrosine-protein kinase '
+             'ITK/TSK, Tyrosine-protein kinase JAK1, Tyrosine-protein kinase '
+             'JAK2, Tyrosine-protein kinase Kit (Kit), Tyrosine-protein kinase '
+             'STK16 (STK16), Tyrosine-protein kinase SYK, Tyrosine-protein '
+             'kinase TEC, Tyrosine-protein kinase TXK (TXK), Tyrosine-protein '
+             'kinase Yes, Tyrosine-protein kinase ZAP-70, Tyrosine-protein '
+             'kinase receptor FLT3, Tyrosine-protein kinase receptor TYRO3, '
+             'Tyrosine-protein kinase receptor Tie-1, Uncharacterized aarF '
+             'domain-containing protein kinase 4, VEGF-receptor 2 and '
+             'tyrosine-protein kinase SRC, Vascular endothelial growth factor '
+             'receptor, Vascular endothelial growth factor receptor 2, '
+             'Vascular endothelial growth factor receptor 2 and '
+             'tyrosine-protein kinase TIE-2 (KDR and TIE2), Wee1-like protein '
+             'kinase 2, c-Jun N-terminal kinase, JNK, cAMP-dependent protein '
+             'kinase (PKA), cGMP-dependent protein kinase, cGMP-dependent '
+             'protein kinase 2, myosin light chain kinase 2, p21-Activated '
+             'kinase 2 (PAK2), p21-Activated kinase 3 (PAK3), and p38 '
+             'delta/gamma, Ambit Biosciences, Affinity</subject>
+'
+             '  </subjects>
+'
+             '  <dates>
+'
+             '    <date dateType="Collected">2012-07-19</date>
+'
+             '  </dates>
+'
+             '  <contributors>
+'
+             '    <contributor contributorType="DataCurator">
+'
+             '      <contributorName>Liu, Tiqing</contributorName>
+'
+             '      <givenName>Tiqing</givenName>
+'
+             '      <familyName>Liu</familyName>
+'
+             '      <affiliation>University of California San '
+             'Diego</affiliation>
+'
+             '    </contributor>
+'
+             '    <contributor contributorType="ProjectLeader">
+'
+             '      <contributorName>Gilson, Michael</contributorName>
+'
+             '      <givenName>Michael</givenName>
+'
+             '      <familyName>Gilson</familyName>
+'
+             '      <affiliation>University of California San '
+             'Diego</affiliation>
+'
+             '    </contributor>
+'
+             '  </contributors>
+'
+             '  <relatedIdentifiers>
+'
+             '    <relatedIdentifier relatedIdentifierType="URL" '
+             'relationType="IsDerivedFrom">https://www.ebi.ac.uk/chembl/</relatedIdentifier>
+'
+             '  <relatedIdentifier relatedIdentifierType="PMID" '
+             'relationType="IsDerivedFrom">22037378</relatedIdentifier>
+'
+             '<relatedIdentifier relatedIdentifierType="DOI" '
+             'relationType="IsDerivedFrom">10.1038/nbt.1990</relatedIdentifier>
+'
+             '</relatedIdentifiers>
+'
+             '  <rightsList>
+'
+             '    <rights>Attribution 3.0 United States</rights>
+'
+             '  </rightsList>
+'
+             '</resource>'}
+~~~~~~~~~~
+keys=
+datacite
+~~~~~~~~~~
+output_exchange=
+datacite
+<?xml%20version%3D%221.0%22?>%0A<resource%20xmlns%3D%22http://datacite.org/schema/kernel-4%22%20xmlns:xsi%3D%22http://www.w3.org/2001/XMLSchema-
+instance%22%20xsi:schemaLocation%3D%22http://datacite.org/schema/kernel-4%20http://schema.datacite.org/meta/kernel-4/metadata.xsd%22>%0A%20%20<identifier%20identifierType%3D%22DOI%22>10.7270/Q25D8S70</identifier>%0A%20%20<alternateIdentifiers>%0A%20%20%20%20<alternateIdentifier%20alternateIdentifierType%3D%22CompactIdentifiers%22>bindingdb:e50034019</alternateIdentifier>%0A%20%20</alternateIdentifiers>%0A%20%20<titles>%0A%20%20%20%20<title>BindingDB%20Entry%2050034019:%20Comprehensive%20analysis%20of%20kinase%20inhibitor%20selectivity.</title>%0A%20%20</titles>%0A%20%20<creators>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>BindingDB</creatorName>%0A%20%20%20%20%20%20<nameIdentifier%20nameIdentifierScheme%3D%22RRID%22%20schemeURI%3D%22https://scicrunch.org/scicrunch/resolver/%22>SCR_000390</nameIdentifier>%0A%20%20%20%20%20%20<affiliation>University%20of%20California%20San%20Diego</affiliation>%0A%20%20%20%20</creator>%0A%20%20</creators>%0A%20%20<publisher>BindingDB</publisher>%0A%20%20<publicationYear>2012</publicationYear>%0A%20%20<resourceType%20resourceTypeGeneral%3D%22Dataset%22>Protein-
+ligand%20binding%20data</resourceType>%0A%20%20<language>en-
+us</language>%0A%20%20<descriptions>%0A%20%20%20%20<description%20descriptionType%3D%22Other%22>Small%20molecule%20binding%20data%20for%20protein%203-phosphoinositide%20dependent%20protein%20kinase-1,%205%27-AMP-
+activated%20protein%20kinase%20catalytic%20subunit%20alpha-1,%20AKT/p21CIP1,%20ALK%20tyrosine%20kinase%20receptor,%20AMPK%20subunit%20alpha-2,%20AXL%20receptor%20tyrosine%20kinase,%20Activin%20receptor%20type-1,%20Activin%20receptor%20type-1B,%20Activin%20receptor%20type-2A,%20Activin%20receptor%20type-2B,%20Activin%20receptor-
+like%20kinase%203%20%28ALK-3%29,%20Adaptor-associated%20kinase,%20Ankyrin%20repeat%20and%20protein%20kinase%20domain-
+containing%20protein%201,%20Apoptosis%20Signal-
+regulating%20Kinase%201%20%28ASK1%29,%20Aurora%20kinase%20B/Inner%20centromere%20protein,%20BMP-2-inducible%20protein%20kinase,%20BR%20serine/threonine-
+protein%20kinase%201,%20BR%20serine/threonine-
+protein%20kinase%202,%20Bone%20morphogenetic%20protein%20receptor%20type-1B%20%28BMPR1B%29,%20Bone%20morphogenetic%20protein%20receptor%20type-2,%20C-RAF,%20CAMK2A,%20CAMK2B,%20CDC2-like%20kinase%203%20%28CLK3%29,%20CDK7/Cyclin%20H/MNAT1,%20CDK8/Cyclin%20C,%20CDKL2,%20CaM%20kinase%20I%20alpha,%20CaM%20kinase%20I%20delta,%20CaM%20kinase%20I%20gamma,%20CaM%20kinase%20II,%20CaM%20kinase%20IV,%20CaM-
+kinase%20kinase%20alpha,%20CaM-kinase%20kinase%20beta,%20Calcium-
+dependent%20protein%20kinase%201,%20Casein%20Kinase%20II,%20Casein%20kinase%20I,%20Casein%20kinase%20I%20delta/epsilon,%20Casein%20kinase%20I%20isoform%20alpha%20%28CK1%20Alpha%29,%20Casein%20kinase%20I%20isoform%20alpha-
+like,%20Casein%20kinase%20I%20isoform%20delta,%20Casein%20kinase%20I%20isoform%20gamma-3,%20Casein%20kinase%20II,%20Cell%20division%20control%20protein%202%20homolog,%20Cell%20division%20cycle%202-like%20protein%20kinase%206,%20Chaperone%20activity%20of%20bc1%20complex-
+like,%20mitochondrial,%20Citron%20Rho-interacting%20kinase,%20Cyclin-Dependent%20Kinase%205%20%28CDK5%29,%20Cyclin-
+dependent%20kinase%2011A,%20Cyclin-dependent%20kinase%2013,%20Cyclin-dependent%20kinase%2015,%20Cyclin-
+dependent%20kinase%202,%20Cyclin-dependent%20kinase%203%20%28CDK3%29,%20Cyclin-dependent%20kinase%204,%20Cyclin-
+dependent%20kinase%209,%20Cyclin-dependent%20kinase-like%201,%20Cyclin-dependent%20kinase-like%203,%20Cyclin-dependent%20kinase-
+like%205,%20Death-associated%20protein%20kinase%201,%20Death-associated%20protein%20kinase%202,%20Death-
+associated%20protein%20kinase%203,%20Discoidin%20domain-
+containing%20receptor%202,%20Dual%20serine/threonine%20and%20tyrosine%20protein%20kinase,%20Dual%20specificity%20mitogen-
+activated%20protein%20kinase%20kinase%201,%20Dual%20specificity%20mitogen-
+activated%20protein%20kinase%20kinase%202,%20Dual%20specificity%20mitogen-
+activated%20protein%20kinase%20kinase%203,%20Dual%20specificity%20mitogen-
+activated%20protein%20kinase%20kinase%204,%20Dual%20specificity%20mitogen-
+activated%20protein%20kinase%20kinase%205,%20Dual%20specificity%20mitogen-
+activated%20protein%20kinase%20kinase%206,%20Dual%20specificity%20mitogen-
+activated%20protein%20kinase%20kinase%207%20%28MAP2K7%29,%20Dual%20specificity%20protein%20kinase%20CLK2,%20Dual%20specificity%20protein%20kinase%20CLK4,%20Dual%20specificity%20protein%20kinase%20TTK,%20Dual%20specificity%20testis-
+specific%20protein%20kinase%201,%20Dual%20specificty%20protein%20kinase%20CLK1,%20Dual-specificity%20tyrosine-
+phosphorylation%20regulated%20kinase%201A,%20Dual-specificity%20tyrosine-phosphorylation%20regulated%20kinase%202,%20Dual-
+specificity%20tyrosine-
+regulated%20kinases%201B,%20EPHB1,%20Ephrin%20receptor,%20Ephrin%20type-A%20receptor%201%20%28EPHA1%29,%20Ephrin%20type-A%20receptor%203%20%28EPHA3%29,%20Ephrin%20type-B%20receptor%203%20%28EPHB3%29,%20Ephrin%20type-B%20receptor%204%20%28EphB4%29,%20Epidermal%20growth%20factor%20receptor,%20Epidermal%20growth%20factor%20receptor%20and%20ErbB2%20%28HER1%20and%20HER2%29,%20Epithelial%20discoidin%20domain-
+containing%20receptor%201,%20Eukaryotic%20translation%20initiation%20factor%202-alpha%20kinase%201,%20Eukaryotic%20translation%20initiation%20factor%202-alpha%20kinase%204,%20Extracellular%20signal-
+regulated%20kinase%205%20%28ERK5%29,%20Fibroblast%20growth%20factor%20receptor%201,%20Fibroblast%20growth%20factor%20receptor%202,%20Fibroblast%20growth%20factor%20receptor%203,%20Fibroblast%20growth%20factor%20receptor%204,%20Focal%20adhesion%20kinase%201/vascular%20endothelial%20growth%20factor%20receptor%203,%20G%20protein-
+coupled%20receptor%20kinase%204,%20G%20protein-
+coupled%20receptor%20kinase%207,%20Glycogen%20synthase%20kinase-3,%20Hepatocyte%20growth%20factor%20receptor,%20Homeodomain-
+interacting%20protein%20kinase%201,%20Homeodomain-interacting%20protein%20kinase%202%20%28HIPK2%29,%20Homeodomain-
+interacting%20protein%20kinase%203,%20Homeodomain-interacting%20protein%20kinase%204,%20Hormonally%20up-regulated%20neu%20tumor-
+associated%20kinase,%20IKK%20epsilon/TBK1,%20Inhibitor%20of%20NF-
+kappa-B%20kinase%20%28IKK%29,%20Insulin%20receptor,%20Insulin%20receptor-related%20protein,%20Insulin-
+like%20growth%20factor%20I%20receptor,%20Interferon-induced,%20double-stranded%20RNA-
+activated%20protein%20kinase,%20Interleukin-1%20receptor-associated%20kinase%201,%20Interleukin-1%20receptor-
+associated%20kinase%203,%20Interleukin-1%20receptor-
+associated%20kinase%204,%20JAK2/TYK2,%20JAK3/JAK1,%20Kinesin-1%20heavy%20chain/%20Tyrosine-
+protein%20kinase%20receptor%20RET,%20LIM%20domain%20kinase%201,%20LIM%20domain%20kinase%202,%20Leucine-
+rich%20repeat%20serine/threonine-
+protein%20kinase%202%20%28LRRK2%29,%20Leukocyte%20tyrosine%20kinase%20receptor,%20MAP%20kinase%20ERK2,%20MAP%20kinase%20p38,%20MAP%20kinase%20signal-
+integrating%20kinase%202,%20MAP%20kinase-activated%20protein%20kinase%202,%20MAP%20kinase-
+activated%20protein%20kinase%205,%20MAP%20kinase-interacting%20serine/threonine-
+protein%20kinase%20MNK1,%20MAP/microtubule%20affinity-regulating%20kinase%202,%20MAP/microtubule%20affinity-
+regulating%20kinase%204,%20MAST1/MAST2,%20MER%20intracellular%20domain/EGFR%20extracellular%20domain%20chimera,%20Macrophage%20colony%20stimulating%20factor%20receptor,%20Macrophage-
+stimulating%20protein%20receptor,%20Maternal%20embryonic%20leucine%20zipper%20kinase%20%28MELK%29,%20Misshapen-
+like%20kinase%201,%20Mitogen-activated%20protein%20kinase%2010,%20Mitogen-
+activated%20protein%20kinase%2013%20%28MAPK13%29,%20Mitogen-activated%20protein%20kinase%2014,%20Mitogen-
+activated%20protein%20kinase%2015,%20Mitogen-activated%20protein%20kinase%202,%20Mitogen-
+activated%20protein%20kinase%203,%20Mitogen-activated%20protein%20kinase%204,%20Mitogen-
+activated%20protein%20kinase%206,%20Mitogen-activated%20protein%20kinase%209,%20Mitogen-
+activated%20protein%20kinase%20kinase%20kinase%201,%20Mitogen-activated%20protein%20kinase%20kinase%20kinase%2010,%20Mitogen-
+activated%20protein%20kinase%20kinase%20kinase%2011,%20Mitogen-activated%20protein%20kinase%20kinase%20kinase%2012,%20Mitogen-
+activated%20protein%20kinase%20kinase%20kinase%2013,%20Mitogen-activated%20protein%20kinase%20kinase%20kinase%2015,%20Mitogen-
+activated%20protein%20kinase%20kinase%20kinase%202,%20Mitogen-activated%20protein%20kinase%20kinase%20kinase%203,%20Mitogen-
+activated%20protein%20kinase%20kinase%20kinase%204,%20Mitogen-activated%20protein%20kinase%20kinase%20kinase%206,%20Mitogen-
+activated%20protein%20kinase%20kinase%20kinase%209%20%28MLK1%29,%20Mitogen-
+activated%20protein%20kinase%20kinase%20kinase%20kinase%201,%20Mitogen-
+activated%20protein%20kinase%20kinase%20kinase%20kinase%203,%20Mitogen-
+activated%20protein%20kinase%20kinase%20kinase%20kinase%204,%20Mitogen-
+activated%20protein%20kinase%20kinase%20kinase%20kinase%205,%20Mixed%20lineage%20kinase%207,%20Muscle,%20skeletal%20receptor%20tyrosine%20protein%20kinase,%20Myosin%20IIIA,%20Myosin%20light%20chain%20kinase,%20Myosin%20light%20chain%20kinase%20family%20member%204,%20Myosin-
+IIIB,%20Myotonin-
+protein%20kinase,%20NT-3%20growth%20factor%20receptor,%20NUAK%20family%20SNF1-like%20kinase%201,%20NUAK%20family%20SNF1-like%20kinase%202,%20Neurotrophic%20tyrosine%20kinase%20receptor,%20Neurotrophic%20tyrosine%20kinase%20receptor%20type%202,%20Non-
+receptor%20tyrosine-
+protein%20kinase%20TNK1,%20PAK1,%20PI3-kinase%20subunit%20alpha,%20PI3-kinase%20subunit%20beta,%20PI3-kinase%20subunit%20delta,%20PI3-kinase%20subunit%20gamma,%20PITSLRE%20serine/threonine-
+protein%20kinase%20CDC2L1,%20PRP4%20kinase%20%28PRP4%29,%20PTK2B%20protein%20tyrosine%20kinase%202%20beta%20%28PTK2B%29,%20Peripheral%20plasma%20membrane%20protein%20CASK,%20Phosphatidylinositol%204-kinase%20beta%20%28PIK4KB%29,%20Phosphatidylinositol-4-phosphate%203-kinase%20C2%20domain-
+containing%20beta%20polypeptide,%20Phosphatidylinositol-4-phosphate%203-kinase%20C2%20domain-
+containing%20subunit%20gamma,%20Phosphatidylinositol-4-phosphate%205-kinase%20type-1%20alpha,%20Phosphatidylinositol-4-phosphate%205-kinase%20type-1%20gamma,%20Phosphatidylinositol-5-phosphate%204-kinase%20type-2%20beta,%20Phosphatidylinositol-5-phosphate%204-kinase%20type-2%20gamma,%20Phosphorylase%20kinase,%20Platelet-
+derived%20growth%20factor%20receptor,%20Platelet-
+derived%20growth%20factor%20receptor%20beta,%20Protein%20kinase%20C%20delta%20type,%20Protein%20kinase%20C%20iota%20%28PKC%26amp%3B#953%3B%29,%20Protein%20kinase%20C%20theta%20type,%20Protein%20kinase%20C,%20epsilon,%20Protein%20kinase%20C,%20eta,%20Protein%20kinase%20N1,%20Protein%20kinase%20N2,%20Proto-
+oncogene%20tyrosine-protein%20kinase%20ROS,%20Putative%20uncharacterized%20serine/threonine-
+protein%20kinase%20SgK110,%20RAF%20serine/threonine%20protein%20kinase,%20Receptor%20tyrosine-
+protein%20kinase%20erbB-4%20%28HER4%29,%20Receptor-interacting%20serine/threonine-protein%20kinase%201,%20Receptor-
+interacting%20serine/threonine-protein%20kinase%204,%20Rho-
+associated%20protein%20kinase,%20Rhodopsin%20kinase,%20Ribosomal%20protein%20S6%20kinase%20%28P70S6K%29,%20Ribosomal%20protein%20S6%20kinase%20alpha%201,%20Ribosomal%20protein%20S6%20kinase%20alpha%202,%20Ribosomal%20protein%20S6%20kinase%20alpha%203,%20Ribosomal%20protein%20S6%20kinase%20alpha%204,%20Ribosomal%20protein%20S6%20kinase%20alpha%205,%20Ribosomal%20protein%20S6%20kinase%20alpha%206,%20SM%20myosin%20light%20chain%20kinase%20%28smMLCK%29,%20SNF-
+related%20serine/threonine-
+protein%20kinase,%20SPS1/STE20-related%20protein%20kinase%20YSK4,%20SRC,%20STE20/SPS1-related%20proline-alanine-
+rich%20protein%20kinase,%20Salt-
+inducible%20kinase%202%20%28SIK2%29,%20Serine/threonine%20protein%20kinase%20NLK,%20Serine/threonine-
+protein%20kinase%2010,%20Serine/threonine-protein%20kinase%2011,%20Serine/threonine-protein%20kinase%2017A,%20Serine/threonine-
+protein%20kinase%2017B%20%28STK17B%29,%20Serine/threonine-protein%20kinase%202,%20Serine/threonine-
+protein%20kinase%2024,%20Serine/threonine-protein%20kinase%2025,%20Serine/threonine-protein%20kinase%2032A,%20Serine/threonine-
+protein%20kinase%2032B,%20Serine/threonine-protein%20kinase%2032C,%20Serine/threonine-protein%20kinase%2033,%20Serine/threonine-
+protein%20kinase%2035,%20Serine/threonine-protein%20kinase%2036,%20Serine/threonine-protein%20kinase%2038,%20Serine/threonine-
+protein%20kinase%2038-like,%20Serine/threonine-protein%20kinase%204%20%28STK4%29,%20Serine/threonine-
+protein%20kinase%20AKT,%20Serine/threonine-protein%20kinase%20Aurora,%20Serine/threonine-
+protein%20kinase%20Aurora-C,%20Serine/threonine-protein%20kinase%20Chk1,%20Serine/threonine-
+protein%20kinase%20Chk2,%20Serine/threonine-protein%20kinase%20D1,%20Serine/threonine-
+protein%20kinase%20D2%20%28PKD2%29,%20Serine/threonine-protein%20kinase%20D3,%20Serine/threonine-
+protein%20kinase%20DCLK1,%20Serine/threonine-protein%20kinase%20DCLK2,%20Serine/threonine-
+protein%20kinase%20DCLK3,%20Serine/threonine-protein%20kinase%20GAK,%20Serine/threonine-
+protein%20kinase%20ICK,%20Serine/threonine-protein%20kinase%20LATS1,%20Serine/threonine-
+protein%20kinase%20LATS2,%20Serine/threonine-protein%20kinase%20MAK,%20Serine/threonine-
+protein%20kinase%20MARK1,%20Serine/threonine-protein%20kinase%20MRCK%20alpha,%20Serine/threonine-
+protein%20kinase%20MRCK%20beta,%20Serine/threonine-protein%20kinase%20MRCK%20gamma,%20Serine/threonine-
+protein%20kinase%20MST2,%20Serine/threonine-protein%20kinase%20MST4,%20Serine/threonine-
+protein%20kinase%20NEK6,%20Serine/threonine-protein%20kinase%20NEK7,%20Serine/threonine-
+protein%20kinase%20NEK9,%20Serine/threonine-protein%20kinase%20NIM1,%20Serine/threonine-
+protein%20kinase%20Nek1,%20Serine/threonine-protein%20kinase%20Nek11,%20Serine/threonine-
+protein%20kinase%20Nek2,%20Serine/threonine-protein%20kinase%20Nek3,%20Serine/threonine-
+protein%20kinase%20Nek4,%20Serine/threonine-protein%20kinase%20Nek5,%20Serine/threonine-
+protein%20kinase%20OSR1,%20Serine/threonine-protein%20kinase%20PAK%204,%20Serine/threonine-
+protein%20kinase%20PAK6,%20Serine/threonine-protein%20kinase%20PAK7,%20Serine/threonine-
+protein%20kinase%20PCTAIRE-1,%20Serine/threonine-protein%20kinase%20PCTAIRE-2,%20Serine/threonine-
+protein%20kinase%20PCTAIRE-3,%20Serine/threonine-protein%20kinase%20PFTAIRE-1,%20Serine/threonine-
+protein%20kinase%20PIM,%20Serine/threonine-protein%20kinase%20PLK1,%20Serine/threonine-
+protein%20kinase%20PLK2,%20Serine/threonine-protein%20kinase%20PLK3,%20Serine/threonine-
+protein%20kinase%20PLK4,%20Serine/threonine-protein%20kinase%20PRKX,%20Serine/threonine-
+protein%20kinase%20RIO1,%20Serine/threonine-protein%20kinase%20RIO2,%20Serine/threonine-
+protein%20kinase%20RIO3,%20Serine/threonine-protein%20kinase%20RIPK2,%20Serine/threonine-
+protein%20kinase%20SBK1,%20Serine/threonine-protein%20kinase%20SIK1,%20Serine/threonine-
+protein%20kinase%20SIK3,%20Serine/threonine-protein%20kinase%20SRPK1,%20Serine/threonine-
+protein%20kinase%20SRPK2,%20Serine/threonine-protein%20kinase%20SRPK3,%20Serine/threonine-
+protein%20kinase%20Sgk3,%20Serine/threonine-protein%20kinase%20TAO1,%20Serine/threonine-
+protein%20kinase%20TAO2,%20Serine/threonine-protein%20kinase%20TAO3,%20Serine/threonine-
+protein%20kinase%20ULK1,%20Serine/threonine-protein%20kinase%20ULK2,%20Serine/threonine-
+protein%20kinase%20ULK3,%20Serine/threonine-protein%20kinase%20VRK2,%20Serine/threonine-
+protein%20kinase%20WEE1,%20Serine/threonine-protein%20kinase%20c-TAK1,%20Serine/threonine-
+protein%20kinase%20mTOR,%20Serine/threonine-protein%20kinase%20pknB,%20Serine/threonine-
+protein%20kinase%20receptor%20R3,%20Serine/threonine-protein%20kinase%20tousled-like%201,%20Serine/threonine-
+protein%20kinase%20tousled-like%202,%20Serine/threonine-protein%20kinase/endoribonuclease%20IRE1%20Alpha,%20TAK1/TAB1,%20TGF-
+beta%20receptor%20type%20I,%20TGF-beta%20receptor%20type%20II,%20TNNI3K,%20TRAF2%20and%20NCK-
+interacting%20protein%20kinase%20%28TNIK%29,%20Testis-specific%20serine/threonine-
+protein%20kinase%201,%20Transient%20receptor%20potential%20cation%20channel%20subfamily%20M%20member%206,%20Tyrosine%20kinase%20non-
+receptor%20protein%202,%20Tyrosine-%20and%20threonine-specific%20cdc2-inhibitory%20kinase,%20Tyrosine-
+protein%20kinase%20ABL,%20Tyrosine-protein%20kinase%20ABL1,%20Tyrosine-protein%20kinase%20BMX,%20Tyrosine-
+protein%20kinase%20BRK,%20Tyrosine-protein%20kinase%20BTK,%20Tyrosine-protein%20kinase%20Blk,%20Tyrosine-
+protein%20kinase%20CSK,%20Tyrosine-protein%20kinase%20CTK,%20Tyrosine-protein%20kinase%20FER,%20Tyrosine-
+protein%20kinase%20Fes/Fps,%20Tyrosine-protein%20kinase%20ITK/TSK,%20Tyrosine-protein%20kinase%20JAK1,%20Tyrosine-
+protein%20kinase%20JAK2,%20Tyrosine-protein%20kinase%20Kit%20%28Kit%29,%20Tyrosine-
+protein%20kinase%20STK16%20%28STK16%29,%20Tyrosine-protein%20kinase%20SYK,%20Tyrosine-protein%20kinase%20TEC,%20Tyrosine-
+protein%20kinase%20TXK%20%28TXK%29,%20Tyrosine-protein%20kinase%20Yes,%20Tyrosine-protein%20kinase%20ZAP-70,%20Tyrosine-
+protein%20kinase%20receptor%20FLT3,%20Tyrosine-protein%20kinase%20receptor%20TYRO3,%20Tyrosine-
+protein%20kinase%20receptor%20Tie-1,%20Uncharacterized%20aarF%20domain-containing%20protein%20kinase%204,%20VEGF-
+receptor%202%20and%20tyrosine-
+protein%20kinase%20SRC,%20Vascular%20endothelial%20growth%20factor%20receptor,%20Vascular%20endothelial%20growth%20factor%20receptor%202,%20Vascular%20endothelial%20growth%20factor%20receptor%202%20and%20tyrosine-
+protein%20kinase%20TIE-2%20%28KDR%20and%20TIE2%29,%20Wee1-like%20protein%20kinase%202,%20c-Jun%20N-terminal%20kinase,%20JNK,%20cAMP-
+dependent%20protein%20kinase%20%28PKA%29,%20cGMP-dependent%20protein%20kinase,%20cGMP-
+dependent%20protein%20kinase%202,%20myosin%20light%20chain%20kinase%202,%20p21-Activated%20kinase%202%20%28PAK2%29,%20p21-Activated%20kinase%203%20%28PAK3%29,%20and%20p38%20delta/gamma,%20Uniprot%20A0A024RDK3,%20L7RSL3,%20O00238,%20O00329,%20O00444,%20O00506,%20O00750,%20O14578,%20O14730,%20O14733,%20O14757,%20O14920,%20O14936,%20O14965,%20O14976,%20O15075,%20O15111,%20O15146,%20O15197,%20O15264,%20O15530,%20O43283,%20O43293,%20O43318,%20O43353,%20O60285,%20O60331,%20O60674,%20O75116,%20O75385,%20O75460,%20O75582,%20O75676,%20O75716,%20O75747,%20O75914,%20O76039,%20O94768,%20O94804,%20O94806,%20O94921,%20O95382,%20O95747,%20O95819,%20O95835,%20O96013,%20O96017,%20P00519,%20P00533,%20P04049,%20P04626,%20P04629,%20P06213,%20P06239,%20P06241,%20P07332,%20P07333,%20P07947,%20P07948,%20P07949,%20P08069,%20P08581,%20P08631,%20P08922,%20P09619,%20P09769,%20P0C1S8,%20P0C264,%20P10721,%20P11309,%20P11362,%20P11802,%20P12931,%20P14616,%20P15056,%20P15735,%20P16234,%20P16591,%20P17612,%20P17948,%20P19525,%20P19784,%20P20794,%20P21127,%20P21709,%20P21802,%20P21860,%20P22455,%20P22607,%20P22694,%20P23443,%20P23458,%20P24723,%20P24941,%20P27037,%20P27361,%20P27448,%20P28482,%20P29317,%20P29320,%20P29322,%20P29323,%20P29376,%20P29597,%20P30291,%20P30530,%20P31152,%20P31749,%20P31751,%20P32298,%20P33981,%20P35590,%20P35916,%20P35968,%20P36507,%20P36888,%20P36894,%20P36896,%20P36897,%20P37023,%20P37173,%20P41240,%20P41743,%20P42336,%20P42338,%20P42345,%20P42679,%20P42680,%20P42681,%20P42684,%20P42685,%20P43403,%20P43405,%20P45983,%20P45984,%20P45985,%20P46734,%20P48729,%20P48730,%20P48736,%20P49137,%20P49336,%20P49674,%20P49759,%20P49760,%20P49761,%20P49840,%20P49841,%20P50613,%20P50750,%20P51451,%20P51617,%20P51812,%20P51813,%20P51817,%20P51955,%20P51956,%20P51957,%20P52333,%20P52564,%20P53350,%20P53355,%20P53667,%20P53671,%20P53778,%20P53779,%20P54646,%20P54753,%20P54756,%20P54760,%20P54762,%20P54764,%20P57058,%20P57059,%20P57078,%20P61075,%20P62343,%20P68400,%20P78356,%20P78362,%20P78368,%20P80192,%20P9WI81,%20Q00526,%20Q00535,%20Q00536,%20Q00537,%20Q02156,%20Q02750,%20Q02763,%20Q02779,%20Q04759,%20Q04771,%20Q04912,%20Q05397,%20Q05655,%20Q06187,%20Q06418,%20Q07912,%20Q08345,%20Q08881,%20Q09013,%20Q12851,%20Q12852,%20Q12866,%20Q13043,%20Q13131,%20Q13153,%20Q13163,%20Q13164,%20Q13177,%20Q13188,%20Q13233,%20Q13237,%20Q13464,%20Q13470,%20Q13523,%20Q13546,%20Q13554,%20Q13555,%20Q13557,%20Q13627,%20Q13705,%20Q13873,%20Q13882,%20Q13976,%20Q14004,%20Q14012,%20Q14164,%20Q14289,%20Q14680,%20Q15139,%20Q15208,%20Q15303,%20Q15349,%20Q15418,%20Q15569,%20Q15746,%20Q15759,%20Q15831,%20Q15835,%20Q16288,%20Q16512,%20Q16513,%20Q16539,%20Q16566,%20Q16584,%20Q16620,%20Q16659,%20Q16816,%20Q16832,%20Q2M2I8,%20Q32MK0,%20Q52WX2,%20Q541P7,%20Q56UN5,%20Q59H18,%20Q5S007,%20Q5VT25,%20Q6DT37,%20Q6FI23,%20Q6P3R8,%20Q6PHR2,%20Q6XUX3,%20Q6ZN16,%20Q7KZI7,%20Q7L7X3,%20Q86UE8,%20Q86UX6,%20Q86V86,%20Q86Y07,%20Q86YV6,%20Q86Z02,%20Q8IU85,%20Q8IVH8,%20Q8IVW4,%20Q8IW41,%20Q8IWQ3,%20Q8IY84,%20Q8IYT8,%20Q8N4C8,%20Q8N568,%20Q8N5S9,%20Q8N752,%20Q8NE63,%20Q8NEV4,%20Q8NFD2,%20Q8NG66,%20Q8NI60,%20Q8TBX8,%20Q8TD08,%20Q8TD19,%20Q8TDC3,%20Q8TDR2,%20Q8TDX7,%20Q8WTQ7,%20Q8WU08,%20Q8WXR4,%20Q92630,%20Q92772,%20Q92918,%20Q96BR1,%20Q96D53,%20Q96GD4,%20Q96L34,%20Q96NX5,%20Q96PY6,%20Q96Q40,%20Q96RR4,%20Q96SB4,%20Q99640,%20Q99683,%20Q99755,%20Q99759,%20Q9BQI3,%20Q9BRS2,%20Q9BUB5,%20Q9BVS4,%20Q9BWU1,%20Q9BX84,%20Q9BXA7,%20Q9BYT3,%20Q9BZL6,%20Q9C098,%20Q9H093,%20Q9H0K1,%20Q9H1R3,%20Q9H2G2,%20Q9H2K8,%20Q9H2X6,%20Q9H3Y6,%20Q9H422,%20Q9H4B4,%20Q9HAZ1,%20Q9HBH9,%20Q9HC98,%20Q9HCP0,%20Q9NQU5,%20Q9NRH2,%20Q9NRM7,%20Q9NRP7,%20Q9NSY1,%20Q9NWZ3,%20Q9NY57,%20Q9NYL2,%20Q9NYY3,%20Q9P0L2,%20Q9P1W9,%20Q9P286,%20Q9P289,%20Q9P2K8,%20Q9UBE8,%20Q9UBF8,%20Q9UEE5,%20Q9UEW8,%20Q9UF33,%20Q9UHD2,%20Q9UIK4,%20Q9UK32,%20Q9UKE5,%20Q9UKI8,%20Q9UL54,%20Q9UM73,%20Q9UPE1,%20Q9UPZ9,%20Q9UQ88,%20Q9UQB9,%20Q9UQM7,%20Q9Y243,%20Q9Y2H1,%20Q9Y2H9,%20Q9Y2U5,%20Q9Y463,%20Q9Y5S2,%20Q9Y616,%20Q9Y6E0,%20Q9Y6M4,%20and%20Q9Y6R4</description>%0A%20%20</descriptions>%0A%20%20<subjects>%0A%20%20%20%20<subject>3-phosphoinositide%20dependent%20protein%20kinase-1,%205%27-AMP-
+activated%20protein%20kinase%20catalytic%20subunit%20alpha-1,%20AKT/p21CIP1,%20ALK%20tyrosine%20kinase%20receptor,%20AMPK%20subunit%20alpha-2,%20AXL%20receptor%20tyrosine%20kinase,%20Activin%20receptor%20type-1,%20Activin%20receptor%20type-1B,%20Activin%20receptor%20type-2A,%20Activin%20receptor%20type-2B,%20Activin%20receptor-
+like%20kinase%203%20%28ALK-3%29,%20Adaptor-associated%20kinase,%20Ankyrin%20repeat%20and%20protein%20kinase%20domain-
+containing%20protein%201,%20Apoptosis%20Signal-
+regulating%20Kinase%201%20%28ASK1%29,%20Aurora%20kinase%20B/Inner%20centromere%20protein,%20BMP-2-inducible%20protein%20kinase,%20BR%20serine/threonine-
+protein%20kinase%201,%20BR%20serine/threonine-
+protein%20kinase%202,%20Bone%20morphogenetic%20protein%20receptor%20type-1B%20%28BMPR1B%29,%20Bone%20morphogenetic%20protein%20receptor%20type-2,%20C-RAF,%20CAMK2A,%20CAMK2B,%20CDC2-like%20kinase%203%20%28CLK3%29,%20CDK7/Cyclin%20H/MNAT1,%20CDK8/Cyclin%20C,%20CDKL2,%20CaM%20kinase%20I%20alpha,%20CaM%20kinase%20I%20delta,%20CaM%20kinase%20I%20gamma,%20CaM%20kinase%20II,%20CaM%20kinase%20IV,%20CaM-
+kinase%20kinase%20alpha,%20CaM-kinase%20kinase%20beta,%20Calcium-
+dependent%20protein%20kinase%201,%20Casein%20Kinase%20II,%20Casein%20kinase%20I,%20Casein%20kinase%20I%20delta/epsilon,%20Casein%20kinase%20I%20isoform%20alpha%20%28CK1%20Alpha%29,%20Casein%20kinase%20I%20isoform%20alpha-
+like,%20Casein%20kinase%20I%20isoform%20delta,%20Casein%20kinase%20I%20isoform%20gamma-3,%20Casein%20kinase%20II,%20Cell%20division%20control%20protein%202%20homolog,%20Cell%20division%20cycle%202-like%20protein%20kinase%206,%20Chaperone%20activity%20of%20bc1%20complex-
+like,%20mitochondrial,%20Citron%20Rho-interacting%20kinase,%20Cyclin-Dependent%20Kinase%205%20%28CDK5%29,%20Cyclin-
+dependent%20kinase%2011A,%20Cyclin-dependent%20kinase%2013,%20Cyclin-dependent%20kinase%2015,%20Cyclin-
+dependent%20kinase%202,%20Cyclin-dependent%20kinase%203%20%28CDK3%29,%20Cyclin-dependent%20kinase%204,%20Cyclin-
+dependent%20kinase%209,%20Cyclin-dependent%20kinase-like%201,%20Cyclin-dependent%20kinase-like%203,%20Cyclin-dependent%20kinase-
+like%205,%20Death-associated%20protein%20kinase%201,%20Death-associated%20protein%20kinase%202,%20Death-
+associated%20protein%20kinase%203,%20Discoidin%20domain-
+containing%20receptor%202,%20Dual%20serine/threonine%20and%20tyrosine%20protein%20kinase,%20Dual%20specificity%20mitogen-
+activated%20protein%20kinase%20kinase%201,%20Dual%20specificity%20mitogen-
+activated%20protein%20kinase%20kinase%202,%20Dual%20specificity%20mitogen-
+activated%20protein%20kinase%20kinase%203,%20Dual%20specificity%20mitogen-
+activated%20protein%20kinase%20kinase%204,%20Dual%20specificity%20mitogen-
+activated%20protein%20kinase%20kinase%205,%20Dual%20specificity%20mitogen-
+activated%20protein%20kinase%20kinase%206,%20Dual%20specificity%20mitogen-
+activated%20protein%20kinase%20kinase%207%20%28MAP2K7%29,%20Dual%20specificity%20protein%20kinase%20CLK2,%20Dual%20specificity%20protein%20kinase%20CLK4,%20Dual%20specificity%20protein%20kinase%20TTK,%20Dual%20specificity%20testis-
+specific%20protein%20kinase%201,%20Dual%20specificty%20protein%20kinase%20CLK1,%20Dual-specificity%20tyrosine-
+phosphorylation%20regulated%20kinase%201A,%20Dual-specificity%20tyrosine-phosphorylation%20regulated%20kinase%202,%20Dual-
+specificity%20tyrosine-
+regulated%20kinases%201B,%20EPHB1,%20Ephrin%20receptor,%20Ephrin%20type-A%20receptor%201%20%28EPHA1%29,%20Ephrin%20type-A%20receptor%203%20%28EPHA3%29,%20Ephrin%20type-B%20receptor%203%20%28EPHB3%29,%20Ephrin%20type-B%20receptor%204%20%28EphB4%29,%20Epidermal%20growth%20factor%20receptor,%20Epidermal%20growth%20factor%20receptor%20and%20ErbB2%20%28HER1%20and%20HER2%29,%20Epithelial%20discoidin%20domain-
+containing%20receptor%201,%20Eukaryotic%20translation%20initiation%20factor%202-alpha%20kinase%201,%20Eukaryotic%20translation%20initiation%20factor%202-alpha%20kinase%204,%20Extracellular%20signal-
+regulated%20kinase%205%20%28ERK5%29,%20Fibroblast%20growth%20factor%20receptor%201,%20Fibroblast%20growth%20factor%20receptor%202,%20Fibroblast%20growth%20factor%20receptor%203,%20Fibroblast%20growth%20factor%20receptor%204,%20Focal%20adhesion%20kinase%201/vascular%20endothelial%20growth%20factor%20receptor%203,%20G%20protein-
+coupled%20receptor%20kinase%204,%20G%20protein-
+coupled%20receptor%20kinase%207,%20Glycogen%20synthase%20kinase-3,%20Hepatocyte%20growth%20factor%20receptor,%20Homeodomain-
+interacting%20protein%20kinase%201,%20Homeodomain-interacting%20protein%20kinase%202%20%28HIPK2%29,%20Homeodomain-
+interacting%20protein%20kinase%203,%20Homeodomain-interacting%20protein%20kinase%204,%20Hormonally%20up-regulated%20neu%20tumor-
+associated%20kinase,%20IKK%20epsilon/TBK1,%20Inhibitor%20of%20NF-
+kappa-B%20kinase%20%28IKK%29,%20Insulin%20receptor,%20Insulin%20receptor-related%20protein,%20Insulin-
+like%20growth%20factor%20I%20receptor,%20Interferon-induced,%20double-stranded%20RNA-
+activated%20protein%20kinase,%20Interleukin-1%20receptor-associated%20kinase%201,%20Interleukin-1%20receptor-
+associated%20kinase%203,%20Interleukin-1%20receptor-
+associated%20kinase%204,%20JAK2/TYK2,%20JAK3/JAK1,%20Kinesin-1%20heavy%20chain/%20Tyrosine-
+protein%20kinase%20receptor%20RET,%20LIM%20domain%20kinase%201,%20LIM%20domain%20kinase%202,%20Leucine-
+rich%20repeat%20serine/threonine-
+protein%20kinase%202%20%28LRRK2%29,%20Leukocyte%20tyrosine%20kinase%20receptor,%20MAP%20kinase%20ERK2,%20MAP%20kinase%20p38,%20MAP%20kinase%20signal-
+integrating%20kinase%202,%20MAP%20kinase-activated%20protein%20kinase%202,%20MAP%20kinase-
+activated%20protein%20kinase%205,%20MAP%20kinase-interacting%20serine/threonine-
+protein%20kinase%20MNK1,%20MAP/microtubule%20affinity-regulating%20kinase%202,%20MAP/microtubule%20affinity-
+regulating%20kinase%204,%20MAST1/MAST2,%20MER%20intracellular%20domain/EGFR%20extracellular%20domain%20chimera,%20Macrophage%20colony%20stimulating%20factor%20receptor,%20Macrophage-
+stimulating%20protein%20receptor,%20Maternal%20embryonic%20leucine%20zipper%20kinase%20%28MELK%29,%20Misshapen-
+like%20kinase%201,%20Mitogen-activated%20protein%20kinase%2010,%20Mitogen-
+activated%20protein%20kinase%2013%20%28MAPK13%29,%20Mitogen-activated%20protein%20kinase%2014,%20Mitogen-
+activated%20protein%20kinase%2015,%20Mitogen-activated%20protein%20kinase%202,%20Mitogen-
+activated%20protein%20kinase%203,%20Mitogen-activated%20protein%20kinase%204,%20Mitogen-
+activated%20protein%20kinase%206,%20Mitogen-activated%20protein%20kinase%209,%20Mitogen-
+activated%20protein%20kinase%20kinase%20kinase%201,%20Mitogen-activated%20protein%20kinase%20kinase%20kinase%2010,%20Mitogen-
+activated%20protein%20kinase%20kinase%20kinase%2011,%20Mitogen-activated%20protein%20kinase%20kinase%20kinase%2012,%20Mitogen-
+activated%20protein%20kinase%20kinase%20kinase%2013,%20Mitogen-activated%20protein%20kinase%20kinase%20kinase%2015,%20Mitogen-
+activated%20protein%20kinase%20kinase%20kinase%202,%20Mitogen-activated%20protein%20kinase%20kinase%20kinase%203,%20Mitogen-
+activated%20protein%20kinase%20kinase%20kinase%204,%20Mitogen-activated%20protein%20kinase%20kinase%20kinase%206,%20Mitogen-
+activated%20protein%20kinase%20kinase%20kinase%209%20%28MLK1%29,%20Mitogen-
+activated%20protein%20kinase%20kinase%20kinase%20kinase%201,%20Mitogen-
+activated%20protein%20kinase%20kinase%20kinase%20kinase%203,%20Mitogen-
+activated%20protein%20kinase%20kinase%20kinase%20kinase%204,%20Mitogen-
+activated%20protein%20kinase%20kinase%20kinase%20kinase%205,%20Mixed%20lineage%20kinase%207,%20Muscle,%20skeletal%20receptor%20tyrosine%20protein%20kinase,%20Myosin%20IIIA,%20Myosin%20light%20chain%20kinase,%20Myosin%20light%20chain%20kinase%20family%20member%204,%20Myosin-
+IIIB,%20Myotonin-
+protein%20kinase,%20NT-3%20growth%20factor%20receptor,%20NUAK%20family%20SNF1-like%20kinase%201,%20NUAK%20family%20SNF1-like%20kinase%202,%20Neurotrophic%20tyrosine%20kinase%20receptor,%20Neurotrophic%20tyrosine%20kinase%20receptor%20type%202,%20Non-
+receptor%20tyrosine-
+protein%20kinase%20TNK1,%20PAK1,%20PI3-kinase%20subunit%20alpha,%20PI3-kinase%20subunit%20beta,%20PI3-kinase%20subunit%20delta,%20PI3-kinase%20subunit%20gamma,%20PITSLRE%20serine/threonine-
+protein%20kinase%20CDC2L1,%20PRP4%20kinase%20%28PRP4%29,%20PTK2B%20protein%20tyrosine%20kinase%202%20beta%20%28PTK2B%29,%20Peripheral%20plasma%20membrane%20protein%20CASK,%20Phosphatidylinositol%204-kinase%20beta%20%28PIK4KB%29,%20Phosphatidylinositol-4-phosphate%203-kinase%20C2%20domain-
+containing%20beta%20polypeptide,%20Phosphatidylinositol-4-phosphate%203-kinase%20C2%20domain-
+containing%20subunit%20gamma,%20Phosphatidylinositol-4-phosphate%205-kinase%20type-1%20alpha,%20Phosphatidylinositol-4-phosphate%205-kinase%20type-1%20gamma,%20Phosphatidylinositol-5-phosphate%204-kinase%20type-2%20beta,%20Phosphatidylinositol-5-phosphate%204-kinase%20type-2%20gamma,%20Phosphorylase%20kinase,%20Platelet-
+derived%20growth%20factor%20receptor,%20Platelet-
+derived%20growth%20factor%20receptor%20beta,%20Protein%20kinase%20C%20delta%20type,%20Protein%20kinase%20C%20iota%20%28PKC%26amp%3B#953%3B%29,%20Protein%20kinase%20C%20theta%20type,%20Protein%20kinase%20C,%20epsilon,%20Protein%20kinase%20C,%20eta,%20Protein%20kinase%20N1,%20Protein%20kinase%20N2,%20Proto-
+oncogene%20tyrosine-protein%20kinase%20ROS,%20Putative%20uncharacterized%20serine/threonine-
+protein%20kinase%20SgK110,%20RAF%20serine/threonine%20protein%20kinase,%20Receptor%20tyrosine-
+protein%20kinase%20erbB-4%20%28HER4%29,%20Receptor-interacting%20serine/threonine-protein%20kinase%201,%20Receptor-
+interacting%20serine/threonine-protein%20kinase%204,%20Rho-
+associated%20protein%20kinase,%20Rhodopsin%20kinase,%20Ribosomal%20protein%20S6%20kinase%20%28P70S6K%29,%20Ribosomal%20protein%20S6%20kinase%20alpha%201,%20Ribosomal%20protein%20S6%20kinase%20alpha%202,%20Ribosomal%20protein%20S6%20kinase%20alpha%203,%20Ribosomal%20protein%20S6%20kinase%20alpha%204,%20Ribosomal%20protein%20S6%20kinase%20alpha%205,%20Ribosomal%20protein%20S6%20kinase%20alpha%206,%20SM%20myosin%20light%20chain%20kinase%20%28smMLCK%29,%20SNF-
+related%20serine/threonine-
+protein%20kinase,%20SPS1/STE20-related%20protein%20kinase%20YSK4,%20SRC,%20STE20/SPS1-related%20proline-alanine-
+rich%20protein%20kinase,%20Salt-
+inducible%20kinase%202%20%28SIK2%29,%20Serine/threonine%20protein%20kinase%20NLK,%20Serine/threonine-
+protein%20kinase%2010,%20Serine/threonine-protein%20kinase%2011,%20Serine/threonine-protein%20kinase%2017A,%20Serine/threonine-
+protein%20kinase%2017B%20%28STK17B%29,%20Serine/threonine-protein%20kinase%202,%20Serine/threonine-
+protein%20kinase%2024,%20Serine/threonine-protein%20kinase%2025,%20Serine/threonine-protein%20kinase%2032A,%20Serine/threonine-
+protein%20kinase%2032B,%20Serine/threonine-protein%20kinase%2032C,%20Serine/threonine-protein%20kinase%2033,%20Serine/threonine-
+protein%20kinase%2035,%20Serine/threonine-protein%20kinase%2036,%20Serine/threonine-protein%20kinase%2038,%20Serine/threonine-
+protein%20kinase%2038-like,%20Serine/threonine-protein%20kinase%204%20%28STK4%29,%20Serine/threonine-
+protein%20kinase%20AKT,%20Serine/threonine-protein%20kinase%20Aurora,%20Serine/threonine-
+protein%20kinase%20Aurora-C,%20Serine/threonine-protein%20kinase%20Chk1,%20Serine/threonine-
+protein%20kinase%20Chk2,%20Serine/threonine-protein%20kinase%20D1,%20Serine/threonine-
+protein%20kinase%20D2%20%28PKD2%29,%20Serine/threonine-protein%20kinase%20D3,%20Serine/threonine-
+protein%20kinase%20DCLK1,%20Serine/threonine-protein%20kinase%20DCLK2,%20Serine/threonine-
+protein%20kinase%20DCLK3,%20Serine/threonine-protein%20kinase%20GAK,%20Serine/threonine-
+protein%20kinase%20ICK,%20Serine/threonine-protein%20kinase%20LATS1,%20Serine/threonine-
+protein%20kinase%20LATS2,%20Serine/threonine-protein%20kinase%20MAK,%20Serine/threonine-
+protein%20kinase%20MARK1,%20Serine/threonine-protein%20kinase%20MRCK%20alpha,%20Serine/threonine-
+protein%20kinase%20MRCK%20beta,%20Serine/threonine-protein%20kinase%20MRCK%20gamma,%20Serine/threonine-
+protein%20kinase%20MST2,%20Serine/threonine-protein%20kinase%20MST4,%20Serine/threonine-
+protein%20kinase%20NEK6,%20Serine/threonine-protein%20kinase%20NEK7,%20Serine/threonine-
+protein%20kinase%20NEK9,%20Serine/threonine-protein%20kinase%20NIM1,%20Serine/threonine-
+protein%20kinase%20Nek1,%20Serine/threonine-protein%20kinase%20Nek11,%20Serine/threonine-
+protein%20kinase%20Nek2,%20Serine/threonine-protein%20kinase%20Nek3,%20Serine/threonine-
+protein%20kinase%20Nek4,%20Serine/threonine-protein%20kinase%20Nek5,%20Serine/threonine-
+protein%20kinase%20OSR1,%20Serine/threonine-protein%20kinase%20PAK%204,%20Serine/threonine-
+protein%20kinase%20PAK6,%20Serine/threonine-protein%20kinase%20PAK7,%20Serine/threonine-
+protein%20kinase%20PCTAIRE-1,%20Serine/threonine-protein%20kinase%20PCTAIRE-2,%20Serine/threonine-
+protein%20kinase%20PCTAIRE-3,%20Serine/threonine-protein%20kinase%20PFTAIRE-1,%20Serine/threonine-
+protein%20kinase%20PIM,%20Serine/threonine-protein%20kinase%20PLK1,%20Serine/threonine-
+protein%20kinase%20PLK2,%20Serine/threonine-protein%20kinase%20PLK3,%20Serine/threonine-
+protein%20kinase%20PLK4,%20Serine/threonine-protein%20kinase%20PRKX,%20Serine/threonine-
+protein%20kinase%20RIO1,%20Serine/threonine-protein%20kinase%20RIO2,%20Serine/threonine-
+protein%20kinase%20RIO3,%20Serine/threonine-protein%20kinase%20RIPK2,%20Serine/threonine-
+protein%20kinase%20SBK1,%20Serine/threonine-protein%20kinase%20SIK1,%20Serine/threonine-
+protein%20kinase%20SIK3,%20Serine/threonine-protein%20kinase%20SRPK1,%20Serine/threonine-
+protein%20kinase%20SRPK2,%20Serine/threonine-protein%20kinase%20SRPK3,%20Serine/threonine-
+protein%20kinase%20Sgk3,%20Serine/threonine-protein%20kinase%20TAO1,%20Serine/threonine-
+protein%20kinase%20TAO2,%20Serine/threonine-protein%20kinase%20TAO3,%20Serine/threonine-
+protein%20kinase%20ULK1,%20Serine/threonine-protein%20kinase%20ULK2,%20Serine/threonine-
+protein%20kinase%20ULK3,%20Serine/threonine-protein%20kinase%20VRK2,%20Serine/threonine-
+protein%20kinase%20WEE1,%20Serine/threonine-protein%20kinase%20c-TAK1,%20Serine/threonine-
+protein%20kinase%20mTOR,%20Serine/threonine-protein%20kinase%20pknB,%20Serine/threonine-
+protein%20kinase%20receptor%20R3,%20Serine/threonine-protein%20kinase%20tousled-like%201,%20Serine/threonine-
+protein%20kinase%20tousled-like%202,%20Serine/threonine-protein%20kinase/endoribonuclease%20IRE1%20Alpha,%20TAK1/TAB1,%20TGF-
+beta%20receptor%20type%20I,%20TGF-beta%20receptor%20type%20II,%20TNNI3K,%20TRAF2%20and%20NCK-
+interacting%20protein%20kinase%20%28TNIK%29,%20Testis-specific%20serine/threonine-
+protein%20kinase%201,%20Transient%20receptor%20potential%20cation%20channel%20subfamily%20M%20member%206,%20Tyrosine%20kinase%20non-
+receptor%20protein%202,%20Tyrosine-%20and%20threonine-specific%20cdc2-inhibitory%20kinase,%20Tyrosine-
+protein%20kinase%20ABL,%20Tyrosine-protein%20kinase%20ABL1,%20Tyrosine-protein%20kinase%20BMX,%20Tyrosine-
+protein%20kinase%20BRK,%20Tyrosine-protein%20kinase%20BTK,%20Tyrosine-protein%20kinase%20Blk,%20Tyrosine-
+protein%20kinase%20CSK,%20Tyrosine-protein%20kinase%20CTK,%20Tyrosine-protein%20kinase%20FER,%20Tyrosine-
+protein%20kinase%20Fes/Fps,%20Tyrosine-protein%20kinase%20ITK/TSK,%20Tyrosine-protein%20kinase%20JAK1,%20Tyrosine-
+protein%20kinase%20JAK2,%20Tyrosine-protein%20kinase%20Kit%20%28Kit%29,%20Tyrosine-
+protein%20kinase%20STK16%20%28STK16%29,%20Tyrosine-protein%20kinase%20SYK,%20Tyrosine-protein%20kinase%20TEC,%20Tyrosine-
+protein%20kinase%20TXK%20%28TXK%29,%20Tyrosine-protein%20kinase%20Yes,%20Tyrosine-protein%20kinase%20ZAP-70,%20Tyrosine-
+protein%20kinase%20receptor%20FLT3,%20Tyrosine-protein%20kinase%20receptor%20TYRO3,%20Tyrosine-
+protein%20kinase%20receptor%20Tie-1,%20Uncharacterized%20aarF%20domain-containing%20protein%20kinase%204,%20VEGF-
+receptor%202%20and%20tyrosine-
+protein%20kinase%20SRC,%20Vascular%20endothelial%20growth%20factor%20receptor,%20Vascular%20endothelial%20growth%20factor%20receptor%202,%20Vascular%20endothelial%20growth%20factor%20receptor%202%20and%20tyrosine-
+protein%20kinase%20TIE-2%20%28KDR%20and%20TIE2%29,%20Wee1-like%20protein%20kinase%202,%20c-Jun%20N-terminal%20kinase,%20JNK,%20cAMP-
+dependent%20protein%20kinase%20%28PKA%29,%20cGMP-dependent%20protein%20kinase,%20cGMP-
+dependent%20protein%20kinase%202,%20myosin%20light%20chain%20kinase%202,%20p21-Activated%20kinase%202%20%28PAK2%29,%20p21-Activated%20kinase%203%20%28PAK3%29,%20and%20p38%20delta/gamma,%20Ambit%20Biosciences,%20Affinity</subject>%0A%20%20</subjects>%0A%20%20<dates>%0A%20%20%20%20<date%20dateType%3D%22Collected%22>2012-07-19</date>%0A%20%20</dates>%0A%20%20<contributors>%0A%20%20%20%20<contributor%20contributorType%3D%22DataCurator%22>%0A%20%20%20%20%20%20<contributorName>Liu,%20Tiqing</contributorName>%0A%20%20%20%20%20%20<givenName>Tiqing</givenName>%0A%20%20%20%20%20%20<familyName>Liu</familyName>%0A%20%20%20%20%20%20<affiliation>University%20of%20California%20San%20Diego</affiliation>%0A%20%20%20%20</contributor>%0A%20%20%20%20<contributor%20contributorType%3D%22ProjectLeader%22>%0A%20%20%20%20%20%20<contributorName>Gilson,%20Michael</contributorName>%0A%20%20%20%20%20%20<givenName>Michael</givenName>%0A%20%20%20%20%20%20<familyName>Gilson</familyName>%0A%20%20%20%20%20%20<affiliation>University%20of%20California%20San%20Diego</affiliation>%0A%20%20%20%20</contributor>%0A%20%20</contributors>%0A%20%20<relatedIdentifiers>%0A%20%20%20%20<relatedIdentifier%20relatedIdentifierType%3D%22URL%22%20relationType%3D%22IsDerivedFrom%22>https://www.ebi.ac.uk/chembl/</relatedIdentifier>%0A%20%20<relatedIdentifier%20relatedIdentifierType%3D%22PMID%22%20relationType%3D%22IsDerivedFrom%22>22037378</relatedIdentifier>%0A<relatedIdentifier%20relatedIdentifierType%3D%22DOI%22%20relationType%3D%22IsDerivedFrom%22>10.1038/nbt.1990</relatedIdentifier>%0A</relatedIdentifiers>%0A%20%20<rightsList>%0A%20%20%20%20<rights>Attribution%203.0%20United%20States</rights>%0A%20%20</rightsList>%0A</resource>

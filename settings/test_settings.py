@@ -1,14 +1,14 @@
 """EZID settings
 """
-
+import collections
 import logging.config
 import os
 import pathlib
 import socket
 import sys
 
+import django.db.models
 import django.utils.translation
-
 
 import impl.nog.tb
 
@@ -17,15 +17,16 @@ def my_excepthook(type, value, traceback):
     impl.nog.tb.traceback_with_local_vars(type, value, traceback)
     # print ('Unhandled error:', type, value)
 
-sys.excepthook = my_excepthook
-
+# print('Installing exception hook')
+# sys.excepthook = my_excepthook
 
 # When DEBUG == True, any errors in EZID are returned to the user as pages containing
 # full stack traces and additional information. Should only be used for development.
-DEBUG = False
+DEBUG = True
 
 # When STANDALONE == True, Django handles serving of static files. Should only be used
 # for development.
+# TODO: Fix 'index out of range' when set to True
 STANDALONE = False
 
 # Absolute paths
@@ -91,7 +92,7 @@ DAEMONS_LINKCHECKER_ENABLED = True
 DAEMONS_STATISTICS_ENABLED = True
 
 DAEMONS_BACKGROUND_PROCESSING_IDLE_SLEEP = 5
-DAEMONS_STATUS_LOGGING_INTERVAL = 1 ################# 60
+DAEMONS_STATUS_LOGGING_INTERVAL = 1  ################# 60
 DAEMONS_BINDER_PROCESSING_IDLE_SLEEP = 5
 DAEMONS_BINDER_PROCESSING_ERROR_SLEEP = 300
 DAEMONS_BINDER_NUM_WORKER_THREADS = 3
@@ -112,11 +113,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'HOST': 'localhost',
-        "NAME": "ezid_test_db",
+        "NAME": "test3",
+        # "NAME": "ezid_test_db",
         'USER': 'ezid_test_user',
-        # 'HOST': 'r2',
-        # "NAME": "ezid",
-        # 'USER': 'ezidrw',
         "PASSWORD": '',
         'PORT': '3306',
         'OPTIONS': {'charset': 'utf8mb4'},
@@ -177,7 +176,6 @@ EMAIL_ERROR_SUPPRESSION_WINDOW = 3600
 EMAIL_ERROR_LIFETIME = 14400
 EMAIL_ERROR_SIMILARITY_THRESHOLD = 0.6
 
-
 # EZID errors are automatically emailed to this list.
 MANAGERS = ADMINS = []
 
@@ -207,8 +205,8 @@ logging.config.dictConfig(
             'console': {
                 'level': 'DEBUG',
                 'class': 'logging.StreamHandler',
-                # 'formatter': 'verbose',
-                'formatter': 'simple',
+                'formatter': 'verbose',
+                # 'formatter': 'simple',
                 # 'stream': sys.stdout,
             },
         },
@@ -216,17 +214,17 @@ logging.config.dictConfig(
             '': {
                 'handlers': ['console'],
                 'propagate': True,
-                'level': 'DEBUG',
+                'level': 'DEBUG', # 'INFO'
             },
             # Increase logging level on loggers that are noisy at debug level
             # Note: django.server logs at warning level for 404s.
             'django.server': {
-                # 'level': 'DEBUG',
-                'level': 'ERROR',
+                'level': 'DEBUG',
+                # 'level': 'ERROR',
             },
             'django.db': {
-                # 'level': 'DEBUG',
-                'level': 'ERROR',
+                'level': 'DEBUG',
+                # 'level': 'ERROR',
             },
             'django.request': {
                 'level': 'ERROR',
@@ -240,6 +238,10 @@ logging.config.dictConfig(
             },
             'django.utils.autoreload': {
                 'level': 'ERROR',
+            },
+            # Suppress 'Using selector: EpollSelector'
+            'asyncio': {
+                'level': 'WARNING',
             },
         },
     }
@@ -456,6 +458,7 @@ LINKCHECKER_MAX_READ = 104857600
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 INSTALLED_APPS = [
+    'django_extensions',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -498,6 +501,61 @@ TEMPLATES = [
     }
 ]
 
+
+QUERY_PAGE_SIZE = 10000
+
+BlobField = collections.namedtuple(
+    'BlobField', ['model', 'field', 'is_queue']
+)
+
+BLOB_FIELD_LIST = [
+    # metadata = Python, JSON, and legacy compound objects
+    BlobField('BinderQueue', 'metadata', True),
+    BlobField('CrossrefQueue', 'metadata', True),
+    BlobField('DataciteQueue', 'metadata', True),
+
+    # object = StoreIdentifier (Model)
+    BlobField('DownloadQueue', 'object', True),
+    BlobField('UpdateQueue',   'object', True),
+
+    # cm = CompressedJsonField (Field)
+    BlobField('SearchIdentifier', 'cm', False),
+    BlobField('StoreIdentifier', 'cm', False),
+
+    BlobField('LinkChecker', '', False),
+]
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 # SERIALIZATION_MODULES = {
 #     'extjson': 'ezidapp.models.serialization',
 # }
+
+
+# From django_extensions
+
+# BASE_DIR = os.path.dirname(os.path.realpath(__file__))
+# REPLACEMENTS = getattr(settings, 'EXTENSIONS_REPLACEMENTS', {})
+#
+# DEFAULT_SQLITE_ENGINES = (
+#     'django.db.backends.sqlite3',
+#     'django.db.backends.spatialite',
+# )
+# DEFAULT_MYSQL_ENGINES = (
+#     'django.db.backends.mysql',
+#     'django.contrib.gis.db.backends.mysql',
+#     'mysql.connector.django',
+# )
+# DEFAULT_POSTGRESQL_ENGINES = (
+#     'django.db.backends.postgresql',
+#     'django.db.backends.postgresql_psycopg2',
+#     'django.db.backends.postgis',
+#     'django.contrib.gis.db.backends.postgis',
+#     'psqlextra.backend',
+#     'django_zero_downtime_migrations.backends.postgres',
+#     'django_zero_downtime_migrations.backends.postgis',
+# )
+#
+# SQLITE_ENGINES = getattr(settings, 'DJANGO_EXTENSIONS_RESET_DB_SQLITE_ENGINES', DEFAULT_SQLITE_ENGINES)
+# MYSQL_ENGINES = getattr(settings, 'DJANGO_EXTENSIONS_RESET_DB_MYSQL_ENGINES', DEFAULT_MYSQL_ENGINES)
+# POSTGRESQL_ENGINES = getattr(settings, 'DJANGO_EXTENSIONS_RESET_DB_POSTGRESQL_ENGINES', DEFAULT_POSTGRESQL_ENGINES)

@@ -92,7 +92,7 @@ def _decodeNonExpansionBlock(s):
     return _encodingRE.sub(lambda c: _encodings.get(c.group(1), c.group(0)), s)
 
 
-_whitespaceRE = re.compile("\s")
+_whitespaceRE = re.compile("\\s")
 
 
 def _decodeExpansionBlock(s):
@@ -115,7 +115,7 @@ def _decode(s):
     return r
 
 
-_spaceRE = re.compile("\s+")
+_spaceRE = re.compile("\\s+")
 
 
 def _decodeLabel(s):

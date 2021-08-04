@@ -282,11 +282,11 @@ def formulateQuery(
         elif column == "identifier":
             v = impl.util.validateIdentifier(value)
             if v is None:
-                if re.match("\d{5}/", value):
+                if re.match("\\d{5}/", value):
                     v = impl.util.validateArk(value)
                     if v is not None:
                         v = "ark:/" + v
-                elif re.match("10\.[1-9]\d{3,4}/", value):
+                elif re.match("10\\.[1-9]\\d{3,4}/", value):
                     v = impl.util.validateDoi(value)
                     if v is not None:
                         v = "doi:" + v

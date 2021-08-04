@@ -192,7 +192,7 @@ def _extractRaiser(tbList):
         return "(unknown)"
 
     def moduleName(path):
-        m = re.match(".*/(.*?)\.py$", path)
+        m = re.match(".*/(.*?)\\.py$", path)
         if m:
             return m.group(1)
         else:

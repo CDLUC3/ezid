@@ -1,0 +1,28 @@
+input_json=
+{"mrt.creator":"lsta_sonomalib_mbl","erc":"who: Sonoma County Library;Gundlach-Bundschu Wine Co., Inc.
+what: Bacchus Wines California Bacchus Sauterne : California Grand Yquem type ; Bacchus Vineyards, Rhine Farm, Sonoma ; contents
+24 fluid ozs
+when: 1901
+where: ark:/13030/c800005r
+where: CSTR_171"}
+~~~~~~~~~~
+dict_pp=
+{'erc': 'who: Sonoma County Library;Gundlach-Bundschu Wine Co., Inc.
+'
+        'what: Bacchus Wines California Bacchus Sauterne : California Grand '
+        'Yquem type ; Bacchus Vineyards, Rhine Farm, Sonoma ; contents 24 '
+        'fluid ozs
+'
+        'when: 1901
+'
+        'where: ark:/13030/c800005r
+'
+        'where: CSTR_171',
+ 'mrt.creator': 'lsta_sonomalib_mbl'}
+~~~~~~~~~~
+keys=
+mrt.creator, erc
+~~~~~~~~~~
+output_exchange=
+mrt.creator lsta_sonomalib_mbl erc who:%20Sonoma%20County%20Library%3BGundlach-
+Bundschu%20Wine%20Co.,%20Inc.%0Awhat:%20Bacchus%20Wines%20California%20Bacchus%20Sauterne%20:%20California%20Grand%20Yquem%20type%20%3B%20Bacchus%20Vineyards,%20Rhine%20Farm,%20Sonoma%20%3B%20contents%2024%20fluid%20ozs%0Awhen:%201901%0Awhere:%20ark:/13030/c800005r%0Awhere:%20CSTR_171

@@ -1,0 +1,17 @@
+input_json=
+{"erc.who":"Kunze, John; Calvert, Scout; DeBarry, Jeremy; Hanlon, Matthew; Jan\u00e9e, Greg; Sweat,
+Sandra","erc.when":"2016.10.31","erc.what":"Persistence statements: describing digital stickiness"}
+~~~~~~~~~~
+dict_pp=
+{'erc.what': 'Persistence statements: describing digital stickiness',
+ 'erc.when': '2016.10.31',
+ 'erc.who': 'Kunze, John; Calvert, Scout; DeBarry, Jeremy; Hanlon, Matthew; '
+            'Janée, Greg; Sweat, Sandra'}
+~~~~~~~~~~
+keys=
+erc.who, erc.when, erc.what
+~~~~~~~~~~
+output_exchange=
+erc.who
+Kunze,%20John%3B%20Calvert,%20Scout%3B%20DeBarry,%20Jeremy%3B%20Hanlon,%20Matthew%3B%20Jan%E9e,%20Greg%3B%20Sweat,%20Sandra
+erc.when 2016.10.31 erc.what Persistence%20statements:%20describing%20digital%20stickiness

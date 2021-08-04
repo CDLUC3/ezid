@@ -1,0 +1,40 @@
+input_json=
+{"dc.date":"undated","dc.creator":"(:unav)","dc.relation":"http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx","dc.title":"Cruess
+Hall, serving as a laboratory and classroom for instruction of students in semi-commercial operations, and practical application
+of research, the Food Technology Building of the University of California College of Agriculture on the Davis campus is designed
+to give the best in educational and research facilities. The building contains cold storage laboratories, teaching laboratories, a
+tropical incubator room, several small utility laboratories, food preparation labs and kitchens, food tasting and acceptance labs,
+and a pilot wing where research under simulated commercial conditions can be conducted. The wing ultimately will be outfitted with
+machinery and equipment for duplicating any process used by the food industry. The cold storage and incubator rooms enable
+technologists to observe the effects of fresh and processed foods under long and short term storage at greatly varied conditions.
+The incubator room will also be used for culturing yeasts, bacteria and viruses for experimental work."}
+~~~~~~~~~~
+dict_pp=
+{'dc.creator': '(:unav)',
+ 'dc.date': 'undated',
+ 'dc.relation': 'http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx',
+ 'dc.title': 'Cruess Hall, serving as a laboratory and classroom for '
+             'instruction of students in semi-commercial operations, and '
+             'practical application of research, the Food Technology Building '
+             'of the University of California College of Agriculture on the '
+             'Davis campus is designed to give the best in educational and '
+             'research facilities. The building contains cold storage '
+             'laboratories, teaching laboratories, a tropical incubator room, '
+             'several small utility laboratories, food preparation labs and '
+             'kitchens, food tasting and acceptance labs, and a pilot wing '
+             'where research under simulated commercial conditions can be '
+             'conducted. The wing ultimately will be outfitted with machinery '
+             'and equipment for duplicating any process used by the food '
+             'industry. The cold storage and incubator rooms enable '
+             'technologists to observe the effects of fresh and processed '
+             'foods under long and short term storage at greatly varied '
+             'conditions. The incubator room will also be used for culturing '
+             'yeasts, bacteria and viruses for experimental work.'}
+~~~~~~~~~~
+keys=
+dc.date, dc.creator, dc.relation, dc.title
+~~~~~~~~~~
+output_exchange=
+dc.date undated dc.creator %28:unav%29 dc.relation http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx dc.title
+Cruess%20Hall,%20serving%20as%20a%20laboratory%20and%20classroom%20for%20instruction%20of%20students%20in%20semi-
+commercial%20operations,%20and%20practical%20application%20of%20research,%20the%20Food%20Technology%20Building%20of%20the%20University%20of%20California%20College%20of%20Agriculture%20on%20the%20Davis%20campus%20is%20designed%20to%20give%20the%20best%20in%20educational%20and%20research%20facilities.%20The%20building%20contains%20cold%20storage%20laboratories,%20teaching%20laboratories,%20a%20tropical%20incubator%20room,%20several%20small%20utility%20laboratories,%20food%20preparation%20labs%20and%20kitchens,%20food%20tasting%20and%20acceptance%20labs,%20and%20a%20pilot%20wing%20where%20research%20under%20simulated%20commercial%20conditions%20can%20be%20conducted.%20The%20wing%20ultimately%20will%20be%20outfitted%20with%20machinery%20and%20equipment%20for%20duplicating%20any%20process%20used%20by%20the%20food%20industry.%20The%20cold%20storage%20and%20incubator%20rooms%20enable%20technologists%20to%20observe%20the%20effects%20of%20fresh%20and%20processed%20foods%20under%20long%20and%20short%20term%20storage%20at%20greatly%20varied%20conditions.%20The%20incubator%20room%20will%20also%20be%20used%20for%20culturing%20yeasts,%20bacteria%20and%20viruses%20for%20experimental%20work.

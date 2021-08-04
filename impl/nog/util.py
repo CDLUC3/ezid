@@ -2,14 +2,17 @@ import logging
 import logging.config
 import sys
 
+log = logging.getLogger(__name__)
 
-def log_setup(module_name, is_debug):
+
+def log_setup(module_name, is_debug, suppress_context=False):
     """Add a logging handler that writes to the console and configure logging
     levels.
 
     Args:
         is_debug: Enable debug level logging.
         module_name: __name_ from caller.
+        suppress_context ():
 
         If debug level logging IS enabled, we just set the root logger to DEBUG so that
         we can log at all levels without getting filtered. We leave the rest of the tree
@@ -43,9 +46,13 @@ def log_setup(module_name, is_debug):
         logging.getLogger(n).setLevel(logging.DEBUG if is_debug else logging.INFO)
 
     # Add new handlers
-    format_str = '%(name)s %(levelname)-8s %(module)s - %(message)s'
-    if is_debug:
-        format_str = '%(filename)s:%(lineno)d %(module)s ' + format_str
+    if suppress_context:
+        format_str = '%(levelname)-8s %(message)s'
+    else:
+        format_str = '%(name)s %(levelname)-8s %(module)s - %(message)s'
+        if is_debug:
+            format_str = '%(filename)s:%(lineno)d %(module)s ' + format_str
+
     formatter = logging.Formatter(format_str)
     base_level = logging.DEBUG if is_debug else logging.INFO
     handler = logging.StreamHandler(sys.stdout)
@@ -68,3 +75,11 @@ def log_setup(module_name, is_debug):
 
     # import logging_tree
     # print(logging_tree.printout())
+
+
+def print_table(row_list, out_fn=log.info):
+    """Print a list of rows as a table with columns adjusted to the longest string in each column"""
+    rot_list = list(zip(*row_list[::-1]))
+    max_list = [max(len(str(s)) for s in r) for r in rot_list]
+    fmt_str = ' '.join([f'{{:<{max(len(str(s)) for s in r)}}}' for r in rot_list])
+    [out_fn(fmt_str.format(*r)) for r in row_list]

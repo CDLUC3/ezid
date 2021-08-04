@@ -1,0 +1,11 @@
+input_json=
+{"erc.what":"exemple de document Jalons"}
+~~~~~~~~~~
+dict_pp=
+{'erc.what': 'exemple de document Jalons'}
+~~~~~~~~~~
+keys=
+erc.what
+~~~~~~~~~~
+output_exchange=
+erc.what exemple%20de%20document%20Jalons

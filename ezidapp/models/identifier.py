@@ -13,6 +13,8 @@
 #
 # -----------------------------------------------------------------------------
 
+import django.core.serializers.json
+import ezidapp.models.custom_fields
 import pprint
 import re
 import time
@@ -28,7 +30,7 @@ import django.db
 import django.db.models
 import django.db.utils
 
-# import ezidapp.models.custom_fields
+import ezidapp.models.custom_fields
 import ezidapp.models.group
 import ezidapp.models.util
 import ezidapp.models.validation
@@ -87,6 +89,9 @@ class Identifier(django.db.models.Model):
     # the concrete subclasses.  There appears to be no better way to
     # model this in Django.
 
+    # TODO: The owner and ownergroup fields have been commented out since before 2020-3, and the
+    # comments can probably be removed.
+
     # owner = django.db.models.ForeignKey(user.User, blank=True, null=True)
     # The identifier's owner, or None if the owner is anonymous.
 
@@ -96,17 +101,17 @@ class Identifier(django.db.models.Model):
     # If an owner is specified but not an ownergroup, the ownergroup is
     # computed.
 
+    # The time the identifier was created as a Unix timestamp.  If not
+    # specified, the current time is used.
     createTime = django.db.models.IntegerField(
         blank=True, default="", validators=[django.core.validators.MinValueValidator(0)]
     )
-    # The time the identifier was created as a Unix timestamp.  If not
-    # specified, the current time is used.
 
+    # The time the identifier was last updated as a Unix timestamp.  If
+    # not specified, the current time is used.
     updateTime = django.db.models.IntegerField(
         blank=True, default="", validators=[django.core.validators.MinValueValidator(0)]
     )
-    # The time the identifier was last updated as a Unix timestamp.  If
-    # not specified, the current time is used.
 
     RESERVED = "R"
     PUBLIC = "P"
@@ -140,15 +145,15 @@ class Identifier(django.db.models.Model):
     def isUnavailable(self):
         return self.status == self.UNAVAILABLE
 
-    unavailableReason = django.db.models.TextField(blank=True, default="")
     # If the status is UNAVAILABLE then, optionally, a reason for the
     # unavailability, e.g., "withdrawn"; otherwise, empty.
+    unavailableReason = django.db.models.TextField(blank=True, default="")
 
-    exported = django.db.models.BooleanField(default=True)
     # Export control: determines if the identifier is publicized by
     # exporting it to external indexing and harvesting services.
     # Although this flag may be set independently of the status, in fact
     # it has effect only if the status is public.
+    exported = django.db.models.BooleanField(default=True)
 
     # datacenter = django.db.models.ForeignKey(datacenter.Datacenter,
     #   blank=True, null=True, default=None)
@@ -203,16 +208,10 @@ class Identifier(django.db.models.Model):
     def isCrossrefBad(self):
         return self.crossrefStatus in [self.CR_WARNING, self.CR_FAILURE]
 
-    crossrefMessage = django.db.models.TextField(blank=True, default="")
     # For the CR_WARNING and CR_FAILURE Crossref statuses only, any
     # message received from Crossref; otherwise, empty.
+    crossrefMessage = django.db.models.TextField(blank=True, default="")
 
-    target = django.db.models.URLField(
-        max_length=2000,
-        blank=True,
-        default="",
-        validators=[ezidapp.models.validation.unicodeBmpOnly],
-    )
     # The identifier's nominal target URL, e.g., "http://foo.com/bar".
     # (The target URL actually registered with resolvers depends on the
     # identifier's status.)  Note that EZID supplies a default target
@@ -220,6 +219,12 @@ class Identifier(django.db.models.Model):
     # practice never be empty.  The length limit of 2000 characters is
     # not arbitrary, but is the de facto limit accepted by most web
     # browsers.
+    target = django.db.models.URLField(
+        max_length=2000,
+        blank=True,
+        default="",
+        validators=[ezidapp.models.validation.unicodeBmpOnly],
+    )
 
     @property
     def defaultTarget(self):
@@ -270,12 +275,17 @@ class Identifier(django.db.models.Model):
     def usesErcProfile(self):
         return self.profile.label == "erc"
 
-    cm = None
-    # import ezidapp.models.custom_fields
-    # cm = ezidapp.models.custom_fields.CompressedJsonField(default=emptyDict)
+    # cm = custom_fields.CompressedJsonField(default=_emptyDict)
+    cm = django.db.models.BinaryField(default=dict)
 
     # All of the identifier's citation metadata as a dictionary of
     # name/value pairs, e.g., { "erc.who": "Proust, Marcel", ... }.
+
+    metadata = django.db.models.JSONField(
+        encoder=django.core.serializers.json.DjangoJSONEncoder,
+        # null=True,
+        default=dict,
+    )
 
     def kernelMetadata(self):
         # Returns citation metadata as a mapping.KernelMetadata object.
@@ -283,7 +293,7 @@ class Identifier(django.db.models.Model):
         # profile.  Missing attributes will be None.
         import impl.mapping as mapping
 
-        return mapping.map(self.cm, profile=self.profile.label)
+        return mapping.map(self.metadata, profile=self.profile.label)
 
     def dataciteMetadata(self):
         # Returns citation metadata as a DataCite XML record.  (The record
@@ -295,26 +305,24 @@ class Identifier(django.db.models.Model):
         import impl.datacite as datacite
 
         return datacite.formRecord(
-            self.identifier, self.cm, supplyMissing=True, profile=self.profile.label
+            self.identifier, self.metadata, supplyMissing=True, profile=self.profile.label
         )
 
+    # If the identifier is the persistent identifier of an agent, the
+    # agent's role; otherwise, empty.
     USER = "U"
     GROUP = "G"
     agentRole = django.db.models.CharField(
         max_length=1, blank=True, choices=[(USER, "user"), (GROUP, "group")], default=""
     )
-    # If the identifier is the persistent identifier of an agent, the
-    # agent's role; otherwise, empty.
-
     agentRoleDisplayToCode = {"user": USER, "group": GROUP}
 
     @property
     def isAgentPid(self):
         return self.agentRole != ""
 
-    isTest = django.db.models.BooleanField(editable=False, blank=True)
-
     # Computed value: True if the identifier is a test identifier.
+    isTest = django.db.models.BooleanField(editable=False, blank=True)
 
     def my_full_clean(self, exclude=None, validate_unique=False):
         # This method differs from the Django-supplied full_clean method
@@ -332,7 +340,7 @@ class Identifier(django.db.models.Model):
         except django.core.exceptions.ValidationError as e:
             raise django.core.exceptions.ValidationError(
                 f'Error="{repr(e)}" '
-                f'Metadata: {pprint.pformat(getattr(self, "cm", "cm=None"))}'
+                f'Metadata: {pprint.pformat(getattr(self, "metadata", "metadata=None"))}'
             )
 
     def clean(self):
@@ -459,16 +467,16 @@ class Identifier(django.db.models.Model):
         self.target = f"{scheme.lower()}:{rest}"
         if self.profile is None:
             self.profile = self.defaultProfile
-        for k, v in list(self.cm.items()):
+        for k, v in list(self.metadata.items()):
             if k.strip() != k or k == "" or k.startswith("_"):
                 raise django.core.exceptions.ValidationError(
-                    {"cm": "Invalid citation metadata key."}
+                    {"metadata": "Invalid citation metadata key."}
                 )
             vs = v.strip()
             if vs == "":
-                del self.cm[k]
+                del self.metadata[k]
             elif vs != v:
-                self.cm[k] = vs
+                self.metadata[k] = vs
 
     def cleanAgentPid(self):
         # Checks applicable to agent PIDs only.
@@ -509,18 +517,18 @@ class Identifier(django.db.models.Model):
         # import ezidapp.management.commands.crossref as crossref
         import impl.datacite as datacite
 
-        if "datacite.resourcetype" in self.cm:
+        if "datacite.resourcetype" in self.metadata:
             try:
-                self.cm[
+                self.metadata[
                     "datacite.resourcetype"
                 ] = ezidapp.models.validation.resourceType(
-                    self.cm["datacite.resourcetype"]
+                    self.metadata["datacite.resourcetype"]
                 )
             except django.core.exceptions.ValidationError as e:
                 raise django.core.exceptions.ValidationError(
                     {"datacite.resourcetype": e}
                 )
-        if "datacite" in self.cm:
+        if "datacite" in self.metadata:
             try:
                 # In validating DataCite XML records, we always require that
                 # records be well-formed and that they look sufficiently like
@@ -530,9 +538,9 @@ class Identifier(django.db.models.Model):
                 # appropriate XML schema to ensure they will be accepted by
                 # DataCite.  (Note that this check is performed for all types
                 # of identifiers, not just DOIs.)
-                self.cm["datacite"] = datacite.validateDcmsRecord(
+                self.metadata["datacite"] = datacite.validateDcmsRecord(
                     self.identifier,
-                    self.cm["datacite"],
+                    self.metadata["datacite"],
                     schemaValidate=(not self.isReserved),
                 )
             except AssertionError as e:
@@ -540,20 +548,20 @@ class Identifier(django.db.models.Model):
                     {
                         "datacite": f"Metadata validation error: "
                         f"{impl.util.oneLine(str(e))}. "
-                        f'metadata="{self.cm.get("datacite", "<missing>")}"'
+                        f'metadata="{self.metadata.get("datacite", "<missing>")}"'
                     }
                 )
-        if "crossref" in self.cm:
+        if "crossref" in self.metadata:
             try:
                 # Our validation of Crossref XML records is incomplete (the
                 # schema is way too complicated).  As with DataCite XML
                 # records, we simply require that they be well-formed and that
                 # the parts that EZID cares about are present and sufficiently
                 # correct to support our processing.
-                self.cm["crossref"] = impl.crossref.validateBody(self.cm["crossref"])
+                self.metadata["crossref"] = impl.crossref.validateBody(self.metadata["crossref"])
                 if self.isDoi and not self.isReserved:
-                    self.cm["crossref"] = impl.crossref.replaceTbas(
-                        self.cm["crossref"], self.identifier[4:], self.resolverTarget
+                    self.metadata["crossref"] = impl.crossref.replaceTbas(
+                        self.metadata["crossref"], self.identifier[4:], self.resolverTarget
                     )
             except AssertionError as e:
                 raise django.core.exceptions.ValidationError(
@@ -572,21 +580,21 @@ class Identifier(django.db.models.Model):
             # (in the Crossref case, by virtue of the design of the
             # Crossref-to-DataCite transform, which always generates a
             # complete DataCite record).
-            if "datacite" not in self.cm and (
-                not self.usesCrossrefProfile or "crossref" not in self.cm
+            if "datacite" not in self.metadata and (
+                not self.usesCrossrefProfile or "crossref" not in self.metadata
             ):
                 try:
                     datacite.formRecord(
-                        self.identifier, self.cm, profile=self.profile.label
+                        self.identifier, self.metadata, profile=self.profile.label
                     )
                 except AssertionError as e:
                     raise django.core.exceptions.ValidationError(
                         f"Public DOI metadata requirements not satisfied: {str(e)}."
                     )
-        if self.isCrossref and not self.isReserved and "crossref" not in self.cm:
+        if self.isCrossref and not self.isReserved and "crossref" not in self.metadata:
             raise django.core.exceptions.ValidationError(
                 f"Registration with Crossref requires Crossref metadata supplied "
-                f"as value of element 'crossref'. Received metadata: {self.cm}"
+                f"as value of element 'crossref'. Received metadata: {self.metadata}"
             )
 
     def computeComputedValues(self):
@@ -595,7 +603,85 @@ class Identifier(django.db.models.Model):
         self.isTest = util2.isTestIdentifier(self.identifier)
 
     def __str__(self):
-        return self.identifier
+        return f'{self.__class__.__name__}({self.pk}, {self.identifier})'
+
+    def toLegacy(self):
+        # Returns a legacy representation of the identifier.  See the inverse of this method,
+        # 'fromLegacy' below.
+        d = self.metadata.copy()
+        d["_o"] = self.owner.pid if self.owner is not None else "anonymous"
+        d["_g"] = self.ownergroup.pid if self.ownergroup is not None else "anonymous"
+        d["_c"] = str(self.createTime)
+        d["_u"] = str(self.updateTime)
+        d["_p"] = self.profile.label
+        if self.isPublic:
+            d["_t"] = self.target
+        else:
+            if self.isReserved:
+                d["_is"] = "reserved"
+            else:
+                d["_is"] = "unavailable"
+                if self.unavailableReason != "":
+                    d["_is"] += " | " + self.unavailableReason
+            d["_t"] = self.resolverTarget
+            d["_t1"] = self.target
+        if not self.exported:
+            d["_x"] = "no"
+        if self.isDatacite:
+            # noinspection PyUnresolvedReferences
+            d["_d"] = self.datacenter.symbol
+        if self.isCrossref:
+            d["_cr"] = "yes | " + self.get_crossrefStatus_display()
+            if self.crossrefMessage != "":
+                d["_cr"] += " | " + self.crossrefMessage
+        if self.isAgentPid:
+            d["_ezid_role"] = "user" if self.agentRole == self.USER else "group"
+        return d
+
+    _legacyUnavailableStatusRE = re.compile("unavailable \\| (.*)")
+
+    def fromLegacy(self, d):
+        # Creates an identifier from a legacy representation (or more
+        # accurately, fills out an identifier from a legacy
+        # representation).  This method should be called after the
+        # concrete subclass instance has been created with the identifier
+        # set as in, for example, SearchIdentifier(identifier=...).  All
+        # foreign key values (owner, ownergroup, datacenter, profile) must
+        # be set externally to this method.  Finally,
+        # computeComputedValues should be called after this method to fill
+        # out the rest of the object.
+        self.createTime = int(d["_c"])
+        self.updateTime = int(d["_u"])
+        if "_is" in d:
+            if d["_is"] == "reserved":
+                self.status = self.RESERVED
+            else:
+                self.status = self.UNAVAILABLE
+                m = self._legacyUnavailableStatusRE.match(d["_is"])
+                if m:
+                    self.unavailableReason = m.group(1)
+            self.target = d["_t1"]
+        else:
+            self.status = self.PUBLIC
+            self.target = d["_t"]
+        self.exported = "_x" not in d
+        for k, v in list(d.items()):
+            if not k.startswith("_"):
+                self.cm[k] = v
+        if "_cr" in d:
+            statuses = dict(
+                (v, k) for k, v in self._meta.get_field("crossrefStatus").get_choices()
+            )
+            assert d["_cr"].startswith("yes | "), "malformed legacy Crossref status"
+            l = [s for s in list(statuses.keys()) if d["_cr"][6:].startswith(s)]
+            assert len(l) == 1, "unrecognized legacy Crossref status"
+            self.crossrefStatus = statuses[l[0]]
+            if len(d["_cr"]) > 6 + len(l[0]):
+                m = d["_cr"][6 + len(l[0]):]
+                assert m.startswith(" | "), "malformed legacy Crossref status"
+                self.crossrefMessage = m[3:]
+        if "_ezid_role" in d:
+            self.agentRole = self.USER if d["_ezid_role"] == "user" else self.GROUP
 
 
 class Search(django.db.models.Lookup):
@@ -619,8 +705,6 @@ class SearchIdentifier(Identifier):
     # identifier has an owner; anonymous identifiers are not stored.
     # For performance we do not validate foreign key references (but of
     # course they're still checked in the database).
-
-    import ezidapp.models.custom_fields
 
     # non_validating_key = django.apps.apps.get_model('ezidapp', '')
     owner = ezidapp.models.custom_fields.NonValidatingForeignKey(
@@ -658,44 +742,47 @@ class SearchIdentifier(Identifier):
         # return ezidapp.models.profile.SearchProfile, "label", label
         return defaultProfile(self.identifier)
 
-    searchableTarget = django.db.models.CharField(max_length=255, editable=False)
     # Computed value.  To support searching over target URLs (which are
     # too long to be fully indexed), this field is the last 255
     # characters of the target URL in reverse order.
+    searchableTarget = django.db.models.CharField(max_length=255, editable=False)
 
     # Citation metadata follows.  Which is to say, the following
     # metadata refers to the resource identified by the identifier, not
     # the identifier itself.
 
-    resourceCreator = django.db.models.TextField(editable=False)
     # Computed value: the resource's creator, if available, as mapped
     # from the identifier's preferred metadata profile; otherwise,
     # empty.
+    resourceCreator = django.db.models.TextField(editable=False)
 
-    resourceTitle = django.db.models.TextField(editable=False)
     # Computed value: the resource's title, if available, as mapped from
     # the identifier's preferred metadata profile; otherwise, empty.
+    resourceTitle = django.db.models.TextField(editable=False)
 
-    resourcePublisher = django.db.models.TextField(editable=False)
     # Computed value: the resource's publisher, if available, as mapped
     # from the identifier's preferred metadata profile; otherwise,
     # empty.
+    resourcePublisher = django.db.models.TextField(editable=False)
 
-    resourcePublicationDate = django.db.models.TextField(editable=False)
     # Computed value: the resource's publication date, if available, as
     # mapped from the identifier's preferred metadata profile;
     # otherwise, empty.
+    resourcePublicationDate = django.db.models.TextField(editable=False)
 
+    # The year portion of resourcePublicationDate, as a numeric, if one
+    # could be extracted; otherwise, None.
     searchablePublicationYear = django.db.models.IntegerField(
         blank=True, null=True, editable=False
     )
-    # The year portion of resourcePublicationDate, as a numeric, if one
-    # could be extracted; otherwise, None.
 
-    resourceType = django.db.models.TextField(editable=False)
     # Computed value: the resource's type, if available, as mapped from
     # the identifier's preferred metadata profile; otherwise, empty.
+    resourceType = django.db.models.TextField(editable=False)
 
+    # The general resource type stored as a single-character mnemonic
+    # code, if one could be extracted from resourceType; otherwise,
+    # empty.
     searchableResourceType = django.db.models.CharField(
         max_length=2,
         editable=False,
@@ -705,12 +792,9 @@ class SearchIdentifier(Identifier):
             # cmp=lambda a, b: cmp(a[1], b[1]),
         ),
     )
-    # The general resource type stored as a single-character mnemonic
-    # code, if one could be extracted from resourceType; otherwise,
-    # empty.
 
-    keywords = django.db.models.TextField(editable=False)
     # Computed value: a compendium of all searchable text.
+    keywords = django.db.models.TextField(editable=False)
 
     # To support (partial) ordering by resource creator/title/publisher,
     # which have unbounded length and are therefore unindexable, we add
@@ -718,7 +802,6 @@ class SearchIdentifier(Identifier):
     # fields above.
 
     indexedPrefixLength = 50
-
     resourceCreatorPrefix = django.db.models.CharField(
         max_length=indexedPrefixLength, editable=False
     )
@@ -729,33 +812,32 @@ class SearchIdentifier(Identifier):
         max_length=indexedPrefixLength, editable=False
     )
 
-    hasMetadata = django.db.models.BooleanField(editable=False)
     # Computed value: True if resourceTitle and resourcePublicationDate
     # are nonempty, and at least one of resourceCreator and
     # resourcePublisher is nonempty (i.e., the identifier has at least
     # who/what/when metadata in ERC parlance).
+    hasMetadata = django.db.models.BooleanField(editable=False)
 
-    publicSearchVisible = django.db.models.BooleanField(editable=False)
     # Computed value: True if the identifier is visible in EZID's public
     # search interface, i.e., if the identifier is public and exported
     # and not a test identifier.
+    publicSearchVisible = django.db.models.BooleanField(editable=False)
 
-    oaiVisible = django.db.models.BooleanField(editable=False)
     # Computed value: True if the identifier is visible in the OAI feed,
     # i.e., if the identifier is public and exported and not a test
     # identifier (i.e., if publicSearchVisible is True), and if
     # hasMetadata is True and if the target URL is not the default
     # target URL.
+    oaiVisible = django.db.models.BooleanField(editable=False)
 
-    linkIsBroken = django.db.models.BooleanField(editable=False, default=False)
     # Computed value: True if the target URL is broken.  This field is
     # set only by the link checker update daemon.
     # N.B.: see note under updateFromLegacy below regarding this field.
-
-    hasIssues = django.db.models.BooleanField(editable=False)
+    linkIsBroken = django.db.models.BooleanField(editable=False, default=False)
 
     # Computed value: True if the identifier "has issues," i.e., has
     # problems of some kind.
+    hasIssues = django.db.models.BooleanField(editable=False)
 
     def issueReasons(self):
         # Returns a list of the identifier's issues.
@@ -812,7 +894,7 @@ class SearchIdentifier(Identifier):
             kw.append(self.datacenter.symbol)
         if self.target != self.defaultTarget:
             kw.append(self.target)
-        for k, v in list(self.cm.items()):
+        for k, v in list(self.metadata.items()):
             if k in ["datacite", "crossref"]:
                 try:
                     kw.append(impl.util.extractXmlContent(v))
@@ -970,6 +1052,45 @@ def getIdentifier(identifier, prefixMatch=False):
         ).get(identifier=identifier)
 
 
+class RefIdentifier(Identifier):
+    """Identifier referenced in task queues.
+
+    The queues hold create, update and/or delete operations that have been scheduled but not yet
+    completed.
+
+    TODO: Factor in docstring from StoreIdentifierObjectField:
+
+    - The StoreIdentifier model instance primary key (pk) attribute may be set or unset. If `pk` is
+    unset, the object is designated as newly created and unsaved (existing only in memory). The
+    object does not reference any existing rows in the the StoreIdentifier table, and the identifier
+    in the model instance may or may not exist in the StoreIdentifier, or other tables.
+
+    - If set, `pk` must reference an existing row in the StoreIdentifier table. The identifier in
+    the referenced row should be an exact match for identifier in the model instance. Other values
+    may differ, representing the identifier in a different state.
+
+    - Model instances are normally in an unsaved state only briefly after they're created, which is
+    while they are being populated with field values. Once populated, the object's `.save()` method
+    is called, which causes the object to be serialized and written to a new database row, and the
+    object's `pk` to be set to the index of the new row, which enables future model modifications to
+    be synced to the database.
+
+    - If there are issues finding the field values for an object, e.g., if the object was intended
+    to hold the results of an operation, and the operation was cancelled or interrupted, the object
+    may end up being discarded instead of saved. Any object that becomes unreachable without having
+    had its `.save()` method called, is discarded.
+
+    - Calling `.save()` on an an object always causes a new row to be inserted if `pk` is unset, and
+    an existing row to be updated if `pk` is set. If the inserted or updated row breaks any
+    constraints, the operation fails with an IntegrityError or other exception.
+
+    - `pk` can be manipulated programmatically before calling `.save()` in order to change an update
+    to an insert and vice versa, or to change which row is updated.
+
+    - Sample StoreIdentifier model instance, after serialization to JSON. Note that .cm is a nested
+    serialized instance of a metadata object.
+    """
+
 class StoreIdentifier(Identifier):
     # An identifier as stored in the store database.
 
@@ -1084,7 +1205,7 @@ class StoreIdentifier(Identifier):
                     self.status = StoreIdentifier.PUBLIC
                     self.unavailableReason = ""
                 else:
-                    m = re.match("unavailable(?:$| *\|(.*))", d[k])
+                    m = re.match("unavailable(?:$| *\\|(.*))", d[k])
                     if m:
                         if (
                             self.pk is not None and not self.isReserved
@@ -1179,7 +1300,7 @@ class StoreIdentifier(Identifier):
                     {k: "Field is not settable."}
                 )
             else:
-                self.cm[k] = d[k]
+                self.metadata[k] = d[k]
 
 
 def defaultProfile(identifier):

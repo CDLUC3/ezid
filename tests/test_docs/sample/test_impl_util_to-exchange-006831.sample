@@ -1,0 +1,196 @@
+input_json=
+{"datacite.publisher":"KNB Data Repository","datacite.size":"11892","datacite":"<?xml version=\"1.0\"?>
+<resource xmlns=\"http://datacite.org/schema/kernel-3\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+xsi:schemaLocation=\"http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd\"><identifier
+identifierType=\"DOI\">10.5063/AA/DPENNINGTON.100.1</identifier><creators><creator><creatorName>Intergovernmental Panel on Climate
+Change (IPCC)</creatorName></creator></creators><titles><title xml:lang=\"en\">IPCC Climate Change Data: CSIRO A2a Model: 2050
+Mean Temperature</title></titles><publisher>KNB Data
+Repository</publisher><publicationYear>2005</publicationYear><subjects><subject xml:lang=\"en\">climate</subject><subject
+xml:lang=\"en\">global climate change</subject><subject
+xml:lang=\"en\">temperature</subject></subjects><language>en</language><resourceType
+resourceTypeGeneral=\"Dataset\"/><descriptions><description descriptionType=\"Abstract\" xml:lang=\"en\">  The CSIRO Atmospheric
+Research Mark 2b climate model (Hirst et al., 1996, 1999) has recently been used for a number of more sophisticated climate change
+simulations. These start from 1880 to avoid the \"cold start problem\".  This version of the CSIRO model includes the Gent-
+McWilliams mixing scheme in the ocean and shows greatly reduced climate drift relative to earlier versions (e.g. Dix and Hunt,
+1998). The drift in global mean surface temperature in the new control run is about -0.02  degrees C/century. Note that the model
+uses flux correction.  The model atmosphere has 9 levels in the vertical and horizontal resolution of spectral R21 (approximately
+5.6 by 3.2 degrees). The ocean model has the same horizontal resolution with 21 levels.  The equilibrium sensitivity to doubled
+CO2 of a mixed layer ocean version of the model is 4.3 degrees. This is at the high end of the range of model sensitivities (e.g.
+IPCC 1995, Table 6.3). In the basic greenhouse gas experiment the model combines the effect of all radiatively active trace gases
+into an \"equivalent\" CO2 concentration. Observed concentrations are used from 1880 to 1990 and the IS92a projections into the
+future. This gives close to a 1%/year compounding increase of equivalent CO2.  Another model experiment includes the negative
+radiative forcing from atmospheric sulphate aerosol. The direct aerosol forcing is included via a perturbation of the surface
+albedo, similarly to the Hadley Centre experiments described by Mitchell et al (1995) and Mitchell and Johns (1997) . The sulphate
+concentrations are the same as used in the Hadley Centre experiments. However the chosen aerosol optical properties are different,
+giving a present day forcing due to anthropogenic sulphate of about -0.4 W/m^2. This can be compared to the 1880-1990 greenhouse
+gas forcing of about 2 W/m^2.  The magnitude of the 20th century warming in the model including aerosol matches the observed
+reasonably well. However there are a number of forcings missing from the model, including solar variability, sulphate indirect
+effect and the effect of soot.  The climate sensitivity of CSIRO-Mk2 is about 4.3 degrees C (Watterson et al.,1997).
+ For the A2 emissions scenario the main emphasis is on a strengthening of regional and local culture, with a return to family
+values in many regions. The A2 world consolidates into a series of roughly continental economic regions, emphasizing local
+cultural roots. In some regions, increased religious participation leads many to reject a materialist path and to focus attention
+on contributing to the local community. Elsewhere, the trend is towards increased investment in education and science and growth
+in economic productivity. Social and political structures diversify, with some regions moving towards stronger welfare systems and
+reduced income inequality, while others move towards \"lean\" government. Environmental concerns are relatively weak, although
+some attention is paid to bringing local pollution under control and maintaining local environmental amenities. The A2 world sees
+more international tensions and less cooperation than in A1 or B1. People, ideas and capital are less mobile so that technology
+diffuses slowly. International disparities in productivity, and hence income per capita, are maintained or increased. With the
+emphasis on family and community life, fertility rates decline only slowly, although they vary among regions. Hence, this scenario
+family has high population growth (to 15 billion by 2100) with comparatively low incomes per capita relative to the A1 and B1
+worlds, at US$7,200 in 2050 and US$16,000 in 2100.Technological change is rapid in some regions and slow in others as industry
+adjusts to local resource endowments, culture, and education levels. Regions with abundant energy and mineral resources evolve
+more resource intensive economies, while those poor in resources place very high priority on minimizing import dependence through
+technological innovation to improve resource efficiency and make use of substitute inputs. The fuel mix in different regions is
+determined primarily by resource availability. And divisions among regions persist in terms of their mix of technologies, with
+high-income but resource-poor regions shifting toward advanced post fossil technologies (renewables in regions of large land
+availability, nuclear in densely populated, resource poor regions) and low-income resource-rich regions generally relying on older
+fossil technologies.With substantial food requirements, agricultural productivity is one of the main focus areas for innovation
+and RD efforts in this future. Initially high levels of soil erosion and water pollution are eventually eased through the local
+development of more sustainable high-yield agriculture.Although attention is given to potential local and regional environmental
+damage, it is not uniform across regions. For example, sulfur and particulate emissions are reduced in Asia due to impacts on
+human health and agricultural production but increase in Africa as a result of the intensified exploitation of coal and other
+mineral resources. The A2 world sees high energy and carbon intensity, and correspondingly high GHG emissions. Its CO2 emissions
+are the highest of all four scenario families.  Data are available for the following periods:  1961-1990, 2010-2039; 2040-2069;
+and 2090-2099 Mean monthly and change fields.
+ </description></descriptions><formats><format>text/xml</format></formats></resource>","datacite.title":"IPCC Climate Change Data:
+CSIRO A2a Model: 2050 Mean
+Temperature","datacite.creator":"uid=dpennington,o=LTER,dc=ecoinformatics,dc=org","datacite.publicationyear":"2005","datacite.resourcetype":"Dataset/metadata","datacite.format":"eml://ecoinformatics.org/eml-2.0.0"}
+~~~~~~~~~~
+dict_pp=
+{'datacite': '<?xml version="1.0"?>
+'
+             '<resource xmlns="http://datacite.org/schema/kernel-3" '
+             'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
+             'xsi:schemaLocation="http://datacite.org/schema/kernel-3 '
+             'http://schema.datacite.org/meta/kernel-3/metadata.xsd"><identifier '
+             'identifierType="DOI">10.5063/AA/DPENNINGTON.100.1</identifier><creators><creator><creatorName>Intergovernmental '
+             'Panel on Climate Change '
+             '(IPCC)</creatorName></creator></creators><titles><title '
+             'xml:lang="en">IPCC Climate Change Data: CSIRO A2a Model: 2050 '
+             'Mean Temperature</title></titles><publisher>KNB Data '
+             'Repository</publisher><publicationYear>2005</publicationYear><subjects><subject '
+             'xml:lang="en">climate</subject><subject xml:lang="en">global '
+             'climate change</subject><subject '
+             'xml:lang="en">temperature</subject></subjects><language>en</language><resourceType '
+             'resourceTypeGeneral="Dataset"/><descriptions><description '
+             'descriptionType="Abstract" xml:lang="en">  The CSIRO Atmospheric '
+             'Research Mark 2b climate model (Hirst et al., 1996, 1999) has '
+             'recently been used for a number of more sophisticated climate '
+             'change simulations. These start from 1880 to avoid the "cold '
+             'start problem".  This version of the CSIRO model includes the '
+             'Gent-McWilliams mixing scheme in the ocean and shows greatly '
+             'reduced climate drift relative to earlier versions (e.g. Dix and '
+             'Hunt, 1998). The drift in global mean surface temperature in the '
+             'new control run is about -0.02  degrees C/century. Note that the '
+             'model uses flux correction.  The model atmosphere has 9 levels '
+             'in the vertical and horizontal resolution of spectral R21 '
+             '(approximately 5.6 by 3.2 degrees). The ocean model has the same '
+             'horizontal resolution with 21 levels.  The equilibrium '
+             'sensitivity to doubled CO2 of a mixed layer ocean version of the '
+             'model is 4.3 degrees. This is at the high end of the range of '
+             'model sensitivities (e.g. IPCC 1995, Table 6.3). In the basic '
+             'greenhouse gas experiment the model combines the effect of all '
+             'radiatively active trace gases into an "equivalent" CO2 '
+             'concentration. Observed concentrations are used from 1880 to '
+             '1990 and the IS92a projections into the future. This gives close '
+             'to a 1%/year compounding increase of equivalent CO2.  Another '
+             'model experiment includes the negative radiative forcing from '
+             'atmospheric sulphate aerosol. The direct aerosol forcing is '
+             'included via a perturbation of the surface albedo, similarly to '
+             'the Hadley Centre experiments described by Mitchell et al (1995) '
+             'and Mitchell and Johns (1997) . The sulphate concentrations are '
+             'the same as used in the Hadley Centre experiments. However the '
+             'chosen aerosol optical properties are different, giving a '
+             'present day forcing due to anthropogenic sulphate of about -0.4 '
+             'W/m^2. This can be compared to the 1880-1990 greenhouse gas '
+             'forcing of about 2 W/m^2.  The magnitude of the 20th century '
+             'warming in the model including aerosol matches the observed '
+             'reasonably well. However there are a number of forcings missing '
+             'from the model, including solar variability, sulphate indirect '
+             'effect and the effect of soot.  The climate sensitivity of '
+             'CSIRO-Mk2 is about 4.3 degrees C (Watterson et al.,1997).
+'
+             ' For the A2 emissions scenario the main emphasis is on a '
+             'strengthening of regional and local culture, with a return to '
+             'family values in many regions. The A2 world consolidates into a '
+             'series of roughly continental economic regions, emphasizing '
+             'local cultural roots. In some regions, increased religious '
+             'participation leads many to reject a materialist path and to '
+             'focus attention on contributing to the local community. '
+             'Elsewhere, the trend is towards increased investment in '
+             'education and science and growth in economic productivity. '
+             'Social and political structures diversify, with some regions '
+             'moving towards stronger welfare systems and reduced income '
+             'inequality, while others move towards "lean" government. '
+             'Environmental concerns are relatively weak, although some '
+             'attention is paid to bringing local pollution under control and '
+             'maintaining local environmental amenities. The A2 world sees '
+             'more international tensions and less cooperation than in A1 or '
+             'B1. People, ideas and capital are less mobile so that technology '
+             'diffuses slowly. International disparities in productivity, and '
+             'hence income per capita, are maintained or increased. With the '
+             'emphasis on family and community life, fertility rates decline '
+             'only slowly, although they vary among regions. Hence, this '
+             'scenario family has high population growth (to 15 billion by '
+             '2100) with comparatively low incomes per capita relative to the '
+             'A1 and B1 worlds, at US$7,200 in 2050 and US$16,000 in '
+             '2100.Technological change is rapid in some regions and slow in '
+             'others as industry adjusts to local resource endowments, '
+             'culture, and education levels. Regions with abundant energy and '
+             'mineral resources evolve more resource intensive economies, '
+             'while those poor in resources place very high priority on '
+             'minimizing import dependence through technological innovation to '
+             'improve resource efficiency and make use of substitute inputs. '
+             'The fuel mix in different regions is determined primarily by '
+             'resource availability. And divisions among regions persist in '
+             'terms of their mix of technologies, with high-income but '
+             'resource-poor regions shifting toward advanced post fossil '
+             'technologies (renewables in regions of large land availability, '
+             'nuclear in densely populated, resource poor regions) and '
+             'low-income resource-rich regions generally relying on older '
+             'fossil technologies.With substantial food requirements, '
+             'agricultural productivity is one of the main focus areas for '
+             'innovation and RD efforts in this future. Initially high levels '
+             'of soil erosion and water pollution are eventually eased through '
+             'the local development of more sustainable high-yield '
+             'agriculture.Although attention is given to potential local and '
+             'regional environmental damage, it is not uniform across regions. '
+             'For example, sulfur and particulate emissions are reduced in '
+             'Asia due to impacts on human health and agricultural production '
+             'but increase in Africa as a result of the intensified '
+             'exploitation of coal and other mineral resources. The A2 world '
+             'sees high energy and carbon intensity, and correspondingly high '
+             'GHG emissions. Its CO2 emissions are the highest of all four '
+             'scenario families.  Data are available for the following '
+             'periods:  1961-1990, 2010-2039; 2040-2069; and 2090-2099 Mean '
+             'monthly and change fields.
+'
+             ' '
+             '</description></descriptions><formats><format>text/xml</format></formats></resource>',
+ 'datacite.creator': 'uid=dpennington,o=LTER,dc=ecoinformatics,dc=org',
+ 'datacite.format': 'eml://ecoinformatics.org/eml-2.0.0',
+ 'datacite.publicationyear': '2005',
+ 'datacite.publisher': 'KNB Data Repository',
+ 'datacite.resourcetype': 'Dataset/metadata',
+ 'datacite.size': '11892',
+ 'datacite.title': 'IPCC Climate Change Data: CSIRO A2a Model: 2050 Mean '
+                   'Temperature'}
+~~~~~~~~~~
+keys=
+datacite.publisher, datacite.size, datacite, datacite.title, datacite.creator, datacite.publicationyear, datacite.resourcetype,
+datacite.format
+~~~~~~~~~~
+output_exchange=
+datacite.publisher KNB%20Data%20Repository datacite.size 11892 datacite
+<?xml%20version%3D%221.0%22?>%0A<resource%20xmlns%3D%22http://datacite.org/schema/kernel-3%22%20xmlns:xsi%3D%22http://www.w3.org/2001/XMLSchema-
+instance%22%20xsi:schemaLocation%3D%22http://datacite.org/schema/kernel-3%20http://schema.datacite.org/meta/kernel-3/metadata.xsd%22><identifier%20identifierType%3D%22DOI%22>10.5063/AA/DPENNINGTON.100.1</identifier><creators><creator><creatorName>Intergovernmental%20Panel%20on%20Climate%20Change%20%28IPCC%29</creatorName></creator></creators><titles><title%20xml:lang%3D%22en%22>IPCC%20Climate%20Change%20Data:%20CSIRO%20A2a%20Model:%202050%20Mean%20Temperature</title></titles><publisher>KNB%20Data%20Repository</publisher><publicationYear>2005</publicationYear><subjects><subject%20xml:lang%3D%22en%22>climate</subject><subject%20xml:lang%3D%22en%22>global%20climate%20change</subject><subject%20xml:lang%3D%22en%22>temperature</subject></subjects><language>en</language><resourceType%20resourceTypeGeneral%3D%22Dataset%22/><descriptions><description%20descriptionType%3D%22Abstract%22%20xml:lang%3D%22en%22>%20%20The%20CSIRO%20Atmospheric%20Research%20Mark%202b%20climate%20model%20%28Hirst%20et%20al.,%201996,%201999%29%20has%20recently%20been%20used%20for%20a%20number%20of%20more%20sophisticated%20climate%20change%20simulations.%20These%20start%20from%201880%20to%20avoid%20the%20%22cold%20start%20problem%22.%20%20This%20version%20of%20the%20CSIRO%20model%20includes%20the%20Gent-
+McWilliams%20mixing%20scheme%20in%20the%20ocean%20and%20shows%20greatly%20reduced%20climate%20drift%20relative%20to%20earlier%20versions%20%28e.g.%20Dix%20and%20Hunt,%201998%29.%20The%20drift%20in%20global%20mean%20surface%20temperature%20in%20the%20new%20control%20run%20is%20about%20-0.02%20%20degrees%20C/century.%20Note%20that%20the%20model%20uses%20flux%20correction.%20%20The%20model%20atmosphere%20has%209%20levels%20in%20the%20vertical%20and%20horizontal%20resolution%20of%20spectral%20R21%20%28approximately%205.6%20by%203.2%20degrees%29.%20The%20ocean%20model%20has%20the%20same%20horizontal%20resolution%20with%2021%20levels.%20%20The%20equilibrium%20sensitivity%20to%20doubled%20CO2%20of%20a%20mixed%20layer%20ocean%20version%20of%20the%20model%20is%204.3%20degrees.%20This%20is%20at%20the%20high%20end%20of%20the%20range%20of%20model%20sensitivities%20%28e.g.%20IPCC%201995,%20Table%206.3%29.%20In%20the%20basic%20greenhouse%20gas%20experiment%20the%20model%20combines%20the%20effect%20of%20all%20radiatively%20active%20trace%20gases%20into%20an%20%22equivalent%22%20CO2%20concentration.%20Observed%20concentrations%20are%20used%20from%201880%20to%201990%20and%20the%20IS92a%20projections%20into%20the%20future.%20This%20gives%20close%20to%20a%201%25/year%20compounding%20increase%20of%20equivalent%20CO2.%20%20Another%20model%20experiment%20includes%20the%20negative%20radiative%20forcing%20from%20atmospheric%20sulphate%20aerosol.%20The%20direct%20aerosol%20forcing%20is%20included%20via%20a%20perturbation%20of%20the%20surface%20albedo,%20similarly%20to%20the%20Hadley%20Centre%20experiments%20described%20by%20Mitchell%20et%20al%20%281995%29%20and%20Mitchell%20and%20Johns%20%281997%29%20.%20The%20sulphate%20concentrations%20are%20the%20same%20as%20used%20in%20the%20Hadley%20Centre%20experiments.%20However%20the%20chosen%20aerosol%20optical%20properties%20are%20different,%20giving%20a%20present%20day%20forcing%20due%20to%20anthropogenic%20sulphate%20of%20about%20-0.4%20W/m^2.%20This%20can%20be%20compared%20to%20the%201880-1990%20greenhouse%20gas%20forcing%20of%20about%202%20W/m^2.%20%20The%20magnitude%20of%20the%2020th%20century%20warming%20in%20the%20model%20including%20aerosol%20matches%20the%20observed%20reasonably%20well.%20However%20there%20are%20a%20number%20of%20forcings%20missing%20from%20the%20model,%20including%20solar%20variability,%20sulphate%20indirect%20effect%20and%20the%20effect%20of%20soot.%20%20The%20climate%20sensitivity%20of%20CSIRO-
+Mk2%20is%20about%204.3%20degrees%20C%20%28Watterson%20et%20al.,1997%29.%0A%20For%20the%20A2%20emissions%20scenario%20the%20main%20emphasis%20is%20on%20a%20strengthening%20of%20regional%20and%20local%20culture,%20with%20a%20return%20to%20family%20values%20in%20many%20regions.%20The%20A2%20world%20consolidates%20into%20a%20series%20of%20roughly%20continental%20economic%20regions,%20emphasizing%20local%20cultural%20roots.%20In%20some%20regions,%20increased%20religious%20participation%20leads%20many%20to%20reject%20a%20materialist%20path%20and%20to%20focus%20attention%20on%20contributing%20to%20the%20local%20community.%20Elsewhere,%20the%20trend%20is%20towards%20increased%20investment%20in%20education%20and%20science%20and%20growth%20in%20economic%20productivity.%20Social%20and%20political%20structures%20diversify,%20with%20some%20regions%20moving%20towards%20stronger%20welfare%20systems%20and%20reduced%20income%20inequality,%20while%20others%20move%20towards%20%22lean%22%20government.%20Environmental%20concerns%20are%20relatively%20weak,%20although%20some%20attention%20is%20paid%20to%20bringing%20local%20pollution%20under%20control%20and%20maintaining%20local%20environmental%20amenities.%20The%20A2%20world%20sees%20more%20international%20tensions%20and%20less%20cooperation%20than%20in%20A1%20or%20B1.%20People,%20ideas%20and%20capital%20are%20less%20mobile%20so%20that%20technology%20diffuses%20slowly.%20International%20disparities%20in%20productivity,%20and%20hence%20income%20per%20capita,%20are%20maintained%20or%20increased.%20With%20the%20emphasis%20on%20family%20and%20community%20life,%20fertility%20rates%20decline%20only%20slowly,%20although%20they%20vary%20among%20regions.%20Hence,%20this%20scenario%20family%20has%20high%20population%20growth%20%28to%2015%20billion%20by%202100%29%20with%20comparatively%20low%20incomes%20per%20capita%20relative%20to%20the%20A1%20and%20B1%20worlds,%20at%20US$7,200%20in%202050%20and%20US$16,000%20in%202100.Technological%20change%20is%20rapid%20in%20some%20regions%20and%20slow%20in%20others%20as%20industry%20adjusts%20to%20local%20resource%20endowments,%20culture,%20and%20education%20levels.%20Regions%20with%20abundant%20energy%20and%20mineral%20resources%20evolve%20more%20resource%20intensive%20economies,%20while%20those%20poor%20in%20resources%20place%20very%20high%20priority%20on%20minimizing%20import%20dependence%20through%20technological%20innovation%20to%20improve%20resource%20efficiency%20and%20make%20use%20of%20substitute%20inputs.%20The%20fuel%20mix%20in%20different%20regions%20is%20determined%20primarily%20by%20resource%20availability.%20And%20divisions%20among%20regions%20persist%20in%20terms%20of%20their%20mix%20of%20technologies,%20with%20high-
+income%20but%20resource-
+poor%20regions%20shifting%20toward%20advanced%20post%20fossil%20technologies%20%28renewables%20in%20regions%20of%20large%20land%20availability,%20nuclear%20in%20densely%20populated,%20resource%20poor%20regions%29%20and%20low-
+income%20resource-
+rich%20regions%20generally%20relying%20on%20older%20fossil%20technologies.With%20substantial%20food%20requirements,%20agricultural%20productivity%20is%20one%20of%20the%20main%20focus%20areas%20for%20innovation%20and%20RD%20efforts%20in%20this%20future.%20Initially%20high%20levels%20of%20soil%20erosion%20and%20water%20pollution%20are%20eventually%20eased%20through%20the%20local%20development%20of%20more%20sustainable%20high-
+yield%20agriculture.Although%20attention%20is%20given%20to%20potential%20local%20and%20regional%20environmental%20damage,%20it%20is%20not%20uniform%20across%20regions.%20For%20example,%20sulfur%20and%20particulate%20emissions%20are%20reduced%20in%20Asia%20due%20to%20impacts%20on%20human%20health%20and%20agricultural%20production%20but%20increase%20in%20Africa%20as%20a%20result%20of%20the%20intensified%20exploitation%20of%20coal%20and%20other%20mineral%20resources.%20The%20A2%20world%20sees%20high%20energy%20and%20carbon%20intensity,%20and%20correspondingly%20high%20GHG%20emissions.%20Its%20CO2%20emissions%20are%20the%20highest%20of%20all%20four%20scenario%20families.%20%20Data%20are%20available%20for%20the%20following%20periods:%20%201961-1990,%202010-2039%3B%202040-2069%3B%20and%202090-2099%20Mean%20monthly%20and%20change%20fields.%0A%20</description></descriptions><formats><format>text/xml</format></formats></resource>
+datacite.title IPCC%20Climate%20Change%20Data:%20CSIRO%20A2a%20Model:%202050%20Mean%20Temperature datacite.creator
+uid%3Ddpennington,o%3DLTER,dc%3Decoinformatics,dc%3Dorg datacite.publicationyear 2005 datacite.resourcetype Dataset/metadata
+datacite.format eml://ecoinformatics.org/eml-2.0.0

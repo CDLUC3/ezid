@@ -96,13 +96,13 @@ class AnonymousUser(object):
 def _databaseQueryGroup():
     store_group_model = django.apps.apps.get_model('ezidapp', 'StoreGroup')
     try:
-        return store_group_model.objects.select_related("group", "realm").prefetch_related("shoulders", "proxies")
+        return store_group_model.objects.select_related("realm").prefetch_related("shoulders")
+        # return store_group_model.objects.select_related("group", "realm").prefetch_related("shoulders", "proxies")
     except store_group_model.DoesNotExist:
         return None
 
-# TODO
-def _databaseQueryStoreGroup():
-    return StoreGroup.objects.select_related("realm").prefetch_related("shoulders")
+# def _databaseQueryStoreGroup():
+#     return StoreGroup.objects.select_related("realm").prefetch_related("shoulders")
 
 def getGroupByPid(pid):
     # Returns the group identified by persistent identifier 'pid', or

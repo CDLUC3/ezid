@@ -34,7 +34,7 @@ TABLE_NAME_TO_ORM = {
 #     "CnfTup", ["cnf_name", "connect_name", "default", "desc"], verbose=True
 # )
 
-# Map MySQL config file keys to aiohttp.connect() params
+# Map MySQL config file keys to aiomysql.connect() params
 CONFIG_TO_CONNECT = {
     "host": "host",
     "port": "port",

@@ -1,0 +1,11 @@
+input_json=
+{"dc.title":"5"}
+~~~~~~~~~~
+dict_pp=
+{'dc.title': '5'}
+~~~~~~~~~~
+keys=
+dc.title
+~~~~~~~~~~
+output_exchange=
+dc.title 5

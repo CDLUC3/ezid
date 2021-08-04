@@ -80,8 +80,8 @@ else:
 
 if (
     len(sys.argv) not in [4, 5]
-    or not re.match("\d+$", sys.argv[2])
-    or not re.match("\d+$", sys.argv[3])
+    or not re.match("\\d+$", sys.argv[2])
+    or not re.match("\\d+$", sys.argv[3])
 ):
     usageError()
 host = sys.argv[1]

@@ -1,0 +1,36 @@
+input_json=
+{"dc.date":"1950","dc.creator":"(:unav)","dc.relation":"http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx","dc.title":"Sewage
+Treatment Plant, Completed September 1950, Grouped in the background -- left to right -- Pumphouse, covered walk-way, office and
+laboratory, control room (directly in back of office), two sludge digestors, and the refuse disposal unit, with vacuum sludge
+filters. Directly in front of this building group, right to left, are the primary, secondary, and final sedimentation filters. The
+two circular structures in the foreground are trickling filters, and at the extreme left foreground is the million gallon final
+effluent reservoir. Paving of paths, roads, and walks, also landscaping and a mesh wire fence completely surrounding the plant
+have no yet been completed. Built at a cost of a million dollars, it is to serve as a model of construction for future plants in
+several of the metropolitan areas of the West."}
+~~~~~~~~~~
+dict_pp=
+{'dc.creator': '(:unav)',
+ 'dc.date': '1950',
+ 'dc.relation': 'http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx',
+ 'dc.title': 'Sewage Treatment Plant, Completed September 1950, Grouped in the '
+             'background -- left to right -- Pumphouse, covered walk-way, '
+             'office and laboratory, control room (directly in back of '
+             'office), two sludge digestors, and the refuse disposal unit, '
+             'with vacuum sludge filters. Directly in front of this building '
+             'group, right to left, are the primary, secondary, and final '
+             'sedimentation filters. The two circular structures in the '
+             'foreground are trickling filters, and at the extreme left '
+             'foreground is the million gallon final effluent reservoir. '
+             'Paving of paths, roads, and walks, also landscaping and a mesh '
+             'wire fence completely surrounding the plant have no yet been '
+             'completed. Built at a cost of a million dollars, it is to serve '
+             'as a model of construction for future plants in several of the '
+             'metropolitan areas of the West.'}
+~~~~~~~~~~
+keys=
+dc.date, dc.creator, dc.relation, dc.title
+~~~~~~~~~~
+output_exchange=
+dc.date 1950 dc.creator %28:unav%29 dc.relation http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx dc.title
+Sewage%20Treatment%20Plant,%20Completed%20September%201950,%20Grouped%20in%20the%20background%20--%20left%20to%20right%20--%20Pumphouse,%20covered%20walk-
+way,%20office%20and%20laboratory,%20control%20room%20%28directly%20in%20back%20of%20office%29,%20two%20sludge%20digestors,%20and%20the%20refuse%20disposal%20unit,%20with%20vacuum%20sludge%20filters.%20Directly%20in%20front%20of%20this%20building%20group,%20right%20to%20left,%20are%20the%20primary,%20secondary,%20and%20final%20sedimentation%20filters.%20The%20two%20circular%20structures%20in%20the%20foreground%20are%20trickling%20filters,%20and%20at%20the%20extreme%20left%20foreground%20is%20the%20million%20gallon%20final%20effluent%20reservoir.%20Paving%20of%20paths,%20roads,%20and%20walks,%20also%20landscaping%20and%20a%20mesh%20wire%20fence%20completely%20surrounding%20the%20plant%20have%20no%20yet%20been%20completed.%20Built%20at%20a%20cost%20of%20a%20million%20dollars,%20it%20is%20to%20serve%20as%20a%20model%20of%20construction%20for%20future%20plants%20in%20several%20of%20the%20metropolitan%20areas%20of%20the%20West.
