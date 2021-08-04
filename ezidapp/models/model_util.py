@@ -1,5 +1,20 @@
-import ezidapp.models
-from impl.util2 import _labelMapping
+# import ezidapp.models
+import ezidapp.models.group
+import ezidapp.models.util
+
+
+_labelMapping = {
+    "_o": "_owner",
+    "_g": "_ownergroup",
+    "_c": "_created",
+    "_u": "_updated",
+    "_t": "_target",
+    "_p": "_profile",
+    "_is": "_status",
+    "_x": "_export",
+    "_d": "_datacenter",
+    "_cr": "_crossref",
+}
 
 
 def convertLegacyToExternal(d, convertAgents=True):
@@ -16,10 +31,10 @@ def convertLegacyToExternal(d, convertAgents=True):
     if "_x" not in d:
         d["_x"] = "yes"
     if convertAgents:
-        u = ezidapp.models.store_user.getUserByPid(d["_o"])
+        u = ezidapp.models.util.getUserByPid(d["_o"])
         if u is not None:
             d["_o"] = u.username
-        g = ezidapp.models.store_group.getGroupByPid(d["_g"])
+        g = ezidapp.models.util.getGroupByPid(d["_g"])
         if g is not None:
             d["_g"] = g.groupname
     if d["_is"] != "public":

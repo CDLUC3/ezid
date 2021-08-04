@@ -1,0 +1,13 @@
+input_json=
+{"erc.who":"California Digital Library","erc.when":"2010","erc.what":"Web Archiving Service: Rights Management Practices"}
+~~~~~~~~~~
+dict_pp=
+{'erc.what': 'Web Archiving Service: Rights Management Practices',
+ 'erc.when': '2010',
+ 'erc.who': 'California Digital Library'}
+~~~~~~~~~~
+keys=
+erc.who, erc.when, erc.what
+~~~~~~~~~~
+output_exchange=
+erc.who California%20Digital%20Library erc.when 2010 erc.what Web%20Archiving%20Service:%20Rights%20Management%20Practices

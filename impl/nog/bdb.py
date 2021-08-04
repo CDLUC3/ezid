@@ -14,7 +14,6 @@ import hjson
 import ezidapp.models.shoulder
 import impl.nog.bdb_wrapper
 import impl.nog.exc
-import impl.nog.exc
 import impl.nog.filesystem
 import impl.nog.id_ns
 
@@ -52,7 +51,7 @@ def dump_full(bdb_path):
     def _sort_key(kv):
         """Place counters at top and sort them numerically."""
         k, v = kv
-        m = re.search(r".*/c(\d+)(/.*)$", k)
+        m = re.search(r".*/c(\\d+)(/.*)$", k)
         if m:
             return 0, "{:04d}{}".format(int(m.group(1)), m.group(2))
         return 1, k

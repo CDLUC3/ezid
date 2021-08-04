@@ -15,10 +15,8 @@
 
 import django.db.models
 
-import impl.util
-
-# # import ezidapp.models
 import ezidapp.models.validation
+import impl.util
 
 
 class Datacenter(django.db.models.Model):
@@ -48,3 +46,26 @@ class Datacenter(django.db.models.Model):
 
     def __str__(self):
         return self.symbol
+
+
+class SearchDatacenter(Datacenter):
+    pass
+
+
+
+
+class StoreDatacenter(Datacenter):
+    # A DataCite datacenter as stored in the store database.
+
+    name = django.db.models.CharField(
+        max_length=255, unique=True, validators=[ezidapp.models.validation.nonEmpty]
+    )
+    # The datacenter's full name, e.g., "Brown University Library".
+
+    def clean(self):
+        super(StoreDatacenter, self).clean()
+        self.name = self.name.strip()
+
+    class Meta:
+        verbose_name = "datacenter"
+        verbose_name_plural = "datacenters"

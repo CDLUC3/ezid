@@ -79,10 +79,7 @@ import sys
 import time
 import types
 import urllib.error
-import urllib.error
 import urllib.parse
-import urllib.parse
-import urllib.request
 import urllib.request
 
 signal.signal(signal.SIGINT, lambda signal, frame: sys.exit())
@@ -105,7 +102,7 @@ OPERATIONS = {
     "status": (lambda l: l in [0, 1, 2], False),
     "Version": (0, False),
     "pause": (1, False),
-    "reload": (0, False),
+    # "reload": (0, False),
 }
 
 USAGE_TEXT = """Usage: client [options] server credentials operation...
@@ -149,7 +146,7 @@ USAGE_TEXT = """Usage: client [options] server credentials operation...
 # Global variables that are initialized farther down.
 
 _options = None
-_server = None
+django.conf.settings.BINDER_URL = None
 _opener = None
 _cookie = None
 
@@ -202,7 +199,7 @@ def encode(id_str):
 
 
 def issueRequest(path, method, data=None, returnHeaders=False, streamOutput=False):
-    request = urllib.request.Request("%s/%s" % (_server, path))
+    request = urllib.request.Request("%s/%s" % (django.conf.settings.BINDER_URL, path))
     request.get_method = lambda: method
     if data:
         request.add_header("Content-Type", "text/plain; charset=UTF-8")
@@ -280,7 +277,7 @@ if _options.disableCertificateChecking:
     except AttributeError:
         pass
 
-_server = KNOWN_SERVERS.get(args[0], args[0])
+django.conf.settings.BINDER_URL = KNOWN_SERVERS.get(args[0], args[0])
 
 _opener = urllib.request.build_opener(MyHTTPErrorProcessor())
 if args[1].startswith("sessionid="):
@@ -293,7 +290,7 @@ elif args[1] != "-":
         password = getpass.getpass()
     h = urllib.request.HTTPBasicAuthHandler()
     # noinspection PyUnresolvedReferences
-    h.add_password("EZID", _server, username, password)
+    h.add_password("EZID", django.conf.settings.BINDER_URL, username, password)
     _opener.add_handler(h)
 
 if args[2].endswith("!"):
@@ -393,6 +390,6 @@ elif operation == "pause":
     else:
         response = issueRequest("admin/pause?op=" + op, "GET")
         printAnvlResponse(response)
-elif operation == "reload":
-    response = issueRequest("admin/reload", "POST")
-    printAnvlResponse(response)
+# elif operation == "reload":
+#     response = issueRequest("admin/reload", "POST")
+#     printAnvlResponse(response)

@@ -1,0 +1,40 @@
+input_json=
+{"dc.date":"undated","dc.creator":"(:unav)","dc.relation":"http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx","dc.title":"Everson
+Hall, this view shows one wing of the new Home Economics Building on the University of California campus at Davis as seen at
+night. On the right is the entrance and foyer with a solid glass wall for light. In the dark areas under the balcony is the door
+to the courtyard on the other side of this wing. Lower floor offices are protected from the direct rays of the summer sun by
+horizontal and vertical projecting fins. The upper floor houses the foods and nutrition laboratories. At the extreme left, the
+light area is the door into a smaller hall between this wing and the auditorium at the far end of the wing. This wing of the
+building faces east. The north-facing wing of the two-story structure joins this wing at the right end of the foyer. The north-
+facing wing contains the decorative arts, home furnishings, and social living laboratories on the lower floor, and the clothing
+and textiles and home management laboratories on the upper floor."}
+~~~~~~~~~~
+dict_pp=
+{'dc.creator': '(:unav)',
+ 'dc.date': 'undated',
+ 'dc.relation': 'http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx',
+ 'dc.title': 'Everson Hall, this view shows one wing of the new Home Economics '
+             'Building on the University of California campus at Davis as seen '
+             'at night. On the right is the entrance and foyer with a solid '
+             'glass wall for light. In the dark areas under the balcony is the '
+             'door to the courtyard on the other side of this wing. Lower '
+             'floor offices are protected from the direct rays of the summer '
+             'sun by horizontal and vertical projecting fins. The upper floor '
+             'houses the foods and nutrition laboratories. At the extreme '
+             'left, the light area is the door into a smaller hall between '
+             'this wing and the auditorium at the far end of the wing. This '
+             'wing of the building faces east. The north-facing wing of the '
+             'two-story structure joins this wing at the right end of the '
+             'foyer. The north-facing wing contains the decorative arts, home '
+             'furnishings, and social living laboratories on the lower floor, '
+             'and the clothing and textiles and home management laboratories '
+             'on the upper floor.'}
+~~~~~~~~~~
+keys=
+dc.date, dc.creator, dc.relation, dc.title
+~~~~~~~~~~
+output_exchange=
+dc.date undated dc.creator %28:unav%29 dc.relation http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx dc.title
+Everson%20Hall,%20this%20view%20shows%20one%20wing%20of%20the%20new%20Home%20Economics%20Building%20on%20the%20University%20of%20California%20campus%20at%20Davis%20as%20seen%20at%20night.%20On%20the%20right%20is%20the%20entrance%20and%20foyer%20with%20a%20solid%20glass%20wall%20for%20light.%20In%20the%20dark%20areas%20under%20the%20balcony%20is%20the%20door%20to%20the%20courtyard%20on%20the%20other%20side%20of%20this%20wing.%20Lower%20floor%20offices%20are%20protected%20from%20the%20direct%20rays%20of%20the%20summer%20sun%20by%20horizontal%20and%20vertical%20projecting%20fins.%20The%20upper%20floor%20houses%20the%20foods%20and%20nutrition%20laboratories.%20At%20the%20extreme%20left,%20the%20light%20area%20is%20the%20door%20into%20a%20smaller%20hall%20between%20this%20wing%20and%20the%20auditorium%20at%20the%20far%20end%20of%20the%20wing.%20This%20wing%20of%20the%20building%20faces%20east.%20The%20north-
+facing%20wing%20of%20the%20two-story%20structure%20joins%20this%20wing%20at%20the%20right%20end%20of%20the%20foyer.%20The%20north-
+facing%20wing%20contains%20the%20decorative%20arts,%20home%20furnishings,%20and%20social%20living%20laboratories%20on%20the%20lower%20floor,%20and%20the%20clothing%20and%20textiles%20and%20home%20management%20laboratories%20on%20the%20upper%20floor.

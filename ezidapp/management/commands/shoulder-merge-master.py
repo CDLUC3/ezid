@@ -1,6 +1,5 @@
 """Permanently merge the master_shoulders.txt file into the database."""
 
-import ezidapp.models.shoulder
 import argparse
 import datetime
 import logging
@@ -9,10 +8,10 @@ import django.contrib.auth.models
 import django.core.management
 import django.db.transaction
 
-
-import ezidapp.models.store_datacenter
+import ezidapp.models.datacenter
+import ezidapp.models.shoulder
 import impl.nog.filesystem
-import impl.nog.reload
+# import impl.nog.reload
 import impl.nog.util
 import impl.shoulder_parser
 
@@ -39,7 +38,7 @@ class Command(django.core.management.BaseCommand):
 
     def handle(self, *_, **opt):
         self.opt = opt = argparse.Namespace(**opt)
-        impl.nog.util.log_to_console(__name__, opt.debug)
+        impl.nog.util.log_setup(__name__, opt.debug)
 
         try:
             with django.db.transaction.atomic():

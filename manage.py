@@ -3,7 +3,7 @@
 import os
 import sys
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings.test_settings')
 
 import django.core.management
 

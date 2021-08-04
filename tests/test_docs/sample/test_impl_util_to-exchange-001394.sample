@@ -1,0 +1,49 @@
+input_json=
+{"mrt.creator":"cdl_oac","erc":"what: S/Sgt. Henry H. Gosho served 16 months in the Burma-India theatre attached to Army Combat
+Intelligence with General Frank Merrill's Marauders until April, 1945, at which time he returned to the United States and is now
+convalescing at Fitzsimons General Hospital preparatory to being given a medical discharge. He volunteered for duty at Camp Savage
+in November, 1942, while living at the Minidoka Center, and volunteered for the Marauders in August, 1943. His was the first unit
+to be created from Camp Savage which left the United States in June, 1943. He wears the Presidential Citation, Bronze Star, the
+Pacific Ribbon with 3 campaign stars, the Combat Infantry Badge, and the shoulder patch of Merrill's Marauders. General Merrill
+said to his Nisei outfit, I don't know how we would get along without you boys. Sgt. Gosho was affectionately nicknamed Horizontal
+Hank because he hit the ground so much he wore it out. The doctors had declared him to be flat-footed and physically not qualified
+for combat. Despite these handicaps he wore out 4 pairs of shoes in walking 1030 miles and contracted malaria 7 times in addition
+to other tropical diseases. Prior to evacuation to Minidoka, his parents operated a drug store in Seattle. -- Photographer:
+Iwasaki, Hikaru -- Denver, Colorado. 4/21/45
+where: ark:/13030/m50c5sq0
+where: ark:/13030/ft6w10077m"}
+~~~~~~~~~~
+dict_pp=
+{'erc': 'what: S/Sgt. Henry H. Gosho served 16 months in the Burma-India '
+        'theatre attached to Army Combat Intelligence with General Frank '
+        "Merrill's Marauders until April, 1945, at which time he returned to "
+        'the United States and is now convalescing at Fitzsimons General '
+        'Hospital preparatory to being given a medical discharge. He '
+        'volunteered for duty at Camp Savage in November, 1942, while living '
+        'at the Minidoka Center, and volunteered for the Marauders in August, '
+        '1943. His was the first unit to be created from Camp Savage which '
+        'left the United States in June, 1943. He wears the Presidential '
+        'Citation, Bronze Star, the Pacific Ribbon with 3 campaign stars, the '
+        "Combat Infantry Badge, and the shoulder patch of Merrill's Marauders. "
+        "General Merrill said to his Nisei outfit, I don't know how we would "
+        'get along without you boys. Sgt. Gosho was affectionately nicknamed '
+        'Horizontal Hank because he hit the ground so much he wore it out. The '
+        'doctors had declared him to be flat-footed and physically not '
+        'qualified for combat. Despite these handicaps he wore out 4 pairs of '
+        'shoes in walking 1030 miles and contracted malaria 7 times in '
+        'addition to other tropical diseases. Prior to evacuation to Minidoka, '
+        'his parents operated a drug store in Seattle. -- Photographer: '
+        'Iwasaki, Hikaru -- Denver, Colorado. 4/21/45
+'
+        'where: ark:/13030/m50c5sq0
+'
+        'where: ark:/13030/ft6w10077m',
+ 'mrt.creator': 'cdl_oac'}
+~~~~~~~~~~
+keys=
+mrt.creator, erc
+~~~~~~~~~~
+output_exchange=
+mrt.creator cdl_oac erc what:%20S/Sgt.%20Henry%20H.%20Gosho%20served%2016%20months%20in%20the%20Burma-
+India%20theatre%20attached%20to%20Army%20Combat%20Intelligence%20with%20General%20Frank%20Merrill%27s%20Marauders%20until%20April,%201945,%20at%20which%20time%20he%20returned%20to%20the%20United%20States%20and%20is%20now%20convalescing%20at%20Fitzsimons%20General%20Hospital%20preparatory%20to%20being%20given%20a%20medical%20discharge.%20He%20volunteered%20for%20duty%20at%20Camp%20Savage%20in%20November,%201942,%20while%20living%20at%20the%20Minidoka%20Center,%20and%20volunteered%20for%20the%20Marauders%20in%20August,%201943.%20His%20was%20the%20first%20unit%20to%20be%20created%20from%20Camp%20Savage%20which%20left%20the%20United%20States%20in%20June,%201943.%20He%20wears%20the%20Presidential%20Citation,%20Bronze%20Star,%20the%20Pacific%20Ribbon%20with%203%20campaign%20stars,%20the%20Combat%20Infantry%20Badge,%20and%20the%20shoulder%20patch%20of%20Merrill%27s%20Marauders.%20General%20Merrill%20said%20to%20his%20Nisei%20outfit,%20I%20don%27t%20know%20how%20we%20would%20get%20along%20without%20you%20boys.%20Sgt.%20Gosho%20was%20affectionately%20nicknamed%20Horizontal%20Hank%20because%20he%20hit%20the%20ground%20so%20much%20he%20wore%20it%20out.%20The%20doctors%20had%20declared%20him%20to%20be%20flat-
+footed%20and%20physically%20not%20qualified%20for%20combat.%20Despite%20these%20handicaps%20he%20wore%20out%204%20pairs%20of%20shoes%20in%20walking%201030%20miles%20and%20contracted%20malaria%207%20times%20in%20addition%20to%20other%20tropical%20diseases.%20Prior%20to%20evacuation%20to%20Minidoka,%20his%20parents%20operated%20a%20drug%20store%20in%20Seattle.%20--%20Photographer:%20Iwasaki,%20Hikaru%20--%20Denver,%20Colorado.%204/21/45%0Awhere:%20ark:/13030/m50c5sq0%0Awhere:%20ark:/13030/ft6w10077m

@@ -1,0 +1,61 @@
+input_json=
+{"mrt.creator":"cdl_oac","erc":"what: S/Sgt. Henry H. Gosho, left, and Pfc. James Yura, right, are seen looking over War
+Relocation Authority photographs of some of their comrades. Sgt. Gosho served 16 months in the Burma-India theatre attached to
+Army Combat Intelligence with General Frank Merrill's Marauders until April, 1945, at which time he returned to the United States
+and is now convalescing at Fitzsimons General Hospital preparatory to being given a medical discharge. He wears the Presidential
+Citation, Bronze Star, the Pacific Ribbon with 3 campaign stars, the Combat Infantry Badge, and the shoulder patch of Merrill's
+Marauders. He was nicknamed Horizontal Hank because of his ability to hit the ground fast when a shell came his way. Although
+declared by doctors to be flat-footed and not qualified physically for combat, he walked 1030 miles and contracted malaria 7 times
+in addition to other tropical diseases. Prior to evacuation to Minidoka, his parents operated a drug store in Seattle. Pvt. Yura
+joined the 442nd Combat Team, an all Japanese-American outfit, just north of Rome and fought north through Italy with it assigned
+to a machine-gun section. In the Vosges Forest in France he participated in the rescue of the Lost Battalion, the 141st Regiment
+from Texas. He was wounded in Southern France, November 6, 1945, and was hospitalized two months in England before being returned
+to the United States. His mother, Mrs. Mikiyo Yura, and two sisters, Mrs. George Kaneko and Mrs. Everett Itanaga, live in Denver.
+He volunteered from Poston, May 1943, and wears the Purple Heart and a Presidential Citation. His home before evacuation was
+Bakersfield, California. -- Photographer: Iwasaki, Hikaru -- Denver, Colorado. 4/28/45
+where: ark:/13030/m5446p0j
+where: ark:/13030/ft1h4nb00r"}
+~~~~~~~~~~
+dict_pp=
+{'erc': 'what: S/Sgt. Henry H. Gosho, left, and Pfc. James Yura, right, are '
+        'seen looking over War Relocation Authority photographs of some of '
+        'their comrades. Sgt. Gosho served 16 months in the Burma-India '
+        'theatre attached to Army Combat Intelligence with General Frank '
+        "Merrill's Marauders until April, 1945, at which time he returned to "
+        'the United States and is now convalescing at Fitzsimons General '
+        'Hospital preparatory to being given a medical discharge. He wears the '
+        'Presidential Citation, Bronze Star, the Pacific Ribbon with 3 '
+        'campaign stars, the Combat Infantry Badge, and the shoulder patch of '
+        "Merrill's Marauders. He was nicknamed Horizontal Hank because of his "
+        'ability to hit the ground fast when a shell came his way. Although '
+        'declared by doctors to be flat-footed and not qualified physically '
+        'for combat, he walked 1030 miles and contracted malaria 7 times in '
+        'addition to other tropical diseases. Prior to evacuation to Minidoka, '
+        'his parents operated a drug store in Seattle. Pvt. Yura joined the '
+        '442nd Combat Team, an all Japanese-American outfit, just north of '
+        'Rome and fought north through Italy with it assigned to a machine-gun '
+        'section. In the Vosges Forest in France he participated in the rescue '
+        'of the Lost Battalion, the 141st Regiment from Texas. He was wounded '
+        'in Southern France, November 6, 1945, and was hospitalized two months '
+        'in England before being returned to the United States. His mother, '
+        'Mrs. Mikiyo Yura, and two sisters, Mrs. George Kaneko and Mrs. '
+        'Everett Itanaga, live in Denver. He volunteered from Poston, May '
+        '1943, and wears the Purple Heart and a Presidential Citation. His '
+        'home before evacuation was Bakersfield, California. -- Photographer: '
+        'Iwasaki, Hikaru -- Denver, Colorado. 4/28/45
+'
+        'where: ark:/13030/m5446p0j
+'
+        'where: ark:/13030/ft1h4nb00r',
+ 'mrt.creator': 'cdl_oac'}
+~~~~~~~~~~
+keys=
+mrt.creator, erc
+~~~~~~~~~~
+output_exchange=
+mrt.creator cdl_oac erc
+what:%20S/Sgt.%20Henry%20H.%20Gosho,%20left,%20and%20Pfc.%20James%20Yura,%20right,%20are%20seen%20looking%20over%20War%20Relocation%20Authority%20photographs%20of%20some%20of%20their%20comrades.%20Sgt.%20Gosho%20served%2016%20months%20in%20the%20Burma-
+India%20theatre%20attached%20to%20Army%20Combat%20Intelligence%20with%20General%20Frank%20Merrill%27s%20Marauders%20until%20April,%201945,%20at%20which%20time%20he%20returned%20to%20the%20United%20States%20and%20is%20now%20convalescing%20at%20Fitzsimons%20General%20Hospital%20preparatory%20to%20being%20given%20a%20medical%20discharge.%20He%20wears%20the%20Presidential%20Citation,%20Bronze%20Star,%20the%20Pacific%20Ribbon%20with%203%20campaign%20stars,%20the%20Combat%20Infantry%20Badge,%20and%20the%20shoulder%20patch%20of%20Merrill%27s%20Marauders.%20He%20was%20nicknamed%20Horizontal%20Hank%20because%20of%20his%20ability%20to%20hit%20the%20ground%20fast%20when%20a%20shell%20came%20his%20way.%20Although%20declared%20by%20doctors%20to%20be%20flat-
+footed%20and%20not%20qualified%20physically%20for%20combat,%20he%20walked%201030%20miles%20and%20contracted%20malaria%207%20times%20in%20addition%20to%20other%20tropical%20diseases.%20Prior%20to%20evacuation%20to%20Minidoka,%20his%20parents%20operated%20a%20drug%20store%20in%20Seattle.%20Pvt.%20Yura%20joined%20the%20442nd%20Combat%20Team,%20an%20all%20Japanese-
+American%20outfit,%20just%20north%20of%20Rome%20and%20fought%20north%20through%20Italy%20with%20it%20assigned%20to%20a%20machine-
+gun%20section.%20In%20the%20Vosges%20Forest%20in%20France%20he%20participated%20in%20the%20rescue%20of%20the%20Lost%20Battalion,%20the%20141st%20Regiment%20from%20Texas.%20He%20was%20wounded%20in%20Southern%20France,%20November%206,%201945,%20and%20was%20hospitalized%20two%20months%20in%20England%20before%20being%20returned%20to%20the%20United%20States.%20His%20mother,%20Mrs.%20Mikiyo%20Yura,%20and%20two%20sisters,%20Mrs.%20George%20Kaneko%20and%20Mrs.%20Everett%20Itanaga,%20live%20in%20Denver.%20He%20volunteered%20from%20Poston,%20May%201943,%20and%20wears%20the%20Purple%20Heart%20and%20a%20Presidential%20Citation.%20His%20home%20before%20evacuation%20was%20Bakersfield,%20California.%20--%20Photographer:%20Iwasaki,%20Hikaru%20--%20Denver,%20Colorado.%204/28/45%0Awhere:%20ark:/13030/m5446p0j%0Awhere:%20ark:/13030/ft1h4nb00r

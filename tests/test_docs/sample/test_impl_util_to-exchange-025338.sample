@@ -1,0 +1,672 @@
+input_json=
+{"datacite":"<?xml version=\"1.0\"?>
+<resource xmlns=\"http://datacite.org/schema/kernel-3\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+xsi:schemaLocation=\"http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd\">  <identifier
+identifierType=\"DOI\">10.15144/PL-515</identifier>  <creators>    <creator>      <creatorName>Hyslop, Catriona
+(Ed.)</creatorName>    </creator>  </creators>  <titles>    <title>The Lolovoli Dialect of the North-East Ambae language,
+Vanuatu</title>  </titles>  <publisher>Pacific Linguistics</publisher>  <publicationYear>2001</publicationYear>  <contributors>
+<contributor contributorType=\"Editor\">      <contributorName>CRCL</contributorName>    </contributor>    <contributor
+contributorType=\"HostingInstitution\">      <contributorName>CRCL</contributorName>    </contributor>    <contributor
+contributorType=\"RightsHolder\">      <contributorName>Pacific Linguistics and/or the author(s)</contributorName>
+</contributor>  </contributors>  <dates>    <date dateType=\"Copyrighted\">2001</date>    <date dateType=\"Issued\">2015</date>
+</dates>  <language>en</language>  <resourceType resourceTypeGeneral=\"Text\">book</resourceType>  <alternateIdentifiers>
+<alternateIdentifier alternateIdentifierType=\"Series\">PL-515</alternateIdentifier>  </alternateIdentifiers>
+<relatedIdentifiers>    <relatedIdentifier relatedIdentifierType=\"URN\"
+relationType=\"IsIdenticalTo\">urn:md5:80a67ccfdfb141683a02c1db2a4a7047</relatedIdentifier>    <relatedIdentifier
+relatedIdentifierType=\"URN\" relationType=\"IsIdenticalTo\">urn:sha1:4db6e748584ef0c252c23d018f15f85eb6bb1f06</relatedIdentifier>
+<relatedIdentifier relatedIdentifierType=\"ISBN\" relationType=\"IsIdenticalTo\">0858834537</relatedIdentifier>
+</relatedIdentifiers>  <sizes>    <size>38M</size>    <size>xxxvi + 510 pages</size>  </sizes>  <formats>    <format>PDF</format>
+</formats>  <version>1.0</version>  <rightsList>    <rights rightsURI=\"http://creativecommons.org/licenses/by-sa/4.0\">CC BY-SA
+4.0</rights>  </rightsList>  <descriptions>    <description descriptionType=\"SeriesInformation\">PL-515</description>
+<description descriptionType=\"TableOfContents\">Contents\tv<br/>Acknowledgements\tv<br/>Abstract\tvii<br/>Table of
+contents\tix<br/>List of tables\txx<br/>List of figures and maps\txxiii<br/>List of
+abbreviations\txxv<br/>Pictures\txxvii<br/>Maps\txxxiv#<br/> 1. Introduction\t1<br/> 1.1 Lolovoli: the place where the language
+was bought\t1<br/> 1.2 Subgrouping and the linguistic situation in Vanuatu\t2<br/> 1.2.1 The influence of Bislama, English and
+French\t5<br/> 1.3 Ambae: the island and its people\t6<br/> 1.4 Previous linguistic and ethnographic research in Vanuatu\t8<br/>
+1.4.1 Linguistic research in Vanuatu\t8<br/> 1.4.2 Linguistic research on Ambae\t9<br/> 1.4.3 Ethnographic research\t9<br/> 1.5
+Dialect variation\t11<br/> 1.5.1 Phonological variation\t14<br/> 1.5.1.1 Regular sound shifts\t14<br/> 1.5.1.2 Variation in
+phonological shape\t20<br/> 1.5.2 Lexical and semantic variation\t20<br/> 1.5.3 Morphological and syntactic variation\t22<br/>
+1.5.4 Sociolects\t23<br/> 1.6 Typological characteristics of North-East Ambae\t23<br/> 1.7 This study\t24<br/> 1.7.1 The
+grammatical description\t24<br/> 1.7.2 Fieldwork\t25<br/> 2. Phonology\t27<br/> 2.1 Introduction\t27<br/> 2.2 Phoneme
+inventory\t27<br/> 2.2.1 Consonants\t27<br/> 2.2.2 Vowels\t28<br/> 2.3 Orthography\t28<br/> 2.4 Description of phonemes\t29<br/>
+2.4.1 Voiceless stops\t29<br/> 2.4.2 Prenasalised voiced stops\t30<br/> 2.4.3 Nasals\t30<br/> 2.4.4 Fricatives\t31<br/> 2.4.5
+Rhotic\t32<br/> 2.4.6 Lateral\t32<br/> 2.4.7 Glide\t32<br/> 2.4.8 Vowels\t33<br/> 2.5 Minimal Phonemic Contrasts\t34<br/> 2.5.1
+Minimal consonantal contrasts\t34<br/> 2.5.2 Minimal vowel contrasts\t34<br/> 2.6 Syllable structure\t35<br/> 2.6.1
+Phonotactics\t35<br/> 2.6.2 Stress\t36<br/> 2.6.3 Vowel sequences and diphthongs\t36<br/> 2.6.3.1 Diphthongs\t38<br/> 2.6.4
+Apocope\t38<br/> 2.6.5 Vowel height assimilation\t41<br/> 2.6.6 Reduplication\t44<br/> 2.6.7 Metathesis\t45<br/> 2.7 The
+word\t45<br/> 2.7.1 The phonological word\t45<br/> 2.7.2 The grammatical word\t46<br/> 2.8 Loan words\t47<br/> 2.8.1 Loan
+Phonemes\t47<br/> 2.8.2 Maintaining syllable structure\t47<br/> 2.9 Intonation\t48<br/> 2.9.1 Declarative clauses\t48<br/> 2.9.2
+Imperative clauses\t48<br/> 2.9.3 Interrogative clauses\t49<br/> 2.9.4 Relative clauses\t50<br/> 2.10 Proto Oceanic sound
+correspondences\t50<br/> 3. Basic clause structure\t53<br/> 3.1 Introduction\t53<br/> 3.2 Basic clause structure\t53<br/> 3.3
+Grammatical functions and grammatical relations\t54<br/> 3.4 Coding of grammatical functions\t55<br/> 3.4.1 Indexing\t55<br/>
+3.4.2 Constituent order\t57<br/> 3.4.3 Case marking functions of articles\t58<br/> 3.4.3.1 Accusative case na\t60<br/> 3.4.3.2
+Nominative case a\t61<br/> 3.4.3.3 Locative case lo\t62<br/> 3.5 Grammatical relations\t62<br/> 3.5.1 Subject\t62<br/> 3.5.2
+Object\t63<br/> 3.6 Oblique grammatical functions\t63<br/> 3.7 Adjuncts\t63<br/> 3.7.1 Temporal adjuncts\t63<br/> 3.7.2 Locational
+adjuncts\t65<br/> 3.7.3 Manner adjuncts\t66<br/> 3.7.4 Circumstantial adjuncts\t67<br/> 3.7.5 Verificationals\t69<br/> 3.8 Topic
+fronting\t69<br/> 4. Word classes\t73<br/> 4.1 Introduction\t73<br/> 4.2 Nominals\t73<br/> 4.2.1 Vocatives\t74<br/> 4.2.2 Proper
+nouns\t75<br/> 4.2.2.1 Personal names\t75<br/> 4.2.2.2 Kinship terms\t76<br/> 4.2.3 Locational nouns\t77<br/> 4.2.3.1 Relational
+location nouns\t77<br/> 4.2.3.2 Absolute location nouns\t78<br/> 4.2.4 Common nouns\t79<br/> 4.2.4.1 Free common nouns\t80<br/>
+4.2.4.2 Bound common nouns\t80<br/> 4.3 Temporals\t81<br/> 4.4 Verbs\t81<br/> 4.4.1 Intransitive verbs\t83<br/> 4.4.1.1 Stative-
+inchoative verbs\t83<br/> 4.4.1.1.1 Stative-inchoative verbs with no transitive form\t84<br/> 4.4.1.1.2 O-type stative-inchoative
+verbs\t84<br/> 4.4.1.2 Active intransitive verbs\t85<br/> 4.4.1.2.1 A-type. Takes applicative suffix -Ci\t85<br/> 4.4.1.2.2
+A-type. Takes applicative suffix -gi(ni)\t85<br/> 4.4.1.2.3 O-type. Takes causative suffix -tagi(ni)\t86<br/> 4.4.1.2.4
+Intransitives with no transitive form\t86<br/> 4.4.2 Ambitransitive verbs\t87<br/> 4.4.3 Transitive verbs\t87<br/> 4.4.3.1 O-type.
+Takes anticausative prefix ma- to form intransitive\t87<br/> 4.4.3.2 A-type. Reduplicated to form intransitive\t89<br/> 4.4.3.3
+Transitives with no intransitive form\t89<br/> 4.4.4 Extended transitive verbs\t91<br/> 4.4.5 Verbs functioning as members of more
+than one subclass\t91<br/> 4.5 Noun-verb distinction\t91<br/> 4.6 Adverbs\t93<br/> 4.7 General modifiers\t94<br/> 4.8
+Quantifiers\t94<br/> 4.9 Numerals\t94<br/> 4.10 Pronominals\t96<br/> 4.10.1 Independent pronouns\t96<br/> 4.10.2 Subject
+proclitics\t96<br/> 4.10.3 Object enclitics\t96<br/> 4.10.4 Possessive suffixes\t97<br/> 4.11 Relational classifiers\t97<br/> 4.12
+Directionals\t97<br/> 4.13 Demonstratives\t98<br/> 4.13.1 ge\t98<br/> 4.13.2 Presentative ia\t98<br/> 4.14 Articles\t99<br/> 4.15
+Prepositions\t99<br/> 4.15.1 True prepositions\t99<br/> 4.15.2 Noun-like prepositions\t100<br/> 4.15.3 Verb-like
+prepositions\t100<br/> 4.16 Negative particles\t100<br/> 4.17 Verbal particles\t100<br/> 4.18 Subordinators\t101<br/> 4.18.1
+Complementiser\t101<br/> 4.18.2 Relativiser\t101<br/> 4.18.3 Adverbial subordinators\t102<br/> 4.19 Conjunctions\t102<br/> 4.20
+Mwere\t102<br/> 4.21 Verificationals\t103<br/> 4.22 Epistememes (interrogatives)\t104<br/> 4.23 Interjections\t104<br/> 5. Noun
+phrase\t107<br/> 5.1 Introduction\t107<br/> 5.2 Order of noun phrase constituents\t107<br/> 5.3 Functions of noun
+phrases\t109<br/> 5.4 Words functioning as the head of the noun phrase\t111<br/> 5.4.1 Common nouns\t111<br/> 5.4.2 Proper
+nouns\t111<br/> 5.4.3 Locational nouns\t113<br/> 5.4.4 Independent pronouns\t113<br/> 5.4.5 Demonstratives\t114<br/> 5.4.6
+Quantifiers and numerals\t115<br/> 5.4.7 Nominalisations\t116<br/> 5.4.7.1 Nominalising suffix -ana\t116<br/> 5.4.7.2 Nominalising
+suffix -gi\t117<br/> 5.5 Headless noun phrases\t118<br/> 5.5.1 Relational classifiers\t118<br/> 5.6 Articles\t118<br/> 5.6.1
+Accusative article na\t119<br/> 5.6.2 Nominative article a\t119<br/> 5.6.3 Locative article lo\t120<br/> 5.6.4 Personal article
+i\t121<br/> 5.6.5 Plural article re\t122<br/> 5.6.6 ire 'all'\t123<br/> 5.6.7 tea 'some'\t124<br/> 5.7 Modification of the
+head\t124<br/> 5.7.1 Nominal modifiers\t124<br/> 5.7.2 Stative-inchoative verb modifiers\t125<br/> 5.7.3 Number\t127<br/> 5.7.3.1
+Third person nonsingular pronoun ngire\t127<br/> 5.7.3.2 Quantifiers\t128<br/> 5.7.3.3 Numerals\t130<br/> 5.7.4
+Demonstratives\t131<br/> 5.7.5 Possession\t132<br/> 5.7.6 Relative Clauses\t133<br/> 5.7.7 Locational adjuncts\t134<br/> 6.
+Adjuncts\t137<br/> 6.1 Introduction\t137<br/> 6.2 Prepositional phrases\t137<br/> 6.3 The three types of prepositions\t138<br/>
+6.3.1 Structure of the prepositional phrase\t139<br/> 6.4 True and noun-like prepositions\t140<br/> 6.4.1 Comitative to-\t140<br/>
+6.5 Verb-like prepositions\t144<br/> 6.5.1 Ablative, source 'from': dene\t144<br/> 6.5.2 gahe 'alone, by oneself'\t146<br/> 6.5.3
+Instrumental, stimulus 'with': gene, gi\t146<br/> 6.5.4 Allative 'to', purposive 'for', 'about': huri\t149<br/> 6.5.5 Dative 'to',
+benefactive 'for': lawe\t151<br/> 6.5.6 Comitative, confective 'with': me\t153<br/> 6.5.7 Manner 'like': mwere\t155<br/> 6.6
+Locational adjuncts\t156<br/> 6.6.1 Absolute location nouns and directionals\t158<br/> 6.6.2 Locative case article lo\t158<br/>
+6.6.3 True prepositions\t160<br/> 6.6.3.1 'denizen of, from': tau1\t160<br/> 6.6.3.2 Locative 'to, at': tau2/si\t162<br/> 6.6.3.3
+Locative 'to, at': sara\t164<br/> 6.6.4 Noun-like prepositions\t165<br/> 6.6.4.1 'Near, next to': lobe\t165<br/> 6.6.4.2
+'In(side), into': lolo\t167<br/> 6.6.4.3 'On': lu\t168<br/> 7. Possessive and associative constructions\t171<br/> 7.1
+Introduction\t171<br/> 7.2 The possessive construction\t171<br/> 7.3 Direct possession\t173<br/> 7.3.1 The 'self'\t175<br/>
+7.3.1.1 Kin relations\t176<br/> 7.3.1.2 Body parts and associated body products\t176<br/> 7.3.1.3 Natural behaviour and personal
+attributes\t177<br/> 7.3.1.4 Intimate personal property\t179<br/> 7.3.2 Part-whole and positional relations\t181<br/> 7.3.2.1
+Part-whole relations\t181<br/> 7.3.2.2 Positional relations\t181<br/> 7.4 Indirect possession\t182<br/> 7.4.1 Relational
+classifier ga-\t183<br/> 7.4.2 Relational classifier me-\t184<br/> 7.4.3 Relational classifier bula-\t185<br/> 7.4.4 Relational
+classifier no-\t187<br/> 7.5 Variation in possessive relationships\t187<br/> 7.6 Associative construction\t194<br/> 7.6.1 The
+relationship between a container and its contents\t195<br/> 7.6.2 The relationship between a measure and what is
+measured\t196<br/> 7.6.3 The relationship between an entity and a type of entity\t196<br/> 7.6.4 The purpose or function of an
+item\t197<br/> 7.6.4.1 Vai 'do, thing'\t199<br/> 7.6.5 Overlap between direct possession and association\t200<br/> 7.6.6
+Associative suffix -gi\t201<br/> 7.7 Independent possessive pronouns\t204<br/> 7.8 Definiteness in possessive
+constructions\t205<br/> 7.9 Possessive clauses\t206<br/> 7.10 Other forms which take possessive suffixes\t206<br/> 8. Spatial
+reference\t209<br/> 8.1 Introduction\t209<br/> 8.2 Spatial reference\t209<br/> 8.3 Directionals\t211<br/> 8.4 Spatial relationship
+to participants in the speech act\t211<br/> 8.4.1 Motion away (from deictic centre) \u00f8\t212<br/> 8.4.2 Motion towards deictic
+centre -mai\t213<br/> 8.4.3 Motion towards addressee, past/future deictic centre -atu\t214<br/> 8.4.4 Comparison of deictic
+oppositions\t217<br/> 8.5 Specification of vertical/landward-seaward axis\t218<br/> 8.5.1 Vertical axis: across/up/down\t218<br/>
+8.5.2 Inland/seawards\t220<br/> 8.5.3 Towards shore/out to sea\t221<br/> 8.5.4 Movement to other parts of Ambae\t222<br/> 8.5.5
+Movement to other islands\t225<br/> 8.5.6 Internal movement: front/back/side\t229<br/> 8.6 Metaphorical extension\t229<br/> 8.7
+Variation in system in different word classes\t231<br/> 8.7.1 Demonstratives\t231<br/> 8.7.2 Absolute location nouns\t233<br/>
+8.7.2.1 Other absolute location nouns\t234<br/> 8.8 Relational location nouns\t238<br/> 9. Verb phrase\t241<br/> 9.1
+Introduction\t241<br/> 9.2 Order of verb phrase constituents\t241<br/> 9.3 The head of the verb phrase\t242<br/> 9.4 Subject and
+object clitics\t243<br/> 9.4.1 Subject proclitics\t243<br/> 9.4.1.1 Variation in third singular subject marking\t244<br/> 9.4.2
+Object enclitics\t245<br/> 9.5 Preverbal elements\t246<br/> 9.5.1 No preverbal particles: imperative, cohortative mood\t247<br/>
+9.5.2 Dual marker ru\t247<br/> 9.5.3 Realis mood mo\t247<br/> 9.5.4 Irrealis mood ni\t251<br/> 9.5.5 Telic aspect u\t253<br/>
+9.5.6 Dehortative mese/vese\t259<br/> 9.5.7 Apprehensive bo\t262<br/> 9.5.8 Bei 'just, for the first time'\t265<br/> 9.5.9 Mas
+'must'\t267<br/> 9.5.10 Reciprocal: vui\t268<br/> 9.5.11 Preverbal modifier mala 'quite'\t270<br/> 9.6 Negation\t270<br/> 9.7
+Objects\t272<br/> 9.8 Postverbal elements\t274<br/> 9.8.1 Beno 'already'\t275<br/> 9.8.2 Tau/teu 'still, yet'\t276<br/> 9.8.3 Radu
+'still, forever' ongoing, continuous event\t277<br/> 9.8.4 Reflexive, emphatic: sibo- 'self'\t278<br/> 9.8.5 Adverbs\t279<br/>
+9.8.6 Modifiers\t280<br/> 9.8.6.1 Liu 'surpass'\t280<br/> 9.8.6.2 Haro 'randomly'\t281<br/> 9.8.6.3 Intensifier mwere\t282<br/>
+9.9 Other means of aspectual marking\t283<br/> 10. Serial verb constructions\t285<br/> 10.1 Introduction\t285<br/> 10.2 Criteria
+for recognising serial verb constructions\t285<br/> 10.3 Classification of serial verb constructions\t289<br/> 10.3.1 Clause
+layer\t290<br/> 10.3.2 Argument sharing\t291<br/> 10.3.3 Contiguous verb sequencing\t292<br/> 10.3.4 Semantic type\t292<br/>
+10.3.5 Subclasses of verbs most likely to serialise\t293<br/> 10.3.6 Symmetrical vs asymmetrical SVCs\t293<br/> 10.4 Summary of
+SVC types\t293<br/> 10.5 Nuclear layer serialisation\t294<br/> 10.5.1 Cause-effect\t294<br/> 10.5.2 V1 + goro 'to block, cover,
+close s.t.'\t296<br/> 10.5.3 Modal construction\t297<br/> 10.5.3.1 V1 + lai 'to be able', samwegi 'to be unable'\t298<br/>
+10.5.3.2 V1 + kali 'pretend'\t299<br/> 10.5.3.3 Tarani 'to want', rau 'to not want' + V2\t301<br/> 10.5.4 Conative 'try, test,
+taste': V1 + lehi 'see', rongo 'feel, sense'\t301<br/> 10.5.5 Lado 'to think about' + V2\t302<br/> 10.5.6 V1 + rarai
+'ready'\t303<br/> 10.6 Core layer serialisation\t303<br/> 10.6.1 Same-subject serialisation\t304<br/> 10.6.1.1 V1 = directional
+verb: motion &amp; sequential event\t304<br/> 10.6.1.2 V1 = posture verb: position &amp; simultaneous action\t306<br/> 10.6.1.3 V2
+= directional verb: action in a specified direction\t307<br/> 10.6.1.4 Reporting direct speech\t310<br/> 10.6.2 Switch-subject
+serialisation\t312<br/> 10.6.2.1 V1 + directionals\t312<br/> 10.6.2.2 V + posture verb = stay\t314<br/> 10.6.2.3
+Causatives\t315<br/> 10.6.3 Ambient serialisation\t316<br/> 10.6.3.1 Aspectual function\t316<br/> 10.6.3.1.1 rovo 'finish' -
+completive aspect\t316<br/> 10.6.3.1.2 vano 'go' - continuous aspect\t319<br/> 10.6.3.1.3 eno 'lie'\t320<br/> 10.6.3.1.4 dadari,
+bulu 'reach, arrive'\t321<br/> 10.6.3.1.5 sigei 'continue'\t322<br/> 10.6.3.2 Manner function\t322<br/> 11. Valency change and
+rearrangement\t325<br/> 11.1 Introduction\t325<br/> 11.2 Valency decrease\t326<br/> 11.2.1 Unspecified object deletion:
+reduplication\t327<br/> 11.2.2 Anti-causatives\t329<br/> 11.2.2.1 ma-\t329<br/> 11.2.2.2 ta-\t331<br/> 11.3 Valency
+increase\t332<br/> 11.3.1 Applicatives\t332<br/> 11.3.1.1 -Ci\t333<br/> 11.3.1.2 -gi(ni)\t335<br/> 11.3.1.2.1 Motion
+verbs\t338<br/> 11.3.1.2.2 Speech and cognition verbs\t340<br/> 11.3.1.3 Verbs which can take either applicative suffix\t341<br/>
+11.3.2 Causatives\t345<br/> 11.3.2.1 -tagi(ni)\t346<br/> 11.3.2.2 vaga-\t347<br/> 11.3.2.2.1 vaga- on numerals\t349<br/> 11.4
+Valency rearrangement\t349<br/> 11.4.1 Transitive verbs which take -gi(ni)\t349<br/> 11.5 Multiple derivational processes on
+verbs\t351<br/> 12. Reduplication\t355<br/> 12.1 Introduction\t355<br/> 12.2 Unspecified object deletion\t355<br/> 12.3 Plurality
+of action\t356<br/> 12.4 Reciprocal construction\t359<br/> 12.5 Repetitive action\t360<br/> 12.6 Plurality of
+participants\t361<br/> 12.7 Complete effect 'all'\t362<br/> 12.7.1 Introduction\t362<br/> 12.7.2 Verbs and adverbs\t362<br/>
+12.7.3 Nouns\t364<br/> 12.7.4 Plural article re\t365<br/> 12.8 Habitual\t366<br/> 12.9 Intensity\t367<br/> 12.9.1 Intransitive
+verbs\t367<br/> 12.9.2 Modifier\t368<br/> 12.9.3 Nominalisation (nominalised intransitive)\t368<br/> 12.10 Word class changing
+derivation\t369<br/> 12.10.1 Nominalisation\t369<br/> 12.10.2 Noun \u2192 intransitive verb\t371<br/> 12.10.3 Verb \u2192 verbal
+modifier\t371<br/> 12.11 Directionals\t372<br/> 12.12 Numerals\t373<br/> 12.13 Semantic extension\t374<br/> 12.14 Inherent
+reduplication\t374<br/> 12.15 Full versus partial reduplication\t375<br/> 12.16 Repetition\t377<br/> 13. Existential, equational
+and locational clauses\t379<br/> 13.1 Introduction\t379<br/> 13.2 Existential clauses\t380<br/> 13.2.1 Nonverbal existential
+clauses\t380<br/> 13.2.1.1 Negative existential clauses\t382<br/> 13.2.2 Possessive clauses\t383<br/> 13.2.2.1 Negative possessive
+clauses\t385<br/> 13.2.3 Verbal existential clauses\t386<br/> 13.3 Equational clauses\t391<br/> 13.3.1 Classificatory
+clauses\t391<br/> 13.3.2 Identificational clauses\t393<br/> 13.3.3 Negative equational clauses\t394<br/> 13.3.4 Interrogative
+equational clauses\t396<br/> 13.4 Locational clauses\t396<br/> 13.4.1 Negative prepositional clauses\t398<br/> 14. Subordinate
+clauses\t401<br/> 14.1 Introduction\t401<br/> 14.2 Complement clauses\t401<br/> 14.2.1 Complement types\t402<br/> 14.2.1.1
+Sentence-like complement introduced by (huri) vo\t402<br/> 14.2.1.2 Paratactic complements\t404<br/> 14.2.1.3 Complement
+introduced by mwere vo\t406<br/> 14.2.1.4 Simultaneous complement\t407<br/> 14.2.1.5 Nominalised complements\t409<br/> 14.2.2
+Classes of complement-taking predicates\t410<br/> 14.2.2.1 Utterance predicates\t410<br/> 14.2.2.1.1 Vo 'to say'\t411<br/>
+14.2.2.2 Propositional attitude predicates\t415<br/> 14.2.2.3 Pretence predicate\t415<br/> 14.2.2.4 Evaluative
+predicates\t416<br/> 14.2.2.5 Predicates of knowledge and acquisition of knowledge\t417<br/> 14.2.2.6 Desiderative
+predicates\t418<br/> 14.2.2.7 Achievement predicates\t421<br/> 14.2.2.8 Immediate perception predicates\t422<br/> 14.2.2.9
+Negative CTP hate\t422<br/> 14.3 Relative clauses\t424<br/> 14.3.1 Grammatical properties of the relative clause\t425<br/>
+14.3.1.1 Marking of the relative clause\t425<br/> 14.3.1.2 Intonation\t426<br/> 14.3.1.3 Marking of the common argument in the
+relative clause\t427<br/> 14.3.2 Function of the common argument\t428<br/> 14.3.3 Non-restrictive relative clauses\t432<br/> 14.4
+Adverbial clauses\t433<br/> 14.4.1 Temporal clauses (tau)vohea\t433<br/> 14.4.2 Manner clauses mwere\t435<br/> 14.4.3 Purpose and
+reason clauses\t436<br/> 14.4.3.1 Purpose clauses huri (vo)\t437<br/> 14.4.3.2 Reason clauses (huri) bana\t438<br/> 14.4.4
+Conditional clauses vo\t440<br/> 15. Coordination\t443<br/> 15.1 Introduction\t443<br/> 15.2 Conjunctive coordination\t444<br/>
+15.2.1 Juxtaposition\t444<br/> 15.2.2 Tail-head linkage\t445<br/> 15.2.3 VP as a conjunction\t446<br/> 15.2.3.1 Rovo 'to
+finish'\t447<br/> 15.2.3.2 Maraga 'to get up'\t448<br/> 15.2.4 Conjunction me(na) 'and'\t450<br/> 15.2.5 Conjunction ko
+'and'\t452<br/> 15.2.6 Conjunction vunu 'then'\t453<br/> 15.2.7 Conjunction siu 'then, thus'\t454<br/> 15.2.8 Conjunction ale 'so,
+then'\t455<br/> 15.3 Adversative coordination: ngie 'but'\t456<br/> 15.4 Disjunctive coordination: sege (vo)
+'or'\t457<br/>Appendix A: Table of texts\t459<br/>Appendix B: Texts\t463<br/> Text 1: Tomutomu\t463<br/> Text 2: How to build a
+house\t471<br/> Text 3: Speech\t477<br/>References\t495<br/>List of tables:<br/>Table 1.1 Phonological variation\t15<br/>Table 1.2
+Proto Oceanic *s \u2192 h in all dialects except Lolokaro\t16<br/>Table 1.3 Proto Oceanic *t \u2192 s/_i in all dialects except
+Lolokaro\t17<br/>Table 1.4 Nasalisation of vowels in Walurigi\t20<br/>Table 1.5 Pronunciation variation\t21<br/>Table 1.6 Lexical
+variation\t21<br/>Table 1.7 Lexical innovations in Lolovoli\t22<br/>Table 1.8 Semantic variation\t22<br/>Table 1.9 Variation in
+form of subject proclitics\t23<br/>Table 2.1 Consonant inventory\t28<br/>Table 2.2 Vowel inventory\t29<br/>Table 2.3 Orthographic
+representation of phonemes\t30<br/>Table 2.4 Proto Oceanic and Lolovoli consonant phonemes\t52<br/>Table 4.1 Subclasses of
+nominals\t73<br/>Table 4.2 Personal names which also function as common nouns\t75<br/>Table 4.3 Traditional and Christian
+names\t75<br/>Table 4.4 Kinship terms\t76<br/>Table 4.5 Relational location nouns\t77<br/>Table 4.6 Absolute location
+nouns\t78<br/>Table 4.7 Free common nouns\t79<br/>Table 4.8 Bound common nouns\t80<br/>Table 4.9 Temporals\t80<br/>Table 4.10
+Subclasses of verbs\t82<br/>Table 4.11 Stative-inchoative verbs with no transitive form\t83<br/>Table 4.12 O-type stative-
+inchoative verbs which take the causative prefix vaga-\t84<br/>Table 4.13 A-type intransitives which take the applicative suffix
+-Ci\t84<br/>Table 4.14 A-type intransitives which take the applicative suffix -gi(ni)\t85<br/>Table 4.15 O-type intransitives
+which take the causative suffix -tagi(ni)\t85<br/>Table 4.16 Active intransitives which have no transitive form\t85<br/>Table 4.17
+Posture verbs\t86<br/>Table 4.18 O-type transitive verbs which take the anti-causative prefix ma-\t87<br/>Table 4.19 A-type
+transitive verbs which can be reduplicated to form an intransitive\t88<br/>Table 4.20 Transitive verbs which have no intransitive
+form (unmarked)\t89<br/>Table 4.21 Transitive verbs which have no intransitive form (with -Ci/-gi(ni) ending)\t89<br/>Table 4.22
+Intransitive verbs functioning as members of more than one subclass\t90<br/>Table 4.23 Phrasal adverbs to which an O enclitic can
+attach\t92<br/>Table 4.24 Adverbs to which an O enclitic cannot attach\t93<br/>Table 4.25 Numerals\t94<br/>Table 4.26 Verbal
+particles\t100<br/>Table 4.27 Adverbial subordinators\t101<br/>Table 4.28 Conjunctions\t101<br/>Table 4.29
+Verificationals\t103<br/>Table 4.30 Epistememes\t103<br/>Table 4.31 Exclamatory particles\t104<br/>Table 4.32 Hesitation
+particles\t104<br/>Table 5.1 Functions of NPs according to word class of the head\t109<br/>Table 6.1 The prepositions which are
+used to express different locative meanings, dependent on the word class of the head of the object NP\t152<br/>Table 6.2
+Combinatorial possibilities of locative prepositions with word class of the head of the object NP\t152<br/>Table 6.3 The
+distribution of locative NPs marked by lo and prepositional phrases introduced by noun-like prepositions\t160<br/>Table 7.1
+Possessive suffixes\t166<br/>Table 7.2 Possessive construction types\t166<br/>Table 7.3 Bodily fluids and other body
+products\t171<br/>Table 7.4 Nouns which can function as the possessee in both direct and indirect possessive
+constructions\t182<br/>Table 7.5 Nouns which can function as the possessee in different possessive constructions\t184<br/>Table
+7.6 Nouns which can function as the head of direct possessive and associative constructions\t192<br/>Table 7.7 Nouns which can
+function as the head of a construction with both direct possessive and associative readings\t193<br/>Table 8.1 The
+directionals\t201<br/>Table 8.2 Specification of the vertical/landward-seaward axis\t208<br/>Table 8.3 Variation in meaning of
+'here' and 'there' forms\t224<br/>Table 8.4 Absolute location nouns\t226<br/>Table 8.5 Relational location nouns\t227<br/>Table
+9.1 Subject proclitics\t232<br/>Table 9.2 Object enclitics and independent pronouns\t234<br/>Table 9.3 Subject proclitics attached
+to realis mo\t237<br/>Table 9.4 Subject proclitics attached to irrealis ni\t241<br/>Table 9.5 Subject proclitics attached to telic
+u\t242<br/>Table 9.6 Stative-inchoative verbs specified for telic aspect or realis mood\t245<br/>Table 10.1 Summary of SVC types
+according to semantic type\t282<br/>Table 10.2 Verbs which occur in cause-effect nuclear layer SVCs\t283<br/>Table 10.3 The
+directionals\t295<br/>Table 11.1 Verbal derivations\t314<br/>Table 11.2 Verbs which take both -Ci and -gi(ni)
+suffixes\t330<br/>Table 11.3 Transitive verbs which take the applicative suffix -gi(ni)\t337<br/>Table 13.1 The various types of
+nonverbal clauses\t365<br/>Table 15.1 Means of coordination\t424<br/>List of figures and maps:<br/>Figure 1.1: Oceanic as a
+subgroup of Austronesian\t3<br/>Map 1: Vanuatu within the South-west Pacific\txxxiv#<br/>Map 2: Ambae within
+Vanuatu\txxxv#<br/>Map 3: Ambae\txxxvi#<br/>Map 4: Ambae island, indicating the dialects of the North-East Ambae language, and the
+division between North-East Ambae and Nduindui\t13<br/>Map 5: s \u2192 h, t \u2192 s/_i\t17<br/>Map 6: Variation in the
+realisation of the phoneme /k/\t18<br/>Map 7: Variation in the realisation of the phoneme /g/\t18<br/>Map 8: Realisation of final
+vowels in northern versus southern dialects\t19<br/>Map 9: Directionals used for movement within Ambae\t213#<br/>Map 10:
+Directionals used for movement to other islands within Vanuatu\t218#</description>  </descriptions></resource>"}
+~~~~~~~~~~
+dict_pp=
+{'datacite': '<?xml version="1.0"?>
+'
+             '<resource xmlns="http://datacite.org/schema/kernel-3" '
+             'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
+             'xsi:schemaLocation="http://datacite.org/schema/kernel-3 '
+             'http://schema.datacite.org/meta/kernel-3/metadata.xsd">  '
+             '<identifier identifierType="DOI">10.15144/PL-515</identifier>  '
+             '<creators>    <creator>      <creatorName>Hyslop, Catriona '
+             '(Ed.)</creatorName>    </creator>  </creators>  <titles>    '
+             '<title>The Lolovoli Dialect of the North-East Ambae language, '
+             'Vanuatu</title>  </titles>  <publisher>Pacific '
+             'Linguistics</publisher>  '
+             '<publicationYear>2001</publicationYear>  <contributors>    '
+             '<contributor contributorType="Editor">      '
+             '<contributorName>CRCL</contributorName>    </contributor>    '
+             '<contributor contributorType="HostingInstitution">      '
+             '<contributorName>CRCL</contributorName>    </contributor>    '
+             '<contributor contributorType="RightsHolder">      '
+             '<contributorName>Pacific Linguistics and/or the '
+             'author(s)</contributorName>    </contributor>  </contributors>  '
+             '<dates>    <date dateType="Copyrighted">2001</date>    <date '
+             'dateType="Issued">2015</date>  </dates>  '
+             '<language>en</language>  <resourceType '
+             'resourceTypeGeneral="Text">book</resourceType>  '
+             '<alternateIdentifiers>    <alternateIdentifier '
+             'alternateIdentifierType="Series">PL-515</alternateIdentifier>  '
+             '</alternateIdentifiers>  <relatedIdentifiers>    '
+             '<relatedIdentifier relatedIdentifierType="URN" '
+             'relationType="IsIdenticalTo">urn:md5:80a67ccfdfb141683a02c1db2a4a7047</relatedIdentifier>    '
+             '<relatedIdentifier relatedIdentifierType="URN" '
+             'relationType="IsIdenticalTo">urn:sha1:4db6e748584ef0c252c23d018f15f85eb6bb1f06</relatedIdentifier>    '
+             '<relatedIdentifier relatedIdentifierType="ISBN" '
+             'relationType="IsIdenticalTo">0858834537</relatedIdentifier>  '
+             '</relatedIdentifiers>  <sizes>    <size>38M</size>    '
+             '<size>xxxvi + 510 pages</size>  </sizes>  <formats>    '
+             '<format>PDF</format>  </formats>  <version>1.0</version>  '
+             '<rightsList>    <rights '
+             'rightsURI="http://creativecommons.org/licenses/by-sa/4.0">CC '
+             'BY-SA 4.0</rights>  </rightsList>  <descriptions>    '
+             '<description '
+             'descriptionType="SeriesInformation">PL-515</description>    '
+             '<description descriptionType="TableOfContents">Contents\t'
+             'v<br/>Acknowledgements\tv<br/>Abstract\tvii<br/>Table of '
+             'contents\tix<br/>List of tables\txx<br/>List of figures and '
+             'maps\txxiii<br/>List of abbreviations\txxv<br/>Pictures\t'
+             'xxvii<br/>Maps\txxxiv#<br/> 1. Introduction\t1<br/> 1.1 '
+             'Lolovoli: the place where the language was bought\t1<br/> 1.2 '
+             'Subgrouping and the linguistic situation in Vanuatu\t2<br/> '
+             '1.2.1 The influence of Bislama, English and French\t5<br/> 1.3 '
+             'Ambae: the island and its people\t6<br/> 1.4 Previous linguistic '
+             'and ethnographic research in Vanuatu\t8<br/> 1.4.1 Linguistic '
+             'research in Vanuatu\t8<br/> 1.4.2 Linguistic research on Ambae\t'
+             '9<br/> 1.4.3 Ethnographic research\t9<br/> 1.5 Dialect '
+             'variation\t11<br/> 1.5.1 Phonological variation\t14<br/> 1.5.1.1 '
+             'Regular sound shifts\t14<br/> 1.5.1.2 Variation in phonological '
+             'shape\t20<br/> 1.5.2 Lexical and semantic variation\t20<br/> '
+             '1.5.3 Morphological and syntactic variation\t22<br/> 1.5.4 '
+             'Sociolects\t23<br/> 1.6 Typological characteristics of '
+             'North-East Ambae\t23<br/> 1.7 This study\t24<br/> 1.7.1 The '
+             'grammatical description\t24<br/> 1.7.2 Fieldwork\t25<br/> 2. '
+             'Phonology\t27<br/> 2.1 Introduction\t27<br/> 2.2 Phoneme '
+             'inventory\t27<br/> 2.2.1 Consonants\t27<br/> 2.2.2 Vowels\t'
+             '28<br/> 2.3 Orthography\t28<br/> 2.4 Description of phonemes\t'
+             '29<br/> 2.4.1 Voiceless stops\t29<br/> 2.4.2 Prenasalised voiced '
+             'stops\t30<br/> 2.4.3 Nasals\t30<br/> 2.4.4 Fricatives\t31<br/> '
+             '2.4.5 Rhotic\t32<br/> 2.4.6 Lateral\t32<br/> 2.4.7 Glide\t'
+             '32<br/> 2.4.8 Vowels\t33<br/> 2.5 Minimal Phonemic Contrasts\t'
+             '34<br/> 2.5.1 Minimal consonantal contrasts\t34<br/> 2.5.2 '
+             'Minimal vowel contrasts\t34<br/> 2.6 Syllable structure\t35<br/> '
+             '2.6.1 Phonotactics\t35<br/> 2.6.2 Stress\t36<br/> 2.6.3 Vowel '
+             'sequences and diphthongs\t36<br/> 2.6.3.1 Diphthongs\t38<br/> '
+             '2.6.4 Apocope\t38<br/> 2.6.5 Vowel height assimilation\t41<br/> '
+             '2.6.6 Reduplication\t44<br/> 2.6.7 Metathesis\t45<br/> 2.7 The '
+             'word\t45<br/> 2.7.1 The phonological word\t45<br/> 2.7.2 The '
+             'grammatical word\t46<br/> 2.8 Loan words\t47<br/> 2.8.1 Loan '
+             'Phonemes\t47<br/> 2.8.2 Maintaining syllable structure\t47<br/> '
+             '2.9 Intonation\t48<br/> 2.9.1 Declarative clauses\t48<br/> 2.9.2 '
+             'Imperative clauses\t48<br/> 2.9.3 Interrogative clauses\t49<br/> '
+             '2.9.4 Relative clauses\t50<br/> 2.10 Proto Oceanic sound '
+             'correspondences\t50<br/> 3. Basic clause structure\t53<br/> 3.1 '
+             'Introduction\t53<br/> 3.2 Basic clause structure\t53<br/> 3.3 '
+             'Grammatical functions and grammatical relations\t54<br/> 3.4 '
+             'Coding of grammatical functions\t55<br/> 3.4.1 Indexing\t55<br/> '
+             '3.4.2 Constituent order\t57<br/> 3.4.3 Case marking functions of '
+             'articles\t58<br/> 3.4.3.1 Accusative case na\t60<br/> 3.4.3.2 '
+             'Nominative case a\t61<br/> 3.4.3.3 Locative case lo\t62<br/> 3.5 '
+             'Grammatical relations\t62<br/> 3.5.1 Subject\t62<br/> 3.5.2 '
+             'Object\t63<br/> 3.6 Oblique grammatical functions\t63<br/> 3.7 '
+             'Adjuncts\t63<br/> 3.7.1 Temporal adjuncts\t63<br/> 3.7.2 '
+             'Locational adjuncts\t65<br/> 3.7.3 Manner adjuncts\t66<br/> '
+             '3.7.4 Circumstantial adjuncts\t67<br/> 3.7.5 Verificationals\t'
+             '69<br/> 3.8 Topic fronting\t69<br/> 4. Word classes\t73<br/> 4.1 '
+             'Introduction\t73<br/> 4.2 Nominals\t73<br/> 4.2.1 Vocatives\t'
+             '74<br/> 4.2.2 Proper nouns\t75<br/> 4.2.2.1 Personal names\t'
+             '75<br/> 4.2.2.2 Kinship terms\t76<br/> 4.2.3 Locational nouns\t'
+             '77<br/> 4.2.3.1 Relational location nouns\t77<br/> 4.2.3.2 '
+             'Absolute location nouns\t78<br/> 4.2.4 Common nouns\t79<br/> '
+             '4.2.4.1 Free common nouns\t80<br/> 4.2.4.2 Bound common nouns\t'
+             '80<br/> 4.3 Temporals\t81<br/> 4.4 Verbs\t81<br/> 4.4.1 '
+             'Intransitive verbs\t83<br/> 4.4.1.1 Stative-inchoative verbs\t'
+             '83<br/> 4.4.1.1.1 Stative-inchoative verbs with no transitive '
+             'form\t84<br/> 4.4.1.1.2 O-type stative-inchoative verbs\t84<br/> '
+             '4.4.1.2 Active intransitive verbs\t85<br/> 4.4.1.2.1 A-type. '
+             'Takes applicative suffix -Ci\t85<br/> 4.4.1.2.2 A-type. Takes '
+             'applicative suffix -gi(ni)\t85<br/> 4.4.1.2.3 O-type. Takes '
+             'causative suffix -tagi(ni)\t86<br/> 4.4.1.2.4 Intransitives with '
+             'no transitive form\t86<br/> 4.4.2 Ambitransitive verbs\t87<br/> '
+             '4.4.3 Transitive verbs\t87<br/> 4.4.3.1 O-type. Takes '
+             'anticausative prefix ma- to form intransitive\t87<br/> 4.4.3.2 '
+             'A-type. Reduplicated to form intransitive\t89<br/> 4.4.3.3 '
+             'Transitives with no intransitive form\t89<br/> 4.4.4 Extended '
+             'transitive verbs\t91<br/> 4.4.5 Verbs functioning as members of '
+             'more than one subclass\t91<br/> 4.5 Noun-verb distinction\t'
+             '91<br/> 4.6 Adverbs\t93<br/> 4.7 General modifiers\t94<br/> 4.8 '
+             'Quantifiers\t94<br/> 4.9 Numerals\t94<br/> 4.10 Pronominals\t'
+             '96<br/> 4.10.1 Independent pronouns\t96<br/> 4.10.2 Subject '
+             'proclitics\t96<br/> 4.10.3 Object enclitics\t96<br/> 4.10.4 '
+             'Possessive suffixes\t97<br/> 4.11 Relational classifiers\t'
+             '97<br/> 4.12 Directionals\t97<br/> 4.13 Demonstratives\t98<br/> '
+             '4.13.1 ge\t98<br/> 4.13.2 Presentative ia\t98<br/> 4.14 '
+             'Articles\t99<br/> 4.15 Prepositions\t99<br/> 4.15.1 True '
+             'prepositions\t99<br/> 4.15.2 Noun-like prepositions\t100<br/> '
+             '4.15.3 Verb-like prepositions\t100<br/> 4.16 Negative particles\t'
+             '100<br/> 4.17 Verbal particles\t100<br/> 4.18 Subordinators\t'
+             '101<br/> 4.18.1 Complementiser\t101<br/> 4.18.2 Relativiser\t'
+             '101<br/> 4.18.3 Adverbial subordinators\t102<br/> 4.19 '
+             'Conjunctions\t102<br/> 4.20 Mwere\t102<br/> 4.21 '
+             'Verificationals\t103<br/> 4.22 Epistememes (interrogatives)\t'
+             '104<br/> 4.23 Interjections\t104<br/> 5. Noun phrase\t107<br/> '
+             '5.1 Introduction\t107<br/> 5.2 Order of noun phrase '
+             'constituents\t107<br/> 5.3 Functions of noun phrases\t109<br/> '
+             '5.4 Words functioning as the head of the noun phrase\t111<br/> '
+             '5.4.1 Common nouns\t111<br/> 5.4.2 Proper nouns\t111<br/> 5.4.3 '
+             'Locational nouns\t113<br/> 5.4.4 Independent pronouns\t113<br/> '
+             '5.4.5 Demonstratives\t114<br/> 5.4.6 Quantifiers and numerals\t'
+             '115<br/> 5.4.7 Nominalisations\t116<br/> 5.4.7.1 Nominalising '
+             'suffix -ana\t116<br/> 5.4.7.2 Nominalising suffix -gi\t117<br/> '
+             '5.5 Headless noun phrases\t118<br/> 5.5.1 Relational '
+             'classifiers\t118<br/> 5.6 Articles\t118<br/> 5.6.1 Accusative '
+             'article na\t119<br/> 5.6.2 Nominative article a\t119<br/> 5.6.3 '
+             'Locative article lo\t120<br/> 5.6.4 Personal article i\t121<br/> '
+             "5.6.5 Plural article re\t122<br/> 5.6.6 ire 'all'\t123<br/> "
+             "5.6.7 tea 'some'\t124<br/> 5.7 Modification of the head\t"
+             '124<br/> 5.7.1 Nominal modifiers\t124<br/> 5.7.2 '
+             'Stative-inchoative verb modifiers\t125<br/> 5.7.3 Number\t'
+             '127<br/> 5.7.3.1 Third person nonsingular pronoun ngire\t'
+             '127<br/> 5.7.3.2 Quantifiers\t128<br/> 5.7.3.3 Numerals\t'
+             '130<br/> 5.7.4 Demonstratives\t131<br/> 5.7.5 Possession\t'
+             '132<br/> 5.7.6 Relative Clauses\t133<br/> 5.7.7 Locational '
+             'adjuncts\t134<br/> 6. Adjuncts\t137<br/> 6.1 Introduction\t'
+             '137<br/> 6.2 Prepositional phrases\t137<br/> 6.3 The three types '
+             'of prepositions\t138<br/> 6.3.1 Structure of the prepositional '
+             'phrase\t139<br/> 6.4 True and noun-like prepositions\t140<br/> '
+             '6.4.1 Comitative to-\t140<br/> 6.5 Verb-like prepositions\t'
+             "144<br/> 6.5.1 Ablative, source 'from': dene\t144<br/> 6.5.2 "
+             "gahe 'alone, by oneself'\t146<br/> 6.5.3 Instrumental, stimulus "
+             "'with': gene, gi\t146<br/> 6.5.4 Allative 'to', purposive 'for', "
+             "'about': huri\t149<br/> 6.5.5 Dative 'to', benefactive 'for': "
+             "lawe\t151<br/> 6.5.6 Comitative, confective 'with': me\t153<br/> "
+             "6.5.7 Manner 'like': mwere\t155<br/> 6.6 Locational adjuncts\t"
+             '156<br/> 6.6.1 Absolute location nouns and directionals\t'
+             '158<br/> 6.6.2 Locative case article lo\t158<br/> 6.6.3 True '
+             "prepositions\t160<br/> 6.6.3.1 'denizen of, from': tau1\t"
+             "160<br/> 6.6.3.2 Locative 'to, at': tau2/si\t162<br/> 6.6.3.3 "
+             "Locative 'to, at': sara\t164<br/> 6.6.4 Noun-like prepositions\t"
+             "165<br/> 6.6.4.1 'Near, next to': lobe\t165<br/> 6.6.4.2 "
+             "'In(side), into': lolo\t167<br/> 6.6.4.3 'On': lu\t168<br/> 7. "
+             'Possessive and associative constructions\t171<br/> 7.1 '
+             'Introduction\t171<br/> 7.2 The possessive construction\t171<br/> '
+             "7.3 Direct possession\t173<br/> 7.3.1 The 'self'\t175<br/> "
+             '7.3.1.1 Kin relations\t176<br/> 7.3.1.2 Body parts and '
+             'associated body products\t176<br/> 7.3.1.3 Natural behaviour and '
+             'personal attributes\t177<br/> 7.3.1.4 Intimate personal '
+             'property\t179<br/> 7.3.2 Part-whole and positional relations\t'
+             '181<br/> 7.3.2.1 Part-whole relations\t181<br/> 7.3.2.2 '
+             'Positional relations\t181<br/> 7.4 Indirect possession\t182<br/> '
+             '7.4.1 Relational classifier ga-\t183<br/> 7.4.2 Relational '
+             'classifier me-\t184<br/> 7.4.3 Relational classifier bula-\t'
+             '185<br/> 7.4.4 Relational classifier no-\t187<br/> 7.5 Variation '
+             'in possessive relationships\t187<br/> 7.6 Associative '
+             'construction\t194<br/> 7.6.1 The relationship between a '
+             'container and its contents\t195<br/> 7.6.2 The relationship '
+             'between a measure and what is measured\t196<br/> 7.6.3 The '
+             'relationship between an entity and a type of entity\t196<br/> '
+             '7.6.4 The purpose or function of an item\t197<br/> 7.6.4.1 Vai '
+             "'do, thing'\t199<br/> 7.6.5 Overlap between direct possession "
+             'and association\t200<br/> 7.6.6 Associative suffix -gi\t201<br/> '
+             '7.7 Independent possessive pronouns\t204<br/> 7.8 Definiteness '
+             'in possessive constructions\t205<br/> 7.9 Possessive clauses\t'
+             '206<br/> 7.10 Other forms which take possessive suffixes\t'
+             '206<br/> 8. Spatial reference\t209<br/> 8.1 Introduction\t'
+             '209<br/> 8.2 Spatial reference\t209<br/> 8.3 Directionals\t'
+             '211<br/> 8.4 Spatial relationship to participants in the speech '
+             'act\t211<br/> 8.4.1 Motion away (from deictic centre) ø\t'
+             '212<br/> 8.4.2 Motion towards deictic centre -mai\t213<br/> '
+             '8.4.3 Motion towards addressee, past/future deictic centre -atu\t'
+             '214<br/> 8.4.4 Comparison of deictic oppositions\t217<br/> 8.5 '
+             'Specification of vertical/landward-seaward axis\t218<br/> 8.5.1 '
+             'Vertical axis: across/up/down\t218<br/> 8.5.2 Inland/seawards\t'
+             '220<br/> 8.5.3 Towards shore/out to sea\t221<br/> 8.5.4 Movement '
+             'to other parts of Ambae\t222<br/> 8.5.5 Movement to other '
+             'islands\t225<br/> 8.5.6 Internal movement: front/back/side\t'
+             '229<br/> 8.6 Metaphorical extension\t229<br/> 8.7 Variation in '
+             'system in different word classes\t231<br/> 8.7.1 Demonstratives\t'
+             '231<br/> 8.7.2 Absolute location nouns\t233<br/> 8.7.2.1 Other '
+             'absolute location nouns\t234<br/> 8.8 Relational location nouns\t'
+             '238<br/> 9. Verb phrase\t241<br/> 9.1 Introduction\t241<br/> 9.2 '
+             'Order of verb phrase constituents\t241<br/> 9.3 The head of the '
+             'verb phrase\t242<br/> 9.4 Subject and object clitics\t243<br/> '
+             '9.4.1 Subject proclitics\t243<br/> 9.4.1.1 Variation in third '
+             'singular subject marking\t244<br/> 9.4.2 Object enclitics\t'
+             '245<br/> 9.5 Preverbal elements\t246<br/> 9.5.1 No preverbal '
+             'particles: imperative, cohortative mood\t247<br/> 9.5.2 Dual '
+             'marker ru\t247<br/> 9.5.3 Realis mood mo\t247<br/> 9.5.4 '
+             'Irrealis mood ni\t251<br/> 9.5.5 Telic aspect u\t253<br/> 9.5.6 '
+             'Dehortative mese/vese\t259<br/> 9.5.7 Apprehensive bo\t262<br/> '
+             "9.5.8 Bei 'just, for the first time'\t265<br/> 9.5.9 Mas 'must'\t"
+             '267<br/> 9.5.10 Reciprocal: vui\t268<br/> 9.5.11 Preverbal '
+             "modifier mala 'quite'\t270<br/> 9.6 Negation\t270<br/> 9.7 "
+             'Objects\t272<br/> 9.8 Postverbal elements\t274<br/> 9.8.1 Beno '
+             "'already'\t275<br/> 9.8.2 Tau/teu 'still, yet'\t276<br/> 9.8.3 "
+             "Radu 'still, forever' ongoing, continuous event\t277<br/> 9.8.4 "
+             "Reflexive, emphatic: sibo- 'self'\t278<br/> 9.8.5 Adverbs\t"
+             "279<br/> 9.8.6 Modifiers\t280<br/> 9.8.6.1 Liu 'surpass'\t"
+             "280<br/> 9.8.6.2 Haro 'randomly'\t281<br/> 9.8.6.3 Intensifier "
+             'mwere\t282<br/> 9.9 Other means of aspectual marking\t283<br/> '
+             '10. Serial verb constructions\t285<br/> 10.1 Introduction\t'
+             '285<br/> 10.2 Criteria for recognising serial verb '
+             'constructions\t285<br/> 10.3 Classification of serial verb '
+             'constructions\t289<br/> 10.3.1 Clause layer\t290<br/> 10.3.2 '
+             'Argument sharing\t291<br/> 10.3.3 Contiguous verb sequencing\t'
+             '292<br/> 10.3.4 Semantic type\t292<br/> 10.3.5 Subclasses of '
+             'verbs most likely to serialise\t293<br/> 10.3.6 Symmetrical vs '
+             'asymmetrical SVCs\t293<br/> 10.4 Summary of SVC types\t293<br/> '
+             '10.5 Nuclear layer serialisation\t294<br/> 10.5.1 Cause-effect\t'
+             "294<br/> 10.5.2 V1 + goro 'to block, cover, close s.t.'\t"
+             '296<br/> 10.5.3 Modal construction\t297<br/> 10.5.3.1 V1 + lai '
+             "'to be able', samwegi 'to be unable'\t298<br/> 10.5.3.2 V1 + "
+             "kali 'pretend'\t299<br/> 10.5.3.3 Tarani 'to want', rau 'to not "
+             "want' + V2\t301<br/> 10.5.4 Conative 'try, test, taste': V1 + "
+             "lehi 'see', rongo 'feel, sense'\t301<br/> 10.5.5 Lado 'to think "
+             "about' + V2\t302<br/> 10.5.6 V1 + rarai 'ready'\t303<br/> 10.6 "
+             'Core layer serialisation\t303<br/> 10.6.1 Same-subject '
+             'serialisation\t304<br/> 10.6.1.1 V1 = directional verb: motion '
+             '&amp; sequential event\t304<br/> 10.6.1.2 V1 = posture verb: '
+             'position &amp; simultaneous action\t306<br/> 10.6.1.3 V2 = '
+             'directional verb: action in a specified direction\t307<br/> '
+             '10.6.1.4 Reporting direct speech\t310<br/> 10.6.2 Switch-subject '
+             'serialisation\t312<br/> 10.6.2.1 V1 + directionals\t312<br/> '
+             '10.6.2.2 V + posture verb = stay\t314<br/> 10.6.2.3 Causatives\t'
+             '315<br/> 10.6.3 Ambient serialisation\t316<br/> 10.6.3.1 '
+             "Aspectual function\t316<br/> 10.6.3.1.1 rovo 'finish' - "
+             "completive aspect\t316<br/> 10.6.3.1.2 vano 'go' - continuous "
+             "aspect\t319<br/> 10.6.3.1.3 eno 'lie'\t320<br/> 10.6.3.1.4 "
+             "dadari, bulu 'reach, arrive'\t321<br/> 10.6.3.1.5 sigei "
+             "'continue'\t322<br/> 10.6.3.2 Manner function\t322<br/> 11. "
+             'Valency change and rearrangement\t325<br/> 11.1 Introduction\t'
+             '325<br/> 11.2 Valency decrease\t326<br/> 11.2.1 Unspecified '
+             'object deletion: reduplication\t327<br/> 11.2.2 Anti-causatives\t'
+             '329<br/> 11.2.2.1 ma-\t329<br/> 11.2.2.2 ta-\t331<br/> 11.3 '
+             'Valency increase\t332<br/> 11.3.1 Applicatives\t332<br/> '
+             '11.3.1.1 -Ci\t333<br/> 11.3.1.2 -gi(ni)\t335<br/> 11.3.1.2.1 '
+             'Motion verbs\t338<br/> 11.3.1.2.2 Speech and cognition verbs\t'
+             '340<br/> 11.3.1.3 Verbs which can take either applicative '
+             'suffix\t341<br/> 11.3.2 Causatives\t345<br/> 11.3.2.1 -tagi(ni)\t'
+             '346<br/> 11.3.2.2 vaga-\t347<br/> 11.3.2.2.1 vaga- on numerals\t'
+             '349<br/> 11.4 Valency rearrangement\t349<br/> 11.4.1 Transitive '
+             'verbs which take -gi(ni)\t349<br/> 11.5 Multiple derivational '
+             'processes on verbs\t351<br/> 12. Reduplication\t355<br/> 12.1 '
+             'Introduction\t355<br/> 12.2 Unspecified object deletion\t'
+             '355<br/> 12.3 Plurality of action\t356<br/> 12.4 Reciprocal '
+             'construction\t359<br/> 12.5 Repetitive action\t360<br/> 12.6 '
+             "Plurality of participants\t361<br/> 12.7 Complete effect 'all'\t"
+             '362<br/> 12.7.1 Introduction\t362<br/> 12.7.2 Verbs and adverbs\t'
+             '362<br/> 12.7.3 Nouns\t364<br/> 12.7.4 Plural article re\t'
+             '365<br/> 12.8 Habitual\t366<br/> 12.9 Intensity\t367<br/> 12.9.1 '
+             'Intransitive verbs\t367<br/> 12.9.2 Modifier\t368<br/> 12.9.3 '
+             'Nominalisation (nominalised intransitive)\t368<br/> 12.10 Word '
+             'class changing derivation\t369<br/> 12.10.1 Nominalisation\t'
+             '369<br/> 12.10.2 Noun → intransitive verb\t371<br/> 12.10.3 Verb '
+             '→ verbal modifier\t371<br/> 12.11 Directionals\t372<br/> 12.12 '
+             'Numerals\t373<br/> 12.13 Semantic extension\t374<br/> 12.14 '
+             'Inherent reduplication\t374<br/> 12.15 Full versus partial '
+             'reduplication\t375<br/> 12.16 Repetition\t377<br/> 13. '
+             'Existential, equational and locational clauses\t379<br/> 13.1 '
+             'Introduction\t379<br/> 13.2 Existential clauses\t380<br/> 13.2.1 '
+             'Nonverbal existential clauses\t380<br/> 13.2.1.1 Negative '
+             'existential clauses\t382<br/> 13.2.2 Possessive clauses\t'
+             '383<br/> 13.2.2.1 Negative possessive clauses\t385<br/> 13.2.3 '
+             'Verbal existential clauses\t386<br/> 13.3 Equational clauses\t'
+             '391<br/> 13.3.1 Classificatory clauses\t391<br/> 13.3.2 '
+             'Identificational clauses\t393<br/> 13.3.3 Negative equational '
+             'clauses\t394<br/> 13.3.4 Interrogative equational clauses\t'
+             '396<br/> 13.4 Locational clauses\t396<br/> 13.4.1 Negative '
+             'prepositional clauses\t398<br/> 14. Subordinate clauses\t'
+             '401<br/> 14.1 Introduction\t401<br/> 14.2 Complement clauses\t'
+             '401<br/> 14.2.1 Complement types\t402<br/> 14.2.1.1 '
+             'Sentence-like complement introduced by (huri) vo\t402<br/> '
+             '14.2.1.2 Paratactic complements\t404<br/> 14.2.1.3 Complement '
+             'introduced by mwere vo\t406<br/> 14.2.1.4 Simultaneous '
+             'complement\t407<br/> 14.2.1.5 Nominalised complements\t409<br/> '
+             '14.2.2 Classes of complement-taking predicates\t410<br/> '
+             "14.2.2.1 Utterance predicates\t410<br/> 14.2.2.1.1 Vo 'to say'\t"
+             '411<br/> 14.2.2.2 Propositional attitude predicates\t415<br/> '
+             '14.2.2.3 Pretence predicate\t415<br/> 14.2.2.4 Evaluative '
+             'predicates\t416<br/> 14.2.2.5 Predicates of knowledge and '
+             'acquisition of knowledge\t417<br/> 14.2.2.6 Desiderative '
+             'predicates\t418<br/> 14.2.2.7 Achievement predicates\t421<br/> '
+             '14.2.2.8 Immediate perception predicates\t422<br/> 14.2.2.9 '
+             'Negative CTP hate\t422<br/> 14.3 Relative clauses\t424<br/> '
+             '14.3.1 Grammatical properties of the relative clause\t425<br/> '
+             '14.3.1.1 Marking of the relative clause\t425<br/> 14.3.1.2 '
+             'Intonation\t426<br/> 14.3.1.3 Marking of the common argument in '
+             'the relative clause\t427<br/> 14.3.2 Function of the common '
+             'argument\t428<br/> 14.3.3 Non-restrictive relative clauses\t'
+             '432<br/> 14.4 Adverbial clauses\t433<br/> 14.4.1 Temporal '
+             'clauses (tau)vohea\t433<br/> 14.4.2 Manner clauses mwere\t'
+             '435<br/> 14.4.3 Purpose and reason clauses\t436<br/> 14.4.3.1 '
+             'Purpose clauses huri (vo)\t437<br/> 14.4.3.2 Reason clauses '
+             '(huri) bana\t438<br/> 14.4.4 Conditional clauses vo\t440<br/> '
+             '15. Coordination\t443<br/> 15.1 Introduction\t443<br/> 15.2 '
+             'Conjunctive coordination\t444<br/> 15.2.1 Juxtaposition\t'
+             '444<br/> 15.2.2 Tail-head linkage\t445<br/> 15.2.3 VP as a '
+             "conjunction\t446<br/> 15.2.3.1 Rovo 'to finish'\t447<br/> "
+             "15.2.3.2 Maraga 'to get up'\t448<br/> 15.2.4 Conjunction me(na) "
+             "'and'\t450<br/> 15.2.5 Conjunction ko 'and'\t452<br/> 15.2.6 "
+             "Conjunction vunu 'then'\t453<br/> 15.2.7 Conjunction siu 'then, "
+             "thus'\t454<br/> 15.2.8 Conjunction ale 'so, then'\t455<br/> 15.3 "
+             "Adversative coordination: ngie 'but'\t456<br/> 15.4 Disjunctive "
+             "coordination: sege (vo) 'or'\t457<br/>Appendix A: Table of "
+             'texts\t459<br/>Appendix B: Texts\t463<br/> Text 1: Tomutomu\t'
+             '463<br/> Text 2: How to build a house\t471<br/> Text 3: Speech\t'
+             '477<br/>References\t495<br/>List of tables:<br/>Table 1.1 '
+             'Phonological variation\t15<br/>Table 1.2 Proto Oceanic *s → h in '
+             'all dialects except Lolokaro\t16<br/>Table 1.3 Proto Oceanic *t '
+             '→ s/_i in all dialects except Lolokaro\t17<br/>Table 1.4 '
+             'Nasalisation of vowels in Walurigi\t20<br/>Table 1.5 '
+             'Pronunciation variation\t21<br/>Table 1.6 Lexical variation\t'
+             '21<br/>Table 1.7 Lexical innovations in Lolovoli\t22<br/>Table '
+             '1.8 Semantic variation\t22<br/>Table 1.9 Variation in form of '
+             'subject proclitics\t23<br/>Table 2.1 Consonant inventory\t'
+             '28<br/>Table 2.2 Vowel inventory\t29<br/>Table 2.3 Orthographic '
+             'representation of phonemes\t30<br/>Table 2.4 Proto Oceanic and '
+             'Lolovoli consonant phonemes\t52<br/>Table 4.1 Subclasses of '
+             'nominals\t73<br/>Table 4.2 Personal names which also function as '
+             'common nouns\t75<br/>Table 4.3 Traditional and Christian names\t'
+             '75<br/>Table 4.4 Kinship terms\t76<br/>Table 4.5 Relational '
+             'location nouns\t77<br/>Table 4.6 Absolute location nouns\t'
+             '78<br/>Table 4.7 Free common nouns\t79<br/>Table 4.8 Bound '
+             'common nouns\t80<br/>Table 4.9 Temporals\t80<br/>Table 4.10 '
+             'Subclasses of verbs\t82<br/>Table 4.11 Stative-inchoative verbs '
+             'with no transitive form\t83<br/>Table 4.12 O-type '
+             'stative-inchoative verbs which take the causative prefix vaga-\t'
+             '84<br/>Table 4.13 A-type intransitives which take the '
+             'applicative suffix -Ci\t84<br/>Table 4.14 A-type intransitives '
+             'which take the applicative suffix -gi(ni)\t85<br/>Table 4.15 '
+             'O-type intransitives which take the causative suffix -tagi(ni)\t'
+             '85<br/>Table 4.16 Active intransitives which have no transitive '
+             'form\t85<br/>Table 4.17 Posture verbs\t86<br/>Table 4.18 O-type '
+             'transitive verbs which take the anti-causative prefix ma-\t'
+             '87<br/>Table 4.19 A-type transitive verbs which can be '
+             'reduplicated to form an intransitive\t88<br/>Table 4.20 '
+             'Transitive verbs which have no intransitive form (unmarked)\t'
+             '89<br/>Table 4.21 Transitive verbs which have no intransitive '
+             'form (with -Ci/-gi(ni) ending)\t89<br/>Table 4.22 Intransitive '
+             'verbs functioning as members of more than one subclass\t'
+             '90<br/>Table 4.23 Phrasal adverbs to which an O enclitic can '
+             'attach\t92<br/>Table 4.24 Adverbs to which an O enclitic cannot '
+             'attach\t93<br/>Table 4.25 Numerals\t94<br/>Table 4.26 Verbal '
+             'particles\t100<br/>Table 4.27 Adverbial subordinators\t'
+             '101<br/>Table 4.28 Conjunctions\t101<br/>Table 4.29 '
+             'Verificationals\t103<br/>Table 4.30 Epistememes\t103<br/>Table '
+             '4.31 Exclamatory particles\t104<br/>Table 4.32 Hesitation '
+             'particles\t104<br/>Table 5.1 Functions of NPs according to word '
+             'class of the head\t109<br/>Table 6.1 The prepositions which are '
+             'used to express different locative meanings, dependent on the '
+             'word class of the head of the object NP\t152<br/>Table 6.2 '
+             'Combinatorial possibilities of locative prepositions with word '
+             'class of the head of the object NP\t152<br/>Table 6.3 The '
+             'distribution of locative NPs marked by lo and prepositional '
+             'phrases introduced by noun-like prepositions\t160<br/>Table 7.1 '
+             'Possessive suffixes\t166<br/>Table 7.2 Possessive construction '
+             'types\t166<br/>Table 7.3 Bodily fluids and other body products\t'
+             '171<br/>Table 7.4 Nouns which can function as the possessee in '
+             'both direct and indirect possessive constructions\t182<br/>Table '
+             '7.5 Nouns which can function as the possessee in different '
+             'possessive constructions\t184<br/>Table 7.6 Nouns which can '
+             'function as the head of direct possessive and associative '
+             'constructions\t192<br/>Table 7.7 Nouns which can function as the '
+             'head of a construction with both direct possessive and '
+             'associative readings\t193<br/>Table 8.1 The directionals\t'
+             '201<br/>Table 8.2 Specification of the vertical/landward-seaward '
+             "axis\t208<br/>Table 8.3 Variation in meaning of 'here' and "
+             "'there' forms\t224<br/>Table 8.4 Absolute location nouns\t"
+             '226<br/>Table 8.5 Relational location nouns\t227<br/>Table 9.1 '
+             'Subject proclitics\t232<br/>Table 9.2 Object enclitics and '
+             'independent pronouns\t234<br/>Table 9.3 Subject proclitics '
+             'attached to realis mo\t237<br/>Table 9.4 Subject proclitics '
+             'attached to irrealis ni\t241<br/>Table 9.5 Subject proclitics '
+             'attached to telic u\t242<br/>Table 9.6 Stative-inchoative verbs '
+             'specified for telic aspect or realis mood\t245<br/>Table 10.1 '
+             'Summary of SVC types according to semantic type\t282<br/>Table '
+             '10.2 Verbs which occur in cause-effect nuclear layer SVCs\t'
+             '283<br/>Table 10.3 The directionals\t295<br/>Table 11.1 Verbal '
+             'derivations\t314<br/>Table 11.2 Verbs which take both -Ci and '
+             '-gi(ni) suffixes\t330<br/>Table 11.3 Transitive verbs which take '
+             'the applicative suffix -gi(ni)\t337<br/>Table 13.1 The various '
+             'types of nonverbal clauses\t365<br/>Table 15.1 Means of '
+             'coordination\t424<br/>List of figures and maps:<br/>Figure 1.1: '
+             'Oceanic as a subgroup of Austronesian\t3<br/>Map 1: Vanuatu '
+             'within the South-west Pacific\txxxiv#<br/>Map 2: Ambae within '
+             'Vanuatu\txxxv#<br/>Map 3: Ambae\txxxvi#<br/>Map 4: Ambae island, '
+             'indicating the dialects of the North-East Ambae language, and '
+             'the division between North-East Ambae and Nduindui\t13<br/>Map '
+             '5: s → h, t → s/_i\t17<br/>Map 6: Variation in the realisation '
+             'of the phoneme /k/\t18<br/>Map 7: Variation in the realisation '
+             'of the phoneme /g/\t18<br/>Map 8: Realisation of final vowels in '
+             'northern versus southern dialects\t19<br/>Map 9: Directionals '
+             'used for movement within Ambae\t213#<br/>Map 10: Directionals '
+             'used for movement to other islands within Vanuatu\t'
+             '218#</description>  </descriptions></resource>'}
+~~~~~~~~~~
+keys=
+datacite
+~~~~~~~~~~
+output_exchange=
+datacite
+<?xml%20version%3D%221.0%22?>%0A<resource%20xmlns%3D%22http://datacite.org/schema/kernel-3%22%20xmlns:xsi%3D%22http://www.w3.org/2001/XMLSchema-
+instance%22%20xsi:schemaLocation%3D%22http://datacite.org/schema/kernel-3%20http://schema.datacite.org/meta/kernel-3/metadata.xsd%22>%20%20<identifier%20identifierType%3D%22DOI%22>10.15144/PL-515</identifier>%20%20<creators>%20%20%20%20<creator>%20%20%20%20%20%20<creatorName>Hyslop,%20Catriona%20%28Ed.%29</creatorName>%20%20%20%20</creator>%20%20</creators>%20%20<titles>%20%20%20%20<title>The%20Lolovoli%20Dialect%20of%20the%20North-
+East%20Ambae%20language,%20Vanuatu</title>%20%20</titles>%20%20<publisher>Pacific%20Linguistics</publisher>%20%20<publicationYear>2001</publicationYear>%20%20<contributors>%20%20%20%20<contributor%20contributorType%3D%22Editor%22>%20%20%20%20%20%20<contributorName>CRCL</contributorName>%20%20%20%20</contributor>%20%20%20%20<contributor%20contributorType%3D%22HostingInstitution%22>%20%20%20%20%20%20<contributorName>CRCL</contributorName>%20%20%20%20</contributor>%20%20%20%20<contributor%20contributorType%3D%22RightsHolder%22>%20%20%20%20%20%20<contributorName>Pacific%20Linguistics%20and/or%20the%20author%28s%29</contributorName>%20%20%20%20</contributor>%20%20</contributors>%20%20<dates>%20%20%20%20<date%20dateType%3D%22Copyrighted%22>2001</date>%20%20%20%20<date%20dateType%3D%22Issued%22>2015</date>%20%20</dates>%20%20<language>en</language>%20%20<resourceType%20resourceTypeGeneral%3D%22Text%22>book</resourceType>%20%20<alternateIdentifiers>%20%20%20%20<alternateIdentifier%20alternateIdentifierType%3D%22Series%22>PL-515</alternateIdentifier>%20%20</alternateIdentifiers>%20%20<relatedIdentifiers>%20%20%20%20<relatedIdentifier%20relatedIdentifierType%3D%22URN%22%20relationType%3D%22IsIdenticalTo%22>urn:md5:80a67ccfdfb141683a02c1db2a4a7047</relatedIdentifier>%20%20%20%20<relatedIdentifier%20relatedIdentifierType%3D%22URN%22%20relationType%3D%22IsIdenticalTo%22>urn:sha1:4db6e748584ef0c252c23d018f15f85eb6bb1f06</relatedIdentifier>%20%20%20%20<relatedIdentifier%20relatedIdentifierType%3D%22ISBN%22%20relationType%3D%22IsIdenticalTo%22>0858834537</relatedIdentifier>%20%20</relatedIdentifiers>%20%20<sizes>%20%20%20%20<size>38M</size>%20%20%20%20<size>xxxvi%20+%20510%20pages</size>%20%20</sizes>%20%20<formats>%20%20%20%20<format>PDF</format>%20%20</formats>%20%20<version>1.0</version>%20%20<rightsList>%20%20%20%20<rights%20rightsURI%3D%22http://creativecommons.org/licenses/by-
+sa/4.0%22>CC%20BY-
+SA%204.0</rights>%20%20</rightsList>%20%20<descriptions>%20%20%20%20<description%20descriptionType%3D%22SeriesInformation%22>PL-515</description>%20%20%20%20<description%20descriptionType%3D%22TableOfContents%22>Contents%09v<br/>Acknowledgements%09v<br/>Abstract%09vii<br/>Table%20of%20contents%09ix<br/>List%20of%20tables%09xx<br/>List%20of%20figures%20and%20maps%09xxiii<br/>List%20of%20abbreviations%09xxv<br/>Pictures%09xxvii<br/>Maps%09xxxiv#<br/>%201.%20Introduction%091<br/>%201.1%20Lolovoli:%20the%20place%20where%20the%20language%20was%20bought%091<br/>%201.2%20Subgrouping%20and%20the%20linguistic%20situation%20in%20Vanuatu%092<br/>%201.2.1%20The%20influence%20of%20Bislama,%20English%20and%20French%095<br/>%201.3%20Ambae:%20the%20island%20and%20its%20people%096<br/>%201.4%20Previous%20linguistic%20and%20ethnographic%20research%20in%20Vanuatu%098<br/>%201.4.1%20Linguistic%20research%20in%20Vanuatu%098<br/>%201.4.2%20Linguistic%20research%20on%20Ambae%099<br/>%201.4.3%20Ethnographic%20research%099<br/>%201.5%20Dialect%20variation%0911<br/>%201.5.1%20Phonological%20variation%0914<br/>%201.5.1.1%20Regular%20sound%20shifts%0914<br/>%201.5.1.2%20Variation%20in%20phonological%20shape%0920<br/>%201.5.2%20Lexical%20and%20semantic%20variation%0920<br/>%201.5.3%20Morphological%20and%20syntactic%20variation%0922<br/>%201.5.4%20Sociolects%0923<br/>%201.6%20Typological%20characteristics%20of%20North-
+East%20Ambae%0923<br/>%201.7%20This%20study%0924<br/>%201.7.1%20The%20grammatical%20description%0924<br/>%201.7.2%20Fieldwork%0925<br/>%202.%20Phonology%0927<br/>%202.1%20Introduction%0927<br/>%202.2%20Phoneme%20inventory%0927<br/>%202.2.1%20Consonants%0927<br/>%202.2.2%20Vowels%0928<br/>%202.3%20Orthography%0928<br/>%202.4%20Description%20of%20phonemes%0929<br/>%202.4.1%20Voiceless%20stops%0929<br/>%202.4.2%20Prenasalised%20voiced%20stops%0930<br/>%202.4.3%20Nasals%0930<br/>%202.4.4%20Fricatives%0931<br/>%202.4.5%20Rhotic%0932<br/>%202.4.6%20Lateral%0932<br/>%202.4.7%20Glide%0932<br/>%202.4.8%20Vowels%0933<br/>%202.5%20Minimal%20Phonemic%20Contrasts%0934<br/>%202.5.1%20Minimal%20consonantal%20contrasts%0934<br/>%202.5.2%20Minimal%20vowel%20contrasts%0934<br/>%202.6%20Syllable%20structure%0935<br/>%202.6.1%20Phonotactics%0935<br/>%202.6.2%20Stress%0936<br/>%202.6.3%20Vowel%20sequences%20and%20diphthongs%0936<br/>%202.6.3.1%20Diphthongs%0938<br/>%202.6.4%20Apocope%0938<br/>%202.6.5%20Vowel%20height%20assimilation%0941<br/>%202.6.6%20Reduplication%0944<br/>%202.6.7%20Metathesis%0945<br/>%202.7%20The%20word%0945<br/>%202.7.1%20The%20phonological%20word%0945<br/>%202.7.2%20The%20grammatical%20word%0946<br/>%202.8%20Loan%20words%0947<br/>%202.8.1%20Loan%20Phonemes%0947<br/>%202.8.2%20Maintaining%20syllable%20structure%0947<br/>%202.9%20Intonation%0948<br/>%202.9.1%20Declarative%20clauses%0948<br/>%202.9.2%20Imperative%20clauses%0948<br/>%202.9.3%20Interrogative%20clauses%0949<br/>%202.9.4%20Relative%20clauses%0950<br/>%202.10%20Proto%20Oceanic%20sound%20correspondences%0950<br/>%203.%20Basic%20clause%20structure%0953<br/>%203.1%20Introduction%0953<br/>%203.2%20Basic%20clause%20structure%0953<br/>%203.3%20Grammatical%20functions%20and%20grammatical%20relations%0954<br/>%203.4%20Coding%20of%20grammatical%20functions%0955<br/>%203.4.1%20Indexing%0955<br/>%203.4.2%20Constituent%20order%0957<br/>%203.4.3%20Case%20marking%20functions%20of%20articles%0958<br/>%203.4.3.1%20Accusative%20case%20na%0960<br/>%203.4.3.2%20Nominative%20case%20a%0961<br/>%203.4.3.3%20Locative%20case%20lo%0962<br/>%203.5%20Grammatical%20relations%0962<br/>%203.5.1%20Subject%0962<br/>%203.5.2%20Object%0963<br/>%203.6%20Oblique%20grammatical%20functions%0963<br/>%203.7%20Adjuncts%0963<br/>%203.7.1%20Temporal%20adjuncts%0963<br/>%203.7.2%20Locational%20adjuncts%0965<br/>%203.7.3%20Manner%20adjuncts%0966<br/>%203.7.4%20Circumstantial%20adjuncts%0967<br/>%203.7.5%20Verificationals%0969<br/>%203.8%20Topic%20fronting%0969<br/>%204.%20Word%20classes%0973<br/>%204.1%20Introduction%0973<br/>%204.2%20Nominals%0973<br/>%204.2.1%20Vocatives%0974<br/>%204.2.2%20Proper%20nouns%0975<br/>%204.2.2.1%20Personal%20names%0975<br/>%204.2.2.2%20Kinship%20terms%0976<br/>%204.2.3%20Locational%20nouns%0977<br/>%204.2.3.1%20Relational%20location%20nouns%0977<br/>%204.2.3.2%20Absolute%20location%20nouns%0978<br/>%204.2.4%20Common%20nouns%0979<br/>%204.2.4.1%20Free%20common%20nouns%0980<br/>%204.2.4.2%20Bound%20common%20nouns%0980<br/>%204.3%20Temporals%0981<br/>%204.4%20Verbs%0981<br/>%204.4.1%20Intransitive%20verbs%0983<br/>%204.4.1.1%20Stative-
+inchoative%20verbs%0983<br/>%204.4.1.1.1%20Stative-
+inchoative%20verbs%20with%20no%20transitive%20form%0984<br/>%204.4.1.1.2%20O-type%20stative-
+inchoative%20verbs%0984<br/>%204.4.1.2%20Active%20intransitive%20verbs%0985<br/>%204.4.1.2.1%20A-type.%20Takes%20applicative%20suffix%20-Ci%0985<br/>%204.4.1.2.2%20A-type.%20Takes%20applicative%20suffix%20-gi%28ni%29%0985<br/>%204.4.1.2.3%20O-type.%20Takes%20causative%20suffix%20-tagi%28ni%29%0986<br/>%204.4.1.2.4%20Intransitives%20with%20no%20transitive%20form%0986<br/>%204.4.2%20Ambitransitive%20verbs%0987<br/>%204.4.3%20Transitive%20verbs%0987<br/>%204.4.3.1%20O-type.%20Takes%20anticausative%20prefix%20ma-%20to%20form%20intransitive%0987<br/>%204.4.3.2%20A-type.%20Reduplicated%20to%20form%20intransitive%0989<br/>%204.4.3.3%20Transitives%20with%20no%20intransitive%20form%0989<br/>%204.4.4%20Extended%20transitive%20verbs%0991<br/>%204.4.5%20Verbs%20functioning%20as%20members%20of%20more%20than%20one%20subclass%0991<br/>%204.5%20Noun-
+verb%20distinction%0991<br/>%204.6%20Adverbs%0993<br/>%204.7%20General%20modifiers%0994<br/>%204.8%20Quantifiers%0994<br/>%204.9%20Numerals%0994<br/>%204.10%20Pronominals%0996<br/>%204.10.1%20Independent%20pronouns%0996<br/>%204.10.2%20Subject%20proclitics%0996<br/>%204.10.3%20Object%20enclitics%0996<br/>%204.10.4%20Possessive%20suffixes%0997<br/>%204.11%20Relational%20classifiers%0997<br/>%204.12%20Directionals%0997<br/>%204.13%20Demonstratives%0998<br/>%204.13.1%20ge%0998<br/>%204.13.2%20Presentative%20ia%0998<br/>%204.14%20Articles%0999<br/>%204.15%20Prepositions%0999<br/>%204.15.1%20True%20prepositions%0999<br/>%204.15.2%20Noun-
+like%20prepositions%09100<br/>%204.15.3%20Verb-
+like%20prepositions%09100<br/>%204.16%20Negative%20particles%09100<br/>%204.17%20Verbal%20particles%09100<br/>%204.18%20Subordinators%09101<br/>%204.18.1%20Complementiser%09101<br/>%204.18.2%20Relativiser%09101<br/>%204.18.3%20Adverbial%20subordinators%09102<br/>%204.19%20Conjunctions%09102<br/>%204.20%20Mwere%09102<br/>%204.21%20Verificationals%09103<br/>%204.22%20Epistememes%20%28interrogatives%29%09104<br/>%204.23%20Interjections%09104<br/>%205.%20Noun%20phrase%09107<br/>%205.1%20Introduction%09107<br/>%205.2%20Order%20of%20noun%20phrase%20constituents%09107<br/>%205.3%20Functions%20of%20noun%20phrases%09109<br/>%205.4%20Words%20functioning%20as%20the%20head%20of%20the%20noun%20phrase%09111<br/>%205.4.1%20Common%20nouns%09111<br/>%205.4.2%20Proper%20nouns%09111<br/>%205.4.3%20Locational%20nouns%09113<br/>%205.4.4%20Independent%20pronouns%09113<br/>%205.4.5%20Demonstratives%09114<br/>%205.4.6%20Quantifiers%20and%20numerals%09115<br/>%205.4.7%20Nominalisations%09116<br/>%205.4.7.1%20Nominalising%20suffix%20-ana%09116<br/>%205.4.7.2%20Nominalising%20suffix%20-gi%09117<br/>%205.5%20Headless%20noun%20phrases%09118<br/>%205.5.1%20Relational%20classifiers%09118<br/>%205.6%20Articles%09118<br/>%205.6.1%20Accusative%20article%20na%09119<br/>%205.6.2%20Nominative%20article%20a%09119<br/>%205.6.3%20Locative%20article%20lo%09120<br/>%205.6.4%20Personal%20article%20i%09121<br/>%205.6.5%20Plural%20article%20re%09122<br/>%205.6.6%20ire%20%27all%27%09123<br/>%205.6.7%20tea%20%27some%27%09124<br/>%205.7%20Modification%20of%20the%20head%09124<br/>%205.7.1%20Nominal%20modifiers%09124<br/>%205.7.2%20Stative-
+inchoative%20verb%20modifiers%09125<br/>%205.7.3%20Number%09127<br/>%205.7.3.1%20Third%20person%20nonsingular%20pronoun%20ngire%09127<br/>%205.7.3.2%20Quantifiers%09128<br/>%205.7.3.3%20Numerals%09130<br/>%205.7.4%20Demonstratives%09131<br/>%205.7.5%20Possession%09132<br/>%205.7.6%20Relative%20Clauses%09133<br/>%205.7.7%20Locational%20adjuncts%09134<br/>%206.%20Adjuncts%09137<br/>%206.1%20Introduction%09137<br/>%206.2%20Prepositional%20phrases%09137<br/>%206.3%20The%20three%20types%20of%20prepositions%09138<br/>%206.3.1%20Structure%20of%20the%20prepositional%20phrase%09139<br/>%206.4%20True%20and%20noun-
+like%20prepositions%09140<br/>%206.4.1%20Comitative%20to-%09140<br/>%206.5%20Verb-
+like%20prepositions%09144<br/>%206.5.1%20Ablative,%20source%20%27from%27:%20dene%09144<br/>%206.5.2%20gahe%20%27alone,%20by%20oneself%27%09146<br/>%206.5.3%20Instrumental,%20stimulus%20%27with%27:%20gene,%20gi%09146<br/>%206.5.4%20Allative%20%27to%27,%20purposive%20%27for%27,%20%27about%27:%20huri%09149<br/>%206.5.5%20Dative%20%27to%27,%20benefactive%20%27for%27:%20lawe%09151<br/>%206.5.6%20Comitative,%20confective%20%27with%27:%20me%09153<br/>%206.5.7%20Manner%20%27like%27:%20mwere%09155<br/>%206.6%20Locational%20adjuncts%09156<br/>%206.6.1%20Absolute%20location%20nouns%20and%20directionals%09158<br/>%206.6.2%20Locative%20case%20article%20lo%09158<br/>%206.6.3%20True%20prepositions%09160<br/>%206.6.3.1%20%27denizen%20of,%20from%27:%20tau1%09160<br/>%206.6.3.2%20Locative%20%27to,%20at%27:%20tau2/si%09162<br/>%206.6.3.3%20Locative%20%27to,%20at%27:%20sara%09164<br/>%206.6.4%20Noun-
+like%20prepositions%09165<br/>%206.6.4.1%20%27Near,%20next%20to%27:%20lobe%09165<br/>%206.6.4.2%20%27In%28side%29,%20into%27:%20lolo%09167<br/>%206.6.4.3%20%27On%27:%20lu%09168<br/>%207.%20Possessive%20and%20associative%20constructions%09171<br/>%207.1%20Introduction%09171<br/>%207.2%20The%20possessive%20construction%09171<br/>%207.3%20Direct%20possession%09173<br/>%207.3.1%20The%20%27self%27%09175<br/>%207.3.1.1%20Kin%20relations%09176<br/>%207.3.1.2%20Body%20parts%20and%20associated%20body%20products%09176<br/>%207.3.1.3%20Natural%20behaviour%20and%20personal%20attributes%09177<br/>%207.3.1.4%20Intimate%20personal%20property%09179<br/>%207.3.2%20Part-
+whole%20and%20positional%20relations%09181<br/>%207.3.2.1%20Part-
+whole%20relations%09181<br/>%207.3.2.2%20Positional%20relations%09181<br/>%207.4%20Indirect%20possession%09182<br/>%207.4.1%20Relational%20classifier%20ga-%09183<br/>%207.4.2%20Relational%20classifier%20me-%09184<br/>%207.4.3%20Relational%20classifier%20bula-%09185<br/>%207.4.4%20Relational%20classifier%20no-%09187<br/>%207.5%20Variation%20in%20possessive%20relationships%09187<br/>%207.6%20Associative%20construction%09194<br/>%207.6.1%20The%20relationship%20between%20a%20container%20and%20its%20contents%09195<br/>%207.6.2%20The%20relationship%20between%20a%20measure%20and%20what%20is%20measured%09196<br/>%207.6.3%20The%20relationship%20between%20an%20entity%20and%20a%20type%20of%20entity%09196<br/>%207.6.4%20The%20purpose%20or%20function%20of%20an%20item%09197<br/>%207.6.4.1%20Vai%20%27do,%20thing%27%09199<br/>%207.6.5%20Overlap%20between%20direct%20possession%20and%20association%09200<br/>%207.6.6%20Associative%20suffix%20-gi%09201<br/>%207.7%20Independent%20possessive%20pronouns%09204<br/>%207.8%20Definiteness%20in%20possessive%20constructions%09205<br/>%207.9%20Possessive%20clauses%09206<br/>%207.10%20Other%20forms%20which%20take%20possessive%20suffixes%09206<br/>%208.%20Spatial%20reference%09209<br/>%208.1%20Introduction%09209<br/>%208.2%20Spatial%20reference%09209<br/>%208.3%20Directionals%09211<br/>%208.4%20Spatial%20relationship%20to%20participants%20in%20the%20speech%20act%09211<br/>%208.4.1%20Motion%20away%20%28from%20deictic%20centre%29%20%F8%09212<br/>%208.4.2%20Motion%20towards%20deictic%20centre%20-mai%09213<br/>%208.4.3%20Motion%20towards%20addressee,%20past/future%20deictic%20centre%20-atu%09214<br/>%208.4.4%20Comparison%20of%20deictic%20oppositions%09217<br/>%208.5%20Specification%20of%20vertical/landward-
+seaward%20axis%09218<br/>%208.5.1%20Vertical%20axis:%20across/up/down%09218<br/>%208.5.2%20Inland/seawards%09220<br/>%208.5.3%20Towards%20shore/out%20to%20sea%09221<br/>%208.5.4%20Movement%20to%20other%20parts%20of%20Ambae%09222<br/>%208.5.5%20Movement%20to%20other%20islands%09225<br/>%208.5.6%20Internal%20movement:%20front/back/side%09229<br/>%208.6%20Metaphorical%20extension%09229<br/>%208.7%20Variation%20in%20system%20in%20different%20word%20classes%09231<br/>%208.7.1%20Demonstratives%09231<br/>%208.7.2%20Absolute%20location%20nouns%09233<br/>%208.7.2.1%20Other%20absolute%20location%20nouns%09234<br/>%208.8%20Relational%20location%20nouns%09238<br/>%209.%20Verb%20phrase%09241<br/>%209.1%20Introduction%09241<br/>%209.2%20Order%20of%20verb%20phrase%20constituents%09241<br/>%209.3%20The%20head%20of%20the%20verb%20phrase%09242<br/>%209.4%20Subject%20and%20object%20clitics%09243<br/>%209.4.1%20Subject%20proclitics%09243<br/>%209.4.1.1%20Variation%20in%20third%20singular%20subject%20marking%09244<br/>%209.4.2%20Object%20enclitics%09245<br/>%209.5%20Preverbal%20elements%09246<br/>%209.5.1%20No%20preverbal%20particles:%20imperative,%20cohortative%20mood%09247<br/>%209.5.2%20Dual%20marker%20ru%09247<br/>%209.5.3%20Realis%20mood%20mo%09247<br/>%209.5.4%20Irrealis%20mood%20ni%09251<br/>%209.5.5%20Telic%20aspect%20u%09253<br/>%209.5.6%20Dehortative%20mese/vese%09259<br/>%209.5.7%20Apprehensive%20bo%09262<br/>%209.5.8%20Bei%20%27just,%20for%20the%20first%20time%27%09265<br/>%209.5.9%20Mas%20%27must%27%09267<br/>%209.5.10%20Reciprocal:%20vui%09268<br/>%209.5.11%20Preverbal%20modifier%20mala%20%27quite%27%09270<br/>%209.6%20Negation%09270<br/>%209.7%20Objects%09272<br/>%209.8%20Postverbal%20elements%09274<br/>%209.8.1%20Beno%20%27already%27%09275<br/>%209.8.2%20Tau/teu%20%27still,%20yet%27%09276<br/>%209.8.3%20Radu%20%27still,%20forever%27%20ongoing,%20continuous%20event%09277<br/>%209.8.4%20Reflexive,%20emphatic:%20sibo-%20%27self%27%09278<br/>%209.8.5%20Adverbs%09279<br/>%209.8.6%20Modifiers%09280<br/>%209.8.6.1%20Liu%20%27surpass%27%09280<br/>%209.8.6.2%20Haro%20%27randomly%27%09281<br/>%209.8.6.3%20Intensifier%20mwere%09282<br/>%209.9%20Other%20means%20of%20aspectual%20marking%09283<br/>%2010.%20Serial%20verb%20constructions%09285<br/>%2010.1%20Introduction%09285<br/>%2010.2%20Criteria%20for%20recognising%20serial%20verb%20constructions%09285<br/>%2010.3%20Classification%20of%20serial%20verb%20constructions%09289<br/>%2010.3.1%20Clause%20layer%09290<br/>%2010.3.2%20Argument%20sharing%09291<br/>%2010.3.3%20Contiguous%20verb%20sequencing%09292<br/>%2010.3.4%20Semantic%20type%09292<br/>%2010.3.5%20Subclasses%20of%20verbs%20most%20likely%20to%20serialise%09293<br/>%2010.3.6%20Symmetrical%20vs%20asymmetrical%20SVCs%09293<br/>%2010.4%20Summary%20of%20SVC%20types%09293<br/>%2010.5%20Nuclear%20layer%20serialisation%09294<br/>%2010.5.1%20Cause-
+effect%09294<br/>%2010.5.2%20V1%20+%20goro%20%27to%20block,%20cover,%20close%20s.t.%27%09296<br/>%2010.5.3%20Modal%20construction%09297<br/>%2010.5.3.1%20V1%20+%20lai%20%27to%20be%20able%27,%20samwegi%20%27to%20be%20unable%27%09298<br/>%2010.5.3.2%20V1%20+%20kali%20%27pretend%27%09299<br/>%2010.5.3.3%20Tarani%20%27to%20want%27,%20rau%20%27to%20not%20want%27%20+%20V2%09301<br/>%2010.5.4%20Conative%20%27try,%20test,%20taste%27:%20V1%20+%20lehi%20%27see%27,%20rongo%20%27feel,%20sense%27%09301<br/>%2010.5.5%20Lado%20%27to%20think%20about%27%20+%20V2%09302<br/>%2010.5.6%20V1%20+%20rarai%20%27ready%27%09303<br/>%2010.6%20Core%20layer%20serialisation%09303<br/>%2010.6.1%20Same-
+subject%20serialisation%09304<br/>%2010.6.1.1%20V1%20%3D%20directional%20verb:%20motion%20%26amp%3B%20sequential%20event%09304<br/>%2010.6.1.2%20V1%20%3D%20posture%20verb:%20position%20%26amp%3B%20simultaneous%20action%09306<br/>%2010.6.1.3%20V2%20%3D%20directional%20verb:%20action%20in%20a%20specified%20direction%09307<br/>%2010.6.1.4%20Reporting%20direct%20speech%09310<br/>%2010.6.2%20Switch-
+subject%20serialisation%09312<br/>%2010.6.2.1%20V1%20+%20directionals%09312<br/>%2010.6.2.2%20V%20+%20posture%20verb%20%3D%20stay%09314<br/>%2010.6.2.3%20Causatives%09315<br/>%2010.6.3%20Ambient%20serialisation%09316<br/>%2010.6.3.1%20Aspectual%20function%09316<br/>%2010.6.3.1.1%20rovo%20%27finish%27%20-%20completive%20aspect%09316<br/>%2010.6.3.1.2%20vano%20%27go%27%20-%20continuous%20aspect%09319<br/>%2010.6.3.1.3%20eno%20%27lie%27%09320<br/>%2010.6.3.1.4%20dadari,%20bulu%20%27reach,%20arrive%27%09321<br/>%2010.6.3.1.5%20sigei%20%27continue%27%09322<br/>%2010.6.3.2%20Manner%20function%09322<br/>%2011.%20Valency%20change%20and%20rearrangement%09325<br/>%2011.1%20Introduction%09325<br/>%2011.2%20Valency%20decrease%09326<br/>%2011.2.1%20Unspecified%20object%20deletion:%20reduplication%09327<br/>%2011.2.2%20Anti-
+causatives%09329<br/>%2011.2.2.1%20ma-%09329<br/>%2011.2.2.2%20ta-%09331<br/>%2011.3%20Valency%20increase%09332<br/>%2011.3.1%20Applicatives%09332<br/>%2011.3.1.1%20-Ci%09333<br/>%2011.3.1.2%20-gi%28ni%29%09335<br/>%2011.3.1.2.1%20Motion%20verbs%09338<br/>%2011.3.1.2.2%20Speech%20and%20cognition%20verbs%09340<br/>%2011.3.1.3%20Verbs%20which%20can%20take%20either%20applicative%20suffix%09341<br/>%2011.3.2%20Causatives%09345<br/>%2011.3.2.1%20-tagi%28ni%29%09346<br/>%2011.3.2.2%20vaga-%09347<br/>%2011.3.2.2.1%20vaga-%20on%20numerals%09349<br/>%2011.4%20Valency%20rearrangement%09349<br/>%2011.4.1%20Transitive%20verbs%20which%20take%20-gi%28ni%29%09349<br/>%2011.5%20Multiple%20derivational%20processes%20on%20verbs%09351<br/>%2012.%20Reduplication%09355<br/>%2012.1%20Introduction%09355<br/>%2012.2%20Unspecified%20object%20deletion%09355<br/>%2012.3%20Plurality%20of%20action%09356<br/>%2012.4%20Reciprocal%20construction%09359<br/>%2012.5%20Repetitive%20action%09360<br/>%2012.6%20Plurality%20of%20participants%09361<br/>%2012.7%20Complete%20effect%20%27all%27%09362<br/>%2012.7.1%20Introduction%09362<br/>%2012.7.2%20Verbs%20and%20adverbs%09362<br/>%2012.7.3%20Nouns%09364<br/>%2012.7.4%20Plural%20article%20re%09365<br/>%2012.8%20Habitual%09366<br/>%2012.9%20Intensity%09367<br/>%2012.9.1%20Intransitive%20verbs%09367<br/>%2012.9.2%20Modifier%09368<br/>%2012.9.3%20Nominalisation%20%28nominalised%20intransitive%29%09368<br/>%2012.10%20Word%20class%20changing%20derivation%09369<br/>%2012.10.1%20Nominalisation%09369<br/>%2012.10.2%20Noun%20%2192%20intransitive%20verb%09371<br/>%2012.10.3%20Verb%20%2192%20verbal%20modifier%09371<br/>%2012.11%20Directionals%09372<br/>%2012.12%20Numerals%09373<br/>%2012.13%20Semantic%20extension%09374<br/>%2012.14%20Inherent%20reduplication%09374<br/>%2012.15%20Full%20versus%20partial%20reduplication%09375<br/>%2012.16%20Repetition%09377<br/>%2013.%20Existential,%20equational%20and%20locational%20clauses%09379<br/>%2013.1%20Introduction%09379<br/>%2013.2%20Existential%20clauses%09380<br/>%2013.2.1%20Nonverbal%20existential%20clauses%09380<br/>%2013.2.1.1%20Negative%20existential%20clauses%09382<br/>%2013.2.2%20Possessive%20clauses%09383<br/>%2013.2.2.1%20Negative%20possessive%20clauses%09385<br/>%2013.2.3%20Verbal%20existential%20clauses%09386<br/>%2013.3%20Equational%20clauses%09391<br/>%2013.3.1%20Classificatory%20clauses%09391<br/>%2013.3.2%20Identificational%20clauses%09393<br/>%2013.3.3%20Negative%20equational%20clauses%09394<br/>%2013.3.4%20Interrogative%20equational%20clauses%09396<br/>%2013.4%20Locational%20clauses%09396<br/>%2013.4.1%20Negative%20prepositional%20clauses%09398<br/>%2014.%20Subordinate%20clauses%09401<br/>%2014.1%20Introduction%09401<br/>%2014.2%20Complement%20clauses%09401<br/>%2014.2.1%20Complement%20types%09402<br/>%2014.2.1.1%20Sentence-
+like%20complement%20introduced%20by%20%28huri%29%20vo%09402<br/>%2014.2.1.2%20Paratactic%20complements%09404<br/>%2014.2.1.3%20Complement%20introduced%20by%20mwere%20vo%09406<br/>%2014.2.1.4%20Simultaneous%20complement%09407<br/>%2014.2.1.5%20Nominalised%20complements%09409<br/>%2014.2.2%20Classes%20of%20complement-
+taking%20predicates%09410<br/>%2014.2.2.1%20Utterance%20predicates%09410<br/>%2014.2.2.1.1%20Vo%20%27to%20say%27%09411<br/>%2014.2.2.2%20Propositional%20attitude%20predicates%09415<br/>%2014.2.2.3%20Pretence%20predicate%09415<br/>%2014.2.2.4%20Evaluative%20predicates%09416<br/>%2014.2.2.5%20Predicates%20of%20knowledge%20and%20acquisition%20of%20knowledge%09417<br/>%2014.2.2.6%20Desiderative%20predicates%09418<br/>%2014.2.2.7%20Achievement%20predicates%09421<br/>%2014.2.2.8%20Immediate%20perception%20predicates%09422<br/>%2014.2.2.9%20Negative%20CTP%20hate%09422<br/>%2014.3%20Relative%20clauses%09424<br/>%2014.3.1%20Grammatical%20properties%20of%20the%20relative%20clause%09425<br/>%2014.3.1.1%20Marking%20of%20the%20relative%20clause%09425<br/>%2014.3.1.2%20Intonation%09426<br/>%2014.3.1.3%20Marking%20of%20the%20common%20argument%20in%20the%20relative%20clause%09427<br/>%2014.3.2%20Function%20of%20the%20common%20argument%09428<br/>%2014.3.3%20Non-
+restrictive%20relative%20clauses%09432<br/>%2014.4%20Adverbial%20clauses%09433<br/>%2014.4.1%20Temporal%20clauses%20%28tau%29vohea%09433<br/>%2014.4.2%20Manner%20clauses%20mwere%09435<br/>%2014.4.3%20Purpose%20and%20reason%20clauses%09436<br/>%2014.4.3.1%20Purpose%20clauses%20huri%20%28vo%29%09437<br/>%2014.4.3.2%20Reason%20clauses%20%28huri%29%20bana%09438<br/>%2014.4.4%20Conditional%20clauses%20vo%09440<br/>%2015.%20Coordination%09443<br/>%2015.1%20Introduction%09443<br/>%2015.2%20Conjunctive%20coordination%09444<br/>%2015.2.1%20Juxtaposition%09444<br/>%2015.2.2%20Tail-
+head%20linkage%09445<br/>%2015.2.3%20VP%20as%20a%20conjunction%09446<br/>%2015.2.3.1%20Rovo%20%27to%20finish%27%09447<br/>%2015.2.3.2%20Maraga%20%27to%20get%20up%27%09448<br/>%2015.2.4%20Conjunction%20me%28na%29%20%27and%27%09450<br/>%2015.2.5%20Conjunction%20ko%20%27and%27%09452<br/>%2015.2.6%20Conjunction%20vunu%20%27then%27%09453<br/>%2015.2.7%20Conjunction%20siu%20%27then,%20thus%27%09454<br/>%2015.2.8%20Conjunction%20ale%20%27so,%20then%27%09455<br/>%2015.3%20Adversative%20coordination:%20ngie%20%27but%27%09456<br/>%2015.4%20Disjunctive%20coordination:%20sege%20%28vo%29%20%27or%27%09457<br/>Appendix%20A:%20Table%20of%20texts%09459<br/>Appendix%20B:%20Texts%09463<br/>%20Text%201:%20Tomutomu%09463<br/>%20Text%202:%20How%20to%20build%20a%20house%09471<br/>%20Text%203:%20Speech%09477<br/>References%09495<br/>List%20of%20tables:<br/>Table%201.1%20Phonological%20variation%0915<br/>Table%201.2%20Proto%20Oceanic%20*s%20%2192%20h%20in%20all%20dialects%20except%20Lolokaro%0916<br/>Table%201.3%20Proto%20Oceanic%20*t%20%2192%20s/_i%20in%20all%20dialects%20except%20Lolokaro%0917<br/>Table%201.4%20Nasalisation%20of%20vowels%20in%20Walurigi%0920<br/>Table%201.5%20Pronunciation%20variation%0921<br/>Table%201.6%20Lexical%20variation%0921<br/>Table%201.7%20Lexical%20innovations%20in%20Lolovoli%0922<br/>Table%201.8%20Semantic%20variation%0922<br/>Table%201.9%20Variation%20in%20form%20of%20subject%20proclitics%0923<br/>Table%202.1%20Consonant%20inventory%0928<br/>Table%202.2%20Vowel%20inventory%0929<br/>Table%202.3%20Orthographic%20representation%20of%20phonemes%0930<br/>Table%202.4%20Proto%20Oceanic%20and%20Lolovoli%20consonant%20phonemes%0952<br/>Table%204.1%20Subclasses%20of%20nominals%0973<br/>Table%204.2%20Personal%20names%20which%20also%20function%20as%20common%20nouns%0975<br/>Table%204.3%20Traditional%20and%20Christian%20names%0975<br/>Table%204.4%20Kinship%20terms%0976<br/>Table%204.5%20Relational%20location%20nouns%0977<br/>Table%204.6%20Absolute%20location%20nouns%0978<br/>Table%204.7%20Free%20common%20nouns%0979<br/>Table%204.8%20Bound%20common%20nouns%0980<br/>Table%204.9%20Temporals%0980<br/>Table%204.10%20Subclasses%20of%20verbs%0982<br/>Table%204.11%20Stative-
+inchoative%20verbs%20with%20no%20transitive%20form%0983<br/>Table%204.12%20O-type%20stative-
+inchoative%20verbs%20which%20take%20the%20causative%20prefix%20vaga-%0984<br/>Table%204.13%20A-type%20intransitives%20which%20take%20the%20applicative%20suffix%20-Ci%0984<br/>Table%204.14%20A-type%20intransitives%20which%20take%20the%20applicative%20suffix%20-gi%28ni%29%0985<br/>Table%204.15%20O-type%20intransitives%20which%20take%20the%20causative%20suffix%20-tagi%28ni%29%0985<br/>Table%204.16%20Active%20intransitives%20which%20have%20no%20transitive%20form%0985<br/>Table%204.17%20Posture%20verbs%0986<br/>Table%204.18%20O-type%20transitive%20verbs%20which%20take%20the%20anti-
+causative%20prefix%20ma-%0987<br/>Table%204.19%20A-type%20transitive%20verbs%20which%20can%20be%20reduplicated%20to%20form%20an%20intransitive%0988<br/>Table%204.20%20Transitive%20verbs%20which%20have%20no%20intransitive%20form%20%28unmarked%29%0989<br/>Table%204.21%20Transitive%20verbs%20which%20have%20no%20intransitive%20form%20%28with%20-Ci/-gi%28ni%29%20ending%29%0989<br/>Table%204.22%20Intransitive%20verbs%20functioning%20as%20members%20of%20more%20than%20one%20subclass%0990<br/>Table%204.23%20Phrasal%20adverbs%20to%20which%20an%20O%20enclitic%20can%20attach%0992<br/>Table%204.24%20Adverbs%20to%20which%20an%20O%20enclitic%20cannot%20attach%0993<br/>Table%204.25%20Numerals%0994<br/>Table%204.26%20Verbal%20particles%09100<br/>Table%204.27%20Adverbial%20subordinators%09101<br/>Table%204.28%20Conjunctions%09101<br/>Table%204.29%20Verificationals%09103<br/>Table%204.30%20Epistememes%09103<br/>Table%204.31%20Exclamatory%20particles%09104<br/>Table%204.32%20Hesitation%20particles%09104<br/>Table%205.1%20Functions%20of%20NPs%20according%20to%20word%20class%20of%20the%20head%09109<br/>Table%206.1%20The%20prepositions%20which%20are%20used%20to%20express%20different%20locative%20meanings,%20dependent%20on%20the%20word%20class%20of%20the%20head%20of%20the%20object%20NP%09152<br/>Table%206.2%20Combinatorial%20possibilities%20of%20locative%20prepositions%20with%20word%20class%20of%20the%20head%20of%20the%20object%20NP%09152<br/>Table%206.3%20The%20distribution%20of%20locative%20NPs%20marked%20by%20lo%20and%20prepositional%20phrases%20introduced%20by%20noun-
+like%20prepositions%09160<br/>Table%207.1%20Possessive%20suffixes%09166<br/>Table%207.2%20Possessive%20construction%20types%09166<br/>Table%207.3%20Bodily%20fluids%20and%20other%20body%20products%09171<br/>Table%207.4%20Nouns%20which%20can%20function%20as%20the%20possessee%20in%20both%20direct%20and%20indirect%20possessive%20constructions%09182<br/>Table%207.5%20Nouns%20which%20can%20function%20as%20the%20possessee%20in%20different%20possessive%20constructions%09184<br/>Table%207.6%20Nouns%20which%20can%20function%20as%20the%20head%20of%20direct%20possessive%20and%20associative%20constructions%09192<br/>Table%207.7%20Nouns%20which%20can%20function%20as%20the%20head%20of%20a%20construction%20with%20both%20direct%20possessive%20and%20associative%20readings%09193<br/>Table%208.1%20The%20directionals%09201<br/>Table%208.2%20Specification%20of%20the%20vertical/landward-
+seaward%20axis%09208<br/>Table%208.3%20Variation%20in%20meaning%20of%20%27here%27%20and%20%27there%27%20forms%09224<br/>Table%208.4%20Absolute%20location%20nouns%09226<br/>Table%208.5%20Relational%20location%20nouns%09227<br/>Table%209.1%20Subject%20proclitics%09232<br/>Table%209.2%20Object%20enclitics%20and%20independent%20pronouns%09234<br/>Table%209.3%20Subject%20proclitics%20attached%20to%20realis%20mo%09237<br/>Table%209.4%20Subject%20proclitics%20attached%20to%20irrealis%20ni%09241<br/>Table%209.5%20Subject%20proclitics%20attached%20to%20telic%20u%09242<br/>Table%209.6%20Stative-
+inchoative%20verbs%20specified%20for%20telic%20aspect%20or%20realis%20mood%09245<br/>Table%2010.1%20Summary%20of%20SVC%20types%20according%20to%20semantic%20type%09282<br/>Table%2010.2%20Verbs%20which%20occur%20in%20cause-
+effect%20nuclear%20layer%20SVCs%09283<br/>Table%2010.3%20The%20directionals%09295<br/>Table%2011.1%20Verbal%20derivations%09314<br/>Table%2011.2%20Verbs%20which%20take%20both%20-Ci%20and%20-gi%28ni%29%20suffixes%09330<br/>Table%2011.3%20Transitive%20verbs%20which%20take%20the%20applicative%20suffix%20-gi%28ni%29%09337<br/>Table%2013.1%20The%20various%20types%20of%20nonverbal%20clauses%09365<br/>Table%2015.1%20Means%20of%20coordination%09424<br/>List%20of%20figures%20and%20maps:<br/>Figure%201.1:%20Oceanic%20as%20a%20subgroup%20of%20Austronesian%093<br/>Map%201:%20Vanuatu%20within%20the%20South-
+west%20Pacific%09xxxiv#<br/>Map%202:%20Ambae%20within%20Vanuatu%09xxxv#<br/>Map%203:%20Ambae%09xxxvi#<br/>Map%204:%20Ambae%20island,%20indicating%20the%20dialects%20of%20the%20North-
+East%20Ambae%20language,%20and%20the%20division%20between%20North-
+East%20Ambae%20and%20Nduindui%0913<br/>Map%205:%20s%20%2192%20h,%20t%20%2192%20s/_i%0917<br/>Map%206:%20Variation%20in%20the%20realisation%20of%20the%20phoneme%20/k/%0918<br/>Map%207:%20Variation%20in%20the%20realisation%20of%20the%20phoneme%20/g/%0918<br/>Map%208:%20Realisation%20of%20final%20vowels%20in%20northern%20versus%20southern%20dialects%0919<br/>Map%209:%20Directionals%20used%20for%20movement%20within%20Ambae%09213#<br/>Map%2010:%20Directionals%20used%20for%20movement%20to%20other%20islands%20within%20Vanuatu%09218#</description>%20%20</descriptions></resource>

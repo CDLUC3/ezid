@@ -1,6 +1,6 @@
 """EZID settings
 """
-
+import collections
 import logging.config
 import os
 import pathlib
@@ -55,26 +55,34 @@ STATICFILES_DIRS = [
 
 # Async processing daemons
 
-# DAEMON_THREADS_ENABLED:
-#   - True: Always enable daemon threads
-#   - False: Always disable daemon threads
-#   - 'auto': Enable daemon threads only if process is running under Apache /
-#      mod_wsgi.
-DAEMON_THREADS_ENABLED = 'auto'
+# DAEMONS_ENABLED:
+# - True: Daemons (asynchronous processing tasks) that are enabled in the
+#   DAEMONS_*_ENABLED settings listed below are available to be started. For a daemon
+#   to be able to be started, both this setting and its individual setting must be set
+#   to ENABLED (True). A daemon that is started without being enabled will will stop
+#   without modifying the system state in any way, with a message indicating the
+#   settings that were used.
+# - False: Daemons cannot run. They are disabled regardless of the DAEMONS_*_ENABLED
+#   settings listed below.
+# - 'auto': Set to True if EZID is running under Apache / mod_wsgi, False otherwise.
+DAEMONS_ENABLED = 'auto'
 
-assert DAEMON_THREADS_ENABLED in (True, False, 'auto')
-if DAEMON_THREADS_ENABLED == 'auto':
-    DAEMON_THREADS_ENABLED = os.environ.get('IS_RUNNING_UNDER_MOD_WSGI', False)
+assert DAEMONS_ENABLED in (True, False, 'auto')
+if DAEMONS_ENABLED == 'auto':
+    DAEMONS_ENABLED = os.environ.get('IS_RUNNING_UNDER_MOD_WSGI', False)
 
-# The following enablement flags are subservient to the DAEMON_THREADS_ENABLED Django
-# setting.
-DAEMONS_BACKPROC_ENABLED = True
+# DAEMONS_*_ENABLED:
+# - True: The daemon is available to be started.
+# - False: The daemon cannot run.
+# - See the DAEMONS_ENABLED setting above.
+# DAEMONS_SEARCHDB_ENABLED = True
 DAEMONS_NEWSFEED_ENABLED = True
 DAEMONS_STATUS_ENABLED = True
 DAEMONS_BINDER_ENABLED = True
 DAEMONS_DATACITE_ENABLED = True
 DAEMONS_CROSSREF_ENABLED = True
 DAEMONS_DOWNLOAD_ENABLED = True
+DAEMONS_LINKCHECKER_ENABLED = True
 DAEMONS_LINKCHECK_UPDATE_ENABLED = True
 DAEMONS_STATISTICS_ENABLED = True
 
@@ -162,7 +170,6 @@ EMAIL_ERROR_SUPPRESSION_WINDOW = 3600
 EMAIL_ERROR_LIFETIME = 14400
 EMAIL_ERROR_SIMILARITY_THRESHOLD = 0.6
 
-
 # EZID errors are automatically emailed to this list.
 MANAGERS = ADMINS = []
 
@@ -225,7 +232,12 @@ logging.config.dictConfig(
             'django.utils.autoreload': {
                 'level': 'ERROR',
             },
-        },
+            'botocore': {'level': 'ERROR'},
+            # Suppress 'Using selector: EpollSelector'
+            'asyncio': {
+                'level': 'WARNING',
+            },
+        }
     }
 )
 
@@ -261,6 +273,45 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 SESSION_COOKIE_PATH = '/'
 
+# EZID administrator account
+
+# Note: The `diag-update-admin` management command must be run in order to apply
+# changes made to any of the `ADMIN_` settings. E.g.,
+#
+# $ cd ezid
+# $ ./manage.py diag-update-admin
+
+ADMIN_USERNAME = '{{ admin_username }}'
+ADMIN_PASSWORD = '{{ admin_password }}'
+
+ADMIN_GROUPNAME = 'admin'
+ADMIN_NOTES = 'This user owns 1 identifier under former shoulder doi:10.5060/D2'
+ADMIN_EMAIL = 'ezid@ucop.edu'
+ADMIN_DISPLAY_NAME = 'EZID superuser'
+
+ADMIN_ORG_ACRONYM = 'CDL'
+ADMIN_ORG_NAME = 'EZID'
+ADMIN_ORG_URL = 'http://ezid.cdlib.org/'
+
+ADMIN_CROSSREF_EMAIL = ''
+ADMIN_CROSSREF_ENABLED = False
+
+ADMIN_PRIMARY_CONTACT_EMAIL = 'ezid@ucop.edu'
+ADMIN_PRIMARY_CONTACT_NAME = 'EZID superuser'
+ADMIN_PRIMARY_CONTACT_PHONE = '(510) 987-0555'
+
+ADMIN_SECONDARY_CONTACT_EMAIL = ''
+ADMIN_SECONDARY_CONTACT_NAME = ''
+ADMIN_SECONDARY_CONTACT_PHONE = ''
+
+ADMIN_STORE_REALM = 'CDL'
+ADMIN_STORE_USER_PID = 'ark:/99166/p9kw57h4w'
+ADMIN_STORE_GROUP_PID = 'ark:/99166/p9g44hq02'
+
+ADMIN_SEARCH_REALM = 'CDL'
+ADMIN_SEARCH_USER_PID = 'ark:/99166/p9kw57h4w'
+ADMIN_SEARCH_GROUP_PID = 'ark:/99166/p9g44hq02'
+
 # Credentials
 
 ARK_PROFILE = 'ERC'
@@ -271,9 +322,6 @@ GOOGLE_ANALYTICS_ID = None
 
 GZIP_COMMAND = '/usr/bin/gzip'
 ZIP_COMMAND = '/usr/bin/zip'
-
-AUTH_ADMIN_USERNAME = '{{ admin_username }}'
-AUTH_ADMIN_PASSWORD = '{{ admin_password }}'
 
 BINDER_URL = '{{ binder_url }}'
 BINDER_USERNAME = '{{ binder_username }}'
@@ -290,6 +338,11 @@ SHOULDERS_ARK_TEST = 'ark:/99999/fk4'
 SHOULDERS_DOI_TEST = 'doi:10.5072/FK2'
 SHOULDERS_CROSSREF_TEST = 'doi:10.15697/'
 SHOULDERS_AGENT = 'ark:/99166/p9'
+
+TEST_SHOULDER_DICT = [
+    {"namespace": 'ARK Test', "prefix": 'ark:/99999/fk4'},
+    {"namespace": 'DOI Test', "prefix": 'doi:10.5072/FK2'},
+]
 
 # DataCite
 
@@ -310,7 +363,7 @@ DATACITE_ALLOCATORS = 'CDL,PURDUE'
 ALLOCATOR_CDL_PASSWORD = '{{ allocator_cdl_password  }}'
 ALLOCATOR_PURDUE_PASSWORD = '{{ allocator_purdue_password  }}'
 
-# CrossRef
+# Crossref
 
 # The 'daemons.crossref_enabled' flag governs whether the Crossref
 # daemon thread runs.  The flag below governs if the daemon actually
@@ -391,7 +444,7 @@ LINKCHECKER_CHECK_TIMEOUT = 30
 LINKCHECKER_USER_AGENT = 'EZID (EZID link checker; https://ezid.cdlib.org/)'
 # The following governs the number of bytes to read from any given
 # link.  Set to a negative value to make unlimited.
-LINKCHECKER_MAX_READ = 104857600
+LINKCHECKER_MAX_READ = 104_857_600
 
 # Internal settings
 
@@ -440,4 +493,28 @@ TEMPLATES = [
             ]
         },
     }
+]
+
+# Django 3.2 transitions from using a 32-bit counter for the automatically generated primary
+# key, to using a 64-bit counter. To prevent
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+
+QUERY_PAGE_SIZE = 10000
+
+BlobField = collections.namedtuple(
+    'BlobField', ['model', 'field', 'is_queue']
+)
+
+BLOB_FIELD_LIST = [
+    # metadata = Python or JSON, compound objects
+    BlobField('BinderQueue', 'metadata', True),
+    BlobField('CrossrefQueue', 'metadata', True),
+    BlobField('DataciteQueue', 'metadata', True),
+    # object = StoreIdentifier (Model)
+    BlobField('DownloadQueue', 'object', True),
+    BlobField('UpdateQueue', 'object', True),
+    # cm = CompressedJsonField (Field)
+    BlobField('SearchIdentifier', 'cm', False),
+    BlobField('StoreIdentifier', 'cm', False),
 ]

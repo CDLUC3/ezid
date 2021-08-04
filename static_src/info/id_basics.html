@@ -1,0 +1,105 @@
+{% extends "layouts/learn.html" %}
+{% load layout_extras %}
+{% load menus %}
+{% load i18n %}
+
+{% block title %}{% block title-twitter %}{% trans "Identifier Basics" %}{% endblock %}{% endblock %}
+{% block heading %}{% content_heading _("Identifier Basics") %}{% endblock %}
+{% block content %}
+
+{% comment %}Don't need to translate this{% endcomment %}
+{% learn_breadcrumb _("Identifier Basics") 'Documentation' '#04' %}
+<div class="container api">
+{% comment %}Translators: Copy HTML tags over and only translate words outside of these tags 
+i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p> 
+i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a> 
+{% endcomment %}
+{% blocktrans trimmed %}
+<h2 class="heading_2">EZID Default Account Setup</h2>
+
+<p>To minimize conflict with other identifiers in the world, your identifiers all begin with a globally unique number identifying the organization associated with your account. For DOIs that is your <em>DOI prefix</em> and for ARKs it is your <em>ARK NAAN</em> (Name Assigning Authority Number).</p>
+
+<ul>
+  <li>Example: in doi:10.5072/K298765 the DOI prefix is 10.5072</li>
+  <li>Example: in ark:/12345/k498765 the ARK NAAN is 12345</li>
+</ul>
+
+<p>By default we add a few extra characters to that number to create a <em>shoulder</em> (<a href="#IdentifierBasics-shoulders">what are shoulders for?</a>) and then create a randomized string generator for it.</p>
+
+<ul>
+  <li>Example: in doi:10.5072/K298765 the shoulder is doi:10.5072/K2</li>
+  <li>Example: in ark:/12345/k498765 the shoulder is ark:/12345/k4</li>
+</ul>
+
+<p>Names that you assign are created by appending a string, such as 98765, to the shoulder. The generator is to help minimize conflict among the names you assign on that shoulder. In EZID you can bypass the generator to create any identifier you wish on your shoulder, provided it is unique.</p>
+
+<p><em>Clients may wish to depart from this default setup under these circumstances:</em></p>
+
+<table border="1">
+<tbody>
+<tr>
+<th>Use Case</th>
+<th>Recommendation</th>
+</tr>
+<tr>
+<td>Clients with established local or legacy naming practices.</td>
+<td>If sufficiently comfortable with the identifier generation process, inform us that you do not need the identifier generator.</td>
+</tr>
+<tr>
+<td>Clients that wish to impose local branding in place of the default shoulder(s).</td>
+<td>See <a href="#IdentifierBasics-opacity">Opacity and Branding</a> below, then let us know how you wish to proceed.</td>
+</tr>
+<tr>
+<td>Clients may already have a DOI prefix or ARK NAAN.</td>
+<td>Inform us in advance.</td>
+</tr>
+</tbody>
+</table>
+
+<span id="IdentifierBasics-shoulders"></span>
+<h2 class="heading_2">Namespaces and Shoulders</h2>
+
+<p>The DOI prefix and ARK NAAN each determine the beginnings of identifiers that you can assign, and they will be globally unique provided the rest of the identifier doesn't conflict with any other identifiers you have assigned. The pool of possible identifiers (names) that start with your prefix or your NAAN is called a <em>namespace</em>.</p>
+
+<p>What are shoulders for? A shoulder actually reserves another namespace inside (a subset of) the overall namespace for the prefix or NAAN. This is a recommended precaution because later on you can ask that new shoulders be created as your naming practices change or are delegated to sub-organizations. Some accounts will be assigning millions of identifiers and this helps avoid collisions among their own names. Other accounts may wish both to be able to use the default account set up (shoulder plus generator) and to assign names directly after the prefix or NAAN (as if there were no shoulder).</p>
+
+<p>EZID clients are using shoulders in interesting ways, to distinguish objects from different</p>
+
+<ul>
+  <li>collections,</li>
+  <li>data sources,</li>
+  <li>projects,</li>
+  <li>departments,</li>
+  <li>and so on.</li>
+</ul>
+
+<p>In other words, shoulders are a great way to <em>manage an identifier namespace</em>. It's helpful, however, if shoulders are &quot;opaque&quot;.</p>
+
+<span id="IdentifierBasics-opacity"></span>
+<h2 class="heading_2">Opacity and Branding</h2>
+
+<p>Opacity in this context means the absence of semantics (recognizable meaning) in the identifier string. The principle is that it is important for the longevity of an identifier to avoid semantics that are subject to change. There is a tradeoff too, in that opaque identifiers may be a little harder to curate.</p>
+
+<p>A major reason why many URLs created in the past now result in 404 (&quot;Not Found&quot;) errors is due to semantics about the object being embedded in identifiers. In general, the more transient and extrinsic the semantic &quot;assertion&quot; in the identifier the string, the more vulnerable it will be to semantic &quot;rot&quot;. For example, it is common practice to incorporate an organization name into an object identifier or shoulder, and this is a problematic precisely because the curating organization is typically very transient and <strong>not</strong> an integral attribute of an object. There is nothing within or about a spreadsheet that has been deposited in a particular custodial institution that is intrinsic to the spreadsheet and its data. Not only do institutions change names, but tomorrow there might be a different custodian.</p>
+
+<p>While leaving a &quot;brand&quot; name out of identifiers can seem like a hard choice, we remind users that your globally unique prefix or NAAN contains the same information; services that track identifier usage and impact factors (e.g., Thomson Reuters Data Citation Index) make it their business to take globally unique organization numbers and make organization names and their identifiers visible.</p>
+
+<p>Semantics are more acceptable if they are intrinsic to the object being registered. For example, if a data granule covers a particular date, it is standard practice to incorporate that date into the granule's filename and/or identifier. That works because the coverage date is never going to change. If a granule has data for 2013-06-05, it will always have data for 2013-06-05.</p>
+
+<p>For these reasons, we recommend our clients avoid branding in identifiers and shoulders. However, you, of course, make this determination for yourselves. If you would like to implement or request branding in the shoulder, then we recommend that you choose a combination that follows these conventions:</p>
+
+<ul>
+  <li>It starts with one or more letters (for DOIs they must be uppercase and for ARKs we strongly recommend lowercase).</li>
+  <li>It ends with a digit.</li>
+  <li>It contains neither vowels nor the letter 'l' (ell).</li>
+</ul>
+
+<p>The above guidelines help us to maintain identifiers and to detect transcription errors in identifier strings that we generate for you. If these considerations are not so important to you, or if you are supplying the identifier strings yourself (i.e., you do not need the identifier generator), you may disregard these recommendations.</p>
+
+<p>The bottom line is that more opaque your identifiers are, the less prone they will be to a number of common age-related problems; if you want to introduce semantics for easier curation, it is best to avoid meaning that is either transient, extrinsic to the object, or widely recognizable.</p>
+
+<h2 class="heading_2">Looking for a deeper dive?</h2>
+For those of you who would like more technical information, you will find it here: <a class="link__primary" href="/learn/id_concepts">Identifier Concepts</a> and Practices.
+{% endblocktrans %}
+</div>
+{% endblock %}

@@ -1,15 +1,11 @@
+# import ezidapp.management.commands.daemon_base
 import django.conf.urls
 import django.conf.urls.static
-
+import django.urls
 # import django.urls
 import django.views.defaults
 
-# import django.conf
-# import django.conf.urls.i18n
-# import django.views.i18n
-
-# import django.views.static
-
+import ezidapp.admin
 import impl.api
 import impl.dispatch
 import impl.oai
@@ -22,11 +18,20 @@ import impl.ui_home
 import impl.ui_manage
 import impl.ui_search
 
-import django.conf.urls.static
+# import django.conf
+# import django.conf.urls.i18n
+# import django.views.i18n
+# import django.views.static
 
-import ezidapp.admin
-import django.urls
+# import ezidapp.management.commands.crossref
 
+# These imports are only used by management commands. As the management commands are not imported
+# during initialization of the main server component, we import them here to let the main Django
+# service know that these models exist, so that it doesn't try to delete the associated tables when
+# generating migrations.
+# noinspection PyUnresolvedReferences
+import ezidapp.models.link_checker
+import ezidapp.models.statistics
 
 # fmt:off
 urlpatterns = [
@@ -74,7 +79,7 @@ urlpatterns = [
     django.urls.re_path("^version$",                       impl.api.getVersion,                name="api.getVersion"),
     django.urls.re_path("^download_request$",              impl.api.batchDownloadRequest,      name="api.batchDownloadRequest",),
     django.urls.re_path("^admin/pause$",                   impl.api.pause,                     name="api.pause"),
-    django.urls.re_path("^admin/reload$",                  impl.api.reload,                    name="api.reload"),
+    # django.urls.re_path("^admin/reload$",                  impl.api.reload,                    name="api.reload"),
     # OAI
     django.urls.re_path("^oai$",                           impl.oai.dispatch,                  name="oai.dispatch"),
     # ADMIN

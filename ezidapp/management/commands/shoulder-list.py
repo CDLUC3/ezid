@@ -26,6 +26,6 @@ class Command(django.core.management.BaseCommand):
     # noinspection PyAttributeOutsideInit
     def handle(self, *_, **opt):
         self.opt = opt = argparse.Namespace(**opt)
-        impl.nog.util.log_to_console(__name__, opt.debug)
+        impl.nog.util.log_setup(__name__, opt.debug)
 
         impl.nog.shoulder.dump_shoulders()

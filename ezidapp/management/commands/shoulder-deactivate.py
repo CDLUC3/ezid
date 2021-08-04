@@ -1,7 +1,6 @@
 """Deactivate an existing shoulder."""
 
 
-import ezidapp.models.shoulder
 import argparse
 import logging
 
@@ -9,8 +8,8 @@ import django.contrib.auth.models
 import django.core.management
 import django.db.transaction
 
-
-import impl.nog.reload
+import ezidapp.models.shoulder
+# import impl.nog.reload
 import impl.nog.util
 
 log = logging.getLogger(__name__)
@@ -37,7 +36,7 @@ class Command(django.core.management.BaseCommand):
 
     def handle(self, *_, **opt):
         self.opt = opt = argparse.Namespace(**opt)
-        impl.nog.util.log_to_console(__name__, opt.debug)
+        impl.nog.util.log_setup(__name__, opt.debug)
 
         shoulder_str = opt.shoulder_str
         try:
@@ -57,4 +56,4 @@ class Command(django.core.management.BaseCommand):
 
         log.info('Shoulder deactivated: {}'.format(shoulder_str))
 
-        impl.nog.reload.trigger_reload()
+        # impl.nog.reload.trigger_reload()

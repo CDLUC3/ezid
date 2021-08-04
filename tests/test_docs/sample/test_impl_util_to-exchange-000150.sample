@@ -1,0 +1,16 @@
+input_json=
+{"datacite.publisher":"California Digital Library","datacite.publicationyear":"2011","datacite.title":"DCXL
+Blog","datacite.creator":"Carly Strasser"}
+~~~~~~~~~~
+dict_pp=
+{'datacite.creator': 'Carly Strasser',
+ 'datacite.publicationyear': '2011',
+ 'datacite.publisher': 'California Digital Library',
+ 'datacite.title': 'DCXL Blog'}
+~~~~~~~~~~
+keys=
+datacite.publisher, datacite.publicationyear, datacite.title, datacite.creator
+~~~~~~~~~~
+output_exchange=
+datacite.publisher California%20Digital%20Library datacite.publicationyear 2011 datacite.title DCXL%20Blog datacite.creator
+Carly%20Strasser

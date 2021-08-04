@@ -1,3 +1,5 @@
+*.before.py
+
 # Files
 *.pyc
 Z*

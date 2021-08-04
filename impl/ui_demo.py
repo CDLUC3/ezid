@@ -1,3 +1,4 @@
+import django.conf
 import django.shortcuts
 
 import impl.ui_common
@@ -12,9 +13,9 @@ def index(_request):
 # noinspection PyDictCreation
 def simple(request):
     d = {'menu_item': 'ui_home.learn'}
-    d["testPrefixes"] = impl.ui_common.testPrefixes
+    # d["testPrefixes"] = impl.ui_common.testPrefixes
     d['prefixes'] = sorted(
-        impl.ui_common.testPrefixes, key=lambda p: p['namespace'].lower()
+        django.conf.settings.TEST_SHOULDER_DICT, key=lambda p: p['namespace'].lower()
     )  # must be done before calling form processing
     d = impl.ui_create.simple_form(request, d)
     return impl.ui_common.renderIdPage(request, 'demo/simple', d)
@@ -23,9 +24,8 @@ def simple(request):
 # noinspection PyDictCreation
 def advanced(request):
     d = {'menu_item': 'ui_home.learn'}
-    d["testPrefixes"] = impl.ui_common.testPrefixes
     d['prefixes'] = sorted(
-        impl.ui_common.testPrefixes, key=lambda p: p['namespace'].lower()
+        django.conf.settings.TEST_SHOULDER_DICT, key=lambda p: p['namespace'].lower()
     )  # must be done before calling form processing
     d = impl.ui_create.adv_form(request, d)
     return impl.ui_common.renderIdPage(request, 'demo/advanced', d)

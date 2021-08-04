@@ -1,13 +1,21 @@
+import base64
+import datetime
+
+import impl.nog.minter
 import bz2
+import collections
 import csv
 import io
+import json
 import logging
 import os
 import pathlib
 import re
 import sys
+import types
 
 import django
+import django.apps
 import django.conf
 import django.contrib.auth.models
 import django.contrib.sessions.models
@@ -15,19 +23,30 @@ import django.core.management
 import django.db
 import django.db.transaction
 import django.http.request
+import django.test.client
 import pytest
 
 import ezidapp
+
+# Queues
+import ezidapp.models.binder_queue
+import ezidapp.models.crossref_queue
+import ezidapp.models.datacenter
+import ezidapp.models.datacite_queue
+import ezidapp.models.download_queue
+import ezidapp.models.link_checker
 import ezidapp.models.shoulder
-import ezidapp.models.store_datacenter
-import ezidapp.models.store_datacenter
-import ezidapp.models.store_user
-import impl.config
+import ezidapp.models.update_queue
+
+import ezidapp.models.user
+import ezidapp.models.util
 import impl.nog.filesystem
 import impl.nog.shoulder
 import tests.util.metadata_generator
 import tests.util.sample
 import tests.util.util
+
+APP_LABEL = 'ezidapp'
 
 HERE_PATH = pathlib.Path(__file__).parent.resolve()
 ROOT_PATH = HERE_PATH / '..'
@@ -39,20 +58,126 @@ NS = impl.nog.id_ns.IdNamespace
 
 # fmt=off
 NAMESPACE_LIST = [
-    (NS.from_str('ark:/99933/x1'),     tuple()),
-    (NS.from_str('ark:/99934/x2'),     tuple()),
-    (NS.from_str('ark:/99933/x3y4/'),  ('supershoulder',)),
-    (NS.from_str('ark:/99934/'),       ('supershoulder', 'force')),
-    (NS.from_str('doi:10.9935/X5'),    tuple()),
-    (NS.from_str('doi:10.19936/X6Y7'), tuple()),
-    (NS.from_str('doi:10.9935/X8'),    tuple()),
-    (NS.from_str('doi:10.19936/X9Y0'), tuple()),
+    # todo: commented out for faster testing
+    (NS.from_str('ark:/99933/x1'), tuple()),
+    # (NS.from_str('ark:/99934/x2'), tuple()),
+    # (NS.from_str('ark:/99933/x3y4/'), ('supershoulder',)),
+    # (NS.from_str('ark:/99934/'), ('supershoulder', 'force')),
+    # (NS.from_str('doi:10.9935/X5'), tuple()),
+    # (NS.from_str('doi:10.19936/X6Y7'), tuple()),
+    # (NS.from_str('doi:10.9935/X8'), tuple()),
+    # (NS.from_str('doi:10.19936/X9Y0'), tuple()),
+    # Shoulder for the API Test Account
+    # (NS.from_str('doi:10.39999/SD2'), ()),
 ]
 # fmt=on
-META_TYPE_LIST = ['datacite', 'crossref', 'dc', 'unknown']
+META_TYPE_LIST = [
+    'datacite',
+    # todo: commented out for faster testing
+    # 'crossref',
+    # 'dc',
+    # 'unknown',
+]
 
 TEST_DOCS_PATH = HERE_PATH / 'test_docs'
 SHOULDER_CSV = TEST_DOCS_PATH / 'ezidapp_shoulder.csv'
+
+METADATA_CSV = TEST_DOCS_PATH / 'metadata_samples.csv'
+
+
+NOW_TS = datetime.datetime.now()
+
+
+ADMIN_MODEL_DICT = {
+    # Django standard user authentication
+    'auth.user': {
+        'date_joined': NOW_TS,
+        'email': django.conf.settings.ADMIN_EMAIL,
+        'first_name': django.conf.settings.ADMIN_DISPLAY_NAME,
+        'is_active': True,
+        'is_staff': True,
+        'is_superuser': True,
+        'last_login': NOW_TS,
+        'last_name': '',
+        # 'username': django.conf.settings.ADMIN_USERNAME,
+        'password': django.conf.settings.ADMIN_PASSWORD,
+    },
+    'contenttypes.contenttype': {
+        'app_label': 'admin',
+        'model': 'logentry',
+    },
+    # EZID custom user authentication
+    'ezidapp.StoreRealm': {
+        "name": django.conf.settings.ADMIN_STORE_REALM,
+    },
+    'ezidapp.SearchRealm': {
+        "name": django.conf.settings.ADMIN_SEARCH_REALM,
+    },
+    'ezidapp.storeuser': {
+        'accountEmail': django.conf.settings.ADMIN_EMAIL,
+        'crossrefEmail': django.conf.settings.ADMIN_CROSSREF_EMAIL,
+        'crossrefEnabled': django.conf.settings.ADMIN_CROSSREF_ENABLED,
+        'displayName': django.conf.settings.ADMIN_DISPLAY_NAME,
+        'inheritGroupShoulders': False,
+        'isGroupAdministrator': False,
+        'isRealmAdministrator': False,
+        'isSuperuser': True,
+        'loginEnabled': True,
+        'notes': django.conf.settings.ADMIN_NOTES,
+        # 'password': django.conf.settings.ADMIN_PASSWORD,
+        'pid': django.conf.settings.ADMIN_STORE_USER_PID,
+        'primaryContactEmail': django.conf.settings.ADMIN_PRIMARY_CONTACT_EMAIL,
+        'primaryContactName': django.conf.settings.ADMIN_PRIMARY_CONTACT_NAME,
+        'primaryContactPhone': django.conf.settings.ADMIN_PRIMARY_CONTACT_PHONE,
+        'secondaryContactEmail': django.conf.settings.ADMIN_SECONDARY_CONTACT_EMAIL,
+        'secondaryContactName': django.conf.settings.ADMIN_SECONDARY_CONTACT_NAME,
+        'secondaryContactPhone': django.conf.settings.ADMIN_SECONDARY_CONTACT_PHONE,
+        'username': django.conf.settings.ADMIN_USERNAME,
+    },
+    'ezidapp.storegroup': {
+        'accountType': '',
+        'agreementOnFile': False,
+        'crossrefEnabled': django.conf.settings.ADMIN_CROSSREF_ENABLED,
+        'groupname': django.conf.settings.ADMIN_GROUPNAME,
+        'notes': django.conf.settings.ADMIN_NOTES,
+        'organizationAcronym': django.conf.settings.ADMIN_ORG_ACRONYM,
+        'organizationName': django.conf.settings.ADMIN_ORG_NAME,
+        'organizationStreetAddress': '(:unap)',
+        'organizationUrl': django.conf.settings.ADMIN_ORG_URL,
+        'pid': django.conf.settings.ADMIN_STORE_GROUP_PID,
+    },
+    'ezidapp.searchuser': {
+        'pid': django.conf.settings.ADMIN_SEARCH_USER_PID,
+        'username': django.conf.settings.ADMIN_USERNAME,
+    },
+    'ezidapp.searchgroup': {
+        'groupname': django.conf.settings.ADMIN_GROUPNAME,
+        'pid': django.conf.settings.ADMIN_SEARCH_GROUP_PID,
+    },
+}
+
+
+# Lists generated from CSV files
+# - These are used for parametrizing fixtures, meaning that the test is run for each row in the CSV,
+# and each run counts as a separate test.
+# - Note that using multiple parametrizing fixtures causes the test to be run for each possible
+# combination of the parameters.
+
+
+def _csv_gen(csv_path, delimiter=','):
+    """Generator that yields the rows from a CSV file"""
+    with pathlib.Path(csv_path).open('rt') as f:
+        for row_tup in csv.reader(f, delimiter=delimiter):
+            yield row_tup
+
+
+Metadata = collections.namedtuple(
+    'Metadata', ['lower_bound', 'row_id', 'length', 'json', 'as_dict']
+)
+METADATA_TUP = tuple(
+    Metadata(*row_tup, json.loads(row_tup[-1]))
+    for row_tup in _csv_gen(METADATA_CSV, delimiter='\t')
+)
 
 # Database fixtures
 
@@ -74,21 +199,33 @@ if logging.getLogger().hasHandlers():
 
 log = logging.getLogger(__name__)
 
+
 # Hooks
+
 
 def pytest_addoption(parser):
     parser.addoption(
         '--sample-error',
+        dest='sample_error',
         action='store_true',
         default=False,
         help='Handle sample mismatch as test failure instead of opening diff viewer',
     )
     parser.addoption(
         '--sample-update',
+        dest='sample_update',
         action='store_true',
         default=False,
         help='Update mismatched samples instead of opening diff viewer',
     )
+
+
+# @pytest.fixture(autouse=True)
+# def sample_options(request):
+#     return types.SimpleNamespace(
+#         error=request.config.getoption("--sample-error"),
+#         update=request.config.getoption("--sample-update"),
+#     )
 
 
 def pytest_configure(config):
@@ -102,10 +239,10 @@ def pytest_configure(config):
     sys.is_running_under_travis = "TRAVIS" in os.environ
     sys.is_running_under_pytest = True
 
-    tests.util.sample.options = {
-        "error": config.getoption("--sample-error"),
-        "update": config.getoption("--sample-update"),
-    }
+    tests.util.sample.options = types.SimpleNamespace(
+        error=config.getoption("--sample-error"),
+        update=config.getoption("--sample-update"),
+    )
 
     # Only accept error messages from loggers that are noisy at debug.
     logging.getLogger('django.db.backends.schema').setLevel(logging.ERROR)
@@ -153,7 +290,7 @@ def django_db_setup(django_db_keepdb):
         "default": {
             "ENGINE": "django.db.backends.mysql",
             "HOST": "localhost",
-            "NAME": "ezid_tests",
+            "NAME": "ezid_test_db",
             "USER": "travis",
             "PASSWORD": "",
             "OPTIONS": {"charset": "utf8mb4"},
@@ -164,7 +301,7 @@ def django_db_setup(django_db_keepdb):
         "search": {
             "ENGINE": "django.db.backends.mysql",
             "HOST": "localhost",
-            "NAME": "ezid_tests",
+            "NAME": "ezid_test_db",
             "USER": "travis",
             "PASSWORD": "",
             "fulltextSearchSupported": True,
@@ -177,10 +314,10 @@ def django_db_setup(django_db_keepdb):
 
 
 @pytest.fixture(autouse=True)
-def disable_log_to_console(mocker):
+def disable_log_setup(mocker):
     """Prevent management commands from reconfiguring the logging that has been
     set up by pytest."""
-    mocker.patch('impl.nog.util.log_to_console')
+    mocker.patch('impl.nog.util.log_setup')
 
 
 # Fixtures
@@ -189,49 +326,65 @@ def disable_log_to_console(mocker):
 
 
 @pytest.fixture(scope='function')
-def reloaded():
-    """Refresh EZID's in-memory caches of the database.
-
-    In the test, additional reloads can be triggered by calling the
-    fixture.
-    """
-
-    def reload_():
-        assert django.conf.settings.configured
-        impl.config.reload()
-        # noinspection PyProtectedMember
-        log.debug(
-            'reloaded(): db_shoulders={} cache_shoulders={}'.format(
-                ezidapp.models.shoulder.Shoulder.objects.filter(
-                    active=True, manager='ezid'
-                ).count(),
-                len(ezidapp.models.shoulder._shoulders),
-            )
-        )
-
-    reload_()
-    return reload_
-
-
-@pytest.fixture(scope='function')
-def admin_admin(reloaded):
+def admin_admin():
     """Set the admin password to "admin".
 
-    This may be useful when testing authentication. To instead skip
-    authentication, see skip_auth.
+    This is intended for testing authentication. To instead skip authentication entirely,
+    see skip_auth.
     """
     with django.db.transaction.atomic():
-        if not django.contrib.auth.models.User.objects.filter(
-            username='admin'
-        ).exists():
+        if not django.contrib.auth.models.User.objects.filter(username='admin').exists():
             django.contrib.auth.models.User.objects.create_superuser(
                 username='admin', password=None, email=""
             )
-        reloaded()
-        o = ezidapp.models.store_user.getUserByUsername('admin')
+        o = ezidapp.models.util.getUserByUsername('admin')
         o.setPassword('admin')
         o.save()
-        reloaded()
+
+
+@pytest.fixture(scope='function')
+def apitest_client(client, django_user_model):
+    """Django test client set up to call the EZID API and logged in as the apitest user
+
+    This uses an existing user with username "apitest", or creates a new one with the same username.
+
+    This also sets the password for the apitest user to 'apitest'.
+
+    When EZID endpoints are called via the client, a cookie for an active authenticated session is
+    included automatically.
+
+    Because EZID does not use a standard authentication procedure, we can't use the regular
+    'client.login()', which assumes standard Django auth.
+
+    The password is salted, so the PBKDF hash that is stored in ezidapp_storeuser.password is
+    different every time, even when using the same password:
+
+        print(ezidapp.models.user.StoreUser.objects.get(username='apitest').password)
+
+    TODO: This sort of procedure probably means that we no longer need 'skip_auth'.
+    """
+    username, password = 'apitest', 'apitest'
+
+    # with django.db.transaction.atomic():
+
+    django_user_model.objects.create_user(username=username, password=password)
+
+    user = ezidapp.models.util.getUserByUsername(username)
+    assert user is not None
+    user.setPassword(password)
+    user.save()
+
+    is_logged_in = client.login(username=username, password=password)
+    assert is_logged_in
+
+    client.defaults['HTTP_AUTHORIZATION'] = b'Basic ' + base64.b64encode(
+        b':'.join([username.encode('utf-8'), password.encode('utf-8')])
+    )
+
+    r = client.get(f'/login')
+    assert r.status_code == 200
+
+    return client
 
 
 @pytest.fixture(scope='function')
@@ -245,11 +398,9 @@ def skip_auth(django_db_keepdb, admin_client, mocker):
 
     def mock_authenticate_request(request):
         user_id = get_user_id_by_session_key(request.session.session_key)
-        return ezidapp.models.store_user.getUserById(user_id)
+        return ezidapp.models.util.getUserById(user_id)
 
-    mocker.patch(
-        'impl.userauth.authenticateRequest', side_effect=mock_authenticate_request
-    )
+    mocker.patch('impl.userauth.authenticateRequest', side_effect=mock_authenticate_request)
 
 
 @pytest.fixture(scope='function')
@@ -259,8 +410,12 @@ def ez_admin(admin_client, admin_admin, skip_auth):
     session is included automatically. This also sets the admin password to
     "admin".
 
-    Note: Because EZID does not use a standard authentication procedure, it's also
-    necessary to pull in skip_auth here.
+    Because EZID does not use a standard authentication procedure:
+
+        - It's necessary to pull in skip_auth here.
+
+        - We can't use the regular 'client.login()', which assumes standard Django auth.
+
     """
     admin_client.login(username='admin', password='admin')
     # log.info('cookies={}'.format(admin_client.cookies))
@@ -275,6 +430,16 @@ def ez_user(client, django_user_model):
     django_user_model.objects.create_user(username=username, password=password)
     client.login(username=username, password=password)
     return client
+
+
+@pytest.fixture()
+def apitest_minter(tmp_bdb_root):
+    """Create a shoulder entry in the database and a minter BerkeleyDB for the apitest user.
+    Returns the DOI for apitest's shoulder.
+    """
+    ns_str = 'doi:10.39999/SD2'
+    tests.util.util.create_shoulder(ns_str)
+    return ns_str
 
 
 @pytest.fixture()
@@ -301,35 +466,23 @@ def tmp_bdb_root(mocker, tmp_path):
     return tmp_path
 
 
-@pytest.fixture(
-    params=NAMESPACE_LIST,
-    ids=lambda x: re.sub("[^\d\w]+", "-", '-'.join([str(x[0]), *x[1]])),
-)
-def namespace(request):
-    return request.param
-
-
-@pytest.fixture(params=META_TYPE_LIST)
-def meta_type(request):
-    """meta_type = 'datacite', 'crossref', 'dc', 'unknown'"""
-    return request.param
-
 @pytest.fixture()
-def minters(tmp_bdb_root, reloaded, namespace, meta_type):
+def minters(tmp_bdb_root, namespace, meta_type):
     """Add a set of minters and corresponding shoulders. The minters are stored below
     the temporary root created by tmp_bdb_root. The shoulders are registered to the
     admin user in the DB, and are ready for use.
 
-    Yields a Returns a list containing the IdNamespace objects for the shoulders.
+    Yields a list containing the IdNamespace objects for the shoulders.
+
+    `namespace` and `meta_type` are parameterized fixtures, causing this fixture to be invoked
+    multiple times, creating minters that are the combinatorial product of the two.
     """
     ns, arg_tup = namespace
     impl.nog.shoulder.create_shoulder(
         ns,
         'test org for shoulder {}'.format(str(ns)),
         datacenter_model=(
-            ezidapp.models.store_datacenter.StoreDatacenter.objects.filter(
-                symbol='CDL.CDL'
-            ).get()
+            ezidapp.models.datacenter.StoreDatacenter.objects.filter(symbol='CDL.CDL').get()
             if meta_type == 'datacite'
             else None
         ),
@@ -340,7 +493,6 @@ def minters(tmp_bdb_root, reloaded, namespace, meta_type):
         is_force='force' in arg_tup,
         is_debug=True,
     )
-    reloaded()
     yield namespace
 
 
@@ -349,15 +501,44 @@ def shoulder_csv():
     """Generator returning rows from the SHOULDER_CSV file."""
 
     def itr():
-        with pathlib.Path(SHOULDER_CSV).open(
-            'rt',
-        ) as f:
+        with pathlib.Path(SHOULDER_CSV).open('rt') as f:
             for row_tup in csv.reader(f):
                 ns_str, org_str, n2t_url = row_tup
                 # log.debug('Testing with shoulder row: {}'.format(row_tup))
                 yield ns_str, org_str, n2t_url
 
     return itr()
+
+
+@pytest.fixture(
+    params=NAMESPACE_LIST,
+    ids=lambda x: re.sub(r"[^\d\w]+", "-", '-'.join([str(x[0]), *x[1]])),
+)
+def namespace(request):
+    return request.param
+
+
+@pytest.fixture(
+    params=METADATA_TUP,
+)
+def metadata(request):
+    """Parametrize on JSON encoded metadata
+
+    The metadata is pulled from the METADATA_CSV file, which is a TSV, tab separated values /
+    columns.
+
+    Columns:
+        - Lower bound of length of JSON encoded metadata (inclusive)
+            - The upper bound for each JSON string is the next lower bound of the following row
+            (exclusive).
+        - Id sequence number from the StoreIdentifier table row holding the metadata that was
+            selected for the sample
+        - Length, in Unicode code points, of the JSON metadata (TODO: Or is it the number of UTF-8
+            bytes, the implicit encoding for JSON?)
+        - JSON encoded
+        metadata
+    """
+    return request.param
 
 
 @pytest.fixture()
@@ -371,12 +552,11 @@ def log_shoulder_count():
     # noinspection PyProtectedMember
     def log_(s):
         log.debug(
-            '{}: db_shoulders={} cache_shoulders={}'.format(
+            '{}: db_shoulders={}'.format(
                 s,
                 ezidapp.models.shoulder.Shoulder.objects.filter(
                     active=True, manager='ezid'
                 ).count(),
-                len(ezidapp.models.shoulder._shoulders),
             )
         )
 
@@ -384,17 +564,104 @@ def log_shoulder_count():
     return log_
 
 
-@pytest.fixture()
-def meta_types():
-    """A list of metadata types trigger different types of validation in EZID. We
+@pytest.fixture(params=META_TYPE_LIST)
+def meta_type(request):
+    """A list of metadata types which trigger different types of validation in EZID. We
     test with specific metadata for each.
     """
-    # return ('datacite', 'crossref', 'dc', 'unknown')
-    for n in ('datacite',):
-        yield n
+    return request.param
+
+
+@pytest.fixture()
+def block_outgoing(mocker):
+    mocker.patch('ezidapp.management.commands.proc_base.AsyncProcessingCommand.callWrapper')
+
+
+@pytest.fixture()
+def binder_queue(request):
+    """BinderQueue populated with tasks marked as not yet processed"""
+    django_load_db_fixture('ezidapp/fixtures/binder_queue.json')
+
+
+# Queues
+
+
+@pytest.fixture()
+def binder_queue(request):
+    """BinderQueue populated with tasks marked as not yet processed"""
+    django_load_db_fixture('ezidapp/fixtures/binder_queue.json')
+
+
+# ezidapp.models.binder_queue
+# ezidapp.models.crossref_queue
+# ezidapp.models.datacite_queue
+# ezidapp.models.download_queue
+# ezidapp.models.link_checker
+
+
+@pytest.fixture()
+def update_queue(request):
+    """UpdateQueue populated with tasks marked as not yet processed"""
+    ezidapp.models.update_queue.UpdateQueue()
 
 
 # Util
+
+
+def dump_models():
+    """Print a list of registered models"""
+    model_dict = {model.__name__: model for model in django.apps.apps.get_models()}
+    print('Registered models:')
+    for k, v in sorted(model_dict.items()):
+        print(f'  {k:<20} {v}')
+
+
+def create_fixtures():
+    """Queue tables:
+
+    ezidapp_binderqueue
+    ezidapp_crossrefqueue
+    ezidapp_datacitequeue
+    ezidapp_downloadqueue
+    ezidapp_updatequeue
+    """
+    dump_models()
+
+    fixture_dir_path = pathlib.Path(impl.nog.filesystem.abs_path('../ezidapp/fixtures'))
+
+    for model_label in (
+        'BinderQueue',
+        'CrossrefQueue',
+        'DataciteQueue',
+        'DownloadQueue',
+        'UpdateQueue',
+        # 'LinkChecker',
+    ):
+        log.info(f'Creating DB fixture for model: {model_label}')
+        table_name = model_label.lower()
+        fixture_file_path = (fixture_dir_path / table_name).with_suffix('.json')
+        log.info('Writing fixture. path="{}"'.format(fixture_file_path))
+        buf = io.StringIO()
+        # Example from Django source:
+        # call_command('loaddata', *cls.fixtures, **{'verbosity': 0, 'database': db_name})
+        django.core.management.call_command(
+            "dumpdata",
+            f'{APP_LABEL}.{model_label}',
+            # exclude=["auth.permission", "contenttypes"],
+            database=DEFAULT_DB_KEY,
+            stdout=buf,
+            indent=2,
+            verbosity=3,
+            traceback=True,
+            # xyz=43,
+            # skip_checks=True,
+        )
+        # with bz2.BZ2File(
+        #     fixture_file_path, "w", buffering=1024 ** 2, compresslevel=9
+        # ) as bz2_file:
+        #     bz2_file.write(buf.getvalue().encode("utf-8"))
+
+    django_load_db_fixture('ezidapp/fixtures/binder_queue.json')
 
 
 def dump_shoulder_table():
@@ -412,8 +679,8 @@ def get_user_id_by_session_key(session_key):
 
 def django_save_db_fixture(db_key=DEFAULT_DB_KEY):
     """Save database to a bz2 compressed JSON fixture."""
-    fixture_file_path = impl.nog.filesystem.abs_path(REL_DB_FIXTURE_PATH)
-    logging.info('Writing fixture. path="{}"'.format(fixture_file_path))
+    fixture_file_path = impl.nog.filesystem.abs_path(REL_DB_FIXTURE_PATH.as_posix())
+    log.info('Writing fixture. path="{}"'.format(fixture_file_path))
     buf = io.StringIO()
     django.core.management.call_command(
         "dumpdata",
@@ -421,7 +688,89 @@ def django_save_db_fixture(db_key=DEFAULT_DB_KEY):
         database=db_key,
         stdout=buf,
     )
-    with bz2.BZ2File(
-        fixture_file_path, "w", buffering=1024 ** 2, compresslevel=9
-    ) as bz2_file:
+    with bz2.BZ2File(fixture_file_path, "w", buffering=1024 ** 2, compresslevel=9) as bz2_file:
         bz2_file.write(buf.getvalue().encode("utf-8"))
+
+
+def django_load_db_fixture(rel_json_fixture_path, db_key=DEFAULT_DB_KEY):
+    log.debug("Populating DB from compressed JSON fixture file. db_key={}".format(db_key))
+    fixture_file_path = impl.nog.filesystem.abs_path(REL_DB_FIXTURE_PATH.as_posix())
+    django.core.management.call_command("loaddata", fixture_file_path, database=db_key)
+    django_commit_and_close(db_key)
+
+
+def django_migrate(db_key=DEFAULT_DB_KEY):
+    log.debug("Applying DB migrations. db_key={}".format(db_key))
+    django.core.management.call_command("migrate", "--run-syncdb", database=db_key)
+    django_commit_and_close(db_key)
+
+
+def django_clear_db(db_key=DEFAULT_DB_KEY):
+    django.core.management.call_command("flush", interactive=False, database=db_key)
+
+
+def django_commit_and_close(db_key=DEFAULT_DB_KEY):
+    django_commit(db_key)
+    django_close_all_connections()
+
+
+def django_commit(db_key=DEFAULT_DB_KEY):
+    django.db.connections[db_key].commit()
+
+
+def django_close_all_connections():
+    for connection in django.db.connections.all():
+        connection.close()
+    # TODO: Needed?
+    django.db.connections.close_all()
+
+
+# def html_pp(html_str):
+#     import bs4
+#     print(bs4.BeautifulSoup(html_str).prettify())
+
+
+# def ensure_minter(tmp_bdb_root, ns):
+#     """Create a minter BerkeleyDB for a shoulder if one does not already exist.
+#     """
+#     # Create the minter BerkeleyDB.
+#     bdb_path = impl.nog.minter.create_minter_database(ns)
+#
+#     ns, arg_tup = namespace
+#     impl.nog.shoulder.create_shoulder(
+#         ns,
+#         'test org for shoulder {}'.format(str(ns)),
+#         datacenter_model=(
+#             ezidapp.models.datacenter.StoreDatacenter.objects.filter(symbol='CDL.CDL').get()
+#             if meta_type == 'datacite'
+#             else None
+#         ),
+#         is_crossref=meta_type == 'crossref',
+#         is_test=True,
+#         is_super_shoulder='supershoulder' in arg_tup,
+#         is_sharing_datacenter=False,
+#         is_force='force' in arg_tup,
+#         is_debug=True,
+#     )
+#     yield namespace
+
+# def get_or_create_user(group_name):
+#     store_realm = ezidapp.models.realm.StoreRealm.objects.update_or_create(name='CDL')[0]
+#     store_group = ezidapp.models.group.StoreGroup.objects.update_or_create(
+#             'realm': store_realm,
+#             'groupname': group_name,
+#             # },
+#         },
+#         groupname=django.conf.settings.ADMIN_GROUPNAME,
+#     )[0]
+#     store_user = ezidapp.models.user.StoreUser.objects.update_or_create(
+#         defaults={
+#             **ADMIN_MODEL_DICT['ezidapp.storeuser'],
+#             'realm': store_realm,
+#             'group': store_group,
+#             'username': django.conf.settings.ADMIN_USERNAME,
+#         },
+#         username='admin',
+#     )[0]
+#     store_user.setPassword(django.conf.settings.ADMIN_PASSWORD)
+#     store_user.save()

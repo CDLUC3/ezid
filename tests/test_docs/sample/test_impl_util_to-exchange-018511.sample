@@ -1,0 +1,481 @@
+input_json=
+{"datacite":"<?xml version=\"1.0\"?>
+<resource xmlns=\"http://datacite.org/schema/kernel-3\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+xsi:schemaLocation=\"http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd\">  <identifier
+identifierType=\"DOI\">10.15144/PL-565</identifier>  <creators>    <creator>      <creatorName>Morey, Stephen (Ed.)</creatorName>
+</creator>  </creators>  <titles>    <title>The Tai languages of Assam - a grammar and texts</title>  </titles>
+<publisher>Pacific Linguistics</publisher>  <publicationYear>2005</publicationYear>  <contributors>    <contributor
+contributorType=\"Editor\">      <contributorName>CRCL</contributorName>    </contributor>    <contributor
+contributorType=\"HostingInstitution\">      <contributorName>CRCL</contributorName>    </contributor>    <contributor
+contributorType=\"RightsHolder\">      <contributorName>Pacific Linguistics and/or the author(s)</contributorName>
+</contributor>  </contributors>  <dates>    <date dateType=\"Copyrighted\">2005</date>    <date dateType=\"Issued\">2015</date>
+</dates>  <language>en</language>  <resourceType resourceTypeGeneral=\"Text\">book</resourceType>  <alternateIdentifiers>
+<alternateIdentifier alternateIdentifierType=\"Series\">PL-565</alternateIdentifier>  </alternateIdentifiers>
+<relatedIdentifiers>    <relatedIdentifier relatedIdentifierType=\"URN\"
+relationType=\"IsIdenticalTo\">urn:md5:fb205887ff19beff96ce6409e313ec62</relatedIdentifier>    <relatedIdentifier
+relatedIdentifierType=\"URN\" relationType=\"IsIdenticalTo\">urn:sha1:e7d4566fa80d2d926a68c56bf87a74d8df3ff9f8</relatedIdentifier>
+<relatedIdentifier relatedIdentifierType=\"ISBN\" relationType=\"IsIdenticalTo\">0858835495</relatedIdentifier>
+</relatedIdentifiers>  <sizes>    <size>39M</size>    <size>xxiv + 436 pages</size>  </sizes>  <formats>    <format>PDF</format>
+</formats>  <version>1.0</version>  <rightsList>    <rights rightsURI=\"http://creativecommons.org/licenses/by-sa/4.0\">CC BY-SA
+4.0</rights>  </rightsList>  <descriptions>    <description descriptionType=\"SeriesInformation\">PL-565</description>
+<description descriptionType=\"TableOfContents\">Dedication\tv<br/>Table of
+contents\tvii<br/>Acknowledgments\txxi<br/>Abbreviations\txxiii<br/> 1 INTRODUCTION\t1<br/> 1.1 MEETING THE TAI OF ASSAM\t2<br/>
+1.1.1 Some difficulties in undertaking this research\t3<br/> 1.1.1.1 Crossing a bamboo bridge\t5<br/> 1.1.2 Life in Tai
+villages\t6<br/> 1.2 THE TAI LANGUAGE FAMILY\t7<br/> 1.2.1 The Shan group of languages\t7<br/> 1.2.2 The similarity of the
+languages in the Shan group\t8<br/> 1.2.3 The Tai varieties of Northeast India\t9<br/> 1.3 THE DATA WHICH FORMS THE BASIS OF THIS
+STUDY\t10<br/> 1.4 KEY AIMS OF THIS STUDY\t11<br/> 1.5 THE SCOPE OF THIS WORK\t12<br/> 2 THE TAIS OF ASSAM &amp; THEIR
+LANGUAGES\t13<br/> 2.1 THE LINGUISTIC MIX IN NORTHEAST INDIA\t13<br/> 2.2 THE AHOMS\t14<br/> 2.3 THE OTHER TAI GROUPS\t17<br/>
+2.3.1 Some notes on the history of the Tai\t18<br/> 2.3.2 The Tai Aiton Villages\t20<br/> 2.3.3 The Tai Phake Villages\t22<br/>
+2.3.4 Other Tai Speaking Villages\t24<br/> 2.3.4.1 Khamti villages\t24<br/> 2.3.4.2 Tai Khamyang village\t24<br/> 2.3.4.3 Turung
+Villages\t24<br/> 2.3.5 Difficulties with identifying the various Tai groups\t25<br/> 2.3.6 A note on the names of the Tai
+groups\t26<br/> 2.3.6.1 Ahom\t26<br/> 2.3.6.2 Aiton\t26<br/> 2.3.6.3 Khamti\t27<br/> 2.3.6.4 Khamyang\t28<br/> 2.3.6.5
+Phake\t28<br/> 2.3.6.6 Turung\t28<br/> 2.4 CURRENT LINGUISTIC SITUATION\t29<br/> 2.4.1 A note on the Turung\t31<br/> 2.4.2 The
+Khamyang language revitalisation (2002)\t31<br/> 3 PREVIOUS STUDIES OF THE TAI LANGUAGES\t33<br/> 3.1 THE NEED FOR A CRITICAL
+REVIEW OF EARLIER SOURCES ON THE TAI LANGUAGES OF ASSAM\t33<br/> 3.2 LINGUISTIC SOURCES\t34<br/> 3.2.1 Buchanan (1799)\t34<br/>
+3.2.2 Brown (1837)\t34<br/> 3.2.3 Robinson (1849)\t35<br/> 3.2.4 Campbell (1874)\t37<br/> 3.2.5 Needham (1894)\t39<br/> 3.2.6
+Grierson (1904)\t40<br/> 3.2.6.1 Contents of Grierson (1904)\t41<br/> 3.2.6.2 General Comments on the Tai Group
+(1904:59-79)\t41<br/> 3.2.6.3 Ahom (1904:81-140)\t42<br/> 3.2.6.3.1 Tones\t42<br/> 3.2.6.4 Khamti (1902:140-165)\t42<br/>
+3.2.6.4.1 Tones\t42<br/> 3.2.6.4.2 Texts\t42<br/> 3.2.6.4.2.1 From the Parable of the Prodigal Son\t43<br/> 3.2.6.5 Tairong
+(1904:167-177)\t44<br/> 3.2.6.5.1 Texts\t44<br/> 3.2.6.5.1.1 From the Parable of the Prodigal Son\t44<br/> 3.2.6.6 Nora
+(1904:179-191)\t45<br/> 3.2.6.6.1 Texts\t45<br/> 3.2.6.6.1.1 From the Parable of the Prodigal Son\t45<br/> 3.2.6.6.1.2
+Riddles\t45<br/> 3.2.6.7 Aitonia (1904:193-211)\t46<br/> 3.2.6.7.1 Orthography\t47<br/> 3.2.6.7.2 The texts\t47<br/> 3.2.6.7.2.1
+From the Parable of the Prodigal Son\t47<br/> 3.2.6.8 Comparative Word list and Sentences (1904:214-233)\t48<br/> 3.2.6.8.1
+Vocabulary items\t48<br/> 3.2.6.8.2 Tense\t48<br/> 3.2.7 Barua, G.C. (1920)\t49<br/> 3.2.8 Barua, G.K. (1936) (Ahom
+Primer)\t49<br/> 3.2.9 Barua, B.K. and Phukan (1964) (Ahom Lexicons)\t50<br/> 3.2.10 Barua, B. (1966)\t52<br/> 3.2.11 Biswas, S.
+(1966)\t52<br/> 3.2.12 Phukan (1966)\t53<br/> 3.2.13 Harris (1976)\t54<br/> 3.2.14 Weidert (1977 &amp; 1979)\t55<br/> 3.2.14.1
+Weidert (1977)\t55<br/> 3.2.14.2 Weidert (1979)\t57<br/> 3.2.15 Wilaiwan (1983, 1986)\t57<br/> 3.2.15.1 Wilaiwan (1983)\t57<br/>
+3.2.15.2 Wilaiwan (1986)\t58<br/> 3.2.16 Banchob (1977, 1987)\t58<br/> 3.2.16.1 Banchob (1977)\t58<br/> 3.2.16.2 Banchob
+(1987)\t59<br/> 3.2.17 Nomal Gogoi (1987 &amp; 1994)\t59<br/> 3.2.17.1 Gogoi (1987)\t59<br/> 3.2.17.2 Gogoi (1994)\t60<br/> 3.2.18
+Aimya Khang Gohain (1991, 1997, 1999)\t62<br/> 3.2.18.1 Aimya Khang Gohain (1991)\t62<br/> 3.2.18.2 Aimya Khang Gohain
+(1997)\t64<br/> 3.2.18.3 Aimya Khang Gohain (1999)\t64<br/> 3.2.19 Kingcom (1992)\t64<br/> 3.2.20 Diller (1992)\t66<br/> 3.2.21
+Boruah (2001)\t67<br/> 3.3 OTHER SOURCES\t68<br/> 3.3.1 Barua, G.C. (1930)\t68<br/> 3.3.2 Yehom Buragohain (1981, 1998)\t68<br/>
+3.3.2.1 Yehom Buragohain (1981)\t68<br/> 3.3.2.2 Yehom Buragohain (1998)\t69<br/> 3.3.3 Sharma Thakur (1982)\t69<br/> 3.3.4 Ranoo
+(1986, 1996)\t70<br/> 3.3.4.1 Ranoo (1986)\t70<br/> 3.3.4.2 Ranoo (1996)\t70<br/> 3.3.5 Terwiel and Ranoo (1992)\t70<br/> 3.3.6
+Chaw Khouk Manpoong (1993)\t71<br/> 3.3.7 Jaya Buragohain (1998)\t72<br/> 3.3.8 Hazarika, Chow Nogen (1993, 1996)\t73<br/> 3.3.8.1
+Hazarika (1993)\t73<br/> 3.3.8.2 Hazarika (1996)\t73<br/> 4 THEORETICAL CONSIDERATIONS\t74<br/> 4.1 LINGUISTIC AND THEORETICAL
+BASIS\t74<br/> 4.1.1 'Basic Linguistic Theory' and formal theories of syntax\t74<br/> 4.1.2 Text Based Grammar\t76<br/> 4.1.2.1
+Description and Documentation\t78<br/> 4.1.3 Language centred approaches\t79<br/> 4.1.4 Some particular difficulties in working
+with the Tai languages of Assam\t79<br/> 4.2 APPROACHES TO THE STUDY OF TAI LANGUAGES\t80<br/> 4.2.1 Noss (1964)\t80<br/> 4.2.2
+Vichin Panupong (1970)\t81<br/> 4.2.3 Pongsri Lekawatana (1970)\t83<br/> 4.2.4 Previous research on Shan\t85<br/> 4.3 NATIVE
+INTUITIONS AND NATIVE PEDAGOGY\t87<br/> 4.4 PRESCRIPTION AND DESCRIPTION\t88<br/> 4.5 THE IMPORTANCE OF THE TAI SCRIPT\t89<br/>
+4.6 THE PRESENTATION OF TEXT EXAMPLES\t91<br/> 4.7 ETHICAL CONSIDERATIONS\t92<br/> 4.7.1 The approach in this study\t93<br/> 4.7.2
+A note on bad language and swearing\t96<br/> 5 METHODOLOGY: COLLECTION, ANALYSIS AND TRANSLATION OF THE TEXTS\t97<br/> 5.1
+THEORETICAL CONSIDERATIONS\t97<br/> 5.2 THE COLLECTION OF DATA\t99<br/> 5.2.1 Elicitation undertaken as part of this
+project\t99<br/> 5.2.2 Text collection\t100<br/> 5.3 DATA ANALYSIS\t101<br/> 5.3.1 Prerequisites for analysis\t101<br/> 5.3.2
+Difficulties encountered in analysis\t101<br/> 5.4 DATA STORAGE\t102<br/> 5.5 GROUPING THE TEXTS\t103<br/> 6 PHONOLOGY\t106<br/>
+6.1 SOME THEORETICAL CONSIDERATIONS\t106<br/> 6.1.1 Proto Southwestern Tai phonemes\t106<br/> 6.1.1.1 Proto Southwestern Tai
+consonants\t106<br/> 6.1.1.2 Consonant change in Southwestern Tai\t108<br/> 6.1.1.3 Proto Southwestern Tai vowels\t108<br/> 6.1.2
+Diphthongs in Tai languages\t109<br/> 6.1.3 Syllable structure in Tai languages\t110<br/> 6.1.4 The glottal stop\t111<br/> 6.1.5
+Tones\t113<br/> 6.1.5.1 Definition of Tone\t113<br/> 6.1.5.2 Notation of tone\t114<br/> 6.1.5.3 Tone in Tai Languages: Theoretical
+&amp; historical background\t114<br/> 6.1.5.4 Changed Tone\t116<br/> 6.2 PHAKE PHONOLOGY\t116<br/> 6.2.1 Consonants\t116<br/>
+6.2.2 Vowels\t118<br/> 6.2.2.1 Vowel length in Phake\t119<br/> 6.2.2.2 Diphthongisation\t120<br/> 6.2.2.3 Vowel
+reduction\t121<br/> 6.2.3 Phonotactics\t122<br/> 6.2.3.1 Initial consonant clusters\t122<br/> 6.2.3.2 Syllable structure\t123<br/>
+6.2.4 Tone\t124<br/> 6.2.4.1 Tone in Phake as notated by Banchob (1987)\t124<br/> 6.2.4.2 Tone in Phake reported by Diller
+(1992)\t125<br/> 6.2.4.3 Tone in Phake as reported by Wilaiwan (1983)\t125<br/> 6.2.4.4 Present investigation\t126<br/> 6.2.4.5
+Changed Tone in Phake\t129<br/> 6.2.4.5.1 The questioning tone in Phake\t129<br/> 6.2.4.5.2 The Tai Phake negative tone\t131<br/>
+6.2.4.5.3 The imperative tone in Phake\t132<br/> 6.2.4.6 Tone assignment in loan words\t133<br/> 6.3 AITON PHONOLOGY\t134<br/>
+6.3.1 Consonants\t134<br/> 6.3.1.1 Realisation of the Consonants\t135<br/> 6.3.1.1.1 Voiced Stops\t135<br/> 6.3.1.1.2 Voiceless
+unaspirated stops\t136<br/> 6.3.1.1.3 Voiceless aspirated stops\t137<br/> 6.3.1.1.4 Nasals\t138<br/> 6.3.1.1.5
+Fricatives\t139<br/> 6.3.1.1.6 Semivowels\t140<br/> 6.3.1.1.7 Approximants\t141<br/> 6.3.1.1.8 Glottal Stop\t142<br/> 6.3.1.2
+Possible reassignment of phoneme symmetry\t143<br/> 6.3.2 Vowels\t144<br/> 6.3.2.1 Previous descriptions\t144<br/> 6.3.2.1.1
+Banchob\t144<br/> 6.3.2.1.2 Diller (1992)\t146<br/> 6.3.2.2 Present Investigation\t147<br/> 6.3.2.2.1 Front vowels\t148<br/>
+6.3.2.2.2 Central Vowels\t150<br/> 6.3.2.2.3 Back Vowels\t150<br/> 6.3.2.2.4 Vowel length distinction\t153<br/> 6.3.2.2.5
+Diphthongs\t155<br/> 6.3.2.2.6 Vowel reduction\t155<br/> 6.3.3 Phonotactics\t156<br/> 6.3.3.1 Initial consonant clusters\t156<br/>
+6.3.3.2 Epenthetic syllables\t157<br/> 6.3.4 Tone\t157<br/> 6.3.4.1 Previous Investigations of Aiton\t157<br/> 6.3.4.1.1
+Banchob\t157<br/> 6.3.4.1.1.1 Banchob (24/4/1977)\t157<br/> 6.3.4.1.1.2 Banchob (Aiton-English-Thai Dictionary)\t158<br/>
+6.3.4.1.1.3 Banchob (Tape recordings)\t159<br/> 6.3.4.1.2 Diller (1992)\t160<br/> 6.3.4.1.3 Current situation\t160<br/> 6.3.4.2
+Some examples of tone variations\t162<br/> 6.3.4.2.1 Variation between tones 1 &amp; 4\t162<br/> 6.3.4.2.2 Possible survival of
+separate B4 tone\t163<br/> 6.3.4.3 Short tones in Aiton\t163<br/> 6.3.4.4 Other unusual tonal patterns\t164<br/> 6.3.4.5 Tone
+assignment in loan words\t164<br/> 6.3.5 The place of Aiton in Southwestern Tai\t165<br/> 6.4 SOME PRELIMINARY OBSERVATIONS ON
+KHAMYANG PHONOLOGY\t165<br/> 6.4.1 Consonants\t166<br/> 6.4.1.1 Consonant clusters\t169<br/> 6.4.2 Vowels\t169<br/> 6.4.2.1 Vowel
+reduction\t170<br/> 6.4.3 Tones\t171<br/> 6.5 SOME PRELIMINARY OBSERVATIONS ON AHOM PHONOLOGY\t174<br/> 6.5.1 Consonants\t174<br/>
+6.5.2 Vowels\t176<br/> 6.5.3 Tones\t177<br/> 6.5.4 Ahom and Aiton\t178<br/> 7 WRITING\t179<br/> 7.1 AHOM SCRIPT\t179<br/> 7.1.1 A
+note on the transcription of the Ahom script\t182<br/> 7.2 AITON &amp; PHAKE SCRIPT\t185<br/> 7.2.1 Initial Consonants\t185<br/>
+7.2.1.1 Shapes of the Consonants\t186<br/> 7.2.2 Final consonants\t187<br/> 7.2.2.1 Subscripted consonants\t187<br/> 7.2.3
+Vowels\t188<br/> 7.2.3.1 Special symbols for vowel-consonant or diphthong combinations\t192<br/> 7.2.3.2 Names of the vowel
+symbols\t193<br/> 7.2.4 Ligatures\t194<br/> 7.2.5 The writing of borrowed words in Tai script\t195<br/> 7.3 A NOTE ON THE REVISED
+KHAMTI SCRIPT\t196<br/> 7.4 COMPARISON OF THE TAI SCRIPTS\t197<br/> 7.5 SOME NOTES ON TONE MARKING\t199<br/> 7.5.1 Proposals for
+marking tones in Tai\t199<br/> 7.6 DEVELOPMENT/ HISTORY OF THE TAI SCRIPTS\t201<br/> 7.7 ALPHABETICAL ORDER OF THE TAI
+SCRIPTS\t202<br/> 7.8 DEVELOPMENT OF THE TAI FONTS\t203<br/> 7.9 ON WRITING THE TAI LANGUAGE IN ASSAMESE SCRIPT\t205<br/> 8
+SYNTAX\t208<br/> 8.1 TYPOLOGICAL PROFILE OF THE TAI LANGUAGES OF ASSAM\t208<br/> 8.1.1 Morphological Structure\t208<br/> 8.1.2
+Syntactic Structure\t210<br/> 8.2 WORDS\t212<br/> 8.2.1 Word classes in Tai languages\t212<br/> 8.2.2 Nominals\t215<br/> 8.2.2.1
+Nouns\t216<br/> 8.2.2.1.1 Common Nouns\t216<br/> 8.2.2.1.1.1 Simple monosyllabic nouns\t216<br/> 8.2.2.1.1.2 Compound
+nouns\t216<br/> 8.2.2.1.2 Proper Nouns\t217<br/> 8.2.2.2 Pronouns\t218<br/> 8.2.2.2.1 Reflexive pronouns\t220<br/> 8.2.2.2.2
+Reciprocals\t221<br/> 8.2.2.3 Interrogative Words\t222<br/> 8.2.2.4 Classifiers\t224<br/> 8.2.2.5 Noun class markers\t229<br/>
+8.2.2.6 Nominalisation\t230<br/> 8.2.3 Verbals\t231<br/> 8.2.3.1 Verbs\t231<br/> 8.2.3.1.1 Monosyllabic verbs\t231<br/> 8.2.3.1.2
+Compound verbs\t232<br/> 8.2.3.2 Auxiliary Verbs\t233<br/> 8.2.3.3 Completive Verbs\t235<br/> 8.2.4 Adjectives\t236<br/> 8.2.4.1
+Adjectival modifiers\t238<br/> 8.2.5 Prepositions\t239<br/> 8.2.6 Numbers and quantifiers\t240<br/> 8.2.6.1 Cardinal
+Numbers\t241<br/> 8.2.6.2 Ordinal Numbers\t242<br/> 8.2.6.3 Other quantifiers\t242<br/> 8.2.7 Demonstratives\t243<br/> 8.2.8
+Conjunctions\t245<br/> 8.2.8.1 Linking two nouns in a noun phrase\t245<br/> 8.2.8.2 Linking two predications\t246<br/> 8.2.9
+Isolatives\t249<br/> 8.2.9.1 Interjections and Exclamations\t249<br/> 8.2.9.2 Responses\t250<br/> 8.2.9.3 Vocatives\t251<br/>
+8.2.9.4 Expressives or Imitatives\t252<br/> 8.2.10 Bound Lexemes\t253<br/> 8.2.10.1 Tense / Aspect Words\t253<br/> 8.2.10.2
+Sentence Particles\t253<br/> 8.2.11 Borrowed words\t255<br/> 8.2.11.1 Burmese loans\t255<br/> 8.2.11.2 Pali Loans\t256<br/>
+8.2.11.3 Assamese Loans\t257<br/> 8.2.11.4 English Loans\t257<br/> 8.3 CONSTITUENTS\t258<br/> 8.3.1 Preliminary theoretical
+considerations\t258<br/> 8.3.2 The Noun Phrase\t259<br/> 8.3.2.1 Possessor Phrase\t261<br/> 8.3.2.2 Adjective Phrases\t263<br/>
+8.3.2.2.1 Comparison and similarity\t263<br/> 8.3.2.3 Quantifier Phrases\t265<br/> 8.3.2.4 The syntax of demonstratives\t267<br/>
+8.3.2.5 Relative Clauses\t268<br/> 8.3.3 Core Prepositional Phrases\t270<br/> 8.3.3.1 Object as prepositional phrase\t270<br/>
+8.3.3.2 Prepositions in three participant events\t274<br/> 8.3.3.3 Experiencer as Adjunct\t278<br/> 8.3.4 Non-core
+elements\t280<br/> 8.3.4.1 Temporal Phrases\t280<br/> 8.3.4.2 Locational Phrases\t281<br/> 8.3.5 Isolative Phrases\t283<br/> 8.3.6
+Elaborate expressions\t285<br/> 8.4 CONSTITUENT ORDER\t288<br/> 8.4.1 Preliminary theoretical considerations\t288<br/> 8.4.1.1 Is
+there a basic constituent order in Tai?\t291<br/> 8.4.1.2 Is there a verb phrase in Tai?\t292<br/> 8.4.2 Constituent order in
+Khamti\t293<br/> 8.4.2.1 Needham\t293<br/> 8.4.2.2 Wilaiwan\t294<br/> 8.4.2.3 Chau Khouk Manpoong\t295<br/> 8.4.2.4 Present
+investigation\t296<br/> 8.4.3 Constituent order in the Tai languages of Assam\t296<br/> 8.4.3.1 Differences in constituent order
+between Tai Aiton and Tai Phake\t302<br/> 8.4.4 A note on information packaging\t303<br/> 8.5 PREDICATIONS\t304<br/> 8.5.1
+Copula\t304<br/> 8.5.2 Existential sentences and possession\t308<br/> 8.5.3 Definitional sentences\t310<br/> 8.5.4 One-participant
+events\t312<br/> 8.5.5 Two-participant events\t312<br/> 8.5.6 Three-participant events\t313<br/> 8.5.7 Tense, Aspect and
+Modality\t315<br/> 8.5.7.1 Preliminary Theoretical Considerations\t315<br/> 8.5.7.2 Previous studies of the Tai
+languages\t317<br/> 8.5.7.2.1 Needham\t317<br/> 8.5.7.2.2 Banchob\t319<br/> 8.5.7.2.3 Aimya Khang\t321<br/> 8.5.7.3 The present
+investigation\t321<br/> 8.5.7.4 TAM morphemes which precede the verb (TAM1)\t322<br/> 8.5.7.4.1 tak1/ta1/ti1\t322<br/> 8.5.7.5 TAM
+morphemes which may either immediately follow the verb or be placed at the end of the core sentence (TAM2)\t324<br/> 8.5.7.5.1
+kaa1/kA1\t326<br/> 8.5.7.5.2 maa2/mA2\t328<br/> 8.5.7.5.3 wai3/wai4\t331<br/> 8.5.7.6 TAM morphemes which occur at the end of the
+core sentence (TAM3)\t333<br/> 8.5.7.6.1 uu1/U1 and q1\t334<br/> 8.5.7.6.2 suu1/sU1\t335<br/> 8.5.7.6.3 Yau3/yau4\t337<br/>
+8.5.7.7 Other TAM morphemes\t339<br/> 8.5.7.7.1 dai3/nai3\t339<br/> 8.5.7.8 Combinations of TAM morphemes\t341<br/> 8.5.7.9
+Utterances unmarked by TAM morphemes\t343<br/> 8.5.7.10 Time expressions\t344<br/> 8.5.8 Multi-Verb Sequences\t345<br/> 8.5.9
+Completive Verbs\t347<br/> 8.6 NON-DECLARATIVE SENTENCES\t349<br/> 8.6.1 Theoretical considerations\t349<br/> 8.6.2
+Questions\t349<br/> 8.6.2.1 Polar questions\t350<br/> 8.6.2.2 WH-questions\t352<br/> 8.6.2.3 Questions expressed by word order or
+tone alteration\t352<br/> 8.6.2.3.1 Word order\t352<br/> 8.6.2.3.2 Tonal alternation\t353<br/> 8.6.3 Negation\t355<br/> 8.6.4
+Imperative\t359<br/> 8.7 COMPLEX SENTENCES\t363<br/> 8.7.1 Causatives &amp; Purposive constructions\t367<br/> 9 THE LITERATURE OF
+THE TAI\t372<br/> 9.1 LITERACY AMONG THE TAI\t372<br/> 9.2 TYPES OF LITERATURE\t375<br/> 9.2.1 Cataloguing the Tai
+manuscripts\t378<br/> 9.2.2 The relationship between Ahom Texts and the texts of the other Tai groups\t378<br/> 9.2.3 The
+difficulties of reading Ahom Texts\t379<br/> 9.2.4 The interpretation of Tai Aiton, Khamyang and Phake texts\t380<br/> 9.2.5 Some
+examples of literary devices\t380<br/> 9.3 THE IMPORTANCE OF LITERATURE\t382<br/> 9.4 BRINGING THE TAI LANGUAGES INTO THE COMPUTER
+AGE: PRESENTING THE LITERATURE FOR THE BENEFIT OF THE COMMUNITY\t382<br/> 9.5 THE TEXTS PRESENTED IN THIS STUDY\t383<br/> 9.5.1
+Phake\t384<br/> 9.5.2 Aiton\t386<br/> 9.5.3 Khamyang\t387<br/> 9.5.4 Turung\t388<br/> 10 LEXICOGRAPHY\t389<br/> 10.1 TAI AITON
+DICTIONARY\t389<br/> 10.1.1 The word list of Bidya Thoumoung\t389<br/> 10.1.2 Other sources of lexicographical information on
+Aiton\t390<br/> 10.1.3 Current state of the Tai Aiton Dictionary\t391<br/> 10.2 TAI PHAKE DICTIONARY\t392<br/> 10.2.1 Current
+State of the Tai Phake Dictionary\t392<br/> 10.3 THE COMPUTER DATA BASE\t393<br/> 10.3.1 Design of the data base\t393<br/> 11
+POSTSCRIPT: PRESENTING THIS WORK IN AN ELECTRONIC FORMAT\t395<br/> 11.1 CREATING AND WORKING WITH NON-STANDARD FONTS\t395<br/>
+11.2 PRESENTING THE SOUND FILES\t397<br/> 11.2.1 Recording the texts\t397<br/> 11.2.2 Digitising the texts\t398<br/> 11.2.3
+Linking the texts to the work\t398<br/> 11.3 THE ROLE OF THE RESEARCHER IN THE ELECTRONIC AGE\t400<br/> 11.4 ARCHIVING THE
+DATA\t400<br/> 11.5 POSSIBILITIES THAT WERE NOT FOLLOWED UP\t401<br/> 11.6 USING THE CD VERSION OF THIS WORK\t401<br/> 11.7
+CONCLUSION\t402<br/>Bibliography\t403</description>  </descriptions></resource>"}
+~~~~~~~~~~
+dict_pp=
+{'datacite': '<?xml version="1.0"?>
+'
+             '<resource xmlns="http://datacite.org/schema/kernel-3" '
+             'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
+             'xsi:schemaLocation="http://datacite.org/schema/kernel-3 '
+             'http://schema.datacite.org/meta/kernel-3/metadata.xsd">  '
+             '<identifier identifierType="DOI">10.15144/PL-565</identifier>  '
+             '<creators>    <creator>      <creatorName>Morey, Stephen '
+             '(Ed.)</creatorName>    </creator>  </creators>  <titles>    '
+             '<title>The Tai languages of Assam - a grammar and texts</title>  '
+             '</titles>  <publisher>Pacific Linguistics</publisher>  '
+             '<publicationYear>2005</publicationYear>  <contributors>    '
+             '<contributor contributorType="Editor">      '
+             '<contributorName>CRCL</contributorName>    </contributor>    '
+             '<contributor contributorType="HostingInstitution">      '
+             '<contributorName>CRCL</contributorName>    </contributor>    '
+             '<contributor contributorType="RightsHolder">      '
+             '<contributorName>Pacific Linguistics and/or the '
+             'author(s)</contributorName>    </contributor>  </contributors>  '
+             '<dates>    <date dateType="Copyrighted">2005</date>    <date '
+             'dateType="Issued">2015</date>  </dates>  '
+             '<language>en</language>  <resourceType '
+             'resourceTypeGeneral="Text">book</resourceType>  '
+             '<alternateIdentifiers>    <alternateIdentifier '
+             'alternateIdentifierType="Series">PL-565</alternateIdentifier>  '
+             '</alternateIdentifiers>  <relatedIdentifiers>    '
+             '<relatedIdentifier relatedIdentifierType="URN" '
+             'relationType="IsIdenticalTo">urn:md5:fb205887ff19beff96ce6409e313ec62</relatedIdentifier>    '
+             '<relatedIdentifier relatedIdentifierType="URN" '
+             'relationType="IsIdenticalTo">urn:sha1:e7d4566fa80d2d926a68c56bf87a74d8df3ff9f8</relatedIdentifier>    '
+             '<relatedIdentifier relatedIdentifierType="ISBN" '
+             'relationType="IsIdenticalTo">0858835495</relatedIdentifier>  '
+             '</relatedIdentifiers>  <sizes>    <size>39M</size>    <size>xxiv '
+             '+ 436 pages</size>  </sizes>  <formats>    <format>PDF</format>  '
+             '</formats>  <version>1.0</version>  <rightsList>    <rights '
+             'rightsURI="http://creativecommons.org/licenses/by-sa/4.0">CC '
+             'BY-SA 4.0</rights>  </rightsList>  <descriptions>    '
+             '<description '
+             'descriptionType="SeriesInformation">PL-565</description>    '
+             '<description descriptionType="TableOfContents">Dedication\t'
+             'v<br/>Table of contents\tvii<br/>Acknowledgments\t'
+             'xxi<br/>Abbreviations\txxiii<br/> 1 INTRODUCTION\t1<br/> 1.1 '
+             'MEETING THE TAI OF ASSAM\t2<br/> 1.1.1 Some difficulties in '
+             'undertaking this research\t3<br/> 1.1.1.1 Crossing a bamboo '
+             'bridge\t5<br/> 1.1.2 Life in Tai villages\t6<br/> 1.2 THE TAI '
+             'LANGUAGE FAMILY\t7<br/> 1.2.1 The Shan group of languages\t'
+             '7<br/> 1.2.2 The similarity of the languages in the Shan group\t'
+             '8<br/> 1.2.3 The Tai varieties of Northeast India\t9<br/> 1.3 '
+             'THE DATA WHICH FORMS THE BASIS OF THIS STUDY\t10<br/> 1.4 KEY '
+             'AIMS OF THIS STUDY\t11<br/> 1.5 THE SCOPE OF THIS WORK\t12<br/> '
+             '2 THE TAIS OF ASSAM &amp; THEIR LANGUAGES\t13<br/> 2.1 THE '
+             'LINGUISTIC MIX IN NORTHEAST INDIA\t13<br/> 2.2 THE AHOMS\t'
+             '14<br/> 2.3 THE OTHER TAI GROUPS\t17<br/> 2.3.1 Some notes on '
+             'the history of the Tai\t18<br/> 2.3.2 The Tai Aiton Villages\t'
+             '20<br/> 2.3.3 The Tai Phake Villages\t22<br/> 2.3.4 Other Tai '
+             'Speaking Villages\t24<br/> 2.3.4.1 Khamti villages\t24<br/> '
+             '2.3.4.2 Tai Khamyang village\t24<br/> 2.3.4.3 Turung Villages\t'
+             '24<br/> 2.3.5 Difficulties with identifying the various Tai '
+             'groups\t25<br/> 2.3.6 A note on the names of the Tai groups\t'
+             '26<br/> 2.3.6.1 Ahom\t26<br/> 2.3.6.2 Aiton\t26<br/> 2.3.6.3 '
+             'Khamti\t27<br/> 2.3.6.4 Khamyang\t28<br/> 2.3.6.5 Phake\t28<br/> '
+             '2.3.6.6 Turung\t28<br/> 2.4 CURRENT LINGUISTIC SITUATION\t'
+             '29<br/> 2.4.1 A note on the Turung\t31<br/> 2.4.2 The Khamyang '
+             'language revitalisation (2002)\t31<br/> 3 PREVIOUS STUDIES OF '
+             'THE TAI LANGUAGES\t33<br/> 3.1 THE NEED FOR A CRITICAL REVIEW OF '
+             'EARLIER SOURCES ON THE TAI LANGUAGES OF ASSAM\t33<br/> 3.2 '
+             'LINGUISTIC SOURCES\t34<br/> 3.2.1 Buchanan (1799)\t34<br/> 3.2.2 '
+             'Brown (1837)\t34<br/> 3.2.3 Robinson (1849)\t35<br/> 3.2.4 '
+             'Campbell (1874)\t37<br/> 3.2.5 Needham (1894)\t39<br/> 3.2.6 '
+             'Grierson (1904)\t40<br/> 3.2.6.1 Contents of Grierson (1904)\t'
+             '41<br/> 3.2.6.2 General Comments on the Tai Group (1904:59-79)\t'
+             '41<br/> 3.2.6.3 Ahom (1904:81-140)\t42<br/> 3.2.6.3.1 Tones\t'
+             '42<br/> 3.2.6.4 Khamti (1902:140-165)\t42<br/> 3.2.6.4.1 Tones\t'
+             '42<br/> 3.2.6.4.2 Texts\t42<br/> 3.2.6.4.2.1 From the Parable of '
+             'the Prodigal Son\t43<br/> 3.2.6.5 Tairong (1904:167-177)\t'
+             '44<br/> 3.2.6.5.1 Texts\t44<br/> 3.2.6.5.1.1 From the Parable of '
+             'the Prodigal Son\t44<br/> 3.2.6.6 Nora (1904:179-191)\t45<br/> '
+             '3.2.6.6.1 Texts\t45<br/> 3.2.6.6.1.1 From the Parable of the '
+             'Prodigal Son\t45<br/> 3.2.6.6.1.2 Riddles\t45<br/> 3.2.6.7 '
+             'Aitonia (1904:193-211)\t46<br/> 3.2.6.7.1 Orthography\t47<br/> '
+             '3.2.6.7.2 The texts\t47<br/> 3.2.6.7.2.1 From the Parable of the '
+             'Prodigal Son\t47<br/> 3.2.6.8 Comparative Word list and '
+             'Sentences (1904:214-233)\t48<br/> 3.2.6.8.1 Vocabulary items\t'
+             '48<br/> 3.2.6.8.2 Tense\t48<br/> 3.2.7 Barua, G.C. (1920)\t'
+             '49<br/> 3.2.8 Barua, G.K. (1936) (Ahom Primer)\t49<br/> 3.2.9 '
+             'Barua, B.K. and Phukan (1964) (Ahom Lexicons)\t50<br/> 3.2.10 '
+             'Barua, B. (1966)\t52<br/> 3.2.11 Biswas, S. (1966)\t52<br/> '
+             '3.2.12 Phukan (1966)\t53<br/> 3.2.13 Harris (1976)\t54<br/> '
+             '3.2.14 Weidert (1977 &amp; 1979)\t55<br/> 3.2.14.1 Weidert '
+             '(1977)\t55<br/> 3.2.14.2 Weidert (1979)\t57<br/> 3.2.15 Wilaiwan '
+             '(1983, 1986)\t57<br/> 3.2.15.1 Wilaiwan (1983)\t57<br/> 3.2.15.2 '
+             'Wilaiwan (1986)\t58<br/> 3.2.16 Banchob (1977, 1987)\t58<br/> '
+             '3.2.16.1 Banchob (1977)\t58<br/> 3.2.16.2 Banchob (1987)\t'
+             '59<br/> 3.2.17 Nomal Gogoi (1987 &amp; 1994)\t59<br/> 3.2.17.1 '
+             'Gogoi (1987)\t59<br/> 3.2.17.2 Gogoi (1994)\t60<br/> 3.2.18 '
+             'Aimya Khang Gohain (1991, 1997, 1999)\t62<br/> 3.2.18.1 Aimya '
+             'Khang Gohain (1991)\t62<br/> 3.2.18.2 Aimya Khang Gohain (1997)\t'
+             '64<br/> 3.2.18.3 Aimya Khang Gohain (1999)\t64<br/> 3.2.19 '
+             'Kingcom (1992)\t64<br/> 3.2.20 Diller (1992)\t66<br/> 3.2.21 '
+             'Boruah (2001)\t67<br/> 3.3 OTHER SOURCES\t68<br/> 3.3.1 Barua, '
+             'G.C. (1930)\t68<br/> 3.3.2 Yehom Buragohain (1981, 1998)\t'
+             '68<br/> 3.3.2.1 Yehom Buragohain (1981)\t68<br/> 3.3.2.2 Yehom '
+             'Buragohain (1998)\t69<br/> 3.3.3 Sharma Thakur (1982)\t69<br/> '
+             '3.3.4 Ranoo (1986, 1996)\t70<br/> 3.3.4.1 Ranoo (1986)\t70<br/> '
+             '3.3.4.2 Ranoo (1996)\t70<br/> 3.3.5 Terwiel and Ranoo (1992)\t'
+             '70<br/> 3.3.6 Chaw Khouk Manpoong (1993)\t71<br/> 3.3.7 Jaya '
+             'Buragohain (1998)\t72<br/> 3.3.8 Hazarika, Chow Nogen (1993, '
+             '1996)\t73<br/> 3.3.8.1 Hazarika (1993)\t73<br/> 3.3.8.2 Hazarika '
+             '(1996)\t73<br/> 4 THEORETICAL CONSIDERATIONS\t74<br/> 4.1 '
+             "LINGUISTIC AND THEORETICAL BASIS\t74<br/> 4.1.1 'Basic "
+             "Linguistic Theory' and formal theories of syntax\t74<br/> 4.1.2 "
+             'Text Based Grammar\t76<br/> 4.1.2.1 Description and '
+             'Documentation\t78<br/> 4.1.3 Language centred approaches\t'
+             '79<br/> 4.1.4 Some particular difficulties in working with the '
+             'Tai languages of Assam\t79<br/> 4.2 APPROACHES TO THE STUDY OF '
+             'TAI LANGUAGES\t80<br/> 4.2.1 Noss (1964)\t80<br/> 4.2.2 Vichin '
+             'Panupong (1970)\t81<br/> 4.2.3 Pongsri Lekawatana (1970)\t'
+             '83<br/> 4.2.4 Previous research on Shan\t85<br/> 4.3 NATIVE '
+             'INTUITIONS AND NATIVE PEDAGOGY\t87<br/> 4.4 PRESCRIPTION AND '
+             'DESCRIPTION\t88<br/> 4.5 THE IMPORTANCE OF THE TAI SCRIPT\t'
+             '89<br/> 4.6 THE PRESENTATION OF TEXT EXAMPLES\t91<br/> 4.7 '
+             'ETHICAL CONSIDERATIONS\t92<br/> 4.7.1 The approach in this '
+             'study\t93<br/> 4.7.2 A note on bad language and swearing\t'
+             '96<br/> 5 METHODOLOGY: COLLECTION, ANALYSIS AND TRANSLATION OF '
+             'THE TEXTS\t97<br/> 5.1 THEORETICAL CONSIDERATIONS\t97<br/> 5.2 '
+             'THE COLLECTION OF DATA\t99<br/> 5.2.1 Elicitation undertaken as '
+             'part of this project\t99<br/> 5.2.2 Text collection\t100<br/> '
+             '5.3 DATA ANALYSIS\t101<br/> 5.3.1 Prerequisites for analysis\t'
+             '101<br/> 5.3.2 Difficulties encountered in analysis\t101<br/> '
+             '5.4 DATA STORAGE\t102<br/> 5.5 GROUPING THE TEXTS\t103<br/> 6 '
+             'PHONOLOGY\t106<br/> 6.1 SOME THEORETICAL CONSIDERATIONS\t'
+             '106<br/> 6.1.1 Proto Southwestern Tai phonemes\t106<br/> 6.1.1.1 '
+             'Proto Southwestern Tai consonants\t106<br/> 6.1.1.2 Consonant '
+             'change in Southwestern Tai\t108<br/> 6.1.1.3 Proto Southwestern '
+             'Tai vowels\t108<br/> 6.1.2 Diphthongs in Tai languages\t109<br/> '
+             '6.1.3 Syllable structure in Tai languages\t110<br/> 6.1.4 The '
+             'glottal stop\t111<br/> 6.1.5 Tones\t113<br/> 6.1.5.1 Definition '
+             'of Tone\t113<br/> 6.1.5.2 Notation of tone\t114<br/> 6.1.5.3 '
+             'Tone in Tai Languages: Theoretical &amp; historical background\t'
+             '114<br/> 6.1.5.4 Changed Tone\t116<br/> 6.2 PHAKE PHONOLOGY\t'
+             '116<br/> 6.2.1 Consonants\t116<br/> 6.2.2 Vowels\t118<br/> '
+             '6.2.2.1 Vowel length in Phake\t119<br/> 6.2.2.2 '
+             'Diphthongisation\t120<br/> 6.2.2.3 Vowel reduction\t121<br/> '
+             '6.2.3 Phonotactics\t122<br/> 6.2.3.1 Initial consonant clusters\t'
+             '122<br/> 6.2.3.2 Syllable structure\t123<br/> 6.2.4 Tone\t'
+             '124<br/> 6.2.4.1 Tone in Phake as notated by Banchob (1987)\t'
+             '124<br/> 6.2.4.2 Tone in Phake reported by Diller (1992)\t'
+             '125<br/> 6.2.4.3 Tone in Phake as reported by Wilaiwan (1983)\t'
+             '125<br/> 6.2.4.4 Present investigation\t126<br/> 6.2.4.5 Changed '
+             'Tone in Phake\t129<br/> 6.2.4.5.1 The questioning tone in Phake\t'
+             '129<br/> 6.2.4.5.2 The Tai Phake negative tone\t131<br/> '
+             '6.2.4.5.3 The imperative tone in Phake\t132<br/> 6.2.4.6 Tone '
+             'assignment in loan words\t133<br/> 6.3 AITON PHONOLOGY\t134<br/> '
+             '6.3.1 Consonants\t134<br/> 6.3.1.1 Realisation of the '
+             'Consonants\t135<br/> 6.3.1.1.1 Voiced Stops\t135<br/> 6.3.1.1.2 '
+             'Voiceless unaspirated stops\t136<br/> 6.3.1.1.3 Voiceless '
+             'aspirated stops\t137<br/> 6.3.1.1.4 Nasals\t138<br/> 6.3.1.1.5 '
+             'Fricatives\t139<br/> 6.3.1.1.6 Semivowels\t140<br/> 6.3.1.1.7 '
+             'Approximants\t141<br/> 6.3.1.1.8 Glottal Stop\t142<br/> 6.3.1.2 '
+             'Possible reassignment of phoneme symmetry\t143<br/> 6.3.2 '
+             'Vowels\t144<br/> 6.3.2.1 Previous descriptions\t144<br/> '
+             '6.3.2.1.1 Banchob\t144<br/> 6.3.2.1.2 Diller (1992)\t146<br/> '
+             '6.3.2.2 Present Investigation\t147<br/> 6.3.2.2.1 Front vowels\t'
+             '148<br/> 6.3.2.2.2 Central Vowels\t150<br/> 6.3.2.2.3 Back '
+             'Vowels\t150<br/> 6.3.2.2.4 Vowel length distinction\t153<br/> '
+             '6.3.2.2.5 Diphthongs\t155<br/> 6.3.2.2.6 Vowel reduction\t'
+             '155<br/> 6.3.3 Phonotactics\t156<br/> 6.3.3.1 Initial consonant '
+             'clusters\t156<br/> 6.3.3.2 Epenthetic syllables\t157<br/> 6.3.4 '
+             'Tone\t157<br/> 6.3.4.1 Previous Investigations of Aiton\t'
+             '157<br/> 6.3.4.1.1 Banchob\t157<br/> 6.3.4.1.1.1 Banchob '
+             '(24/4/1977)\t157<br/> 6.3.4.1.1.2 Banchob (Aiton-English-Thai '
+             'Dictionary)\t158<br/> 6.3.4.1.1.3 Banchob (Tape recordings)\t'
+             '159<br/> 6.3.4.1.2 Diller (1992)\t160<br/> 6.3.4.1.3 Current '
+             'situation\t160<br/> 6.3.4.2 Some examples of tone variations\t'
+             '162<br/> 6.3.4.2.1 Variation between tones 1 &amp; 4\t162<br/> '
+             '6.3.4.2.2 Possible survival of separate B4 tone\t163<br/> '
+             '6.3.4.3 Short tones in Aiton\t163<br/> 6.3.4.4 Other unusual '
+             'tonal patterns\t164<br/> 6.3.4.5 Tone assignment in loan words\t'
+             '164<br/> 6.3.5 The place of Aiton in Southwestern Tai\t165<br/> '
+             '6.4 SOME PRELIMINARY OBSERVATIONS ON KHAMYANG PHONOLOGY\t'
+             '165<br/> 6.4.1 Consonants\t166<br/> 6.4.1.1 Consonant clusters\t'
+             '169<br/> 6.4.2 Vowels\t169<br/> 6.4.2.1 Vowel reduction\t'
+             '170<br/> 6.4.3 Tones\t171<br/> 6.5 SOME PRELIMINARY OBSERVATIONS '
+             'ON AHOM PHONOLOGY\t174<br/> 6.5.1 Consonants\t174<br/> 6.5.2 '
+             'Vowels\t176<br/> 6.5.3 Tones\t177<br/> 6.5.4 Ahom and Aiton\t'
+             '178<br/> 7 WRITING\t179<br/> 7.1 AHOM SCRIPT\t179<br/> 7.1.1 A '
+             'note on the transcription of the Ahom script\t182<br/> 7.2 AITON '
+             '&amp; PHAKE SCRIPT\t185<br/> 7.2.1 Initial Consonants\t185<br/> '
+             '7.2.1.1 Shapes of the Consonants\t186<br/> 7.2.2 Final '
+             'consonants\t187<br/> 7.2.2.1 Subscripted consonants\t187<br/> '
+             '7.2.3 Vowels\t188<br/> 7.2.3.1 Special symbols for '
+             'vowel-consonant or diphthong combinations\t192<br/> 7.2.3.2 '
+             'Names of the vowel symbols\t193<br/> 7.2.4 Ligatures\t194<br/> '
+             '7.2.5 The writing of borrowed words in Tai script\t195<br/> 7.3 '
+             'A NOTE ON THE REVISED KHAMTI SCRIPT\t196<br/> 7.4 COMPARISON OF '
+             'THE TAI SCRIPTS\t197<br/> 7.5 SOME NOTES ON TONE MARKING\t'
+             '199<br/> 7.5.1 Proposals for marking tones in Tai\t199<br/> 7.6 '
+             'DEVELOPMENT/ HISTORY OF THE TAI SCRIPTS\t201<br/> 7.7 '
+             'ALPHABETICAL ORDER OF THE TAI SCRIPTS\t202<br/> 7.8 DEVELOPMENT '
+             'OF THE TAI FONTS\t203<br/> 7.9 ON WRITING THE TAI LANGUAGE IN '
+             'ASSAMESE SCRIPT\t205<br/> 8 SYNTAX\t208<br/> 8.1 TYPOLOGICAL '
+             'PROFILE OF THE TAI LANGUAGES OF ASSAM\t208<br/> 8.1.1 '
+             'Morphological Structure\t208<br/> 8.1.2 Syntactic Structure\t'
+             '210<br/> 8.2 WORDS\t212<br/> 8.2.1 Word classes in Tai '
+             'languages\t212<br/> 8.2.2 Nominals\t215<br/> 8.2.2.1 Nouns\t'
+             '216<br/> 8.2.2.1.1 Common Nouns\t216<br/> 8.2.2.1.1.1 Simple '
+             'monosyllabic nouns\t216<br/> 8.2.2.1.1.2 Compound nouns\t'
+             '216<br/> 8.2.2.1.2 Proper Nouns\t217<br/> 8.2.2.2 Pronouns\t'
+             '218<br/> 8.2.2.2.1 Reflexive pronouns\t220<br/> 8.2.2.2.2 '
+             'Reciprocals\t221<br/> 8.2.2.3 Interrogative Words\t222<br/> '
+             '8.2.2.4 Classifiers\t224<br/> 8.2.2.5 Noun class markers\t'
+             '229<br/> 8.2.2.6 Nominalisation\t230<br/> 8.2.3 Verbals\t'
+             '231<br/> 8.2.3.1 Verbs\t231<br/> 8.2.3.1.1 Monosyllabic verbs\t'
+             '231<br/> 8.2.3.1.2 Compound verbs\t232<br/> 8.2.3.2 Auxiliary '
+             'Verbs\t233<br/> 8.2.3.3 Completive Verbs\t235<br/> 8.2.4 '
+             'Adjectives\t236<br/> 8.2.4.1 Adjectival modifiers\t238<br/> '
+             '8.2.5 Prepositions\t239<br/> 8.2.6 Numbers and quantifiers\t'
+             '240<br/> 8.2.6.1 Cardinal Numbers\t241<br/> 8.2.6.2 Ordinal '
+             'Numbers\t242<br/> 8.2.6.3 Other quantifiers\t242<br/> 8.2.7 '
+             'Demonstratives\t243<br/> 8.2.8 Conjunctions\t245<br/> 8.2.8.1 '
+             'Linking two nouns in a noun phrase\t245<br/> 8.2.8.2 Linking two '
+             'predications\t246<br/> 8.2.9 Isolatives\t249<br/> 8.2.9.1 '
+             'Interjections and Exclamations\t249<br/> 8.2.9.2 Responses\t'
+             '250<br/> 8.2.9.3 Vocatives\t251<br/> 8.2.9.4 Expressives or '
+             'Imitatives\t252<br/> 8.2.10 Bound Lexemes\t253<br/> 8.2.10.1 '
+             'Tense / Aspect Words\t253<br/> 8.2.10.2 Sentence Particles\t'
+             '253<br/> 8.2.11 Borrowed words\t255<br/> 8.2.11.1 Burmese loans\t'
+             '255<br/> 8.2.11.2 Pali Loans\t256<br/> 8.2.11.3 Assamese Loans\t'
+             '257<br/> 8.2.11.4 English Loans\t257<br/> 8.3 CONSTITUENTS\t'
+             '258<br/> 8.3.1 Preliminary theoretical considerations\t258<br/> '
+             '8.3.2 The Noun Phrase\t259<br/> 8.3.2.1 Possessor Phrase\t'
+             '261<br/> 8.3.2.2 Adjective Phrases\t263<br/> 8.3.2.2.1 '
+             'Comparison and similarity\t263<br/> 8.3.2.3 Quantifier Phrases\t'
+             '265<br/> 8.3.2.4 The syntax of demonstratives\t267<br/> 8.3.2.5 '
+             'Relative Clauses\t268<br/> 8.3.3 Core Prepositional Phrases\t'
+             '270<br/> 8.3.3.1 Object as prepositional phrase\t270<br/> '
+             '8.3.3.2 Prepositions in three participant events\t274<br/> '
+             '8.3.3.3 Experiencer as Adjunct\t278<br/> 8.3.4 Non-core '
+             'elements\t280<br/> 8.3.4.1 Temporal Phrases\t280<br/> 8.3.4.2 '
+             'Locational Phrases\t281<br/> 8.3.5 Isolative Phrases\t283<br/> '
+             '8.3.6 Elaborate expressions\t285<br/> 8.4 CONSTITUENT ORDER\t'
+             '288<br/> 8.4.1 Preliminary theoretical considerations\t288<br/> '
+             '8.4.1.1 Is there a basic constituent order in Tai?\t291<br/> '
+             '8.4.1.2 Is there a verb phrase in Tai?\t292<br/> 8.4.2 '
+             'Constituent order in Khamti\t293<br/> 8.4.2.1 Needham\t293<br/> '
+             '8.4.2.2 Wilaiwan\t294<br/> 8.4.2.3 Chau Khouk Manpoong\t295<br/> '
+             '8.4.2.4 Present investigation\t296<br/> 8.4.3 Constituent order '
+             'in the Tai languages of Assam\t296<br/> 8.4.3.1 Differences in '
+             'constituent order between Tai Aiton and Tai Phake\t302<br/> '
+             '8.4.4 A note on information packaging\t303<br/> 8.5 '
+             'PREDICATIONS\t304<br/> 8.5.1 Copula\t304<br/> 8.5.2 Existential '
+             'sentences and possession\t308<br/> 8.5.3 Definitional sentences\t'
+             '310<br/> 8.5.4 One-participant events\t312<br/> 8.5.5 '
+             'Two-participant events\t312<br/> 8.5.6 Three-participant events\t'
+             '313<br/> 8.5.7 Tense, Aspect and Modality\t315<br/> 8.5.7.1 '
+             'Preliminary Theoretical Considerations\t315<br/> 8.5.7.2 '
+             'Previous studies of the Tai languages\t317<br/> 8.5.7.2.1 '
+             'Needham\t317<br/> 8.5.7.2.2 Banchob\t319<br/> 8.5.7.2.3 Aimya '
+             'Khang\t321<br/> 8.5.7.3 The present investigation\t321<br/> '
+             '8.5.7.4 TAM morphemes which precede the verb (TAM1)\t322<br/> '
+             '8.5.7.4.1 tak1/ta1/ti1\t322<br/> 8.5.7.5 TAM morphemes which may '
+             'either immediately follow the verb or be placed at the end of '
+             'the core sentence (TAM2)\t324<br/> 8.5.7.5.1 kaa1/kA1\t326<br/> '
+             '8.5.7.5.2 maa2/mA2\t328<br/> 8.5.7.5.3 wai3/wai4\t331<br/> '
+             '8.5.7.6 TAM morphemes which occur at the end of the core '
+             'sentence (TAM3)\t333<br/> 8.5.7.6.1 uu1/U1 and q1\t334<br/> '
+             '8.5.7.6.2 suu1/sU1\t335<br/> 8.5.7.6.3 Yau3/yau4\t337<br/> '
+             '8.5.7.7 Other TAM morphemes\t339<br/> 8.5.7.7.1 dai3/nai3\t'
+             '339<br/> 8.5.7.8 Combinations of TAM morphemes\t341<br/> 8.5.7.9 '
+             'Utterances unmarked by TAM morphemes\t343<br/> 8.5.7.10 Time '
+             'expressions\t344<br/> 8.5.8 Multi-Verb Sequences\t345<br/> 8.5.9 '
+             'Completive Verbs\t347<br/> 8.6 NON-DECLARATIVE SENTENCES\t'
+             '349<br/> 8.6.1 Theoretical considerations\t349<br/> 8.6.2 '
+             'Questions\t349<br/> 8.6.2.1 Polar questions\t350<br/> 8.6.2.2 '
+             'WH-questions\t352<br/> 8.6.2.3 Questions expressed by word order '
+             'or tone alteration\t352<br/> 8.6.2.3.1 Word order\t352<br/> '
+             '8.6.2.3.2 Tonal alternation\t353<br/> 8.6.3 Negation\t355<br/> '
+             '8.6.4 Imperative\t359<br/> 8.7 COMPLEX SENTENCES\t363<br/> 8.7.1 '
+             'Causatives &amp; Purposive constructions\t367<br/> 9 THE '
+             'LITERATURE OF THE TAI\t372<br/> 9.1 LITERACY AMONG THE TAI\t'
+             '372<br/> 9.2 TYPES OF LITERATURE\t375<br/> 9.2.1 Cataloguing the '
+             'Tai manuscripts\t378<br/> 9.2.2 The relationship between Ahom '
+             'Texts and the texts of the other Tai groups\t378<br/> 9.2.3 The '
+             'difficulties of reading Ahom Texts\t379<br/> 9.2.4 The '
+             'interpretation of Tai Aiton, Khamyang and Phake texts\t380<br/> '
+             '9.2.5 Some examples of literary devices\t380<br/> 9.3 THE '
+             'IMPORTANCE OF LITERATURE\t382<br/> 9.4 BRINGING THE TAI '
+             'LANGUAGES INTO THE COMPUTER AGE: PRESENTING THE LITERATURE FOR '
+             'THE BENEFIT OF THE COMMUNITY\t382<br/> 9.5 THE TEXTS PRESENTED '
+             'IN THIS STUDY\t383<br/> 9.5.1 Phake\t384<br/> 9.5.2 Aiton\t'
+             '386<br/> 9.5.3 Khamyang\t387<br/> 9.5.4 Turung\t388<br/> 10 '
+             'LEXICOGRAPHY\t389<br/> 10.1 TAI AITON DICTIONARY\t389<br/> '
+             '10.1.1 The word list of Bidya Thoumoung\t389<br/> 10.1.2 Other '
+             'sources of lexicographical information on Aiton\t390<br/> 10.1.3 '
+             'Current state of the Tai Aiton Dictionary\t391<br/> 10.2 TAI '
+             'PHAKE DICTIONARY\t392<br/> 10.2.1 Current State of the Tai Phake '
+             'Dictionary\t392<br/> 10.3 THE COMPUTER DATA BASE\t393<br/> '
+             '10.3.1 Design of the data base\t393<br/> 11 POSTSCRIPT: '
+             'PRESENTING THIS WORK IN AN ELECTRONIC FORMAT\t395<br/> 11.1 '
+             'CREATING AND WORKING WITH NON-STANDARD FONTS\t395<br/> 11.2 '
+             'PRESENTING THE SOUND FILES\t397<br/> 11.2.1 Recording the texts\t'
+             '397<br/> 11.2.2 Digitising the texts\t398<br/> 11.2.3 Linking '
+             'the texts to the work\t398<br/> 11.3 THE ROLE OF THE RESEARCHER '
+             'IN THE ELECTRONIC AGE\t400<br/> 11.4 ARCHIVING THE DATA\t'
+             '400<br/> 11.5 POSSIBILITIES THAT WERE NOT FOLLOWED UP\t401<br/> '
+             '11.6 USING THE CD VERSION OF THIS WORK\t401<br/> 11.7 '
+             'CONCLUSION\t402<br/>Bibliography\t403</description>  '
+             '</descriptions></resource>'}
+~~~~~~~~~~
+keys=
+datacite
+~~~~~~~~~~
+output_exchange=
+datacite
+<?xml%20version%3D%221.0%22?>%0A<resource%20xmlns%3D%22http://datacite.org/schema/kernel-3%22%20xmlns:xsi%3D%22http://www.w3.org/2001/XMLSchema-
+instance%22%20xsi:schemaLocation%3D%22http://datacite.org/schema/kernel-3%20http://schema.datacite.org/meta/kernel-3/metadata.xsd%22>%20%20<identifier%20identifierType%3D%22DOI%22>10.15144/PL-565</identifier>%20%20<creators>%20%20%20%20<creator>%20%20%20%20%20%20<creatorName>Morey,%20Stephen%20%28Ed.%29</creatorName>%20%20%20%20</creator>%20%20</creators>%20%20<titles>%20%20%20%20<title>The%20Tai%20languages%20of%20Assam%20-%20a%20grammar%20and%20texts</title>%20%20</titles>%20%20<publisher>Pacific%20Linguistics</publisher>%20%20<publicationYear>2005</publicationYear>%20%20<contributors>%20%20%20%20<contributor%20contributorType%3D%22Editor%22>%20%20%20%20%20%20<contributorName>CRCL</contributorName>%20%20%20%20</contributor>%20%20%20%20<contributor%20contributorType%3D%22HostingInstitution%22>%20%20%20%20%20%20<contributorName>CRCL</contributorName>%20%20%20%20</contributor>%20%20%20%20<contributor%20contributorType%3D%22RightsHolder%22>%20%20%20%20%20%20<contributorName>Pacific%20Linguistics%20and/or%20the%20author%28s%29</contributorName>%20%20%20%20</contributor>%20%20</contributors>%20%20<dates>%20%20%20%20<date%20dateType%3D%22Copyrighted%22>2005</date>%20%20%20%20<date%20dateType%3D%22Issued%22>2015</date>%20%20</dates>%20%20<language>en</language>%20%20<resourceType%20resourceTypeGeneral%3D%22Text%22>book</resourceType>%20%20<alternateIdentifiers>%20%20%20%20<alternateIdentifier%20alternateIdentifierType%3D%22Series%22>PL-565</alternateIdentifier>%20%20</alternateIdentifiers>%20%20<relatedIdentifiers>%20%20%20%20<relatedIdentifier%20relatedIdentifierType%3D%22URN%22%20relationType%3D%22IsIdenticalTo%22>urn:md5:fb205887ff19beff96ce6409e313ec62</relatedIdentifier>%20%20%20%20<relatedIdentifier%20relatedIdentifierType%3D%22URN%22%20relationType%3D%22IsIdenticalTo%22>urn:sha1:e7d4566fa80d2d926a68c56bf87a74d8df3ff9f8</relatedIdentifier>%20%20%20%20<relatedIdentifier%20relatedIdentifierType%3D%22ISBN%22%20relationType%3D%22IsIdenticalTo%22>0858835495</relatedIdentifier>%20%20</relatedIdentifiers>%20%20<sizes>%20%20%20%20<size>39M</size>%20%20%20%20<size>xxiv%20+%20436%20pages</size>%20%20</sizes>%20%20<formats>%20%20%20%20<format>PDF</format>%20%20</formats>%20%20<version>1.0</version>%20%20<rightsList>%20%20%20%20<rights%20rightsURI%3D%22http://creativecommons.org/licenses/by-
+sa/4.0%22>CC%20BY-
+SA%204.0</rights>%20%20</rightsList>%20%20<descriptions>%20%20%20%20<description%20descriptionType%3D%22SeriesInformation%22>PL-565</description>%20%20%20%20<description%20descriptionType%3D%22TableOfContents%22>Dedication%09v<br/>Table%20of%20contents%09vii<br/>Acknowledgments%09xxi<br/>Abbreviations%09xxiii<br/>%201%20INTRODUCTION%091<br/>%201.1%20MEETING%20THE%20TAI%20OF%20ASSAM%092<br/>%201.1.1%20Some%20difficulties%20in%20undertaking%20this%20research%093<br/>%201.1.1.1%20Crossing%20a%20bamboo%20bridge%095<br/>%201.1.2%20Life%20in%20Tai%20villages%096<br/>%201.2%20THE%20TAI%20LANGUAGE%20FAMILY%097<br/>%201.2.1%20The%20Shan%20group%20of%20languages%097<br/>%201.2.2%20The%20similarity%20of%20the%20languages%20in%20the%20Shan%20group%098<br/>%201.2.3%20The%20Tai%20varieties%20of%20Northeast%20India%099<br/>%201.3%20THE%20DATA%20WHICH%20FORMS%20THE%20BASIS%20OF%20THIS%20STUDY%0910<br/>%201.4%20KEY%20AIMS%20OF%20THIS%20STUDY%0911<br/>%201.5%20THE%20SCOPE%20OF%20THIS%20WORK%0912<br/>%202%20THE%20TAIS%20OF%20ASSAM%20%26amp%3B%20THEIR%20LANGUAGES%0913<br/>%202.1%20THE%20LINGUISTIC%20MIX%20IN%20NORTHEAST%20INDIA%0913<br/>%202.2%20THE%20AHOMS%0914<br/>%202.3%20THE%20OTHER%20TAI%20GROUPS%0917<br/>%202.3.1%20Some%20notes%20on%20the%20history%20of%20the%20Tai%0918<br/>%202.3.2%20The%20Tai%20Aiton%20Villages%0920<br/>%202.3.3%20The%20Tai%20Phake%20Villages%0922<br/>%202.3.4%20Other%20Tai%20Speaking%20Villages%0924<br/>%202.3.4.1%20Khamti%20villages%0924<br/>%202.3.4.2%20Tai%20Khamyang%20village%0924<br/>%202.3.4.3%20Turung%20Villages%0924<br/>%202.3.5%20Difficulties%20with%20identifying%20the%20various%20Tai%20groups%0925<br/>%202.3.6%20A%20note%20on%20the%20names%20of%20the%20Tai%20groups%0926<br/>%202.3.6.1%20Ahom%0926<br/>%202.3.6.2%20Aiton%0926<br/>%202.3.6.3%20Khamti%0927<br/>%202.3.6.4%20Khamyang%0928<br/>%202.3.6.5%20Phake%0928<br/>%202.3.6.6%20Turung%0928<br/>%202.4%20CURRENT%20LINGUISTIC%20SITUATION%0929<br/>%202.4.1%20A%20note%20on%20the%20Turung%0931<br/>%202.4.2%20The%20Khamyang%20language%20revitalisation%20%282002%29%0931<br/>%203%20PREVIOUS%20STUDIES%20OF%20THE%20TAI%20LANGUAGES%0933<br/>%203.1%20THE%20NEED%20FOR%20A%20CRITICAL%20REVIEW%20OF%20EARLIER%20SOURCES%20ON%20THE%20TAI%20LANGUAGES%20OF%20ASSAM%0933<br/>%203.2%20LINGUISTIC%20SOURCES%0934<br/>%203.2.1%20Buchanan%20%281799%29%0934<br/>%203.2.2%20Brown%20%281837%29%0934<br/>%203.2.3%20Robinson%20%281849%29%0935<br/>%203.2.4%20Campbell%20%281874%29%0937<br/>%203.2.5%20Needham%20%281894%29%0939<br/>%203.2.6%20Grierson%20%281904%29%0940<br/>%203.2.6.1%20Contents%20of%20Grierson%20%281904%29%0941<br/>%203.2.6.2%20General%20Comments%20on%20the%20Tai%20Group%20%281904:59-79%29%0941<br/>%203.2.6.3%20Ahom%20%281904:81-140%29%0942<br/>%203.2.6.3.1%20Tones%0942<br/>%203.2.6.4%20Khamti%20%281902:140-165%29%0942<br/>%203.2.6.4.1%20Tones%0942<br/>%203.2.6.4.2%20Texts%0942<br/>%203.2.6.4.2.1%20From%20the%20Parable%20of%20the%20Prodigal%20Son%0943<br/>%203.2.6.5%20Tairong%20%281904:167-177%29%0944<br/>%203.2.6.5.1%20Texts%0944<br/>%203.2.6.5.1.1%20From%20the%20Parable%20of%20the%20Prodigal%20Son%0944<br/>%203.2.6.6%20Nora%20%281904:179-191%29%0945<br/>%203.2.6.6.1%20Texts%0945<br/>%203.2.6.6.1.1%20From%20the%20Parable%20of%20the%20Prodigal%20Son%0945<br/>%203.2.6.6.1.2%20Riddles%0945<br/>%203.2.6.7%20Aitonia%20%281904:193-211%29%0946<br/>%203.2.6.7.1%20Orthography%0947<br/>%203.2.6.7.2%20The%20texts%0947<br/>%203.2.6.7.2.1%20From%20the%20Parable%20of%20the%20Prodigal%20Son%0947<br/>%203.2.6.8%20Comparative%20Word%20list%20and%20Sentences%20%281904:214-233%29%0948<br/>%203.2.6.8.1%20Vocabulary%20items%0948<br/>%203.2.6.8.2%20Tense%0948<br/>%203.2.7%20Barua,%20G.C.%20%281920%29%0949<br/>%203.2.8%20Barua,%20G.K.%20%281936%29%20%28Ahom%20Primer%29%0949<br/>%203.2.9%20Barua,%20B.K.%20and%20Phukan%20%281964%29%20%28Ahom%20Lexicons%29%0950<br/>%203.2.10%20Barua,%20B.%20%281966%29%0952<br/>%203.2.11%20Biswas,%20S.%20%281966%29%0952<br/>%203.2.12%20Phukan%20%281966%29%0953<br/>%203.2.13%20Harris%20%281976%29%0954<br/>%203.2.14%20Weidert%20%281977%20%26amp%3B%201979%29%0955<br/>%203.2.14.1%20Weidert%20%281977%29%0955<br/>%203.2.14.2%20Weidert%20%281979%29%0957<br/>%203.2.15%20Wilaiwan%20%281983,%201986%29%0957<br/>%203.2.15.1%20Wilaiwan%20%281983%29%0957<br/>%203.2.15.2%20Wilaiwan%20%281986%29%0958<br/>%203.2.16%20Banchob%20%281977,%201987%29%0958<br/>%203.2.16.1%20Banchob%20%281977%29%0958<br/>%203.2.16.2%20Banchob%20%281987%29%0959<br/>%203.2.17%20Nomal%20Gogoi%20%281987%20%26amp%3B%201994%29%0959<br/>%203.2.17.1%20Gogoi%20%281987%29%0959<br/>%203.2.17.2%20Gogoi%20%281994%29%0960<br/>%203.2.18%20Aimya%20Khang%20Gohain%20%281991,%201997,%201999%29%0962<br/>%203.2.18.1%20Aimya%20Khang%20Gohain%20%281991%29%0962<br/>%203.2.18.2%20Aimya%20Khang%20Gohain%20%281997%29%0964<br/>%203.2.18.3%20Aimya%20Khang%20Gohain%20%281999%29%0964<br/>%203.2.19%20Kingcom%20%281992%29%0964<br/>%203.2.20%20Diller%20%281992%29%0966<br/>%203.2.21%20Boruah%20%282001%29%0967<br/>%203.3%20OTHER%20SOURCES%0968<br/>%203.3.1%20Barua,%20G.C.%20%281930%29%0968<br/>%203.3.2%20Yehom%20Buragohain%20%281981,%201998%29%0968<br/>%203.3.2.1%20Yehom%20Buragohain%20%281981%29%0968<br/>%203.3.2.2%20Yehom%20Buragohain%20%281998%29%0969<br/>%203.3.3%20Sharma%20Thakur%20%281982%29%0969<br/>%203.3.4%20Ranoo%20%281986,%201996%29%0970<br/>%203.3.4.1%20Ranoo%20%281986%29%0970<br/>%203.3.4.2%20Ranoo%20%281996%29%0970<br/>%203.3.5%20Terwiel%20and%20Ranoo%20%281992%29%0970<br/>%203.3.6%20Chaw%20Khouk%20Manpoong%20%281993%29%0971<br/>%203.3.7%20Jaya%20Buragohain%20%281998%29%0972<br/>%203.3.8%20Hazarika,%20Chow%20Nogen%20%281993,%201996%29%0973<br/>%203.3.8.1%20Hazarika%20%281993%29%0973<br/>%203.3.8.2%20Hazarika%20%281996%29%0973<br/>%204%20THEORETICAL%20CONSIDERATIONS%0974<br/>%204.1%20LINGUISTIC%20AND%20THEORETICAL%20BASIS%0974<br/>%204.1.1%20%27Basic%20Linguistic%20Theory%27%20and%20formal%20theories%20of%20syntax%0974<br/>%204.1.2%20Text%20Based%20Grammar%0976<br/>%204.1.2.1%20Description%20and%20Documentation%0978<br/>%204.1.3%20Language%20centred%20approaches%0979<br/>%204.1.4%20Some%20particular%20difficulties%20in%20working%20with%20the%20Tai%20languages%20of%20Assam%0979<br/>%204.2%20APPROACHES%20TO%20THE%20STUDY%20OF%20TAI%20LANGUAGES%0980<br/>%204.2.1%20Noss%20%281964%29%0980<br/>%204.2.2%20Vichin%20Panupong%20%281970%29%0981<br/>%204.2.3%20Pongsri%20Lekawatana%20%281970%29%0983<br/>%204.2.4%20Previous%20research%20on%20Shan%0985<br/>%204.3%20NATIVE%20INTUITIONS%20AND%20NATIVE%20PEDAGOGY%0987<br/>%204.4%20PRESCRIPTION%20AND%20DESCRIPTION%0988<br/>%204.5%20THE%20IMPORTANCE%20OF%20THE%20TAI%20SCRIPT%0989<br/>%204.6%20THE%20PRESENTATION%20OF%20TEXT%20EXAMPLES%0991<br/>%204.7%20ETHICAL%20CONSIDERATIONS%0992<br/>%204.7.1%20The%20approach%20in%20this%20study%0993<br/>%204.7.2%20A%20note%20on%20bad%20language%20and%20swearing%0996<br/>%205%20METHODOLOGY:%20COLLECTION,%20ANALYSIS%20AND%20TRANSLATION%20OF%20THE%20TEXTS%0997<br/>%205.1%20THEORETICAL%20CONSIDERATIONS%0997<br/>%205.2%20THE%20COLLECTION%20OF%20DATA%0999<br/>%205.2.1%20Elicitation%20undertaken%20as%20part%20of%20this%20project%0999<br/>%205.2.2%20Text%20collection%09100<br/>%205.3%20DATA%20ANALYSIS%09101<br/>%205.3.1%20Prerequisites%20for%20analysis%09101<br/>%205.3.2%20Difficulties%20encountered%20in%20analysis%09101<br/>%205.4%20DATA%20STORAGE%09102<br/>%205.5%20GROUPING%20THE%20TEXTS%09103<br/>%206%20PHONOLOGY%09106<br/>%206.1%20SOME%20THEORETICAL%20CONSIDERATIONS%09106<br/>%206.1.1%20Proto%20Southwestern%20Tai%20phonemes%09106<br/>%206.1.1.1%20Proto%20Southwestern%20Tai%20consonants%09106<br/>%206.1.1.2%20Consonant%20change%20in%20Southwestern%20Tai%09108<br/>%206.1.1.3%20Proto%20Southwestern%20Tai%20vowels%09108<br/>%206.1.2%20Diphthongs%20in%20Tai%20languages%09109<br/>%206.1.3%20Syllable%20structure%20in%20Tai%20languages%09110<br/>%206.1.4%20The%20glottal%20stop%09111<br/>%206.1.5%20Tones%09113<br/>%206.1.5.1%20Definition%20of%20Tone%09113<br/>%206.1.5.2%20Notation%20of%20tone%09114<br/>%206.1.5.3%20Tone%20in%20Tai%20Languages:%20Theoretical%20%26amp%3B%20historical%20background%09114<br/>%206.1.5.4%20Changed%20Tone%09116<br/>%206.2%20PHAKE%20PHONOLOGY%09116<br/>%206.2.1%20Consonants%09116<br/>%206.2.2%20Vowels%09118<br/>%206.2.2.1%20Vowel%20length%20in%20Phake%09119<br/>%206.2.2.2%20Diphthongisation%09120<br/>%206.2.2.3%20Vowel%20reduction%09121<br/>%206.2.3%20Phonotactics%09122<br/>%206.2.3.1%20Initial%20consonant%20clusters%09122<br/>%206.2.3.2%20Syllable%20structure%09123<br/>%206.2.4%20Tone%09124<br/>%206.2.4.1%20Tone%20in%20Phake%20as%20notated%20by%20Banchob%20%281987%29%09124<br/>%206.2.4.2%20Tone%20in%20Phake%20reported%20by%20Diller%20%281992%29%09125<br/>%206.2.4.3%20Tone%20in%20Phake%20as%20reported%20by%20Wilaiwan%20%281983%29%09125<br/>%206.2.4.4%20Present%20investigation%09126<br/>%206.2.4.5%20Changed%20Tone%20in%20Phake%09129<br/>%206.2.4.5.1%20The%20questioning%20tone%20in%20Phake%09129<br/>%206.2.4.5.2%20The%20Tai%20Phake%20negative%20tone%09131<br/>%206.2.4.5.3%20The%20imperative%20tone%20in%20Phake%09132<br/>%206.2.4.6%20Tone%20assignment%20in%20loan%20words%09133<br/>%206.3%20AITON%20PHONOLOGY%09134<br/>%206.3.1%20Consonants%09134<br/>%206.3.1.1%20Realisation%20of%20the%20Consonants%09135<br/>%206.3.1.1.1%20Voiced%20Stops%09135<br/>%206.3.1.1.2%20Voiceless%20unaspirated%20stops%09136<br/>%206.3.1.1.3%20Voiceless%20aspirated%20stops%09137<br/>%206.3.1.1.4%20Nasals%09138<br/>%206.3.1.1.5%20Fricatives%09139<br/>%206.3.1.1.6%20Semivowels%09140<br/>%206.3.1.1.7%20Approximants%09141<br/>%206.3.1.1.8%20Glottal%20Stop%09142<br/>%206.3.1.2%20Possible%20reassignment%20of%20phoneme%20symmetry%09143<br/>%206.3.2%20Vowels%09144<br/>%206.3.2.1%20Previous%20descriptions%09144<br/>%206.3.2.1.1%20Banchob%09144<br/>%206.3.2.1.2%20Diller%20%281992%29%09146<br/>%206.3.2.2%20Present%20Investigation%09147<br/>%206.3.2.2.1%20Front%20vowels%09148<br/>%206.3.2.2.2%20Central%20Vowels%09150<br/>%206.3.2.2.3%20Back%20Vowels%09150<br/>%206.3.2.2.4%20Vowel%20length%20distinction%09153<br/>%206.3.2.2.5%20Diphthongs%09155<br/>%206.3.2.2.6%20Vowel%20reduction%09155<br/>%206.3.3%20Phonotactics%09156<br/>%206.3.3.1%20Initial%20consonant%20clusters%09156<br/>%206.3.3.2%20Epenthetic%20syllables%09157<br/>%206.3.4%20Tone%09157<br/>%206.3.4.1%20Previous%20Investigations%20of%20Aiton%09157<br/>%206.3.4.1.1%20Banchob%09157<br/>%206.3.4.1.1.1%20Banchob%20%2824/4/1977%29%09157<br/>%206.3.4.1.1.2%20Banchob%20%28Aiton-
+English-
+Thai%20Dictionary%29%09158<br/>%206.3.4.1.1.3%20Banchob%20%28Tape%20recordings%29%09159<br/>%206.3.4.1.2%20Diller%20%281992%29%09160<br/>%206.3.4.1.3%20Current%20situation%09160<br/>%206.3.4.2%20Some%20examples%20of%20tone%20variations%09162<br/>%206.3.4.2.1%20Variation%20between%20tones%201%20%26amp%3B%204%09162<br/>%206.3.4.2.2%20Possible%20survival%20of%20separate%20B4%20tone%09163<br/>%206.3.4.3%20Short%20tones%20in%20Aiton%09163<br/>%206.3.4.4%20Other%20unusual%20tonal%20patterns%09164<br/>%206.3.4.5%20Tone%20assignment%20in%20loan%20words%09164<br/>%206.3.5%20The%20place%20of%20Aiton%20in%20Southwestern%20Tai%09165<br/>%206.4%20SOME%20PRELIMINARY%20OBSERVATIONS%20ON%20KHAMYANG%20PHONOLOGY%09165<br/>%206.4.1%20Consonants%09166<br/>%206.4.1.1%20Consonant%20clusters%09169<br/>%206.4.2%20Vowels%09169<br/>%206.4.2.1%20Vowel%20reduction%09170<br/>%206.4.3%20Tones%09171<br/>%206.5%20SOME%20PRELIMINARY%20OBSERVATIONS%20ON%20AHOM%20PHONOLOGY%09174<br/>%206.5.1%20Consonants%09174<br/>%206.5.2%20Vowels%09176<br/>%206.5.3%20Tones%09177<br/>%206.5.4%20Ahom%20and%20Aiton%09178<br/>%207%20WRITING%09179<br/>%207.1%20AHOM%20SCRIPT%09179<br/>%207.1.1%20A%20note%20on%20the%20transcription%20of%20the%20Ahom%20script%09182<br/>%207.2%20AITON%20%26amp%3B%20PHAKE%20SCRIPT%09185<br/>%207.2.1%20Initial%20Consonants%09185<br/>%207.2.1.1%20Shapes%20of%20the%20Consonants%09186<br/>%207.2.2%20Final%20consonants%09187<br/>%207.2.2.1%20Subscripted%20consonants%09187<br/>%207.2.3%20Vowels%09188<br/>%207.2.3.1%20Special%20symbols%20for%20vowel-
+consonant%20or%20diphthong%20combinations%09192<br/>%207.2.3.2%20Names%20of%20the%20vowel%20symbols%09193<br/>%207.2.4%20Ligatures%09194<br/>%207.2.5%20The%20writing%20of%20borrowed%20words%20in%20Tai%20script%09195<br/>%207.3%20A%20NOTE%20ON%20THE%20REVISED%20KHAMTI%20SCRIPT%09196<br/>%207.4%20COMPARISON%20OF%20THE%20TAI%20SCRIPTS%09197<br/>%207.5%20SOME%20NOTES%20ON%20TONE%20MARKING%09199<br/>%207.5.1%20Proposals%20for%20marking%20tones%20in%20Tai%09199<br/>%207.6%20DEVELOPMENT/%20HISTORY%20OF%20THE%20TAI%20SCRIPTS%09201<br/>%207.7%20ALPHABETICAL%20ORDER%20OF%20THE%20TAI%20SCRIPTS%09202<br/>%207.8%20DEVELOPMENT%20OF%20THE%20TAI%20FONTS%09203<br/>%207.9%20ON%20WRITING%20THE%20TAI%20LANGUAGE%20IN%20ASSAMESE%20SCRIPT%09205<br/>%208%20SYNTAX%09208<br/>%208.1%20TYPOLOGICAL%20PROFILE%20OF%20THE%20TAI%20LANGUAGES%20OF%20ASSAM%09208<br/>%208.1.1%20Morphological%20Structure%09208<br/>%208.1.2%20Syntactic%20Structure%09210<br/>%208.2%20WORDS%09212<br/>%208.2.1%20Word%20classes%20in%20Tai%20languages%09212<br/>%208.2.2%20Nominals%09215<br/>%208.2.2.1%20Nouns%09216<br/>%208.2.2.1.1%20Common%20Nouns%09216<br/>%208.2.2.1.1.1%20Simple%20monosyllabic%20nouns%09216<br/>%208.2.2.1.1.2%20Compound%20nouns%09216<br/>%208.2.2.1.2%20Proper%20Nouns%09217<br/>%208.2.2.2%20Pronouns%09218<br/>%208.2.2.2.1%20Reflexive%20pronouns%09220<br/>%208.2.2.2.2%20Reciprocals%09221<br/>%208.2.2.3%20Interrogative%20Words%09222<br/>%208.2.2.4%20Classifiers%09224<br/>%208.2.2.5%20Noun%20class%20markers%09229<br/>%208.2.2.6%20Nominalisation%09230<br/>%208.2.3%20Verbals%09231<br/>%208.2.3.1%20Verbs%09231<br/>%208.2.3.1.1%20Monosyllabic%20verbs%09231<br/>%208.2.3.1.2%20Compound%20verbs%09232<br/>%208.2.3.2%20Auxiliary%20Verbs%09233<br/>%208.2.3.3%20Completive%20Verbs%09235<br/>%208.2.4%20Adjectives%09236<br/>%208.2.4.1%20Adjectival%20modifiers%09238<br/>%208.2.5%20Prepositions%09239<br/>%208.2.6%20Numbers%20and%20quantifiers%09240<br/>%208.2.6.1%20Cardinal%20Numbers%09241<br/>%208.2.6.2%20Ordinal%20Numbers%09242<br/>%208.2.6.3%20Other%20quantifiers%09242<br/>%208.2.7%20Demonstratives%09243<br/>%208.2.8%20Conjunctions%09245<br/>%208.2.8.1%20Linking%20two%20nouns%20in%20a%20noun%20phrase%09245<br/>%208.2.8.2%20Linking%20two%20predications%09246<br/>%208.2.9%20Isolatives%09249<br/>%208.2.9.1%20Interjections%20and%20Exclamations%09249<br/>%208.2.9.2%20Responses%09250<br/>%208.2.9.3%20Vocatives%09251<br/>%208.2.9.4%20Expressives%20or%20Imitatives%09252<br/>%208.2.10%20Bound%20Lexemes%09253<br/>%208.2.10.1%20Tense%20/%20Aspect%20Words%09253<br/>%208.2.10.2%20Sentence%20Particles%09253<br/>%208.2.11%20Borrowed%20words%09255<br/>%208.2.11.1%20Burmese%20loans%09255<br/>%208.2.11.2%20Pali%20Loans%09256<br/>%208.2.11.3%20Assamese%20Loans%09257<br/>%208.2.11.4%20English%20Loans%09257<br/>%208.3%20CONSTITUENTS%09258<br/>%208.3.1%20Preliminary%20theoretical%20considerations%09258<br/>%208.3.2%20The%20Noun%20Phrase%09259<br/>%208.3.2.1%20Possessor%20Phrase%09261<br/>%208.3.2.2%20Adjective%20Phrases%09263<br/>%208.3.2.2.1%20Comparison%20and%20similarity%09263<br/>%208.3.2.3%20Quantifier%20Phrases%09265<br/>%208.3.2.4%20The%20syntax%20of%20demonstratives%09267<br/>%208.3.2.5%20Relative%20Clauses%09268<br/>%208.3.3%20Core%20Prepositional%20Phrases%09270<br/>%208.3.3.1%20Object%20as%20prepositional%20phrase%09270<br/>%208.3.3.2%20Prepositions%20in%20three%20participant%20events%09274<br/>%208.3.3.3%20Experiencer%20as%20Adjunct%09278<br/>%208.3.4%20Non-
+core%20elements%09280<br/>%208.3.4.1%20Temporal%20Phrases%09280<br/>%208.3.4.2%20Locational%20Phrases%09281<br/>%208.3.5%20Isolative%20Phrases%09283<br/>%208.3.6%20Elaborate%20expressions%09285<br/>%208.4%20CONSTITUENT%20ORDER%09288<br/>%208.4.1%20Preliminary%20theoretical%20considerations%09288<br/>%208.4.1.1%20Is%20there%20a%20basic%20constituent%20order%20in%20Tai?%09291<br/>%208.4.1.2%20Is%20there%20a%20verb%20phrase%20in%20Tai?%09292<br/>%208.4.2%20Constituent%20order%20in%20Khamti%09293<br/>%208.4.2.1%20Needham%09293<br/>%208.4.2.2%20Wilaiwan%09294<br/>%208.4.2.3%20Chau%20Khouk%20Manpoong%09295<br/>%208.4.2.4%20Present%20investigation%09296<br/>%208.4.3%20Constituent%20order%20in%20the%20Tai%20languages%20of%20Assam%09296<br/>%208.4.3.1%20Differences%20in%20constituent%20order%20between%20Tai%20Aiton%20and%20Tai%20Phake%09302<br/>%208.4.4%20A%20note%20on%20information%20packaging%09303<br/>%208.5%20PREDICATIONS%09304<br/>%208.5.1%20Copula%09304<br/>%208.5.2%20Existential%20sentences%20and%20possession%09308<br/>%208.5.3%20Definitional%20sentences%09310<br/>%208.5.4%20One-
+participant%20events%09312<br/>%208.5.5%20Two-participant%20events%09312<br/>%208.5.6%20Three-
+participant%20events%09313<br/>%208.5.7%20Tense,%20Aspect%20and%20Modality%09315<br/>%208.5.7.1%20Preliminary%20Theoretical%20Considerations%09315<br/>%208.5.7.2%20Previous%20studies%20of%20the%20Tai%20languages%09317<br/>%208.5.7.2.1%20Needham%09317<br/>%208.5.7.2.2%20Banchob%09319<br/>%208.5.7.2.3%20Aimya%20Khang%09321<br/>%208.5.7.3%20The%20present%20investigation%09321<br/>%208.5.7.4%20TAM%20morphemes%20which%20precede%20the%20verb%20%28TAM1%29%09322<br/>%208.5.7.4.1%20tak1/ta1/ti1%09322<br/>%208.5.7.5%20TAM%20morphemes%20which%20may%20either%20immediately%20follow%20the%20verb%20or%20be%20placed%20at%20the%20end%20of%20the%20core%20sentence%20%28TAM2%29%09324<br/>%208.5.7.5.1%20kaa1/kA1%09326<br/>%208.5.7.5.2%20maa2/mA2%09328<br/>%208.5.7.5.3%20wai3/wai4%09331<br/>%208.5.7.6%20TAM%20morphemes%20which%20occur%20at%20the%20end%20of%20the%20core%20sentence%20%28TAM3%29%09333<br/>%208.5.7.6.1%20uu1/U1%20and%20q1%09334<br/>%208.5.7.6.2%20suu1/sU1%09335<br/>%208.5.7.6.3%20Yau3/yau4%09337<br/>%208.5.7.7%20Other%20TAM%20morphemes%09339<br/>%208.5.7.7.1%20dai3/nai3%09339<br/>%208.5.7.8%20Combinations%20of%20TAM%20morphemes%09341<br/>%208.5.7.9%20Utterances%20unmarked%20by%20TAM%20morphemes%09343<br/>%208.5.7.10%20Time%20expressions%09344<br/>%208.5.8%20Multi-
+Verb%20Sequences%09345<br/>%208.5.9%20Completive%20Verbs%09347<br/>%208.6%20NON-
+DECLARATIVE%20SENTENCES%09349<br/>%208.6.1%20Theoretical%20considerations%09349<br/>%208.6.2%20Questions%09349<br/>%208.6.2.1%20Polar%20questions%09350<br/>%208.6.2.2%20WH-
+questions%09352<br/>%208.6.2.3%20Questions%20expressed%20by%20word%20order%20or%20tone%20alteration%09352<br/>%208.6.2.3.1%20Word%20order%09352<br/>%208.6.2.3.2%20Tonal%20alternation%09353<br/>%208.6.3%20Negation%09355<br/>%208.6.4%20Imperative%09359<br/>%208.7%20COMPLEX%20SENTENCES%09363<br/>%208.7.1%20Causatives%20%26amp%3B%20Purposive%20constructions%09367<br/>%209%20THE%20LITERATURE%20OF%20THE%20TAI%09372<br/>%209.1%20LITERACY%20AMONG%20THE%20TAI%09372<br/>%209.2%20TYPES%20OF%20LITERATURE%09375<br/>%209.2.1%20Cataloguing%20the%20Tai%20manuscripts%09378<br/>%209.2.2%20The%20relationship%20between%20Ahom%20Texts%20and%20the%20texts%20of%20the%20other%20Tai%20groups%09378<br/>%209.2.3%20The%20difficulties%20of%20reading%20Ahom%20Texts%09379<br/>%209.2.4%20The%20interpretation%20of%20Tai%20Aiton,%20Khamyang%20and%20Phake%20texts%09380<br/>%209.2.5%20Some%20examples%20of%20literary%20devices%09380<br/>%209.3%20THE%20IMPORTANCE%20OF%20LITERATURE%09382<br/>%209.4%20BRINGING%20THE%20TAI%20LANGUAGES%20INTO%20THE%20COMPUTER%20AGE:%20PRESENTING%20THE%20LITERATURE%20FOR%20THE%20BENEFIT%20OF%20THE%20COMMUNITY%09382<br/>%209.5%20THE%20TEXTS%20PRESENTED%20IN%20THIS%20STUDY%09383<br/>%209.5.1%20Phake%09384<br/>%209.5.2%20Aiton%09386<br/>%209.5.3%20Khamyang%09387<br/>%209.5.4%20Turung%09388<br/>%2010%20LEXICOGRAPHY%09389<br/>%2010.1%20TAI%20AITON%20DICTIONARY%09389<br/>%2010.1.1%20The%20word%20list%20of%20Bidya%20Thoumoung%09389<br/>%2010.1.2%20Other%20sources%20of%20lexicographical%20information%20on%20Aiton%09390<br/>%2010.1.3%20Current%20state%20of%20the%20Tai%20Aiton%20Dictionary%09391<br/>%2010.2%20TAI%20PHAKE%20DICTIONARY%09392<br/>%2010.2.1%20Current%20State%20of%20the%20Tai%20Phake%20Dictionary%09392<br/>%2010.3%20THE%20COMPUTER%20DATA%20BASE%09393<br/>%2010.3.1%20Design%20of%20the%20data%20base%09393<br/>%2011%20POSTSCRIPT:%20PRESENTING%20THIS%20WORK%20IN%20AN%20ELECTRONIC%20FORMAT%09395<br/>%2011.1%20CREATING%20AND%20WORKING%20WITH%20NON-
+STANDARD%20FONTS%09395<br/>%2011.2%20PRESENTING%20THE%20SOUND%20FILES%09397<br/>%2011.2.1%20Recording%20the%20texts%09397<br/>%2011.2.2%20Digitising%20the%20texts%09398<br/>%2011.2.3%20Linking%20the%20texts%20to%20the%20work%09398<br/>%2011.3%20THE%20ROLE%20OF%20THE%20RESEARCHER%20IN%20THE%20ELECTRONIC%20AGE%09400<br/>%2011.4%20ARCHIVING%20THE%20DATA%09400<br/>%2011.5%20POSSIBILITIES%20THAT%20WERE%20NOT%20FOLLOWED%20UP%09401<br/>%2011.6%20USING%20THE%20CD%20VERSION%20OF%20THIS%20WORK%09401<br/>%2011.7%20CONCLUSION%09402<br/>Bibliography%09403</description>%20%20</descriptions></resource>

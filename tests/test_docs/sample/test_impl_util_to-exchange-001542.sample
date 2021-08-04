@@ -1,0 +1,59 @@
+input_json=
+{"mrt.creator":"cdl_oac","erc":"who: James C. Sawders
+what: Cuba - Province of Oriente - Santiago de Cuba: Loma San Juan (San Juan hill) where, on the morning of July 1898, the most
+famous battle of the Spanish-American War was fought. American Rough Riders and a band of Cuban soldiers, led by Theodore
+Roosevelt, then a Lieutenant Colonel, rushed the hill which was held by the Spaniards who were well entrenched on its fortified
+summit. Orders had been given to proceed at 10 a.m. at which time flanking troops of general Lawton's division were to have
+arrived. These troops, fighting earlier at the Spanish held fortress of El Caney a few miles away, were not as quickly successful
+as the American command had anticipated, and so they did not reach San Juan at the time appointed. No orders having come through
+to cancel earlier plans, Roosevelt began the attack as it had been planned and rushed the hill. Because of the revealing smoke of
+the American gunpowder, the Spaniards on their height were able to rake the advancing troops on all sides of the hill as they came
+forward over the bush-covered trails. Before the Americans and Cubans reached the summit and ultimate victory, they had suffered
+great losses. Today a Lovely park commemorates the heroes of that day with monuments and statues. A replica of the Spanish fort
+which they destroyed has been erected on the crown of the hill. The statue in the foreground is a memorial to the American Rough
+Riders.
+when: 1948
+where: ark:/13030/m50c5smn
+where: ark:/13030/kt887019mc"}
+~~~~~~~~~~
+dict_pp=
+{'erc': 'who: James C. Sawders
+'
+        'what: Cuba - Province of Oriente - Santiago de Cuba: Loma San Juan '
+        '(San Juan hill) where, on the morning of July 1898, the most famous '
+        'battle of the Spanish-American War was fought. American Rough Riders '
+        'and a band of Cuban soldiers, led by Theodore Roosevelt, then a '
+        'Lieutenant Colonel, rushed the hill which was held by the Spaniards '
+        'who were well entrenched on its fortified summit. Orders had been '
+        'given to proceed at 10 a.m. at which time flanking troops of general '
+        "Lawton's division were to have arrived. These troops, fighting "
+        'earlier at the Spanish held fortress of El Caney a few miles away, '
+        'were not as quickly successful as the American command had '
+        'anticipated, and so they did not reach San Juan at the time '
+        'appointed. No orders having come through to cancel earlier plans, '
+        'Roosevelt began the attack as it had been planned and rushed the '
+        'hill. Because of the revealing smoke of the American gunpowder, the '
+        'Spaniards on their height were able to rake the advancing troops on '
+        'all sides of the hill as they came forward over the bush-covered '
+        'trails. Before the Americans and Cubans reached the summit and '
+        'ultimate victory, they had suffered great losses. Today a Lovely park '
+        'commemorates the heroes of that day with monuments and statues. A '
+        'replica of the Spanish fort which they destroyed has been erected on '
+        'the crown of the hill. The statue in the foreground is a memorial to '
+        'the American Rough Riders.
+'
+        'when: 1948
+'
+        'where: ark:/13030/m50c5smn
+'
+        'where: ark:/13030/kt887019mc',
+ 'mrt.creator': 'cdl_oac'}
+~~~~~~~~~~
+keys=
+mrt.creator, erc
+~~~~~~~~~~
+output_exchange=
+mrt.creator cdl_oac erc
+who:%20James%20C.%20Sawders%0Awhat:%20Cuba%20-%20Province%20of%20Oriente%20-%20Santiago%20de%20Cuba:%20Loma%20San%20Juan%20%28San%20Juan%20hill%29%20where,%20on%20the%20morning%20of%20July%201898,%20the%20most%20famous%20battle%20of%20the%20Spanish-
+American%20War%20was%20fought.%20American%20Rough%20Riders%20and%20a%20band%20of%20Cuban%20soldiers,%20led%20by%20Theodore%20Roosevelt,%20then%20a%20Lieutenant%20Colonel,%20rushed%20the%20hill%20which%20was%20held%20by%20the%20Spaniards%20who%20were%20well%20entrenched%20on%20its%20fortified%20summit.%20Orders%20had%20been%20given%20to%20proceed%20at%2010%20a.m.%20at%20which%20time%20flanking%20troops%20of%20general%20Lawton%27s%20division%20were%20to%20have%20arrived.%20These%20troops,%20fighting%20earlier%20at%20the%20Spanish%20held%20fortress%20of%20El%20Caney%20a%20few%20miles%20away,%20were%20not%20as%20quickly%20successful%20as%20the%20American%20command%20had%20anticipated,%20and%20so%20they%20did%20not%20reach%20San%20Juan%20at%20the%20time%20appointed.%20No%20orders%20having%20come%20through%20to%20cancel%20earlier%20plans,%20Roosevelt%20began%20the%20attack%20as%20it%20had%20been%20planned%20and%20rushed%20the%20hill.%20Because%20of%20the%20revealing%20smoke%20of%20the%20American%20gunpowder,%20the%20Spaniards%20on%20their%20height%20were%20able%20to%20rake%20the%20advancing%20troops%20on%20all%20sides%20of%20the%20hill%20as%20they%20came%20forward%20over%20the%20bush-
+covered%20trails.%20Before%20the%20Americans%20and%20Cubans%20reached%20the%20summit%20and%20ultimate%20victory,%20they%20had%20suffered%20great%20losses.%20Today%20a%20Lovely%20park%20commemorates%20the%20heroes%20of%20that%20day%20with%20monuments%20and%20statues.%20A%20replica%20of%20the%20Spanish%20fort%20which%20they%20destroyed%20has%20been%20erected%20on%20the%20crown%20of%20the%20hill.%20The%20statue%20in%20the%20foreground%20is%20a%20memorial%20to%20the%20American%20Rough%20Riders.%0Awhen:%201948%0Awhere:%20ark:/13030/m50c5smn%0Awhere:%20ark:/13030/kt887019mc

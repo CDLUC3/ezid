@@ -30,7 +30,7 @@ def _q(elementName):
 
 
 def _isDecimalFloat(s):
-    return re.match("-?(\d+(\.\d*)?|\.\d+)$", s) is not None
+    return re.match("-?(\\d+(\\.\\d*)?|\\.\\d+)$", s) is not None
 
 
 def kmlPolygonToDatacite(kml):
@@ -224,10 +224,10 @@ def internalPolygonToDatacite(s):
     return is a pair (lxml.etree.Element, []) if successful or a string
     error message if not.
     """
-    m = re.match("\s*polygon\s*\((.*)\)\s*$", s)
+    m = re.match("\\s*polygon\\s*\\((.*)\\)\\s*$", s)
     if not m:
         return "not an EZID polygon description"
-    coords = re.split("\s*\)\s*,\s*\(\s*", f"),{m.group(1)},(")
+    coords = re.split("\\s*\\)\\s*,\\s*\\(\\s*", f"),{m.group(1)},(")
     if (
         len(coords) < 2
         or coords[0] != ""

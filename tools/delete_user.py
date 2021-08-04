@@ -4,9 +4,9 @@ import argparse
 import sys
 import time
 
-import ezidapp.models.search_user
-import ezidapp.models.store_identifier
-import ezidapp.models.store_user
+import ezidapp.models.user
+import ezidapp.models.identifier
+import ezidapp.models.user
 
 # Deletes a user, and optionally the user's identifiers as well.
 #
@@ -27,6 +27,7 @@ import ezidapp.models.store_user
 # Greg Janee <gjanee@ucop.edu>
 # June 2018
 import ezidapp.models.update_queue
+import ezidapp.models.util
 from impl import ezid
 
 STEPS = [
@@ -69,7 +70,7 @@ p.add_argument("step", type=int, choices=[2], nargs="?", help="processing step")
 
 args = p.parse_args(sys.argv[1:])
 
-user = ezidapp.models.store_user.getUserByUsername(args.user)
+user = ezidapp.models.util.getUserByUsername(args.user)
 if user is None or args.user == "anonymous":
     error("no such user: " + args.user)
 
@@ -98,14 +99,14 @@ if args.deleteIdentifiers:
     # reasonable when deleting large numbers of identifiers.
     while True:
         ids = list(
-            ezidapp.models.store_identifier.StoreIdentifier.objects.filter(owner=user)
+            ezidapp.models.identifier.StoreIdentifier.objects.filter(owner=user)
             .only("identifier")
             .order_by("identifier")[:1000]
         )
         for id_str in ids:
             s = ezid.deleteIdentifier(
                 id_str.identifier,
-                ezidapp.models.store_user.getAdminUser(),
+                ezidapp.models.util.getAdminUser(),
                 args.updateExternalServices,
             )
             if not s.startswith("success"):
@@ -119,21 +120,16 @@ if args.deleteIdentifiers:
         if len(ids) == 0:
             break
 else:
-    if (
-        ezidapp.models.store_identifier.StoreIdentifier.objects.filter(
-            owner=user
-        ).count()
-        > 0
-    ):
+    if ezidapp.models.identifier.StoreIdentifier.objects.filter(owner=user).count() > 0:
         error("user can't be deleted: has identifiers")
     if hasIdentifiersInUpdateQueue():
         error("user can't be deleted: has identifiers in the update queue")
 
-searchUser = ezidapp.models.search_user.SearchUser.objects.get(username=user.username)
+searchUser = ezidapp.models.user.SearchUser.objects.get(username=user.username)
 user.delete()
 searchUser.delete()
 
-s = ezid.deleteIdentifier(user.pid, ezidapp.models.store_user.getAdminUser())
+s = ezid.deleteIdentifier(user.pid, ezidapp.models.util.getAdminUser())
 if not s.startswith("success"):
     print("delete-user: agent PID deletion failed: " + s)
 

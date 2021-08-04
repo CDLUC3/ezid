@@ -1,0 +1,129 @@
+input_json=
+{"erc.who":"Korn, AP; Aad, G; Abbott, B; Abdallah, J; Abdel, S; Abdelalim, AA; Abdesselam, A; Abdinov, O; Abi, B; Abolins, M;
+Abouzeid, OS; Abramowicz, H; Abreu, H; Acerbi, E; Acharya, BS; Adamczyk, L; Adams, DL; Addy, TN; Adelman, J; Aderholz, M; Adomeit,
+S; Adragna, P; Adye, T; Aefsky, S; Aguilar-Saavedra, JA; Aharrouche, M; Ahlen, SP; Ahles, F; Ahmad, A; Ahsan, M; Aielli, G;
+Akdogan, T; Akesson, TP; Akimoto, G; Akimov, AV; Akiyama, A; Alam, MS; Alam, MA; Albert, J; Albrand, S; Aleksa, M; Aleksandrov,
+IN; Alessandria, F; Alexa, C; Alexander, G; Alexandre, G; Alexopoulos, T; Alhroob, M; Aliev, M; Alimonti, G; Alison, J; Aliyev, M;
+Allbrooke, BM; Allport, PP; Allwood-Spiers, SE; Almond, J; Aloisio, A; Alon, R; Alonso, A; Alvarez, B; Alviggi, MG; Amako, K;
+Amaral, P; Amelung, C; Ammosov, VV; Amorim, A; Amoros, G; Amram, N; Anastopoulos, C; Ancu, LS; Andari, N; Andeen, T; Anders, CF;
+Anders, G; Anderson, KJ; Andreazza, A; Andrei, V; Andrieux, ML; Anduaga, XS; Angerami, A; Anghinolfi, F; Anisenkov, A; Anjos, N;
+Annovi, A; Antonaki, A; Antonelli, M; Antonov, A; Antos, J; Anulli, F; Aoun, S; Aperio, L; Apolle, R; Arabidze, G; Aracena, I;
+Arai, Y; Arce, AT; Arfaoui, S; Arguin, JF; Arik, E; Arik, M; Armbruster, AJ; Arnaez, O; Arnal, V; Arnault, C; Artamonov, A;
+Artoni, G; Arutinov, D; Asai, S; Asfandiyarov, R; Ask, S; Asman, B; Asquith, L; Assamagan, K; Astbury, A; Aubert, B; Auge, E;
+Augsten, K; Aurousseau, M; Avolio, G; Avramidou, R; Axen, D; Ay, C; Azuelos, G; Azuma, Y; Baak, MA; Baccaglioni, G; Bacci, C;
+Bach, AM; Bachacou, H; Bachas, K; Backes, M; Backhaus, M; Badescu, E; Bagnaia, P; Bahinipati, S; Bai, Y; Bailey, DC; Bain, T;
+Baines, JT; Baker, OK; Baker, MD; Baker, S; Banas, E; Banerjee, P; Banerjee, S; Banfi, D; Bangert, A; Bansal, V; Bansil, HS;
+Barak, L; Baranov, SP; Barashkou, A; Barbaro, A; Barber, T; Barberio, EL; Barberis, D; Barbero, M; Bardin, DY; Barillari, T;
+Barisonzi, M; Barklow, T; Barlow, N; Barnett, BM; Barnett, RM; Baroncelli, A; Barone, G; Barr, AJ; Barreiro, F; Barreiro, J;
+Barrillon, P; Bartoldus, R; Barton, AE; Bartsch, V; Bates, RL; Batkova, L; Batley, JR; Battaglia, A; Battistin, M; Bauer, F; Bawa,
+HS; Beale, S; Beau, T; Beauchemin, PH; Beccherle, R; Bechtle, P; Beck, HP; Becker, S; Beckingham, M; Becks, KH; Beddall, AJ;
+Beddall, A; Bedikian, S; Bednyakov, VA; Bee, CP; Begel, M; Behar, S; Behera, PK; Beimforde, M; Belanger-Champagne, C; Bell, PJ;
+Bell, WH; Bella, G; Bellagamba, L; Bellina, F; Bellomo, M; Belloni, A; Beloborodova, O; Belotskiy, K; Beltramello, O; Benary, O;
+Benchekroun, D; Bendel, M; Bendtz, K; Benekos, N; Benhammou, Y; Benhar, E; Benitez, JA; Benjamin, DP; Benoit, M; Bensinger, JR;
+Benslama, K; Bentvelsen, S; Berge, D; Bergeaas, E; Berger, N; Berghaus, F; Berglund, E; Beringer, J; Bernat, P; Bernhard, R;
+Bernius, C; Berry, T; Bertella, C; Bertin, A; Bertinelli, F; Bertolucci, F; Besana, MI; Besson, N; Bethke, S; Bhimji, W; Bianchi,
+RM; Bianco, M; Biebel, O; Bieniek, SP; Bierwagen, K; Biesiada, J; Biglietti, M; Bilokon, H; Bindi, M; Binet, S; Bingul, A; Bini,
+C; Biscarat, C; Bitenc, U; Black, KM; Blair, RE; Blanchard, JB; Blanchot, G; Blazek, T; Blocker, C; Blocki, J; Blondel, A; Blum,
+W; Blumenschein, U; Bobbink, GJ; Bobrovnikov, VB; Bocchetta, SS; Bocci, A; Boddy, CR; Boehler, M; Boek, J; Boelaert, N; Bogaerts,
+JA; Bogdanchikov, A; Bogouch, A; Bohm, C; Bohm, J; Boisvert, V; Bold, T; Boldea, V; Bolnet, NM; Bomben, M; Bona, M; Bondarenko,
+VG; Bondioli, M; Boonekamp, M; Booth, CN; Bordoni, S; Borer, C; Borisov, A; Borissov, G; Borjanovic, I; Borri, M; Borroni, S;
+Bortolotto, V; Bos, K; Boscherini, D; Bosman, M; Boterenbrood, H; Botterill, D; Bouchami, J; Boudreau, J; Bouhova-Thacker, EV;
+Boumediene, D; Bourdarios, C; Bousson, N; Boveia, A; Boyd, J; Boyko, IR; Bozhko, NI; Bozovic-Jelisavcic, I; Bracinik, J; Braem, A;
+Branchini, P; Brandenburg, GW; Brandt, A; Brandt, G; Brandt, O; Bratzler, U; Brau, B; Brau, JE; Braun, HM; Brelier, B; Bremer, J;
+Brendlinger, K; Brenner, R; Bressler, S; Britton, D; Brochu, FM; Brock, I; Brock, R; Brodbeck, TJ; Brodet, E; Broggi, F; Bromberg,
+C; Bronner, J; Brooijmans, G; Brooks, WK; Brown, G; Brown, H; Bruckman, PA; Bruncko, D; Bruneliere, R; Brunet, S; Bruni, A; Bruni,
+G; Bruschi, M; Buanes, T; Buat, Q; Bucci, F; et, al","erc.when":"2014-10-18T09:33:57-07:00","erc.what":"Grouped OA Publication
+record for 'Search for pair production of a new b' quark that decays into a Z boson and a bottom quark with the ATLAS detector.'
+[IDs c-ucsf-id::http://profiles.ucsf.edu/profile/225229 pubmed::23006356]"}
+~~~~~~~~~~
+dict_pp=
+{'erc.what': "Grouped OA Publication record for 'Search for pair production of "
+             "a new b' quark that decays into a Z boson and a bottom quark "
+             "with the ATLAS detector.' [IDs "
+             'c-ucsf-id::http://profiles.ucsf.edu/profile/225229 '
+             'pubmed::23006356]',
+ 'erc.when': '2014-10-18T09:33:57-07:00',
+ 'erc.who': 'Korn, AP; Aad, G; Abbott, B; Abdallah, J; Abdel, S; Abdelalim, '
+            'AA; Abdesselam, A; Abdinov, O; Abi, B; Abolins, M; Abouzeid, OS; '
+            'Abramowicz, H; Abreu, H; Acerbi, E; Acharya, BS; Adamczyk, L; '
+            'Adams, DL; Addy, TN; Adelman, J; Aderholz, M; Adomeit, S; '
+            'Adragna, P; Adye, T; Aefsky, S; Aguilar-Saavedra, JA; Aharrouche, '
+            'M; Ahlen, SP; Ahles, F; Ahmad, A; Ahsan, M; Aielli, G; Akdogan, '
+            'T; Akesson, TP; Akimoto, G; Akimov, AV; Akiyama, A; Alam, MS; '
+            'Alam, MA; Albert, J; Albrand, S; Aleksa, M; Aleksandrov, IN; '
+            'Alessandria, F; Alexa, C; Alexander, G; Alexandre, G; '
+            'Alexopoulos, T; Alhroob, M; Aliev, M; Alimonti, G; Alison, J; '
+            'Aliyev, M; Allbrooke, BM; Allport, PP; Allwood-Spiers, SE; '
+            'Almond, J; Aloisio, A; Alon, R; Alonso, A; Alvarez, B; Alviggi, '
+            'MG; Amako, K; Amaral, P; Amelung, C; Ammosov, VV; Amorim, A; '
+            'Amoros, G; Amram, N; Anastopoulos, C; Ancu, LS; Andari, N; '
+            'Andeen, T; Anders, CF; Anders, G; Anderson, KJ; Andreazza, A; '
+            'Andrei, V; Andrieux, ML; Anduaga, XS; Angerami, A; Anghinolfi, F; '
+            'Anisenkov, A; Anjos, N; Annovi, A; Antonaki, A; Antonelli, M; '
+            'Antonov, A; Antos, J; Anulli, F; Aoun, S; Aperio, L; Apolle, R; '
+            'Arabidze, G; Aracena, I; Arai, Y; Arce, AT; Arfaoui, S; Arguin, '
+            'JF; Arik, E; Arik, M; Armbruster, AJ; Arnaez, O; Arnal, V; '
+            'Arnault, C; Artamonov, A; Artoni, G; Arutinov, D; Asai, S; '
+            'Asfandiyarov, R; Ask, S; Asman, B; Asquith, L; Assamagan, K; '
+            'Astbury, A; Aubert, B; Auge, E; Augsten, K; Aurousseau, M; '
+            'Avolio, G; Avramidou, R; Axen, D; Ay, C; Azuelos, G; Azuma, Y; '
+            'Baak, MA; Baccaglioni, G; Bacci, C; Bach, AM; Bachacou, H; '
+            'Bachas, K; Backes, M; Backhaus, M; Badescu, E; Bagnaia, P; '
+            'Bahinipati, S; Bai, Y; Bailey, DC; Bain, T; Baines, JT; Baker, '
+            'OK; Baker, MD; Baker, S; Banas, E; Banerjee, P; Banerjee, S; '
+            'Banfi, D; Bangert, A; Bansal, V; Bansil, HS; Barak, L; Baranov, '
+            'SP; Barashkou, A; Barbaro, A; Barber, T; Barberio, EL; Barberis, '
+            'D; Barbero, M; Bardin, DY; Barillari, T; Barisonzi, M; Barklow, '
+            'T; Barlow, N; Barnett, BM; Barnett, RM; Baroncelli, A; Barone, G; '
+            'Barr, AJ; Barreiro, F; Barreiro, J; Barrillon, P; Bartoldus, R; '
+            'Barton, AE; Bartsch, V; Bates, RL; Batkova, L; Batley, JR; '
+            'Battaglia, A; Battistin, M; Bauer, F; Bawa, HS; Beale, S; Beau, '
+            'T; Beauchemin, PH; Beccherle, R; Bechtle, P; Beck, HP; Becker, S; '
+            'Beckingham, M; Becks, KH; Beddall, AJ; Beddall, A; Bedikian, S; '
+            'Bednyakov, VA; Bee, CP; Begel, M; Behar, S; Behera, PK; '
+            'Beimforde, M; Belanger-Champagne, C; Bell, PJ; Bell, WH; Bella, '
+            'G; Bellagamba, L; Bellina, F; Bellomo, M; Belloni, A; '
+            'Beloborodova, O; Belotskiy, K; Beltramello, O; Benary, O; '
+            'Benchekroun, D; Bendel, M; Bendtz, K; Benekos, N; Benhammou, Y; '
+            'Benhar, E; Benitez, JA; Benjamin, DP; Benoit, M; Bensinger, JR; '
+            'Benslama, K; Bentvelsen, S; Berge, D; Bergeaas, E; Berger, N; '
+            'Berghaus, F; Berglund, E; Beringer, J; Bernat, P; Bernhard, R; '
+            'Bernius, C; Berry, T; Bertella, C; Bertin, A; Bertinelli, F; '
+            'Bertolucci, F; Besana, MI; Besson, N; Bethke, S; Bhimji, W; '
+            'Bianchi, RM; Bianco, M; Biebel, O; Bieniek, SP; Bierwagen, K; '
+            'Biesiada, J; Biglietti, M; Bilokon, H; Bindi, M; Binet, S; '
+            'Bingul, A; Bini, C; Biscarat, C; Bitenc, U; Black, KM; Blair, RE; '
+            'Blanchard, JB; Blanchot, G; Blazek, T; Blocker, C; Blocki, J; '
+            'Blondel, A; Blum, W; Blumenschein, U; Bobbink, GJ; Bobrovnikov, '
+            'VB; Bocchetta, SS; Bocci, A; Boddy, CR; Boehler, M; Boek, J; '
+            'Boelaert, N; Bogaerts, JA; Bogdanchikov, A; Bogouch, A; Bohm, C; '
+            'Bohm, J; Boisvert, V; Bold, T; Boldea, V; Bolnet, NM; Bomben, M; '
+            'Bona, M; Bondarenko, VG; Bondioli, M; Boonekamp, M; Booth, CN; '
+            'Bordoni, S; Borer, C; Borisov, A; Borissov, G; Borjanovic, I; '
+            'Borri, M; Borroni, S; Bortolotto, V; Bos, K; Boscherini, D; '
+            'Bosman, M; Boterenbrood, H; Botterill, D; Bouchami, J; Boudreau, '
+            'J; Bouhova-Thacker, EV; Boumediene, D; Bourdarios, C; Bousson, N; '
+            'Boveia, A; Boyd, J; Boyko, IR; Bozhko, NI; Bozovic-Jelisavcic, I; '
+            'Bracinik, J; Braem, A; Branchini, P; Brandenburg, GW; Brandt, A; '
+            'Brandt, G; Brandt, O; Bratzler, U; Brau, B; Brau, JE; Braun, HM; '
+            'Brelier, B; Bremer, J; Brendlinger, K; Brenner, R; Bressler, S; '
+            'Britton, D; Brochu, FM; Brock, I; Brock, R; Brodbeck, TJ; Brodet, '
+            'E; Broggi, F; Bromberg, C; Bronner, J; Brooijmans, G; Brooks, WK; '
+            'Brown, G; Brown, H; Bruckman, PA; Bruncko, D; Bruneliere, R; '
+            'Brunet, S; Bruni, A; Bruni, G; Bruschi, M; Buanes, T; Buat, Q; '
+            'Bucci, F; et, al'}
+~~~~~~~~~~
+keys=
+erc.who, erc.when, erc.what
+~~~~~~~~~~
+output_exchange=
+erc.who
+Korn,%20AP%3B%20Aad,%20G%3B%20Abbott,%20B%3B%20Abdallah,%20J%3B%20Abdel,%20S%3B%20Abdelalim,%20AA%3B%20Abdesselam,%20A%3B%20Abdinov,%20O%3B%20Abi,%20B%3B%20Abolins,%20M%3B%20Abouzeid,%20OS%3B%20Abramowicz,%20H%3B%20Abreu,%20H%3B%20Acerbi,%20E%3B%20Acharya,%20BS%3B%20Adamczyk,%20L%3B%20Adams,%20DL%3B%20Addy,%20TN%3B%20Adelman,%20J%3B%20Aderholz,%20M%3B%20Adomeit,%20S%3B%20Adragna,%20P%3B%20Adye,%20T%3B%20Aefsky,%20S%3B%20Aguilar-
+Saavedra,%20JA%3B%20Aharrouche,%20M%3B%20Ahlen,%20SP%3B%20Ahles,%20F%3B%20Ahmad,%20A%3B%20Ahsan,%20M%3B%20Aielli,%20G%3B%20Akdogan,%20T%3B%20Akesson,%20TP%3B%20Akimoto,%20G%3B%20Akimov,%20AV%3B%20Akiyama,%20A%3B%20Alam,%20MS%3B%20Alam,%20MA%3B%20Albert,%20J%3B%20Albrand,%20S%3B%20Aleksa,%20M%3B%20Aleksandrov,%20IN%3B%20Alessandria,%20F%3B%20Alexa,%20C%3B%20Alexander,%20G%3B%20Alexandre,%20G%3B%20Alexopoulos,%20T%3B%20Alhroob,%20M%3B%20Aliev,%20M%3B%20Alimonti,%20G%3B%20Alison,%20J%3B%20Aliyev,%20M%3B%20Allbrooke,%20BM%3B%20Allport,%20PP%3B%20Allwood-
+Spiers,%20SE%3B%20Almond,%20J%3B%20Aloisio,%20A%3B%20Alon,%20R%3B%20Alonso,%20A%3B%20Alvarez,%20B%3B%20Alviggi,%20MG%3B%20Amako,%20K%3B%20Amaral,%20P%3B%20Amelung,%20C%3B%20Ammosov,%20VV%3B%20Amorim,%20A%3B%20Amoros,%20G%3B%20Amram,%20N%3B%20Anastopoulos,%20C%3B%20Ancu,%20LS%3B%20Andari,%20N%3B%20Andeen,%20T%3B%20Anders,%20CF%3B%20Anders,%20G%3B%20Anderson,%20KJ%3B%20Andreazza,%20A%3B%20Andrei,%20V%3B%20Andrieux,%20ML%3B%20Anduaga,%20XS%3B%20Angerami,%20A%3B%20Anghinolfi,%20F%3B%20Anisenkov,%20A%3B%20Anjos,%20N%3B%20Annovi,%20A%3B%20Antonaki,%20A%3B%20Antonelli,%20M%3B%20Antonov,%20A%3B%20Antos,%20J%3B%20Anulli,%20F%3B%20Aoun,%20S%3B%20Aperio,%20L%3B%20Apolle,%20R%3B%20Arabidze,%20G%3B%20Aracena,%20I%3B%20Arai,%20Y%3B%20Arce,%20AT%3B%20Arfaoui,%20S%3B%20Arguin,%20JF%3B%20Arik,%20E%3B%20Arik,%20M%3B%20Armbruster,%20AJ%3B%20Arnaez,%20O%3B%20Arnal,%20V%3B%20Arnault,%20C%3B%20Artamonov,%20A%3B%20Artoni,%20G%3B%20Arutinov,%20D%3B%20Asai,%20S%3B%20Asfandiyarov,%20R%3B%20Ask,%20S%3B%20Asman,%20B%3B%20Asquith,%20L%3B%20Assamagan,%20K%3B%20Astbury,%20A%3B%20Aubert,%20B%3B%20Auge,%20E%3B%20Augsten,%20K%3B%20Aurousseau,%20M%3B%20Avolio,%20G%3B%20Avramidou,%20R%3B%20Axen,%20D%3B%20Ay,%20C%3B%20Azuelos,%20G%3B%20Azuma,%20Y%3B%20Baak,%20MA%3B%20Baccaglioni,%20G%3B%20Bacci,%20C%3B%20Bach,%20AM%3B%20Bachacou,%20H%3B%20Bachas,%20K%3B%20Backes,%20M%3B%20Backhaus,%20M%3B%20Badescu,%20E%3B%20Bagnaia,%20P%3B%20Bahinipati,%20S%3B%20Bai,%20Y%3B%20Bailey,%20DC%3B%20Bain,%20T%3B%20Baines,%20JT%3B%20Baker,%20OK%3B%20Baker,%20MD%3B%20Baker,%20S%3B%20Banas,%20E%3B%20Banerjee,%20P%3B%20Banerjee,%20S%3B%20Banfi,%20D%3B%20Bangert,%20A%3B%20Bansal,%20V%3B%20Bansil,%20HS%3B%20Barak,%20L%3B%20Baranov,%20SP%3B%20Barashkou,%20A%3B%20Barbaro,%20A%3B%20Barber,%20T%3B%20Barberio,%20EL%3B%20Barberis,%20D%3B%20Barbero,%20M%3B%20Bardin,%20DY%3B%20Barillari,%20T%3B%20Barisonzi,%20M%3B%20Barklow,%20T%3B%20Barlow,%20N%3B%20Barnett,%20BM%3B%20Barnett,%20RM%3B%20Baroncelli,%20A%3B%20Barone,%20G%3B%20Barr,%20AJ%3B%20Barreiro,%20F%3B%20Barreiro,%20J%3B%20Barrillon,%20P%3B%20Bartoldus,%20R%3B%20Barton,%20AE%3B%20Bartsch,%20V%3B%20Bates,%20RL%3B%20Batkova,%20L%3B%20Batley,%20JR%3B%20Battaglia,%20A%3B%20Battistin,%20M%3B%20Bauer,%20F%3B%20Bawa,%20HS%3B%20Beale,%20S%3B%20Beau,%20T%3B%20Beauchemin,%20PH%3B%20Beccherle,%20R%3B%20Bechtle,%20P%3B%20Beck,%20HP%3B%20Becker,%20S%3B%20Beckingham,%20M%3B%20Becks,%20KH%3B%20Beddall,%20AJ%3B%20Beddall,%20A%3B%20Bedikian,%20S%3B%20Bednyakov,%20VA%3B%20Bee,%20CP%3B%20Begel,%20M%3B%20Behar,%20S%3B%20Behera,%20PK%3B%20Beimforde,%20M%3B%20Belanger-
+Champagne,%20C%3B%20Bell,%20PJ%3B%20Bell,%20WH%3B%20Bella,%20G%3B%20Bellagamba,%20L%3B%20Bellina,%20F%3B%20Bellomo,%20M%3B%20Belloni,%20A%3B%20Beloborodova,%20O%3B%20Belotskiy,%20K%3B%20Beltramello,%20O%3B%20Benary,%20O%3B%20Benchekroun,%20D%3B%20Bendel,%20M%3B%20Bendtz,%20K%3B%20Benekos,%20N%3B%20Benhammou,%20Y%3B%20Benhar,%20E%3B%20Benitez,%20JA%3B%20Benjamin,%20DP%3B%20Benoit,%20M%3B%20Bensinger,%20JR%3B%20Benslama,%20K%3B%20Bentvelsen,%20S%3B%20Berge,%20D%3B%20Bergeaas,%20E%3B%20Berger,%20N%3B%20Berghaus,%20F%3B%20Berglund,%20E%3B%20Beringer,%20J%3B%20Bernat,%20P%3B%20Bernhard,%20R%3B%20Bernius,%20C%3B%20Berry,%20T%3B%20Bertella,%20C%3B%20Bertin,%20A%3B%20Bertinelli,%20F%3B%20Bertolucci,%20F%3B%20Besana,%20MI%3B%20Besson,%20N%3B%20Bethke,%20S%3B%20Bhimji,%20W%3B%20Bianchi,%20RM%3B%20Bianco,%20M%3B%20Biebel,%20O%3B%20Bieniek,%20SP%3B%20Bierwagen,%20K%3B%20Biesiada,%20J%3B%20Biglietti,%20M%3B%20Bilokon,%20H%3B%20Bindi,%20M%3B%20Binet,%20S%3B%20Bingul,%20A%3B%20Bini,%20C%3B%20Biscarat,%20C%3B%20Bitenc,%20U%3B%20Black,%20KM%3B%20Blair,%20RE%3B%20Blanchard,%20JB%3B%20Blanchot,%20G%3B%20Blazek,%20T%3B%20Blocker,%20C%3B%20Blocki,%20J%3B%20Blondel,%20A%3B%20Blum,%20W%3B%20Blumenschein,%20U%3B%20Bobbink,%20GJ%3B%20Bobrovnikov,%20VB%3B%20Bocchetta,%20SS%3B%20Bocci,%20A%3B%20Boddy,%20CR%3B%20Boehler,%20M%3B%20Boek,%20J%3B%20Boelaert,%20N%3B%20Bogaerts,%20JA%3B%20Bogdanchikov,%20A%3B%20Bogouch,%20A%3B%20Bohm,%20C%3B%20Bohm,%20J%3B%20Boisvert,%20V%3B%20Bold,%20T%3B%20Boldea,%20V%3B%20Bolnet,%20NM%3B%20Bomben,%20M%3B%20Bona,%20M%3B%20Bondarenko,%20VG%3B%20Bondioli,%20M%3B%20Boonekamp,%20M%3B%20Booth,%20CN%3B%20Bordoni,%20S%3B%20Borer,%20C%3B%20Borisov,%20A%3B%20Borissov,%20G%3B%20Borjanovic,%20I%3B%20Borri,%20M%3B%20Borroni,%20S%3B%20Bortolotto,%20V%3B%20Bos,%20K%3B%20Boscherini,%20D%3B%20Bosman,%20M%3B%20Boterenbrood,%20H%3B%20Botterill,%20D%3B%20Bouchami,%20J%3B%20Boudreau,%20J%3B%20Bouhova-
+Thacker,%20EV%3B%20Boumediene,%20D%3B%20Bourdarios,%20C%3B%20Bousson,%20N%3B%20Boveia,%20A%3B%20Boyd,%20J%3B%20Boyko,%20IR%3B%20Bozhko,%20NI%3B%20Bozovic-
+Jelisavcic,%20I%3B%20Bracinik,%20J%3B%20Braem,%20A%3B%20Branchini,%20P%3B%20Brandenburg,%20GW%3B%20Brandt,%20A%3B%20Brandt,%20G%3B%20Brandt,%20O%3B%20Bratzler,%20U%3B%20Brau,%20B%3B%20Brau,%20JE%3B%20Braun,%20HM%3B%20Brelier,%20B%3B%20Bremer,%20J%3B%20Brendlinger,%20K%3B%20Brenner,%20R%3B%20Bressler,%20S%3B%20Britton,%20D%3B%20Brochu,%20FM%3B%20Brock,%20I%3B%20Brock,%20R%3B%20Brodbeck,%20TJ%3B%20Brodet,%20E%3B%20Broggi,%20F%3B%20Bromberg,%20C%3B%20Bronner,%20J%3B%20Brooijmans,%20G%3B%20Brooks,%20WK%3B%20Brown,%20G%3B%20Brown,%20H%3B%20Bruckman,%20PA%3B%20Bruncko,%20D%3B%20Bruneliere,%20R%3B%20Brunet,%20S%3B%20Bruni,%20A%3B%20Bruni,%20G%3B%20Bruschi,%20M%3B%20Buanes,%20T%3B%20Buat,%20Q%3B%20Bucci,%20F%3B%20et,%20al
+erc.when 2014-10-18T09:33:57-07:00 erc.what
+Grouped%20OA%20Publication%20record%20for%20%27Search%20for%20pair%20production%20of%20a%20new%20b%27%20quark%20that%20decays%20into%20a%20Z%20boson%20and%20a%20bottom%20quark%20with%20the%20ATLAS%20detector.%27%20%5BIDs%20c-ucsf-
+id::http://profiles.ucsf.edu/profile/225229%20pubmed::23006356%5D

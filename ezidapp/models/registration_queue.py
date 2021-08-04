@@ -15,6 +15,7 @@
 
 import django.db.models
 
+import ezidapp.models.custom_fields
 import impl.util
 
 
@@ -29,20 +30,25 @@ class RegistrationQueue(django.db.models.Model):
     class Meta:
         abstract = True
 
-    seq = django.db.models.AutoField(primary_key=True)
     # Order of insertion into this table; also, the order in which
     # identifier operations are to be performed.
+    seq = django.db.models.AutoField(primary_key=True)
 
-    enqueueTime = django.db.models.IntegerField()
     # The time this record was enqueued as a Unix timestamp.
+    enqueueTime = django.db.models.IntegerField()
 
-    identifier = django.db.models.CharField(max_length=impl.util.maxIdentifierLength)
     # The identifier in qualified, normalized form, e.g.,
     # "doi:10.5060/FOO".
+    identifier = django.db.models.CharField(max_length=impl.util.maxIdentifierLength)
 
-    metadata = django.db.models.BinaryField()
     # The identifier's metadata dictionary, stored as a gzipped blob.
+    # In old EZID, 'metadata' in the queues is a regular BinaryField, so serialization and
+    # deserialization between Python object and compressed blob had to be done manually whenever
+    # this field was read and written.
+    metadata = django.db.models.BinaryField()
+    # metadata = ezidapp.models.custom_fields.CompressedJsonField()
 
+    # The operation to perform.
     CREATE = "C"
     UPDATE = "U"
     DELETE = "D"
@@ -50,19 +56,17 @@ class RegistrationQueue(django.db.models.Model):
         max_length=1,
         choices=[(CREATE, "create"), (UPDATE, "update"), (DELETE, "delete")],
     )
-    # The operation to perform.
-
     _operationMapping = {"create": CREATE, "update": UPDATE, "delete": DELETE}
 
     @staticmethod
     def operationLabelToCode(label):
         return RegistrationQueue._operationMapping[label]
 
-    error = django.db.models.TextField(blank=True)
     # Any error (transient or permanent) received in processing the
     # identifier.
+    error = django.db.models.TextField(blank=True)
 
-    errorIsPermanent = django.db.models.BooleanField(default=False)
     # True if the error received is not transient.  Permanent errors
     # disable processing on the identifier and can be removed only
     # manually.
+    errorIsPermanent = django.db.models.BooleanField(default=False)

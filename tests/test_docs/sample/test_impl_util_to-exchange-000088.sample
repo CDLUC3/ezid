@@ -1,0 +1,13 @@
+input_json=
+{"erc.who":"CDL","erc.when":"2014","erc.what":"Hypothetical ARK with no target URL set"}
+~~~~~~~~~~
+dict_pp=
+{'erc.what': 'Hypothetical ARK with no target URL set',
+ 'erc.when': '2014',
+ 'erc.who': 'CDL'}
+~~~~~~~~~~
+keys=
+erc.who, erc.when, erc.what
+~~~~~~~~~~
+output_exchange=
+erc.who CDL erc.when 2014 erc.what Hypothetical%20ARK%20with%20no%20target%20URL%20set

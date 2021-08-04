@@ -1,0 +1,27 @@
+input_json=
+{"dc.date":"circa
+1928","dc.creator":"(:unav)","dc.relation":"http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx","dc.title":"Demonstration train
+operated by the University and the Southern Pacific Railroad Co. Front row, left to right: William J. Norton, Frank Adams, George
+H. Hart, Robert W. Hodgson, W.L. Howard, Charles F. Shaw, Chester Rubel, Leroy B. Smith, James P. Fairbank. Back row, left to
+right: Joseph P. Hertel, Elmer Hughes, Robert Miller, W.E. Newlon, Gillette Eddy Gordon, Lawrence W. Taylor, Edwin C. Voorhies,
+William R. Ralston, Eric Stewe. Boys seated in front are unidentified."}
+~~~~~~~~~~
+dict_pp=
+{'dc.creator': '(:unav)',
+ 'dc.date': 'circa 1928',
+ 'dc.relation': 'http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx',
+ 'dc.title': 'Demonstration train operated by the University and the Southern '
+             'Pacific Railroad Co. Front row, left to right: William J. '
+             'Norton, Frank Adams, George H. Hart, Robert W. Hodgson, W.L. '
+             'Howard, Charles F. Shaw, Chester Rubel, Leroy B. Smith, James P. '
+             'Fairbank. Back row, left to right: Joseph P. Hertel, Elmer '
+             'Hughes, Robert Miller, W.E. Newlon, Gillette Eddy Gordon, '
+             'Lawrence W. Taylor, Edwin C. Voorhies, William R. Ralston, Eric '
+             'Stewe. Boys seated in front are unidentified.'}
+~~~~~~~~~~
+keys=
+dc.date, dc.creator, dc.relation, dc.title
+~~~~~~~~~~
+output_exchange=
+dc.date circa%201928 dc.creator %28:unav%29 dc.relation http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx dc.title
+Demonstration%20train%20operated%20by%20the%20University%20and%20the%20Southern%20Pacific%20Railroad%20Co.%20Front%20row,%20left%20to%20right:%20William%20J.%20Norton,%20Frank%20Adams,%20George%20H.%20Hart,%20Robert%20W.%20Hodgson,%20W.L.%20Howard,%20Charles%20F.%20Shaw,%20Chester%20Rubel,%20Leroy%20B.%20Smith,%20James%20P.%20Fairbank.%20Back%20row,%20left%20to%20right:%20Joseph%20P.%20Hertel,%20Elmer%20Hughes,%20Robert%20Miller,%20W.E.%20Newlon,%20Gillette%20Eddy%20Gordon,%20Lawrence%20W.%20Taylor,%20Edwin%20C.%20Voorhies,%20William%20R.%20Ralston,%20Eric%20Stewe.%20Boys%20seated%20in%20front%20are%20unidentified.

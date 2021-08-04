@@ -1,0 +1,38 @@
+input_json=
+{"dc.date":"undated","dc.creator":"(:unav)","dc.relation":"http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx","dc.title":"Solano
+Park, Married student housing at the University of California's Davis campus presently consists of one 276-unit complex and
+another under construction with 200 two-bedroom units. Solano Park's 26 buildings -- some two-story, others three-story -- include
+168 two-bedroom apartments and 108 one-bedroom units. All are unfurnished, except for built-in range and refrigerator. Laundry
+facilities, tot lots, and parking areas are provided as well as two recreation areas. One-bedroom units rent for $70 per month,
+two-bedroom units are $80. The housing was designed by Clark, Beuttler, Rockrise & Watson; landscape architect was Lawrence
+Halprin. Executive architect for the entire Davis campus is Gardner A Dailey & Associates. Total cost was $2,201,000."}
+~~~~~~~~~~
+dict_pp=
+{'dc.creator': '(:unav)',
+ 'dc.date': 'undated',
+ 'dc.relation': 'http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx',
+ 'dc.title': 'Solano Park, Married student housing at the University of '
+             "California's Davis campus presently consists of one 276-unit "
+             'complex and another under construction with 200 two-bedroom '
+             "units. Solano Park's 26 buildings -- some two-story, others "
+             'three-story -- include 168 two-bedroom apartments and 108 '
+             'one-bedroom units. All are unfurnished, except for built-in '
+             'range and refrigerator. Laundry facilities, tot lots, and '
+             'parking areas are provided as well as two recreation areas. '
+             'One-bedroom units rent for $70 per month, two-bedroom units are '
+             '$80. The housing was designed by Clark, Beuttler, Rockrise & '
+             'Watson; landscape architect was Lawrence Halprin. Executive '
+             'architect for the entire Davis campus is Gardner A Dailey & '
+             'Associates. Total cost was $2,201,000.'}
+~~~~~~~~~~
+keys=
+dc.date, dc.creator, dc.relation, dc.title
+~~~~~~~~~~
+output_exchange=
+dc.date undated dc.creator %28:unav%29 dc.relation http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx dc.title
+Solano%20Park,%20Married%20student%20housing%20at%20the%20University%20of%20California%27s%20Davis%20campus%20presently%20consists%20of%20one%20276-unit%20complex%20and%20another%20under%20construction%20with%20200%20two-
+bedroom%20units.%20Solano%20Park%27s%2026%20buildings%20--%20some%20two-story,%20others%20three-story%20--%20include%20168%20two-
+bedroom%20apartments%20and%20108%20one-bedroom%20units.%20All%20are%20unfurnished,%20except%20for%20built-
+in%20range%20and%20refrigerator.%20Laundry%20facilities,%20tot%20lots,%20and%20parking%20areas%20are%20provided%20as%20well%20as%20two%20recreation%20areas.%20One-
+bedroom%20units%20rent%20for%20$70%20per%20month,%20two-
+bedroom%20units%20are%20$80.%20The%20housing%20was%20designed%20by%20Clark,%20Beuttler,%20Rockrise%20%26%20Watson%3B%20landscape%20architect%20was%20Lawrence%20Halprin.%20Executive%20architect%20for%20the%20entire%20Davis%20campus%20is%20Gardner%20A%20Dailey%20%26%20Associates.%20Total%20cost%20was%20$2,201,000.

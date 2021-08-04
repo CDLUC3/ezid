@@ -1,0 +1,87 @@
+input_json=
+{"mrt.creator":"lsta_ssfpl","erc":"who: unknown;South San Francisco Public Library
+what: Palace Market & Mode O'Day, Grand Avenue  All Sou'l's Church construction, c1966  Alfred's Cleaners and Al's Liquors on
+Grand Avenue  Three businesses on Grand Avenue:  Palace Market, Mode O'Day and Anchor Drug  Antoniazzi Cottages # 1 & 2 on Grand
+Avenue  Bank of America, Grand Avenue, circa 1960  Bank of South San Francisco, circa 1960  Business cluster on Grand Avenue:
+Donut shop, Florist, Barbershop & Pet Store  Bay View Federal Savings and Sherwin Williams Paint Store on Grand Avenue  Karl's
+Shoes, Bell Jewellers and James Dresser on Grand Avenue  Sprouse-Reitz 5 & 10 & Beneficial Loans, Grand Avenue, c1966  Ben
+Franklin 5 - 10 on Grand Avenue  Bombay Bar, Avenue Smoke and Liquor Store on Grand Avenue  South San Francisco Police Department,
+Grand Avenue  City Hall and Library Park, Grand Avenue  Doris' Beauty Shop, and optometrist & F.D. Minucciani Real Estate  Ed's
+Diner, Grand Avenue  Salvation Army with Bayview Lunch and Edwin Hotel, Grand Avenue  Empire Furniture and Dinucci's Appliances on
+Grand Avenue  Enterprise Paper & Ward's (in Fraternal Hall Building, 400 block of Grand Avenue  Cypress Avenue-Norman Hotel and
+Fanucci Poultry, Grand Avenue  Baldasseroni Jewelers, D.W. Ratto Real Estate & Insurance, & Grand Food Market, Grand Avenue  Green
+Stamp Redemption Center and Wardrobe Cleaners, Grand Avenue  Industrial Savings & Price Furniture on Grand Avenue  Fun Fair Toy &
+Hobby Shop and Jay-Vee on Grand Avenue  Duplicating Service & J & J Cleaners  Kaiser Medical Annex on Grand Avenue & Spruce  JC
+Penny Department Store, Grand Avenue  City Hall Meat Market & residence at 425 Grand Avenue   Cosy Barber Shop, Mr. Keen, Frank
+Giffra & Sons & Bayview Lunch on Grand Avenue  Brown Stationary, Richard's Gift Shop & Penna hardware & Sporting Goods store on
+Grand Avenue  Pete's Coffee Shop on Grand Avenue  All Sou'l's Church rectory and Breer Chapman & Associates on Grand Avenue
+Royce/Modena Building & Carl Houlihan offices on Grand Avenue  Home Entertainment Center & Rousso's Apparel  Salvation Army Thrift
+store, Tri-City Credit Bureau and the West Hotel on Grand Avenue  Royal Typewriter Service & Sanitary Bakery on Grand Avenue
+Sears Catalog & Wolfe's Children's Clothing shop  Silver Dollar Bar, Grand Avenue Shoe Service, Wright Cleaners & Sciandri Bros.
+Hardware on Grand Avenue  South San Francisco Woman's Club building on Grand Avenue  Law Offices and The Hub shop on Grand Avenue
+St. Vincent de Paul Thrift Shop, Spuri Studio and B.J. Rodondi Real Estate offices on Grand Avenue  Town Liquors store and Dete's
+Bar on Grand Avenue  Wald Medical Building on Grand Avenue  Yellow Cab & Moose Lodge on Grand Avenue  Welte's Bar & Zep's Barber
+Shop
+when: 1960's
+where: ark:/13030/kt6j49r8kh"}
+~~~~~~~~~~
+dict_pp=
+{'erc': 'who: unknown;South San Francisco Public Library
+'
+        "what: Palace Market & Mode O'Day, Grand Avenue  All Sou'l's Church "
+        "construction, c1966  Alfred's Cleaners and Al's Liquors on Grand "
+        "Avenue  Three businesses on Grand Avenue:  Palace Market, Mode O'Day "
+        'and Anchor Drug  Antoniazzi Cottages # 1 & 2 on Grand Avenue  Bank of '
+        'America, Grand Avenue, circa 1960  Bank of South San Francisco, circa '
+        '1960  Business cluster on Grand Avenue: Donut shop, Florist, '
+        'Barbershop & Pet Store  Bay View Federal Savings and Sherwin Williams '
+        "Paint Store on Grand Avenue  Karl's Shoes, Bell Jewellers and James "
+        'Dresser on Grand Avenue  Sprouse-Reitz 5 & 10 & Beneficial Loans, '
+        'Grand Avenue, c1966  Ben Franklin 5 - 10 on Grand Avenue  Bombay Bar, '
+        'Avenue Smoke and Liquor Store on Grand Avenue  South San Francisco '
+        'Police Department, Grand Avenue  City Hall and Library Park, Grand '
+        "Avenue  Doris' Beauty Shop, and optometrist & F.D. Minucciani Real "
+        "Estate  Ed's Diner, Grand Avenue  Salvation Army with Bayview Lunch "
+        "and Edwin Hotel, Grand Avenue  Empire Furniture and Dinucci's "
+        "Appliances on Grand Avenue  Enterprise Paper & Ward's (in Fraternal "
+        'Hall Building, 400 block of Grand Avenue  Cypress Avenue-Norman Hotel '
+        'and Fanucci Poultry, Grand Avenue  Baldasseroni Jewelers, D.W. Ratto '
+        'Real Estate & Insurance, & Grand Food Market, Grand Avenue  Green '
+        'Stamp Redemption Center and Wardrobe Cleaners, Grand Avenue  '
+        'Industrial Savings & Price Furniture on Grand Avenue  Fun Fair Toy & '
+        'Hobby Shop and Jay-Vee on Grand Avenue  Duplicating Service & J & J '
+        'Cleaners  Kaiser Medical Annex on Grand Avenue & Spruce  JC Penny '
+        'Department Store, Grand Avenue  City Hall Meat Market & residence at '
+        '425 Grand Avenue   Cosy Barber Shop, Mr. Keen, Frank Giffra & Sons & '
+        "Bayview Lunch on Grand Avenue  Brown Stationary, Richard's Gift Shop "
+        "& Penna hardware & Sporting Goods store on Grand Avenue  Pete's "
+        "Coffee Shop on Grand Avenue  All Sou'l's Church rectory and Breer "
+        'Chapman & Associates on Grand Avenue  Royce/Modena Building & Carl '
+        'Houlihan offices on Grand Avenue  Home Entertainment Center & '
+        "Rousso's Apparel  Salvation Army Thrift store, Tri-City Credit Bureau "
+        'and the West Hotel on Grand Avenue  Royal Typewriter Service & '
+        "Sanitary Bakery on Grand Avenue  Sears Catalog & Wolfe's Children's "
+        'Clothing shop  Silver Dollar Bar, Grand Avenue Shoe Service, Wright '
+        'Cleaners & Sciandri Bros. Hardware on Grand Avenue  South San '
+        "Francisco Woman's Club building on Grand Avenue  Law Offices and The "
+        'Hub shop on Grand Avenue  St. Vincent de Paul Thrift Shop, Spuri '
+        'Studio and B.J. Rodondi Real Estate offices on Grand Avenue  Town '
+        "Liquors store and Dete's Bar on Grand Avenue  Wald Medical Building "
+        "on Grand Avenue  Yellow Cab & Moose Lodge on Grand Avenue  Welte's "
+        "Bar & Zep's Barber Shop
+"
+        "when: 1960's
+"
+        'where: ark:/13030/kt6j49r8kh',
+ 'mrt.creator': 'lsta_ssfpl'}
+~~~~~~~~~~
+keys=
+mrt.creator, erc
+~~~~~~~~~~
+output_exchange=
+mrt.creator lsta_ssfpl erc
+who:%20unknown%3BSouth%20San%20Francisco%20Public%20Library%0Awhat:%20Palace%20Market%20%26%20Mode%20O%27Day,%20Grand%20Avenue%20%20All%20Sou%27l%27s%20Church%20construction,%20c1966%20%20Alfred%27s%20Cleaners%20and%20Al%27s%20Liquors%20on%20Grand%20Avenue%20%20Three%20businesses%20on%20Grand%20Avenue:%20%20Palace%20Market,%20Mode%20O%27Day%20and%20Anchor%20Drug%20%20Antoniazzi%20Cottages%20#%201%20%26%202%20on%20Grand%20Avenue%20%20Bank%20of%20America,%20Grand%20Avenue,%20circa%201960%20%20Bank%20of%20South%20San%20Francisco,%20circa%201960%20%20Business%20cluster%20on%20Grand%20Avenue:%20Donut%20shop,%20Florist,%20Barbershop%20%26%20Pet%20Store%20%20Bay%20View%20Federal%20Savings%20and%20Sherwin%20Williams%20Paint%20Store%20on%20Grand%20Avenue%20%20Karl%27s%20Shoes,%20Bell%20Jewellers%20and%20James%20Dresser%20on%20Grand%20Avenue%20%20Sprouse-
+Reitz%205%20%26%2010%20%26%20Beneficial%20Loans,%20Grand%20Avenue,%20c1966%20%20Ben%20Franklin%205%20-%2010%20on%20Grand%20Avenue%20%20Bombay%20Bar,%20Avenue%20Smoke%20and%20Liquor%20Store%20on%20Grand%20Avenue%20%20South%20San%20Francisco%20Police%20Department,%20Grand%20Avenue%20%20City%20Hall%20and%20Library%20Park,%20Grand%20Avenue%20%20Doris%27%20Beauty%20Shop,%20and%20optometrist%20%26%20F.D.%20Minucciani%20Real%20Estate%20%20Ed%27s%20Diner,%20Grand%20Avenue%20%20Salvation%20Army%20with%20Bayview%20Lunch%20and%20Edwin%20Hotel,%20Grand%20Avenue%20%20Empire%20Furniture%20and%20Dinucci%27s%20Appliances%20on%20Grand%20Avenue%20%20Enterprise%20Paper%20%26%20Ward%27s%20%28in%20Fraternal%20Hall%20Building,%20400%20block%20of%20Grand%20Avenue%20%20Cypress%20Avenue-
+Norman%20Hotel%20and%20Fanucci%20Poultry,%20Grand%20Avenue%20%20Baldasseroni%20Jewelers,%20D.W.%20Ratto%20Real%20Estate%20%26%20Insurance,%20%26%20Grand%20Food%20Market,%20Grand%20Avenue%20%20Green%20Stamp%20Redemption%20Center%20and%20Wardrobe%20Cleaners,%20Grand%20Avenue%20%20Industrial%20Savings%20%26%20Price%20Furniture%20on%20Grand%20Avenue%20%20Fun%20Fair%20Toy%20%26%20Hobby%20Shop%20and%20Jay-
+Vee%20on%20Grand%20Avenue%20%20Duplicating%20Service%20%26%20J%20%26%20J%20Cleaners%20%20Kaiser%20Medical%20Annex%20on%20Grand%20Avenue%20%26%20Spruce%20%20JC%20Penny%20Department%20Store,%20Grand%20Avenue%20%20City%20Hall%20Meat%20Market%20%26%20residence%20at%20425%20Grand%20Avenue%20%20%20Cosy%20Barber%20Shop,%20Mr.%20Keen,%20Frank%20Giffra%20%26%20Sons%20%26%20Bayview%20Lunch%20on%20Grand%20Avenue%20%20Brown%20Stationary,%20Richard%27s%20Gift%20Shop%20%26%20Penna%20hardware%20%26%20Sporting%20Goods%20store%20on%20Grand%20Avenue%20%20Pete%27s%20Coffee%20Shop%20on%20Grand%20Avenue%20%20All%20Sou%27l%27s%20Church%20rectory%20and%20Breer%20Chapman%20%26%20Associates%20on%20Grand%20Avenue%20%20Royce/Modena%20Building%20%26%20Carl%20Houlihan%20offices%20on%20Grand%20Avenue%20%20Home%20Entertainment%20Center%20%26%20Rousso%27s%20Apparel%20%20Salvation%20Army%20Thrift%20store,%20Tri-
+City%20Credit%20Bureau%20and%20the%20West%20Hotel%20on%20Grand%20Avenue%20%20Royal%20Typewriter%20Service%20%26%20Sanitary%20Bakery%20on%20Grand%20Avenue%20%20Sears%20Catalog%20%26%20Wolfe%27s%20Children%27s%20Clothing%20shop%20%20Silver%20Dollar%20Bar,%20Grand%20Avenue%20Shoe%20Service,%20Wright%20Cleaners%20%26%20Sciandri%20Bros.%20Hardware%20on%20Grand%20Avenue%20%20South%20San%20Francisco%20Woman%27s%20Club%20building%20on%20Grand%20Avenue%20%20Law%20Offices%20and%20The%20Hub%20shop%20on%20Grand%20Avenue%20%20St.%20Vincent%20de%20Paul%20Thrift%20Shop,%20Spuri%20Studio%20and%20B.J.%20Rodondi%20Real%20Estate%20offices%20on%20Grand%20Avenue%20%20Town%20Liquors%20store%20and%20Dete%27s%20Bar%20on%20Grand%20Avenue%20%20Wald%20Medical%20Building%20on%20Grand%20Avenue%20%20Yellow%20Cab%20%26%20Moose%20Lodge%20on%20Grand%20Avenue%20%20Welte%27s%20Bar%20%26%20Zep%27s%20Barber%20Shop%0Awhen:%201960%27s%0Awhere:%20ark:/13030/kt6j49r8kh

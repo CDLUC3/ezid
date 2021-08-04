@@ -22,12 +22,13 @@
 import argparse
 import sys
 
-import ezidapp.models.search_group
-import ezidapp.models.search_user
-import ezidapp.models.store_group
-import ezidapp.models.store_identifier
-import ezidapp.models.store_user
+import ezidapp.models.group
+import ezidapp.models.user
+import ezidapp.models.group
+import ezidapp.models.identifier
+import ezidapp.models.user
 import ezidapp.models.update_queue
+import ezidapp.models.util
 from impl import ezid
 
 # @executable
@@ -67,11 +68,11 @@ p.add_argument("step", type=int, choices=[2, 4], nargs="?", help="processing ste
 
 args = p.parse_args(sys.argv[1:])
 
-user = ezidapp.models.store_user.getUserByUsername(args.user)
+user = ezidapp.models.util.getUserByUsername(args.user)
 if user is None or args.user == "anonymous":
     error("no such user: " + args.user)
 
-newGroup = ezidapp.models.store_group.getGroupByGroupname(args.new_group)
+newGroup = ezidapp.models.util.getGroupByGroupname(args.new_group)
 if newGroup is None or args.new_group == "anonymous":
     error("no such group: " + args.new_group)
 
@@ -97,12 +98,10 @@ if args.step == 2:
     user.group = newGroup
     user.realm = newGroup.realm
     user.save()
-    newSearchGroup = ezidapp.models.search_group.SearchGroup.objects.get(
+    newSearchGroup = ezidapp.models.group.SearchGroup.objects.get(
         groupname=newGroup.groupname
     )
-    searchUser = ezidapp.models.search_user.SearchUser.objects.get(
-        username=user.username
-    )
+    searchUser = ezidapp.models.user.SearchUser.objects.get(username=user.username)
     searchUser.group = newSearchGroup
     searchUser.realm = newSearchGroup.realm
     searchUser.save()
@@ -118,7 +117,7 @@ if args.step == 4:
     lastId = ""
     while True:
         ids = list(
-            ezidapp.models.store_identifier.StoreIdentifier.objects.filter(owner=user)
+            ezidapp.models.identifier.StoreIdentifier.objects.filter(owner=user)
             .filter(identifier__gt=lastId)
             .only("identifier")
             .order_by("identifier")[:1000]
@@ -128,7 +127,7 @@ if args.step == 4:
         for id in ids:
             s = ezid.setMetadata(
                 id.identifier,
-                ezidapp.models.store_user.getAdminUser(),
+                ezidapp.models.util.getAdminUser(),
                 {"_ownergroup": newGroup.groupname},
                 updateExternalServices=False,
             )

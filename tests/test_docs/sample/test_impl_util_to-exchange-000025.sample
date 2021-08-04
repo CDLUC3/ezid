@@ -1,0 +1,11 @@
+input_json=
+{"mrt.creator":"cdl_oac"}
+~~~~~~~~~~
+dict_pp=
+{'mrt.creator': 'cdl_oac'}
+~~~~~~~~~~
+keys=
+mrt.creator
+~~~~~~~~~~
+output_exchange=
+mrt.creator cdl_oac

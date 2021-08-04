@@ -28,8 +28,6 @@
 #
 # -----------------------------------------------------------------------------
 
-import django.conf
-
 import logging
 import re
 import time
@@ -38,36 +36,27 @@ import urllib.parse
 import urllib.request
 import urllib.response
 
-import impl.config
+import django.conf
+
 import impl.log
 import impl.util
 
 _LT = logging.getLogger("tracer")
 
-_server = None
-_authorization = None
-_numAttempts = None
-_reattemptDelay = None
-
-
-def loadConfig():
-    global _server, _authorization, _numAttempts, _reattemptDelay
-    _server = django.conf.settings.BINDER_URL
-    _authorization = impl.util.basic_auth(
-        django.conf.settings.BINDER_USERNAME,
-        django.conf.settings.BINDER_PASSWORD,
-    )
-    _numAttempts = int(django.conf.settings.BINDER_NUM_ATTEMPTS)
-    _reattemptDelay = int(django.conf.settings.BINDER_REATTEMPT_DELAY)
-
 
 @impl.log.stacklog
 def _issue(method, operations):
     # noinspection PyUnresolvedReferences
-    r = urllib.request.Request(_server + "?-")
+    r = urllib.request.Request(django.conf.settings.BINDER_URL + "?-")
     r.get_method = lambda: method
     # noinspection PyTypeChecker
-    r.add_header("Authorization", _authorization)
+    r.add_header(
+        "Authorization",
+        impl.util.basic_auth(
+            django.conf.settings.BINDER_USERNAME,
+            django.conf.settings.BINDER_PASSWORD,
+        ),
+    )
     if len(operations) > 0:
         r.add_header("Content-Type", "text/plain")
         l = []
@@ -81,14 +70,14 @@ def _issue(method, operations):
             l.append(s)
         r.data = "\n".join(l)
     # noinspection PyTypeChecker
-    for i in range(_numAttempts):
+    for i in range(int(django.conf.settings.BINDER_NUM_ATTEMPTS)):
         c = None
         try:
             c = urllib.request.urlopen(r)
             s = c.readlines()
         except Exception:
             # noinspection PyTypeChecker
-            if i == _numAttempts - 1:
+            if i == int(django.conf.settings.BINDER_NUM_ATTEMPTS) - 1:
                 raise
         else:
             break
@@ -96,7 +85,7 @@ def _issue(method, operations):
             if c:
                 c.close()
         # noinspection PyTypeChecker
-        time.sleep(_reattemptDelay)
+        time.sleep(int(django.conf.settings.BINDER_REATTEMPT_DELAY))
     # noinspection PyUnboundLocalVariable,PyUnboundLocalVariable
     return s
 
@@ -131,7 +120,7 @@ def identifierExists(id_str):
         and s[-3].startswith("# elements bound under")
         and s[-2] == "egg-status: 0\n"
     ), _error("fetch", s)
-    m = re.search(": (\d+)\n$", s[-3])
+    m = re.search(": (\\d+)\n$", s[-3])
     assert m, _error("fetch", s)
     return m.group(1) != "0"
 
@@ -182,7 +171,7 @@ def getElements(identifier):
         and s[-3].startswith("# elements bound under")
         and s[-2] == "egg-status: 0\n"
     ), _error("fetch", s)
-    m = re.search(": (\d+)\n$", s[-3])
+    m = re.search(": (\\d+)\n$", s[-3])
     assert m, _error("fetch", s)
     c = int(m.group(1))
     assert len(s) == c + 4, _error("fetch", s)

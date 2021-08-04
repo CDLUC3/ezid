@@ -379,7 +379,7 @@ def _pageLayout(d, REQUEST, s_type="public"):
     """Track user preferences for selected fields, field order, page, and page
     size."""
     d['filtered'] = False if 'filtered' not in d and 'filtered' not in REQUEST else True
-    d['testPrefixes'] = impl.ui_common.testPrefixes
+    # d['testPrefixes'] = impl.ui_common.testPrefixes
     d['fields_mapped'] = FIELDS_MAPPED
     d['field_display_types'] = FIELD_DISPLAY_TYPES
     f_order = _fieldOrderByType[s_type]
@@ -577,7 +577,7 @@ def _buildQuerySyntax(c):
             vu = value.upper()
             # Just simply include 'AND' only when user hasn't used quotes or AND/OR
             if not quoteOccurred and " AND " not in vu and " OR " not in vu:
-                value = re.sub(r'\s+', ' AND ', value)
+                value = re.sub(r'\\s+', ' AND ', value)
             r += value + ")"
         dlength -= 1
         if dlength >= 1:

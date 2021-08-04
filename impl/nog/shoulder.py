@@ -4,14 +4,12 @@ import logging
 import django.contrib.auth.models
 import django.core
 import django.core.management
-import django.core.management
 import django.db
 import django.db.transaction
 import django.db.utils
 
+import ezidapp.models.datacenter
 import ezidapp.models.shoulder
-import ezidapp.models.store_datacenter
-import ezidapp.models.store_datacenter
 import impl.nog.id_ns
 import impl.nog.minter
 
@@ -57,7 +55,9 @@ def assert_super_shoulder_slash(ns, is_super_shoulder, is_force):
         return
     if not str(ns).endswith('/'):
         if is_force:
-            log.info('Accepting super-shoulder not ending with "/" due to --skip-checks')
+            log.info(
+                'Accepting super-shoulder not ending with "/" due to --skip-checks'
+            )
         else:
             raise django.core.management.CommandError(
                 'Super-shoulder normally ends with "/". Use --skip-checks to skip this check '
@@ -67,7 +67,7 @@ def assert_super_shoulder_slash(ns, is_super_shoulder, is_force):
 
 def assert_valid_datacenter(datacenter_str):
     datacenter_set = {
-        x.symbol for x in ezidapp.models.store_datacenter.StoreDatacenter.objects.all()
+        x.symbol for x in ezidapp.models.datacenter.StoreDatacenter.objects.all()
     }
     if datacenter_str not in datacenter_set:
         log.error(
@@ -87,9 +87,9 @@ def dump_shoulders():
 
 
 def dump_datacenters():
-    # for x in ezidapp.models.search_datacenter.SearchDatacenter.objects.all():
+    # for x in ezidapp.models.datacenter.SearchDatacenter.objects.all():
     #     log.info(x)
-    for x in ezidapp.models.store_datacenter.StoreDatacenter.objects.all():
+    for x in ezidapp.models.datacenter.StoreDatacenter.objects.all():
         log.info(x)
 
 

@@ -1,0 +1,142 @@
+{% load i18n %}
+<script type="text/javascript">
+  /* these javascript methods replace some
+   * django template tags since it is hard to keep
+   * the two code branches (info pages and ezid) in sync
+   * so this should make maintenance easier and without
+   * the same dependency problems.
+   */
+  
+   function htmlEscape(str) {
+    return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+	}
+
+	function unavailable_codes(for_field){
+  	var items = [ ["unac", "temporarily inaccessible"],
+            ["unal", "unallowed, suppressed intentionally"],
+            ["unap", "not applicable, makes no sense"],
+            ["unas", "value unassigned (e.g., Untitled)"],
+            ["unav", "value unavailable, possibly unknown"],
+            ["unkn", "known to be unknown (e.g., Anonymous, Inconnue)"],
+            ["none", "never had a value, never will"],
+            ["null", "explicitly and meaningfully empty"],
+            ["tba", "to be assigned or announced later"],
+            ["etal", "too numerous to list (et alia)"],
+            ["at", "the real value is at the given URL or identifier"] ];
+   	var outstr = "";
+   	
+   	outstr += "<ul>\n";
+   	for (var i=0;i<items.length;i++){
+   		outstr += "<li><a class=\"link__primary\" href=\"#" + htmlEscape(items[i][0]) +
+   			"_" + for_field + "\" name=\"code_insert_link\">" +
+        htmlEscape("(:" + items[i][0] + ")" ) + "</a> " + htmlEscape(items[i][1]) + "</li>";
+   	}
+   	outstr += "</ul>";
+   	document.write(outstr);
+  }
+	
+</script>
+
+{% comment %}Translators: Copy HTML tags over and only translate words outside of these tags 
+i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS. PLEASE PRESERVE HTML TAGS</p> 
+{% endcomment %}
+{% blocktrans trimmed %}
+<div id="choose_id_demo_content" class="help_window" role="tooltip">
+  <p>
+    <strong>DOIs</strong> <br/>Recommended for final products, published materials, and citation. Use for objects under good long-term management.
+  </p>
+  <p>
+    <strong>ARKs</strong> <br/>Recommended for projects requiring more flexibility, early or unpublished versions of material.
+  </p>
+</div>
+<div id="choose_id_content" class="help_window" role="tooltip">
+  <p>
+    <strong>DOIs</strong> <br/>Recommended for final products, published materials, and citation. Use for objects under good long-term management. Cannot be deleted.
+  </p>
+  <p>
+    <strong>ARKs</strong> <br/>Recommended for projects requiring more flexibility, early or unpublished versions of material. Can be deleted.
+  </p>
+</div>
+ <div id="custom_remainder_content" class="help_window" role="tooltip">
+  <p>
+    EZID will create a unique string for you. If you choose to create a custom remainder, best practice is to not include information that is subject to change, which impairs persistence. Please check <a class="link__primary" target="_blank" title="PDF Document" href="/static/locale/en/EZID_CustomRemainders.pdf">Custom Remainder Rules</a> for permitted characters.
+  </p>
+</div>
+
+<div id="describe_profile_content" class="help_window" role="tooltip">
+  <p>
+    <strong>DataCite</strong> <br/>Required for DOIs. More here: <a href="http://schema.datacite.org" class="ext-link no-wrap">http://schema.datacite.org</a>
+  </p>
+  <p>
+    <strong>Dublin Core</strong> <br/>More here: <a href="http://dublincore.org/documents/dces/" class="ext-link no-wrap">http://dublincore.org/documents/dces/</a>
+  </p>
+  <p>
+    <strong>ERC</strong> <br/>Electronic Resource Citation, default for ARKs. More here: <a href="http://dublincore.org/groups/kernel/spec/" class="ext-link no-wrap">http://dublincore.org/groups/kernel/spec/</a>
+  </p>
+</div>
+
+<div id="decide_public_content" class="help_window" role="tooltip">
+  <p>
+    A <strong>public</strong> status means the identifier is viewable by anyone. The <strong>reserved</strong> status means it is viewable only by owners, so “reserved” is a great way to save a DOI or ARK for use later. Reserved IDs can be deleted.
+  </p>
+</div>
+<div id="decide_public_unavail_content" class="help_window" role="tooltip">
+  <p>
+    A <strong>public</strong> status means the identifier is viewable by anyone. An identifier with <strong>unavailable</strong> status is also public, but only insofar as it redirects to an EZID-provided "tombstone" page, displaying the identifier's citation metadata and the reason for the object's unavailability.
+  </p>
+</div>
+<div id="decide_export_content" class="help_window" role="tooltip">
+  <p>
+    Your choice pertains to making the metadata available for harvesting and/or indexing. Choosing "Yes" does not guarantee that the metadata will be harvested or indexed, but choosing "No" removes the possibility.
+  </p>
+</div>
+<div id="lookup_proxies_content" class="help_window" role="tooltip">
+  <p>
+    <strong>About Proxy Users</strong> <br/>An EZID user account may designate another EZID user account as a proxy user of the first account's identifiers. This gives the second EZID user account the right to manage and edit detailed information about an identifier.
+  </p>
+</div>
+<div id="search_advanced_content" class="help_window" role="tooltip">
+  <p>No wildcards allowed (i.e. asterisks, question marks)</p>
+</div>
+
+<div id="search_target_content" class="help_window" role="tooltip">
+  <p>
+    <strong>Target URL</strong> <br/>The current location (URL) of the identified object
+  </p>
+</div>
+<div id="search_id_create_date_content" class="help_window" role="tooltip">
+  <p>
+    <strong>ID Create Date</strong> <br/>Date when identifier was created. Format: YYYYY-MM-DD
+  </p>
+</div>
+<div id="search_id_update_date_content" class="help_window" role="tooltip">
+  <p>
+    <strong>ID Update Date</strong> <br/>Date when identifier was last updated. Format: YYYYY-MM-DD
+  </p>
+</div>
+<div id="search_id_status_content" class="help_window" role="tooltip">
+  <p>
+    <strong>ID Status</strong> <br/>A value indicating the visibility of the identifier and its referenced object
+  </p>
+</div>
+<div id="search_harvesting_content" class="help_window" role="tooltip">
+  <p>
+    <strong>Allows harvesting?</strong> <br/>A value indicating that the metadata is or is not available for harvesting and/or indexing
+  </p>
+</div>
+<div id="search_has_metadata_content" class="help_window" role="tooltip">
+  <p>
+    <strong>Has metadata?</strong> <br/>A value indicating the presence of metadata
+  </p>
+</div>
+<div id="polygonhelp_content" class="help_window" role="tooltip">
+  <p>
+    Enter coordinates of the polygon using either <a class="ext-link" href="https://tools.ietf.org/html/rfc7946">GeoJSON</a> or <a class="ext-link" href="https://developers.google.com/kml/">Keyhole Markup Language (KML)</a> formatted text. Each point is defined by a longitude‐latitude pair. The last point should be the same as the first point.
+  </p>
+</div>
+{% endblocktrans %}

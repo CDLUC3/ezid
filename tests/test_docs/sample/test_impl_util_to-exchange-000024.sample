@@ -1,0 +1,11 @@
+input_json=
+{"erc.what":"mon titre"}
+~~~~~~~~~~
+dict_pp=
+{'erc.what': 'mon titre'}
+~~~~~~~~~~
+keys=
+erc.what
+~~~~~~~~~~
+output_exchange=
+erc.what mon%20titre

@@ -17,10 +17,7 @@ import sys
 import time
 import urllib.error
 import urllib.error
-import urllib.error
 import urllib.parse
-import urllib.parse
-import urllib.request
 import urllib.request
 import urllib.response
 
@@ -28,14 +25,14 @@ import django.db
 import django.conf
 
 import ezidapp.models.shoulder
-import ezidapp.models.store_identifier
+import ezidapp.models.identifier
 from impl import config
 
 # from impl # import ezidapp.models
 
 expireTime = int(time.time()) - 14 * 86400
 baseUrl = django.conf.settings.EZID_BASE_URL
-adminPassword = django.conf.settings.AUTH_ADMIN_PASSWORD
+adminPassword = django.conf.settings.ADMIN_PASSWORD
 
 if len(sys.argv) != 1:
     sys.stderr.write("Usage: expunge\n")
@@ -50,7 +47,7 @@ for prefix in [
     expungeList.extend(
         [
             si.identifier
-            for si in ezidapp.models.store_identifier.StoreIdentifier.objects.filter(
+            for si in ezidapp.models.identifier.StoreIdentifier.objects.filter(
                 identifier__startswith=prefix
             )
             .filter(createTime__lte=expireTime)

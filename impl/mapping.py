@@ -31,7 +31,7 @@
 
 import re
 
-import ezidapp.models.validation
+# import ezidapp.models.validation
 import impl.datacite
 import impl.erc
 import impl.util
@@ -62,6 +62,8 @@ class KernelMetadata(object):
     def validatedDate(self):
         if self.date is not None:
             try:
+                import ezidapp.models.validation
+
                 return ezidapp.models.validation.publicationDate(self.date)
             except Exception:
                 return None
@@ -157,7 +159,7 @@ def _mapDataciteItemized(metadata):
     )
 
 
-_rootTagRE = re.compile("{(http://datacite\.org/schema/kernel-[^}]*)}resource$")
+_rootTagRE = re.compile("{(http://datacite\\.org/schema/kernel-[^}]*)}resource$")
 
 
 def _text(n):

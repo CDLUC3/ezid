@@ -142,7 +142,7 @@ def compareXml(node1, node2, mismatches):
 
     # Crossref internally normalizes text values.
     def normalize(text):
-        return re.sub("\s+", " ", (text or "").strip())
+        return re.sub("\\s+", " ", (text or "").strip())
 
     if localName(node1.tag) != localName(node2.tag):
         mismatches.append(

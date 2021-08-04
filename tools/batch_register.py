@@ -209,10 +209,7 @@ import getpass
 import re
 import sys
 import urllib.error
-import urllib.error
 import urllib.parse
-import urllib.parse
-import urllib.request
 import urllib.request
 import urllib.response
 
@@ -238,10 +235,10 @@ def loadMappings(file):
                 d, e = [v.strip() for v in l.split("=", 1)]
                 if d.startswith("/"):
                     assert re.match(
-                        "/resource(/\w+)+(@\w+)?$", d
+                        "/resource(/\\w+)+(@\\w+)?$", d
                     ), "invalid absolute XPath expression"
                 else:
-                    assert re.match("[.\w]+$", d), "invalid element name"
+                    assert re.match("[.\\w]+$", d), "invalid element name"
                 m.append((d, e))
             except Exception as e:
                 assert False, "%s, line %d: %s" % (file, n, str(e))
@@ -277,7 +274,7 @@ def interpolate(expression, row):
     # returns: string or complex object
     v = ""
     i = 0
-    for m in re.finditer("\$(?:\d+|{\d+}|{\d+(?:,\d+)*:\w+}|\$)", expression):
+    for m in re.finditer("\\$(?:\\d+|{\\d+}|{\\d+(?:,\\d+)*:\\w+}|\\$)", expression):
         v += expression[i : m.start()]
         try:
             if m.group(0) == "$$":
@@ -339,7 +336,7 @@ def setDataciteValue(node, path, value):
             "invalid return value from user-supplied function: "
             + "malformed list or tuple"
         )
-        assert all(re.match("(\w+|[.])(/(\w+|[.]))*(@\w+)?$", v[0]) for v in value), (
+        assert all(re.match("(\\w+|[.])(/(\\w+|[.]))*(@\\w+)?$", v[0]) for v in value), (
             "invalid return value from user-supplied function: "
             + "invalid relative XPath expression"
         )

@@ -4,9 +4,10 @@ import io
 
 from django.utils.translation import ugettext as _
 
-import ezidapp.models.store_group
-import ezidapp.models.store_user
-import impl.stats
+import ezidapp.models.group
+import ezidapp.models.user
+import ezidapp.models.util
+import impl.statistics
 import impl.ui_common
 import impl.ui_search
 import impl.userauth
@@ -75,9 +76,7 @@ def ajax_dashboard_table(request):
         user = impl.userauth.getUser(request)
         G = request.GET
         d = {
-            'owner_selected': (
-                G['owner_selected'] if 'owner_selected' in G else user.username
-            ),
+            'owner_selected': (G['owner_selected'] if 'owner_selected' in G else user.username),
             'p': G.get('p'),
         }
         if 'name' in G and d['p'] is not None and d['p'].isdigit():
@@ -89,37 +88,29 @@ def ajax_dashboard_table(request):
 
 def _getUsage(REQUEST, _user, d):
     _table = []
-    user_id, group_id, realm_id = impl.ui_common.getOwnerOrGroupOrRealm(
-        d['owner_selected']
-    )
+    user_id, group_id, realm_id = impl.ui_common.getOwnerOrGroupOrRealm(d['owner_selected'])
     if realm_id is not None:
-        table = impl.stats.getTable(realm=realm_id)
+        table = ezidapp.management.commands.stats.getTable(realm=realm_id)
     elif group_id is not None:
-        table = impl.stats.getTable(
-            ownergroup=ezidapp.models.store_group.getGroupByGroupname(group_id).pid
+        table = ezidapp.management.commands.stats.getTable(
+            ownergroup=ezidapp.models.util.getGroupByGroupname(group_id).pid
         )
     else:
         if user_id == 'all':
-            table = impl.stats.getTable()
+            table = ezidapp.management.commands.stats.getTable()
         else:
-            table = impl.stats.getTable(
-                owner=ezidapp.models.store_user.getUserByUsername(user_id).pid
+            table = ezidapp.management.commands.stats.getTable(
+                owner=ezidapp.models.util.getUserByUsername(user_id).pid
             )
     all_months = _computeMonths(table)
     if len(all_months) > 0:
         d["totals"] = _computeTotals(table)
         _month_earliest = table[0][0]
-        _month_latest = (
-            f"{datetime.datetime.now().year}-{datetime.datetime.now().month}"
-        )
+        _month_latest = f"{datetime.datetime.now().year}-{datetime.datetime.now().month}"
         d['months_all'] = [m[0] for m in table]
         default_table = table[-12:]
-        d["month_from"] = (
-            REQUEST["month_from"] if "month_from" in REQUEST else default_table[0][0]
-        )
-        d["month_to"] = (
-            REQUEST["month_to"] if "month_to" in REQUEST else default_table[-1][0]
-        )
+        d["month_from"] = REQUEST["month_from"] if "month_from" in REQUEST else default_table[0][0]
+        d["month_to"] = REQUEST["month_to"] if "month_to" in REQUEST else default_table[-1][0]
         d["totals_by_month"] = _computeMonths(
             _getScopedRange(table, d['month_from'], d['month_to'])
         )
@@ -170,9 +161,9 @@ def _computeTotals(table):
             for hasMetadata in [True, False]:
                 t = (type, hasMetadata)
                 data[t] = data.get(t, 0) + row[1].get(t, 0)
-                data[("grand", hasMetadata)] = data.get(
-                    ("grand", hasMetadata), 0
-                ) + row[1].get(t, 0)
+                data[("grand", hasMetadata)] = data.get(("grand", hasMetadata), 0) + row[1].get(
+                    t, 0
+                )
     totals = {}
     for type in ["ARK", "DOI", "grand"]:
         total = data[(type, True)] + data[(type, False)]
@@ -210,7 +201,7 @@ def csvStats(request):
     requestor = impl.userauth.getUser(request)
     users = {requestor}
     if requestor.isSuperuser:
-        for u in ezidapp.models.store_user.StoreUser.objects.all():
+        for u in ezidapp.models.user.StoreUser.objects.all():
             users.add(u)
     elif requestor.isRealmAdministrator:
         for g in requestor.realm.groups.all():
@@ -237,7 +228,7 @@ def csvStats(request):
         ]
     )
     for u in users:
-        for r in impl.stats.getTable(owner=u.pid):
+        for r in ezidapp.management.commands.stats.getTable(owner=u.pid):
             outputRow = [u.username, u.group.groupname, r[0]]
             for type in ["ARK", "DOI"]:
                 t = 0
@@ -247,7 +238,5 @@ def csvStats(request):
                     t += v
                 outputRow.append(str(t))
             w.writerow(outputRow)
-    fn = (
-        "EZID_" + requestor.username + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-    )
+    fn = "EZID_" + requestor.username + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     return impl.ui_common.csvResponse(f.getvalue(), fn)

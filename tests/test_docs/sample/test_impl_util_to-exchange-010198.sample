@@ -1,0 +1,312 @@
+input_json=
+{"datacite":"<?xml version=\"1.0\"?>
+<resource xmlns=\"http://datacite.org/schema/kernel-3\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+xsi:schemaLocation=\"http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd\"><identifier
+identifierType=\"ARK\">81239/m9rp5z</identifier><creators><creator><creatorName>Vides, Marta. Londo\u00f1o, Marelvis. Fontalvo,
+Martha. Lacambra, Carmen. Correa, Ivan. Hern\u00e1ndez, Sarah. Morales, Ricardo. Arias-Isaza, F. Sierra-Correa, P.C. Alonso-
+Carvajal, David A.</creatorName></creator></creators><titles><title>Programa Holand\u00e9s de asistencia para estudios en Cambio
+clim\u00e1tico: Colombia. Definici\u00f3n de la vulnerabilidad de los sistemas bio-geof\u00edsicos y socioecon\u00f3micos debido
+a un cambio en el nivel del mar en la zona costera colombiana (Caribe, Insular y pac\u00edfico) y medidas para su adaptaci\u00f3n-
+Informe t\u00e9cnico 5- Estrategia de
+respuesta.</title></titles><publisher>INVEMAR</publisher><publicationYear>2003</publicationYear><subjects><subject>Cambio
+climatico, vulnerabilidad al ascenso del nivel del mar.</subject></subjects><contributors><contributor
+contributorType=\"Sponsor\"><contributorName>INVEMAR</contributorName></contributor></contributors><dates><date
+dateType=\"Created\">2003</date></dates><resourceType
+resourceTypeGeneral=\"Text\">Report</resourceType><relatedIdentifiers><relatedIdentifier relationType=\"IsPartOf\"
+relatedIdentifierType=\"ARK\">ark:/81239/m9dg65</relatedIdentifier><relatedIdentifier relationType=\"IsPartOf\"
+relatedIdentifierType=\"ARK\">ark:/81239/m95018</relatedIdentifier><relatedIdentifier relationType=\"IsPartOf\"
+relatedIdentifierType=\"ARK\">ark:/81239/m9160q</relatedIdentifier><relatedIdentifier relatedIdentifierType=\"ARK\"
+relationType=\"IsPartOf\">ark:/81239/m9wg6h</relatedIdentifier><relatedIdentifier relatedIdentifierType=\"ARK\"
+relationType=\"IsPartOf\">ark:/81239/m9n01m</relatedIdentifier><relatedIdentifier relationType=\"IsPartOf\"
+relatedIdentifierType=\"ARK\">ark:/81239/m9h88s</relatedIdentifier><relatedIdentifier relationType=\"IsPartOf\"
+relatedIdentifierType=\"ARK\">ark:/81239/m9cg6v</relatedIdentifier></relatedIdentifiers><formats><format>PDF</format></formats><version>1.0</version><rightsList><rights>CC
+BY NC, 4.0</rights></rightsList><descriptions><description descriptionType=\"Abstract\">El presente informe busca de forma
+general, plantear algunas estrategias de respuesta analizadas para los sitios m\u00e1s susceptibles sobre la costa colombiana ante
+los efectos esperados del aumento en el nivel del mar. Este an\u00e1lisis debe ser considerado como un ejercicio acad\u00e9mico de
+la metodolog\u00eda IPCC, para identificar las fortalezas y debilidades del manejo actual y futuro de nuestras costas. Las medidas
+necesarias para la protecci\u00f3n y adaptaci\u00f3n de las costas, al igual que la reubicaci\u00f3n de la poblaci\u00f3n en
+riesgo, deben ser adoptadas en el futuro mediante estudios m\u00e1s detallados y espec\u00edficos, teniendo como base experiencias
+anteriores y la debida socializaci\u00f3n de dichas medidas.</description><description
+descriptionType=\"TableOfContents\">ACCIONES PLANEADAS ANTE EL ASCENSO DEL NIVEL DEL MAR.
+.......................................23&#13;
+EVACUACION
+.............................................................................................................................................23&#13;
+ADAPTACION..............................................................................................................................................24&#13;
+PROTECCION...............................................................................................................................................25&#13;
+Dise\u00f1o de paredes de
+protecci\u00f3n...........................................................................................................25&#13;
+Relleno de
+playas...................................................................................................................................27&#13;
+Obras en los deltas y
+estuarios..............................................................................................................29&#13;
+Acreci\u00f3n.................................................................................................................................................30&#13;
+Recubrimientos y reforzamiento de estructuras
+existentes....................................................................30&#13;
+Creaci\u00f3n de ecosistemas artificiales
+.....................................................................................................30&#13;
+Tubos de
+geotextil..................................................................................................................................31&#13;
+ESTRATEGIAS USADAS EN COLOMBIA............................................................................................33&#13;
+REUBICACION.............................................................................................................................................33&#13;
+PROTECCION...............................................................................................................................................34&#13;
+Sector Golfo de
+Morrosquillo................................................................................................................34&#13;
+Sector
+Cartagena...................................................................................................................................36&#13;
+Sector
+Buenaventura.............................................................................................................................36&#13;
+ESTRATEGIAS DE ADAPTACI\u00d3N
+........................................................................................................39&#13;
+NCCSAP, Colombia ii&#13;
+IDENTIFICACION DE LAS AREAS CRITICAS EN
+COLOMBIA............................................................................40&#13;
+\u00c1reas cr\u00edticas en la proyecci\u00f3n de 30 cm de
+ANM................................................................................42&#13;
+\u00c1reas cr\u00edticas en la proyecci\u00f3n de 100 cm de
+ANM..............................................................................46&#13;
+AN\u00c1LISIS DE LAS POSIBLES ESTRATEGIAS DE RESPUESTA ....................................................51&#13;
+IDENTIFICACION DE ESTRATEGIAS POR ANALISIS MULTICRITERIO ..............................................................51&#13;
+Santa
+Marta........................................................................................................................................57&#13;
+Barranquilla
+.......................................................................................................................................57&#13;
+Cartagena...........................................................................................................................................58&#13;
+Turbo
+.................................................................................................................................................58&#13;
+Morrosquillo
+......................................................................................................................................59&#13;
+Buenaventura.....................................................................................................................................59&#13;
+Guapi
+.................................................................................................................................................60&#13;
+Tumaco
+..............................................................................................................................................60&#13;
+ESPECIFICACION DE ESTRATEGIAS DE RESPUESTA Y COSTOS ......................................................................61&#13;
+Estrategia de respuesta \u201csin medidas \u201d
+................................................................................................61&#13;
+Estrategias de respuesta \u201cprotecci\u00f3n total\u201d
+.........................................................................................61&#13;
+SAN ANDRES DE TUMACO: Cabecera municipal........................................................................62&#13;
+UNIDAD DE MANEJO INTEGRADO GUAPI-ISCUANDE .........................................................65&#13;
+BUENAVENTURA
+..........................................................................................................................66&#13;
+SANTA MARTA
+..............................................................................................................................68&#13;
+CIENAGA GRANDE DE SANTA MARTA Y BARRANQUILLA................................................70&#13;
+CARTAGENA
+D.T.C.H....................................................................................................................72&#13;
+GOLFO DE
+MORROSQUILLO.......................................................................................................74&#13;
+ESTRATEGIA A ESCALA
+NACIONAL..................................................................................................76&#13;
+ESTIMACION DE COSTOS ASOCIADOS A LAS ESTRATEGIAS DE RESPUESTA: .................................................79&#13;
+Aspectos
+metodol\u00f3gicos.........................................................................................................................79&#13;
+Planificaci\u00f3n Local
+...............................................................................................................................80&#13;
+Medidas
+Adicionales..............................................................................................................................80</description></descriptions><geoLocations><geoLocation><geoLocationPlace>Regi\u00f3n
+Caribe Continental, Caribe Insular Oce\u00e1nico, Pac\u00edfico Continental, Pac\u00edfico Oce\u00e1nico e
+Insular.</geoLocationPlace></geoLocation></geoLocations></resource>"}
+~~~~~~~~~~
+dict_pp=
+{'datacite': '<?xml version="1.0"?>
+'
+             '<resource xmlns="http://datacite.org/schema/kernel-3" '
+             'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
+             'xsi:schemaLocation="http://datacite.org/schema/kernel-3 '
+             'http://schema.datacite.org/meta/kernel-3/metadata.xsd"><identifier '
+             'identifierType="ARK">81239/m9rp5z</identifier><creators><creator><creatorName>Vides, '
+             'Marta. Londoño, Marelvis. Fontalvo, Martha. Lacambra, Carmen. '
+             'Correa, Ivan. Hernández, Sarah. Morales, Ricardo. Arias-Isaza, '
+             'F. Sierra-Correa, P.C. Alonso-Carvajal, David '
+             'A.</creatorName></creator></creators><titles><title>Programa '
+             'Holandés de asistencia para estudios en Cambio climático: '
+             'Colombia. Definición de la vulnerabilidad de los sistemas '
+             'bio-geofísicos y socioeconómicos debido  a un cambio en el nivel '
+             'del mar en la zona costera colombiana (Caribe, Insular y '
+             'pacífico) y medidas para su adaptación- Informe técnico 5- '
+             'Estrategia de '
+'respuesta.</title></titles><publisher>INVEMAR</publisher><publicationYear>2003</publicationYear><subjects><subject>Cambio '
+             'climatico, vulnerabilidad al ascenso del nivel del '
+             'mar.</subject></subjects><contributors><contributor '
+             'contributorType="Sponsor"><contributorName>INVEMAR</contributorName></contributor></contributors><dates><date '
+             'dateType="Created">2003</date></dates><resourceType '
+             'resourceTypeGeneral="Text">Report</resourceType><relatedIdentifiers><relatedIdentifier '
+             'relationType="IsPartOf" '
+             'relatedIdentifierType="ARK">ark:/81239/m9dg65</relatedIdentifier><relatedIdentifier '
+             'relationType="IsPartOf" '
+             'relatedIdentifierType="ARK">ark:/81239/m95018</relatedIdentifier><relatedIdentifier '
+             'relationType="IsPartOf" '
+             'relatedIdentifierType="ARK">ark:/81239/m9160q</relatedIdentifier><relatedIdentifier '
+             'relatedIdentifierType="ARK" '
+             'relationType="IsPartOf">ark:/81239/m9wg6h</relatedIdentifier><relatedIdentifier '
+             'relatedIdentifierType="ARK" '
+             'relationType="IsPartOf">ark:/81239/m9n01m</relatedIdentifier><relatedIdentifier '
+             'relationType="IsPartOf" '
+             'relatedIdentifierType="ARK">ark:/81239/m9h88s</relatedIdentifier><relatedIdentifier '
+             'relationType="IsPartOf" '
+'relatedIdentifierType="ARK">ark:/81239/m9cg6v</relatedIdentifier></relatedIdentifiers><formats><format>PDF</format></formats><version>1.0</version><rightsList><rights>CC
+'
+             'BY NC, 4.0</rights></rightsList><descriptions><description '
+             'descriptionType="Abstract">El presente informe busca de forma '
+             'general, plantear algunas estrategias de respuesta analizadas '
+             'para los sitios más susceptibles sobre la costa colombiana ante '
+             'los efectos esperados del aumento en el nivel del mar. Este '
+             'análisis debe ser considerado como un ejercicio académico de la '
+             'metodología IPCC, para identificar las fortalezas y debilidades '
+             'del manejo actual y futuro de nuestras costas. Las medidas '
+             'necesarias para la protección y adaptación de las costas, al '
+             'igual que la reubicación de la población en riesgo, deben ser '
+             'adoptadas en el futuro mediante estudios más detallados y '
+             'específicos, teniendo como base experiencias anteriores y la '
+             'debida socialización de dichas '
+             'medidas.</description><description '
+             'descriptionType="TableOfContents">ACCIONES PLANEADAS ANTE EL '
+             'ASCENSO DEL NIVEL DEL MAR. '
+             '.......................................23&#13;
+'
+             'EVACUACION '
+'.............................................................................................................................................23&#13;
+'
+'ADAPTACION..............................................................................................................................................24&#13;
+'
+'PROTECCION...............................................................................................................................................25&#13;
+'
+             'Diseño de paredes de '
+'protección...........................................................................................................25&#13;
+'
+             'Relleno de '
+'playas...................................................................................................................................27&#13;
+'
+             'Obras en los deltas y '
+'estuarios..............................................................................................................29&#13;
+'
+'Acreción.................................................................................................................................................30&#13;
+'
+             'Recubrimientos y reforzamiento de estructuras '
+             'existentes....................................................................30&#13;
+'
+             'Creación de ecosistemas artificiales '
+             '.....................................................................................................30&#13;
+'
+             'Tubos de '
+'geotextil..................................................................................................................................31&#13;
+'
+             'ESTRATEGIAS USADAS EN '
+             'COLOMBIA............................................................................................33&#13;
+'
+'REUBICACION.............................................................................................................................................33&#13;
+'
+'PROTECCION...............................................................................................................................................34&#13;
+'
+             'Sector Golfo de '
+'Morrosquillo................................................................................................................34&#13;
+'
+             'Sector '
+'Cartagena...................................................................................................................................36&#13;
+'
+             'Sector '
+'Buenaventura.............................................................................................................................36&#13;
+'
+             'ESTRATEGIAS DE ADAPTACIÓN '
+             '........................................................................................................39&#13;
+'
+             'NCCSAP, Colombia ii&#13;
+'
+             'IDENTIFICACION DE LAS AREAS CRITICAS EN '
+             'COLOMBIA............................................................................40&#13;
+'
+             'Áreas críticas en la proyección de 30 cm de '
+             'ANM................................................................................42&#13;
+'
+             'Áreas críticas en la proyección de 100 cm de '
+             'ANM..............................................................................46&#13;
+'
+             'ANÁLISIS DE LAS POSIBLES ESTRATEGIAS DE RESPUESTA '
+             '....................................................51&#13;
+'
+             'IDENTIFICACION DE ESTRATEGIAS POR ANALISIS MULTICRITERIO '
+             '..............................................................51&#13;
+'
+             'Santa '
+'Marta........................................................................................................................................57&#13;
+'
+             'Barranquilla '
+'.......................................................................................................................................57&#13;
+'
+'Cartagena...........................................................................................................................................58&#13;
+'
+             'Turbo '
+'.................................................................................................................................................58&#13;
+'
+             'Morrosquillo '
+'......................................................................................................................................59&#13;
+'
+'Buenaventura.....................................................................................................................................59&#13;
+'
+             'Guapi '
+'.................................................................................................................................................60&#13;
+'
+             'Tumaco '
+'..............................................................................................................................................60&#13;
+'
+             'ESPECIFICACION DE ESTRATEGIAS DE RESPUESTA Y COSTOS '
+             '......................................................................61&#13;
+'
+             'Estrategia de respuesta “sin medidas ” '
+             '................................................................................................61&#13;
+'
+             'Estrategias de respuesta “protección total” '
+             '.........................................................................................61&#13;
+'
+             'SAN ANDRES DE TUMACO: Cabecera '
+             'municipal........................................................................62&#13;
+'
+             'UNIDAD DE MANEJO INTEGRADO GUAPI-ISCUANDE '
+             '.........................................................65&#13;
+'
+             'BUENAVENTURA '
+'..........................................................................................................................66&#13;
+'
+             'SANTA MARTA '
+'..............................................................................................................................68&#13;
+'
+             'CIENAGA GRANDE DE SANTA MARTA Y '
+             'BARRANQUILLA................................................70&#13;
+'
+             'CARTAGENA '
+'D.T.C.H....................................................................................................................72&#13;
+'
+             'GOLFO DE '
+'MORROSQUILLO.......................................................................................................74&#13;
+'
+             'ESTRATEGIA A ESCALA '
+             'NACIONAL..................................................................................................76&#13;
+'
+             'ESTIMACION DE COSTOS ASOCIADOS A LAS ESTRATEGIAS DE RESPUESTA: '
+             '.................................................79&#13;
+'
+             'Aspectos '
+'metodológicos.........................................................................................................................79&#13;
+'
+             'Planificación Local '
+'...............................................................................................................................80&#13;
+'
+             'Medidas '
+'Adicionales..............................................................................................................................80</description></descriptions><geoLocations><geoLocation><geoLocationPlace>Región
+'
+             'Caribe Continental, Caribe Insular Oceánico, Pacífico '
+             'Continental, Pacífico Oceánico e '
+             'Insular.</geoLocationPlace></geoLocation></geoLocations></resource>'}
+~~~~~~~~~~
+keys=
+datacite
+~~~~~~~~~~
+output_exchange=
+datacite
+<?xml%20version%3D%221.0%22?>%0A<resource%20xmlns%3D%22http://datacite.org/schema/kernel-3%22%20xmlns:xsi%3D%22http://www.w3.org/2001/XMLSchema-
+instance%22%20xsi:schemaLocation%3D%22http://datacite.org/schema/kernel-3%20http://schema.datacite.org/meta/kernel-3/metadata.xsd%22><identifier%20identifierType%3D%22ARK%22>81239/m9rp5z</identifier><creators><creator><creatorName>Vides,%20Marta.%20Londo%F1o,%20Marelvis.%20Fontalvo,%20Martha.%20Lacambra,%20Carmen.%20Correa,%20Ivan.%20Hern%E1ndez,%20Sarah.%20Morales,%20Ricardo.%20Arias-
+Isaza,%20F.%20Sierra-Correa,%20P.C.%20Alonso-
+Carvajal,%20David%20A.</creatorName></creator></creators><titles><title>Programa%20Holand%E9s%20de%20asistencia%20para%20estudios%20en%20Cambio%20clim%E1tico:%20Colombia.%20Definici%F3n%20de%20la%20vulnerabilidad%20de%20los%20sistemas%20bio-
+geof%EDsicos%20y%20socioecon%F3micos%20debido%20%20a%20un%20cambio%20en%20el%20nivel%20del%20mar%20en%20la%20zona%20costera%20colombiana%20%28Caribe,%20Insular%20y%20pac%EDfico%29%20y%20medidas%20para%20su%20adaptaci%F3n-%20Informe%20t%E9cnico%205-%20Estrategia%20de%20respuesta.</title></titles><publisher>INVEMAR</publisher><publicationYear>2003</publicationYear><subjects><subject>Cambio%20climatico,%20vulnerabilidad%20al%20ascenso%20del%20nivel%20del%20mar.</subject></subjects><contributors><contributor%20contributorType%3D%22Sponsor%22><contributorName>INVEMAR</contributorName></contributor></contributors><dates><date%20dateType%3D%22Created%22>2003</date></dates><resourceType%20resourceTypeGeneral%3D%22Text%22>Report</resourceType><relatedIdentifiers><relatedIdentifier%20relationType%3D%22IsPartOf%22%20relatedIdentifierType%3D%22ARK%22>ark:/81239/m9dg65</relatedIdentifier><relatedIdentifier%20relationType%3D%22IsPartOf%22%20relatedIdentifierType%3D%22ARK%22>ark:/81239/m95018</relatedIdentifier><relatedIdentifier%20relationType%3D%22IsPartOf%22%20relatedIdentifierType%3D%22ARK%22>ark:/81239/m9160q</relatedIdentifier><relatedIdentifier%20relatedIdentifierType%3D%22ARK%22%20relationType%3D%22IsPartOf%22>ark:/81239/m9wg6h</relatedIdentifier><relatedIdentifier%20relatedIdentifierType%3D%22ARK%22%20relationType%3D%22IsPartOf%22>ark:/81239/m9n01m</relatedIdentifier><relatedIdentifier%20relationType%3D%22IsPartOf%22%20relatedIdentifierType%3D%22ARK%22>ark:/81239/m9h88s</relatedIdentifier><relatedIdentifier%20relationType%3D%22IsPartOf%22%20relatedIdentifierType%3D%22ARK%22>ark:/81239/m9cg6v</relatedIdentifier></relatedIdentifiers><formats><format>PDF</format></formats><version>1.0</version><rightsList><rights>CC%20BY%20NC,%204.0</rights></rightsList><descriptions><description%20descriptionType%3D%22Abstract%22>El%20presente%20informe%20busca%20de%20forma%20general,%20plantear%20algunas%20estrategias%20de%20respuesta%20analizadas%20para%20los%20sitios%20m%E1s%20susceptibles%20sobre%20la%20costa%20colombiana%20ante%20los%20efectos%20esperados%20del%20aumento%20en%20el%20nivel%20del%20mar.%20Este%20an%E1lisis%20debe%20ser%20considerado%20como%20un%20ejercicio%20acad%E9mico%20de%20la%20metodolog%EDa%20IPCC,%20para%20identificar%20las%20fortalezas%20y%20debilidades%20del%20manejo%20actual%20y%20futuro%20de%20nuestras%20costas.%20Las%20medidas%20necesarias%20para%20la%20protecci%F3n%20y%20adaptaci%F3n%20de%20las%20costas,%20al%20igual%20que%20la%20reubicaci%F3n%20de%20la%20poblaci%F3n%20en%20riesgo,%20deben%20ser%20adoptadas%20en%20el%20futuro%20mediante%20estudios%20m%E1s%20detallados%20y%20espec%EDficos,%20teniendo%20como%20base%20experiencias%20anteriores%20y%20la%20debida%20socializaci%F3n%20de%20dichas%20medidas.</description><description%20descriptionType%3D%22TableOfContents%22>ACCIONES%20PLANEADAS%20ANTE%20EL%20ASCENSO%20DEL%20NIVEL%20DEL%20MAR.%20.......................................23%26#13%3B%0AEVACUACION%20.............................................................................................................................................23%26#13%3B%0AADAPTACION..............................................................................................................................................24%26#13%3B%0APROTECCION...............................................................................................................................................25%26#13%3B%0ADise%F1o%20de%20paredes%20de%20protecci%F3n...........................................................................................................25%26#13%3B%0ARelleno%20de%20playas...................................................................................................................................27%26#13%3B%0AObras%20en%20los%20deltas%20y%20estuarios..............................................................................................................29%26#13%3B%0AAcreci%F3n.................................................................................................................................................30%26#13%3B%0ARecubrimientos%20y%20reforzamiento%20de%20estructuras%20existentes....................................................................30%26#13%3B%0ACreaci%F3n%20de%20ecosistemas%20artificiales%20.....................................................................................................30%26#13%3B%0ATubos%20de%20geotextil..................................................................................................................................31%26#13%3B%0AESTRATEGIAS%20USADAS%20EN%20COLOMBIA............................................................................................33%26#13%3B%0AREUBICACION.............................................................................................................................................33%26#13%3B%0APROTECCION...............................................................................................................................................34%26#13%3B%0ASector%20Golfo%20de%20Morrosquillo................................................................................................................34%26#13%3B%0ASector%20Cartagena...................................................................................................................................36%26#13%3B%0ASector%20Buenaventura.............................................................................................................................36%26#13%3B%0AESTRATEGIAS%20DE%20ADAPTACI%D3N%20........................................................................................................39%26#13%3B%0ANCCSAP,%20Colombia%20ii%26#13%3B%0AIDENTIFICACION%20DE%20LAS%20AREAS%20CRITICAS%20EN%20COLOMBIA............................................................................40%26#13%3B%0A%C1reas%20cr%EDticas%20en%20la%20proyecci%F3n%20de%2030%20cm%20de%20ANM................................................................................42%26#13%3B%0A%C1reas%20cr%EDticas%20en%20la%20proyecci%F3n%20de%20100%20cm%20de%20ANM..............................................................................46%26#13%3B%0AAN%C1LISIS%20DE%20LAS%20POSIBLES%20ESTRATEGIAS%20DE%20RESPUESTA%20....................................................51%26#13%3B%0AIDENTIFICACION%20DE%20ESTRATEGIAS%20POR%20ANALISIS%20MULTICRITERIO%20..............................................................51%26#13%3B%0ASanta%20Marta........................................................................................................................................57%26#13%3B%0ABarranquilla%20.......................................................................................................................................57%26#13%3B%0ACartagena...........................................................................................................................................58%26#13%3B%0ATurbo%20.................................................................................................................................................58%26#13%3B%0AMorrosquillo%20......................................................................................................................................59%26#13%3B%0ABuenaventura.....................................................................................................................................59%26#13%3B%0AGuapi%20.................................................................................................................................................60%26#13%3B%0ATumaco%20..............................................................................................................................................60%26#13%3B%0AESPECIFICACION%20DE%20ESTRATEGIAS%20DE%20RESPUESTA%20Y%20COSTOS%20......................................................................61%26#13%3B%0AEstrategia%20de%20respuesta%20%201Csin%20medidas%20%201D%20................................................................................................61%26#13%3B%0AEstrategias%20de%20respuesta%20%201Cprotecci%F3n%20total%201D%20.........................................................................................61%26#13%3B%0ASAN%20ANDRES%20DE%20TUMACO:%20Cabecera%20municipal........................................................................62%26#13%3B%0AUNIDAD%20DE%20MANEJO%20INTEGRADO%20GUAPI-
+ISCUANDE%20.........................................................65%26#13%3B%0ABUENAVENTURA%20..........................................................................................................................66%26#13%3B%0ASANTA%20MARTA%20..............................................................................................................................68%26#13%3B%0ACIENAGA%20GRANDE%20DE%20SANTA%20MARTA%20Y%20BARRANQUILLA................................................70%26#13%3B%0ACARTAGENA%20D.T.C.H....................................................................................................................72%26#13%3B%0AGOLFO%20DE%20MORROSQUILLO.......................................................................................................74%26#13%3B%0AESTRATEGIA%20A%20ESCALA%20NACIONAL..................................................................................................76%26#13%3B%0AESTIMACION%20DE%20COSTOS%20ASOCIADOS%20A%20LAS%20ESTRATEGIAS%20DE%20RESPUESTA:%20.................................................79%26#13%3B%0AAspectos%20metodol%F3gicos.........................................................................................................................79%26#13%3B%0APlanificaci%F3n%20Local%20...............................................................................................................................80%26#13%3B%0AMedidas%20Adicionales..............................................................................................................................80</description></descriptions><geoLocations><geoLocation><geoLocationPlace>Regi%F3n%20Caribe%20Continental,%20Caribe%20Insular%20Oce%E1nico,%20Pac%EDfico%20Continental,%20Pac%EDfico%20Oce%E1nico%20e%20Insular.</geoLocationPlace></geoLocation></geoLocations></resource>

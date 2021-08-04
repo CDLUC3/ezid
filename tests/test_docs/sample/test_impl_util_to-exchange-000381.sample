@@ -1,0 +1,29 @@
+input_json=
+{"mrt.creator":"lsta_blackgoldcooperativels","erc":"who: Unknown
+what: Second from left, Juana (\"\"Jennie\"\") Gardner (nee Castelo), Barbareno Chumash, and third from left, Amanda Martinez (nee
+Sosa), Ventureno Chumash, with friends and relatives at Bill Gardner's \"\"Fish Camp\"\" on the Rincon Coast : ca. 1930
+when: circa 1930
+where: ark:/13030/c82806dr
+where: CVTB_018"}
+~~~~~~~~~~
+dict_pp=
+{'erc': 'who: Unknown
+'
+        'what: Second from left, Juana (""Jennie"") Gardner (nee Castelo), '
+        'Barbareno Chumash, and third from left, Amanda Martinez (nee Sosa), '
+        "Ventureno Chumash, with friends and relatives at Bill Gardner's "
+        '""Fish Camp"" on the Rincon Coast : ca. 1930
+'
+        'when: circa 1930
+'
+        'where: ark:/13030/c82806dr
+'
+        'where: CVTB_018',
+ 'mrt.creator': 'lsta_blackgoldcooperativels'}
+~~~~~~~~~~
+keys=
+mrt.creator, erc
+~~~~~~~~~~
+output_exchange=
+mrt.creator lsta_blackgoldcooperativels erc
+who:%20Unknown%0Awhat:%20Second%20from%20left,%20Juana%20%28%22%22Jennie%22%22%29%20Gardner%20%28nee%20Castelo%29,%20Barbareno%20Chumash,%20and%20third%20from%20left,%20Amanda%20Martinez%20%28nee%20Sosa%29,%20Ventureno%20Chumash,%20with%20friends%20and%20relatives%20at%20Bill%20Gardner%27s%20%22%22Fish%20Camp%22%22%20on%20the%20Rincon%20Coast%20:%20ca.%201930%0Awhen:%20circa%201930%0Awhere:%20ark:/13030/c82806dr%0Awhere:%20CVTB_018

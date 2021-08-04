@@ -1,0 +1,26 @@
+input_json=
+{"mrt.creator":"lsta_csuchannelislands","erc":"who: California State University, Channel Islands, John Spoor Broome Library
+what: Federico Talaugon Sr. and Federico Talaugon Jr
+when: 1936-2011
+where: ark:/13030/c8028qtp
+where: CACAMCUC_007"}
+~~~~~~~~~~
+dict_pp=
+{'erc': 'who: California State University, Channel Islands, John Spoor Broome '
+        'Library
+'
+        'what: Federico Talaugon Sr. and Federico Talaugon Jr
+'
+        'when: 1936-2011
+'
+        'where: ark:/13030/c8028qtp
+'
+        'where: CACAMCUC_007',
+ 'mrt.creator': 'lsta_csuchannelislands'}
+~~~~~~~~~~
+keys=
+mrt.creator, erc
+~~~~~~~~~~
+output_exchange=
+mrt.creator lsta_csuchannelislands erc
+who:%20California%20State%20University,%20Channel%20Islands,%20John%20Spoor%20Broome%20Library%0Awhat:%20Federico%20Talaugon%20Sr.%20and%20Federico%20Talaugon%20Jr%0Awhen:%201936-2011%0Awhere:%20ark:/13030/c8028qtp%0Awhere:%20CACAMCUC_007

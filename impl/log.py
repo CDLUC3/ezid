@@ -46,7 +46,6 @@ import traceback
 import django.conf
 import django.core.mail
 
-import impl.config
 import impl.util
 
 
@@ -87,33 +86,22 @@ def stacklog(f):
 
 ## --
 
-_errorLock = threading.Lock()
 _countLock = threading.Lock()
+_errorLock = threading.Lock()
+
 _operationCount = 0
-_suppressionWindow = None
-_errorLifetime = None
-_errorSimilarityThreshold = None
-_sentErrors = None
+_sentErrors = {}
 
-
-def loadConfig():
-    global _operationCount, _suppressionWindow, _errorLifetime
-    global _errorSimilarityThreshold, _sentErrors
-    _errorLock.acquire()
-    try:
-        _suppressionWindow = int(django.conf.settings.EMAIL_ERROR_SUPPRESSION_WINDOW)
-        _errorLifetime = int(django.conf.settings.EMAIL_ERROR_LIFETIME)
-        _errorSimilarityThreshold = float(
-            django.conf.settings.EMAIL_ERROR_SIMILARITY_THRESHOLD
-        )
-        _sentErrors = {}
-    finally:
-        _errorLock.release()
-    _countLock.acquire()
-    try:
-        _operationCount = 0
-    finally:
-        _countLock.release()
+# def loadConfig():
+#     _errorLock.acquire()
+#     try:
+#     finally:
+#         _errorLock.release()
+#     _countLock.acquire()
+#     try:
+#         _operationCount = 0
+#     finally:
+#         _countLock.release()
 
 
 def getOperationCount():
@@ -204,7 +192,7 @@ def _extractRaiser(tbList):
         return "(unknown)"
 
     def moduleName(path):
-        m = re.match(".*/(.*?)\.py$", path)
+        m = re.match(".*/(.*?)\\.py$", path)
         if m:
             return m.group(1)
         else:
@@ -242,23 +230,23 @@ def _notifyAdmins(error):
         # noinspection PyUnresolvedReferences
         for e, r in list(_sentErrors.items()):
             # noinspection PyTypeChecker
-            if t - r[0] > _errorLifetime:
+            if t - r[0] > int(django.conf.settings.EMAIL_ERROR_LIFETIME):
                 # Error has expired; remove it from cache.
                 # noinspection PyUnresolvedReferences
                 del _sentErrors[e]
             else:
                 # noinspection PyTypeChecker
-                if (
-                    e == error
-                    or difflib.SequenceMatcher(lambda c: c.isspace(), error, e).ratio()
-                    >= _errorSimilarityThreshold
+                if e == error or difflib.SequenceMatcher(
+                    lambda c: c.isspace(), error, e
+                ).ratio() >= float(
+                    django.conf.settings.EMAIL_ERROR_SIMILARITY_THRESHOLD
                 ):
                     similarError = e
         if similarError is not None:
             # noinspection PyUnresolvedReferences
             r = _sentErrors[similarError]
             # noinspection PyTypeChecker
-            if t - r[0] <= _suppressionWindow:
+            if t - r[0] <= int(django.conf.settings.EMAIL_ERROR_SUPPRESSION_WINDOW):
                 r[1] += 1
                 suppress = True
             else:
@@ -282,7 +270,12 @@ def _notifyAdmins(error):
         m += (
             "  Notifications of any additional occurrences of this error "
             "will be suppressed for the next {}.\n\n{}".format(
-                str(datetime.timedelta(seconds=_suppressionWindow)), error
+                str(
+                    datetime.timedelta(
+                        seconds=int(django.conf.settings.EMAIL_ERROR_SUPPRESSION_WINDOW)
+                    )
+                ),
+                error,
             )
         )
         django.core.mail.mail_admins("EZID error", m, fail_silently=True)
@@ -338,7 +331,9 @@ def otherError(caller, exception):
             impl.util.encode1(m),
         )
     )
-    if not django.conf.settings.DEBUG:
+    if django.conf.settings.DEBUG:
+        raise
+    else:
         _notifyAdmins(
             "Exception raised in {}:\n{}{}\n\n{}".format(
                 caller, type(exception).__name__, m, traceback.format_exc()
@@ -346,6 +341,6 @@ def otherError(caller, exception):
         )
 
 
-def status(*args):
-    """Logs the server's status."""
-    _log.info("- STATUS " + " ".join(impl.util.encode1(a) for a in args))
+# def status(*args):
+#     """Logs the server's status."""
+#     _log.info("- STATUS " + " ".join(impl.util.encode1(a) for a in args))

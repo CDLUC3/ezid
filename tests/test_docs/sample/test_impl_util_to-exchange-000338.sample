@@ -1,0 +1,20 @@
+input_json=
+{"dc.date":"1919","dc.creator":"(:unav)","dc.relation":"http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx","dc.title":"Dairy
+Industry Division and Short Courses. Top row, left to right: John B. Wood, George Dondero, Thomas Moran, Beach, Horn. Second row,
+left to right: Osburn, J.C. Marquardt, H.S. Baird, S.L. Demming, Wickham, Meads."}
+~~~~~~~~~~
+dict_pp=
+{'dc.creator': '(:unav)',
+ 'dc.date': '1919',
+ 'dc.relation': 'http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx',
+ 'dc.title': 'Dairy Industry Division and Short Courses. Top row, left to '
+             'right: John B. Wood, George Dondero, Thomas Moran, Beach, Horn. '
+             'Second row, left to right: Osburn, J.C. Marquardt, H.S. Baird, '
+             'S.L. Demming, Wickham, Meads.'}
+~~~~~~~~~~
+keys=
+dc.date, dc.creator, dc.relation, dc.title
+~~~~~~~~~~
+output_exchange=
+dc.date 1919 dc.creator %28:unav%29 dc.relation http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx dc.title
+Dairy%20Industry%20Division%20and%20Short%20Courses.%20Top%20row,%20left%20to%20right:%20John%20B.%20Wood,%20George%20Dondero,%20Thomas%20Moran,%20Beach,%20Horn.%20Second%20row,%20left%20to%20right:%20Osburn,%20J.C.%20Marquardt,%20H.S.%20Baird,%20S.L.%20Demming,%20Wickham,%20Meads.

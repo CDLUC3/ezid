@@ -182,7 +182,7 @@ def _validateShoulder(entry, errors, warnings):
     mytest(entry.name != "", "empty shoulder name", entry.lineNum.name)
     if "date" in entry:
         mytest(
-            re.match("\d{4}\.\d{2}\.\d{2}$", entry.date),
+            re.match("\\d{4}\\.\\d{2}\\.\\d{2}$", entry.date),
             "invalid date",
             entry.lineNum.date,
         )
@@ -316,7 +316,7 @@ def _validateDatacenter(entry, errors, _warnings):
         entry["active"] = True
     if "date" in entry:
         mytest(
-            re.match("\d{4}\.\d{2}\.\d{2}$", entry.date),
+            re.match("\\d{4}\\.\\d{2}\\.\\d{2}$", entry.date),
             "invalid date",
             entry.lineNum.date,
         )

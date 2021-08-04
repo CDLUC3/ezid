@@ -1,0 +1,1641 @@
+input_json=
+{"datacite":"<?xml version=\"1.0\"?>
+<resource xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://datacite.org/schema/kernel-3\"
+xsi:schemaLocation=\"http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd\">
+  <identifier identifierType=\"DOI\">10.7297/X2028PGT</identifier>
+  <creators>
+    <creator>
+      <creatorName>Alto, Tommy</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Andrews, Sylvia</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Barber, Amy</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Barker, Nora</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Blind Mike</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Brown, Florence</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Brown, Martin</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Butler, Charles</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Charlie, Haltie</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Chipps, Mary</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Colfax, Lyda</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Cornbread, Bill</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Cranmer Webster, Gloria</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Dick, Sam</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Dressler, Marvin</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Edgar, Joshua</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Encinales, Dolores</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Evans, Lizzie</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Fillmore, Benny</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Fillmore, Bill</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Frank, Clara</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Frank, John</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Frank, Shirley</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Frank, Vernelle</creatorName>
+    </creator>
+    <creator>
+      <creatorName>George Jr., Art</creatorName>
+    </creator>
+    <creator>
+      <creatorName>George, Agnes</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Higgins, Henry</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Higgins, Molly</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Holbrook, Bertha</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Holbrook, Herman</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Hunter, Connie</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Ides, Harold</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Ides, Hildred</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Ides, Isabel</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Ishi</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Jackson, Theresa</creatorName>
+    </creator>
+    <creator>
+      <creatorName>James, Adele</creatorName>
+    </creator>
+    <creator>
+      <creatorName>James, Roma</creatorName>
+    </creator>
+    <creator>
+      <creatorName>James, Roy</creatorName>
+    </creator>
+    <creator>
+      <creatorName>James, Steven</creatorName>
+    </creator>
+    <creator>
+      <creatorName>John, Wally</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Johnson, Viola</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Jones Sr., Charlie</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Kizer, Marie</creatorName>
+    </creator>
+    <creator>
+      <creatorName>LaChester, Ralph</creatorName>
+    </creator>
+    <creator>
+      <creatorName>LaChester, Sebastian</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Mara, Ed</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Martinez, Joanne</creatorName>
+    </creator>
+    <creator>
+      <creatorName>McDonald, Daniel</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Mora, Dave</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Morgan, Frank</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Okoli, George</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Pane, Chris</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Pete, Hank</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Quintana, Elario</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Robertson, Mable</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Sam, Fred</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Smokey, Eleanore</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Snooks, George</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Wager, John</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Walker, John</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Ward, Irene</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Wiger, John</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Wyatt, Elwood</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Wyatt, Tina</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Ammons, Darlene</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Anderson, Lloyd B.</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Applegate, Richard B.</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Arnett, Florence E.</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Arrowsmith, Garry</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Austerlitz, Robert</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Beeler, Madison</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Bright, William</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Burkeuroad, David</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Cohn, Amy</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Dangberg, Grace</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Dyk, Walter</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Efrat, Barbara</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Elmendorf, William</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Fillmore, Laura</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Garey-Sage, Darla</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Golla, Victor</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Goss, Jim</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Green, James P.</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Haas, Mary R.</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Harrington, John</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Harris, Alice</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Henshaw, Henry W.</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Jacobsen, William H.</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Jenkins, Carolyn J.</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Keeler, Charles</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Klokeid, Terry J.</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Kuipers, Aert H.</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Kwan, Julia Chin</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Langacker, Ronald</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Marsh, Gordon</creatorName>
+    </creator>
+    <creator>
+      <creatorName>McLendon, Sally</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Mithun, Marianne</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Mixco, Mauricio J.</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Mordy, Brooke</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Nevin, Bruce E.</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Nichols, Michael Porter</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Oswalt, Robert L.</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Pharies, David A.</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Phelps, E.</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Powell, Jay</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Powers, Stephen</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Rhodes, Richard</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Ridgeway, Robert</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Sableski, Julia A.</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Sapir, Edward</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Sastil, Raymond</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Silverstein, Michael</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Sloan, G.</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Soemarmo</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Suttles, Wayne</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Swadesh, Morris</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Tagaskira, Yoeliko</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Thompson, Laurence C.</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Thompson, M. Terry</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Turner, Paul R.</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Van Winkle, Barrick</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Waterman, Thomas Talbot</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Whistler, Kenneth W.</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Winter, Werner</creatorName>
+    </creator>
+    <creator>
+      <creatorName>d'Azevedo, Warren</creatorName>
+    </creator>
+    <creator>
+      <creatorName>de Angulo, Jaime</creatorName>
+    </creator>
+    <creator>
+      <creatorName>hfeldt, Lee R.</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Baumoff, M.A.</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Davis, Henry</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Duff, Wilson</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Flinn Jr., Arlington A.</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Lee, Dr. S.L.</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Wahnetah, Lisa</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Wojdak, Rachel</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Aoki, Haruo</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Barker, Phillip</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Biggoose, Anne</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Boneno, Richard N.</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Collett Jr., Howard</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Enjady, Rena J.</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Fillmore, Helen</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Fillmore, Hunter</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Hayes, Alfred S.</creatorName>
+    </creator>
+    <creator>
+      <creatorName>James, Gloria</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Jim, Harvey</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Kaufman, Terrence</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Langdon, Margaret</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Lomax, Alan</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Rupert, Henry Moses</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Shipley, William</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Smokey, Carnegie</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Starosta, Stanley</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Wahnetah, Howard</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Wahnetah, Tiva Bear</creatorName>
+    </creator>
+  </creators>
+  <titles>
+    <title>William H. Jacobsen Materials on Indigenous Languages of North America</title>
+  </titles>
+  <publisher>California Language Archive, University of California, Berkeley</publisher>
+  <publicationYear>2015</publicationYear>
+  <alternateIdentifiers>
+    <alternateIdentifier alternateIdentifierType=\"A local accession number\">SCL 2014-21</alternateIdentifier>
+    <alternateIdentifier alternateIdentifierType=\"URL\">http://cla.berkeley.edu/collection/11110</alternateIdentifier>
+  </alternateIdentifiers>
+  <rightsList>
+    <rights>Items catalogued in the California Language Archive are the physical property of their respective physical
+repositories. Intellectual rights, including copyright, belong to item creators or their legal heirs and assigns.</rights>
+  </rightsList>
+  <descriptions>
+    <description descriptionType=\"Abstract\">These materials document the linguistic work of William H. Jacobsen on various
+indigenous languages of North America, especially Washo, Makah, and Salinan, as well as on other languages and linguistic topics
+Jacobsen came into contact with throughout his academic career. The collection includes Jacobsen\u2019s original field notebooks
+from work on Washo, Makah, and Salinan, as well as smaller aggregates of field notes on Diegue\u00f1o, Northern Paiute,
+Kwak\u2019wala, and Cowichan.  In addition to original field notes, the collection includes derived research notes; many of these
+derived materials were organized by Jacobsen into separate folders by topic, and have been catalogued as they were found in order
+to reflect Jacobsen\u2019s own organization.  These research notes encompass work on Washo, Makah and other Southern Wakashan
+languages, Salinan, Yana and other Hokan languages, other Californian languages, and other topics related to general linguistic
+theory.  A set of finished or near-finished manuscripts and handouts is also included, in many cases constituting completed work
+derived from Jacobsen\u2019s research notes.  Also included are transcriptions of texts and conversations in Washo and Makah,
+notes from collaborative work with Grace Dangberg on Washo texts, and materials Jacobsen developed in order to teach both Washo
+and Makah.  Original file slips from Jacobsen\u2019s work in organizing lexical material from Washo, Makah, Salinan, comparative
+Wakashan and Hokan, and Tagalog are also included.  In addition to materials from Jacobsen\u2019s original fieldwork and research,
+the collection includes a wealth of materials that Jacobsen obtained from other researchers. These obtained materials include an
+extensive collection of original Washo field notebooks originally belonging to Grace Dangberg, Gordon Marsh, Walter Dyk, Phillip
+Barker and William Shipley, and Brooke Mordy.  In addition, the collection includes file slips and derived field notes from
+various sources.  On Washo, these materials include Gordon Marsh\u2019s file slips, research notes from Grace Dangberg and Walter
+Dyk, and photocopies of various vocabulary lists obtained from the Smithsonian Institution; on Wakashan, this includes a set of
+file slips from an unknown source; and on Yana, this includes a variety of research notes and a box of file slips obtained from
+Bruce Nevin, along with various photocopied materials on Yana obtained from museums.  Other obtained materials include derived
+work on Washo texts by Brooke Mordy and on Yahi by T. T. Waterman, a collection of rare, unpublished, or difficult to obtain
+manuscripts concerning various North American indigenous languages, and published curricular materials on Washo and Makah.
+Various materials related to Jacobsen\u2019s academic, scholarly, and teaching activities are catalogued as a separate series in
+the collection, in addition to being scattered throughout Jacobsen\u2019s research notes.  Finally, the collection includes a set
+of sound recordings that were discovered in Jacobsen\u2019s possession but are not otherwise catalogued in earlier CLA
+collections.  These recordings include recordings of Washo, Makah, Bella Coola, Ibo, Abaza, and at least one other unidentified
+language; some of the recordings were made by Jacobsen with various identified consultants, while others were obtained from
+colleagues including Brooke Mordy, Laura Fillmore, and Warren d\u2019Azevedo, among possible others. </description>
+  </descriptions>
+</resource>","mrt.creator":"ucbling_cla","erc":"who: Alto, Tommy; Andrews, Sylvia; Barber, Amy; Barker, Nora; Blind Mike; Brown,
+Florence; Brown, Martin; Butler, Charles; Charlie, Haltie; Chipps, Mary; Colfax, Lyda; Cornbread, Bill; Cranmer Webster, Gloria;
+Dick, Sam; Dressler, Marvin; Edgar, Joshua; Encinales, Dolores; Evans, Lizzie; Fillmore, Benny; Fillmore, Bill; Frank, Clara;
+Frank, John; Frank, Shirley; Frank, Vernelle; George Jr., Art; George, Agnes; Higgins, Henry; Higgins, Molly; Holbrook, Bertha;
+Holbrook, Herman; Hunter, Connie; Ides, Harold; Ides, Hildred; Ides, Isabel; Ishi; Jackson, Theresa; James, Adele; James, Roma;
+James, Roy; James, Steven; John, Wally; Johnson, Viola; Jones Sr., Charlie; Kizer, Marie; LaChester, Ralph; LaChester, Sebastian;
+Mara, Ed; Martinez, Joanne; McDonald, Daniel; Mora, Dave; Morgan, Frank; Okoli, George; Pane, Chris; Pete, Hank; Quintana, Elario;
+Robertson, Mable; Sam, Fred; Smokey, Eleanore; Snooks, George; Wager, John; Walker, John; Ward, Irene; Wiger, John; Wyatt, Elwood;
+Wyatt, Tina; Ammons, Darlene; Anderson, Lloyd B.; Applegate, Richard B.; Arnett, Florence E.; Arrowsmith, Garry; Austerlitz,
+Robert; Beeler, Madison; Bright, William; Burkeuroad, David; Cohn, Amy; Dangberg, Grace; Dyk, Walter; Efrat, Barbara; Elmendorf,
+William; Fillmore, Laura; Garey-Sage, Darla; Golla, Victor; Goss, Jim; Green, James P.; Haas, Mary R.; Harrington, John; Harris,
+Alice; Henshaw, Henry W.; Jacobsen, William H.; Jenkins, Carolyn J.; Keeler, Charles; Klokeid, Terry J.; Kuipers, Aert H.; Kwan,
+Julia Chin; Langacker, Ronald; Marsh, Gordon; McLendon, Sally; Mithun, Marianne; Mixco, Mauricio J.; Mordy, Brooke; Nevin, Bruce
+E.; Nichols, Michael Porter; Oswalt, Robert L.; Pharies, David A.; Phelps, E.; Powell, Jay; Powers, Stephen; Rhodes, Richard;
+Ridgeway, Robert; Sableski, Julia A.; Sapir, Edward; Sastil, Raymond; Silverstein, Michael; Sloan, G.; Soemarmo; Suttles, Wayne;
+Swadesh, Morris; Tagaskira, Yoeliko; Thompson, Laurence C.; Thompson, M. Terry; Turner, Paul R.; Van Winkle, Barrick; Waterman,
+Thomas Talbot; Whistler, Kenneth W.; Winter, Werner; d'Azevedo, Warren; de Angulo, Jaime; hfeldt, Lee R.; Baumoff, M.A.; Davis,
+Henry; Duff, Wilson; Flinn Jr., Arlington A.; Lee, Dr. S.L.; Wahnetah, Lisa; Wojdak, Rachel; Aoki, Haruo; Barker, Phillip;
+Biggoose, Anne; Boneno, Richard N.; Collett Jr., Howard; Enjady, Rena J.; Fillmore, Helen; Fillmore, Hunter; Hayes, Alfred S.;
+James, Gloria; Jim, Harvey; Kaufman, Terrence; Langdon, Margaret; Lomax, Alan; Rupert, Henry Moses; Shipley, William; Smokey,
+Carnegie; Starosta, Stanley; Wahnetah, Howard; Wahnetah, Tiva Bear
+what: William H. Jacobsen Materials on Indigenous Languages of North America
+when: 1952-2004
+where: ark:/b7297/x2028pgt
+where: 2014-21"}
+~~~~~~~~~~
+dict_pp=
+{'datacite': '<?xml version="1.0"?>
+'
+             '<resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
+             'xmlns="http://datacite.org/schema/kernel-3" '
+             'xsi:schemaLocation="http://datacite.org/schema/kernel-3 '
+             'http://schema.datacite.org/meta/kernel-3/metadata.xsd">
+'
+             '  <identifier '
+             'identifierType="DOI">10.7297/X2028PGT</identifier>
+'
+             '  <creators>
+'
+             '    <creator>
+'
+             '      <creatorName>Alto, Tommy</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Andrews, Sylvia</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Barber, Amy</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Barker, Nora</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Blind Mike</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Brown, Florence</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Brown, Martin</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Butler, Charles</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Charlie, Haltie</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Chipps, Mary</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Colfax, Lyda</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Cornbread, Bill</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Cranmer Webster, Gloria</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Dick, Sam</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Dressler, Marvin</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Edgar, Joshua</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Encinales, Dolores</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Evans, Lizzie</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Fillmore, Benny</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Fillmore, Bill</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Frank, Clara</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Frank, John</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Frank, Shirley</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Frank, Vernelle</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>George Jr., Art</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>George, Agnes</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Higgins, Henry</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Higgins, Molly</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Holbrook, Bertha</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Holbrook, Herman</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Hunter, Connie</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Ides, Harold</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Ides, Hildred</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Ides, Isabel</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Ishi</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Jackson, Theresa</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>James, Adele</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>James, Roma</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>James, Roy</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>James, Steven</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>John, Wally</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Johnson, Viola</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Jones Sr., Charlie</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Kizer, Marie</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>LaChester, Ralph</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>LaChester, Sebastian</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Mara, Ed</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Martinez, Joanne</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>McDonald, Daniel</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Mora, Dave</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Morgan, Frank</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Okoli, George</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Pane, Chris</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Pete, Hank</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Quintana, Elario</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Robertson, Mable</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Sam, Fred</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Smokey, Eleanore</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Snooks, George</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Wager, John</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Walker, John</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Ward, Irene</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Wiger, John</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Wyatt, Elwood</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Wyatt, Tina</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Ammons, Darlene</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Anderson, Lloyd B.</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Applegate, Richard B.</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Arnett, Florence E.</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Arrowsmith, Garry</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Austerlitz, Robert</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Beeler, Madison</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Bright, William</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Burkeuroad, David</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Cohn, Amy</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Dangberg, Grace</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Dyk, Walter</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Efrat, Barbara</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Elmendorf, William</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Fillmore, Laura</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Garey-Sage, Darla</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Golla, Victor</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Goss, Jim</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Green, James P.</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Haas, Mary R.</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Harrington, John</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Harris, Alice</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Henshaw, Henry W.</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Jacobsen, William H.</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Jenkins, Carolyn J.</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Keeler, Charles</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Klokeid, Terry J.</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Kuipers, Aert H.</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Kwan, Julia Chin</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Langacker, Ronald</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Marsh, Gordon</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>McLendon, Sally</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Mithun, Marianne</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Mixco, Mauricio J.</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Mordy, Brooke</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Nevin, Bruce E.</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Nichols, Michael Porter</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Oswalt, Robert L.</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Pharies, David A.</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Phelps, E.</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Powell, Jay</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Powers, Stephen</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Rhodes, Richard</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Ridgeway, Robert</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Sableski, Julia A.</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Sapir, Edward</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Sastil, Raymond</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Silverstein, Michael</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Sloan, G.</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Soemarmo</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Suttles, Wayne</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Swadesh, Morris</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Tagaskira, Yoeliko</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Thompson, Laurence C.</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Thompson, M. Terry</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Turner, Paul R.</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Van Winkle, Barrick</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Waterman, Thomas Talbot</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Whistler, Kenneth W.</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Winter, Werner</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             "      <creatorName>d'Azevedo, Warren</creatorName>
+"
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>de Angulo, Jaime</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>hfeldt, Lee R.</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Baumoff, M.A.</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Davis, Henry</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Duff, Wilson</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Flinn Jr., Arlington A.</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Lee, Dr. S.L.</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Wahnetah, Lisa</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Wojdak, Rachel</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Aoki, Haruo</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Barker, Phillip</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Biggoose, Anne</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Boneno, Richard N.</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Collett Jr., Howard</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Enjady, Rena J.</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Fillmore, Helen</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Fillmore, Hunter</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Hayes, Alfred S.</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>James, Gloria</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Jim, Harvey</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Kaufman, Terrence</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Langdon, Margaret</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Lomax, Alan</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Rupert, Henry Moses</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Shipley, William</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Smokey, Carnegie</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Starosta, Stanley</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Wahnetah, Howard</creatorName>
+'
+             '    </creator>
+'
+             '    <creator>
+'
+             '      <creatorName>Wahnetah, Tiva Bear</creatorName>
+'
+             '    </creator>
+'
+             '  </creators>
+'
+             '  <titles>
+'
+             '    <title>William H. Jacobsen Materials on Indigenous Languages '
+             'of North America</title>
+'
+             '  </titles>
+'
+             '  <publisher>California Language Archive, University of '
+             'California, Berkeley</publisher>
+'
+             '  <publicationYear>2015</publicationYear>
+'
+             '  <alternateIdentifiers>
+'
+             '    <alternateIdentifier alternateIdentifierType="A local '
+             'accession number">SCL 2014-21</alternateIdentifier>
+'
+             '    <alternateIdentifier '
+             'alternateIdentifierType="URL">http://cla.berkeley.edu/collection/11110</alternateIdentifier>
+'
+             '  </alternateIdentifiers>
+'
+             '  <rightsList>
+'
+             '    <rights>Items catalogued in the California Language Archive '
+             'are the physical property of their respective physical '
+             'repositories. Intellectual rights, including copyright, belong '
+             'to item creators or their legal heirs and assigns.</rights>
+'
+             '  </rightsList>
+'
+             '  <descriptions>
+'
+             '    <description descriptionType="Abstract">These materials '
+             'document the linguistic work of William H. Jacobsen on various '
+             'indigenous languages of North America, especially Washo, Makah, '
+             'and Salinan, as well as on other languages and linguistic topics '
+             'Jacobsen came into contact with throughout his academic career. '
+             'The collection includes Jacobsen’s original field notebooks from '
+             'work on Washo, Makah, and Salinan, as well as smaller aggregates '
+             'of field notes on Diegueño, Northern Paiute, Kwak’wala, and '
+             'Cowichan.  In addition to original field notes, the collection '
+             'includes derived research notes; many of these derived materials '
+             'were organized by Jacobsen into separate folders by topic, and '
+             'have been catalogued as they were found in order to reflect '
+             'Jacobsen’s own organization.  These research notes encompass '
+             'work on Washo, Makah and other Southern Wakashan languages, '
+             'Salinan, Yana and other Hokan languages, other Californian '
+             'languages, and other topics related to general linguistic '
+             'theory.  A set of finished or near-finished manuscripts and '
+             'handouts is also included, in many cases constituting completed '
+             'work derived from Jacobsen’s research notes.  Also included are '
+             'transcriptions of texts and conversations in Washo and Makah, '
+             'notes from collaborative work with Grace Dangberg on Washo '
+             'texts, and materials Jacobsen developed in order to teach both '
+             'Washo and Makah.  Original file slips from Jacobsen’s work in '
+             'organizing lexical material from Washo, Makah, Salinan, '
+             'comparative Wakashan and Hokan, and Tagalog are also included.  '
+             'In addition to materials from Jacobsen’s original fieldwork and '
+             'research, the collection includes a wealth of materials that '
+             'Jacobsen obtained from other researchers. These obtained '
+             'materials include an extensive collection of original Washo '
+             'field notebooks originally belonging to Grace Dangberg, Gordon '
+             'Marsh, Walter Dyk, Phillip Barker and William Shipley, and '
+             'Brooke Mordy.  In addition, the collection includes file slips '
+             'and derived field notes from various sources.  On Washo, these '
+             'materials include Gordon Marsh’s file slips, research notes from '
+             'Grace Dangberg and Walter Dyk, and photocopies of various '
+             'vocabulary lists obtained from the Smithsonian Institution; on '
+             'Wakashan, this includes a set of file slips from an unknown '
+             'source; and on Yana, this includes a variety of research notes '
+             'and a box of file slips obtained from Bruce Nevin, along with '
+             'various photocopied materials on Yana obtained from museums.  '
+             'Other obtained materials include derived work on Washo texts by '
+             'Brooke Mordy and on Yahi by T. T. Waterman, a collection of '
+             'rare, unpublished, or difficult to obtain manuscripts concerning '
+             'various North American indigenous languages, and published '
+             'curricular materials on Washo and Makah.  Various materials '
+             'related to Jacobsen’s academic, scholarly, and teaching '
+             'activities are catalogued as a separate series in the '
+             'collection, in addition to being scattered throughout Jacobsen’s '
+             'research notes.  Finally, the collection includes a set of sound '
+             'recordings that were discovered in Jacobsen’s possession but are '
+             'not otherwise catalogued in earlier CLA collections.  These '
+             'recordings include recordings of Washo, Makah, Bella Coola, Ibo, '
+             'Abaza, and at least one other unidentified language; some of the '
+             'recordings were made by Jacobsen with various identified '
+             'consultants, while others were obtained from colleagues '
+             'including Brooke Mordy, Laura Fillmore, and Warren d’Azevedo, '
+             'among possible others. </description>
+'
+             '  </descriptions>
+'
+             '</resource>',
+ 'erc': 'who: Alto, Tommy; Andrews, Sylvia; Barber, Amy; Barker, Nora; Blind '
+        'Mike; Brown, Florence; Brown, Martin; Butler, Charles; Charlie, '
+        'Haltie; Chipps, Mary; Colfax, Lyda; Cornbread, Bill; Cranmer Webster, '
+        'Gloria; Dick, Sam; Dressler, Marvin; Edgar, Joshua; Encinales, '
+        'Dolores; Evans, Lizzie; Fillmore, Benny; Fillmore, Bill; Frank, '
+        'Clara; Frank, John; Frank, Shirley; Frank, Vernelle; George Jr., Art; '
+        'George, Agnes; Higgins, Henry; Higgins, Molly; Holbrook, Bertha; '
+        'Holbrook, Herman; Hunter, Connie; Ides, Harold; Ides, Hildred; Ides, '
+        'Isabel; Ishi; Jackson, Theresa; James, Adele; James, Roma; James, '
+        'Roy; James, Steven; John, Wally; Johnson, Viola; Jones Sr., Charlie; '
+        'Kizer, Marie; LaChester, Ralph; LaChester, Sebastian; Mara, Ed; '
+        'Martinez, Joanne; McDonald, Daniel; Mora, Dave; Morgan, Frank; Okoli, '
+        'George; Pane, Chris; Pete, Hank; Quintana, Elario; Robertson, Mable; '
+        'Sam, Fred; Smokey, Eleanore; Snooks, George; Wager, John; Walker, '
+        'John; Ward, Irene; Wiger, John; Wyatt, Elwood; Wyatt, Tina; Ammons, '
+        'Darlene; Anderson, Lloyd B.; Applegate, Richard B.; Arnett, Florence '
+        'E.; Arrowsmith, Garry; Austerlitz, Robert; Beeler, Madison; Bright, '
+        'William; Burkeuroad, David; Cohn, Amy; Dangberg, Grace; Dyk, Walter; '
+        'Efrat, Barbara; Elmendorf, William; Fillmore, Laura; Garey-Sage, '
+        'Darla; Golla, Victor; Goss, Jim; Green, James P.; Haas, Mary R.; '
+        'Harrington, John; Harris, Alice; Henshaw, Henry W.; Jacobsen, William '
+        'H.; Jenkins, Carolyn J.; Keeler, Charles; Klokeid, Terry J.; Kuipers, '
+        'Aert H.; Kwan, Julia Chin; Langacker, Ronald; Marsh, Gordon; '
+        'McLendon, Sally; Mithun, Marianne; Mixco, Mauricio J.; Mordy, Brooke; '
+        'Nevin, Bruce E.; Nichols, Michael Porter; Oswalt, Robert L.; Pharies, '
+        'David A.; Phelps, E.; Powell, Jay; Powers, Stephen; Rhodes, Richard; '
+        'Ridgeway, Robert; Sableski, Julia A.; Sapir, Edward; Sastil, Raymond; '
+        'Silverstein, Michael; Sloan, G.; Soemarmo; Suttles, Wayne; Swadesh, '
+        'Morris; Tagaskira, Yoeliko; Thompson, Laurence C.; Thompson, M. '
+        'Terry; Turner, Paul R.; Van Winkle, Barrick; Waterman, Thomas Talbot; '
+        "Whistler, Kenneth W.; Winter, Werner; d'Azevedo, Warren; de Angulo, "
+        'Jaime; hfeldt, Lee R.; Baumoff, M.A.; Davis, Henry; Duff, Wilson; '
+        'Flinn Jr., Arlington A.; Lee, Dr. S.L.; Wahnetah, Lisa; Wojdak, '
+        'Rachel; Aoki, Haruo; Barker, Phillip; Biggoose, Anne; Boneno, Richard '
+        'N.; Collett Jr., Howard; Enjady, Rena J.; Fillmore, Helen; Fillmore, '
+        'Hunter; Hayes, Alfred S.; James, Gloria; Jim, Harvey; Kaufman, '
+        'Terrence; Langdon, Margaret; Lomax, Alan; Rupert, Henry Moses; '
+        'Shipley, William; Smokey, Carnegie; Starosta, Stanley; Wahnetah, '
+        'Howard; Wahnetah, Tiva Bear
+'
+        'what: William H. Jacobsen Materials on Indigenous Languages of North '
+        'America
+'
+        'when: 1952-2004
+'
+        'where: ark:/b7297/x2028pgt
+'
+        'where: 2014-21',
+ 'mrt.creator': 'ucbling_cla'}
+~~~~~~~~~~
+keys=
+datacite, mrt.creator, erc
+~~~~~~~~~~
+output_exchange=
+datacite <?xml%20version%3D%221.0%22?>%0A<resource%20xmlns:xsi%3D%22http://www.w3.org/2001/XMLSchema-
+instance%22%20xmlns%3D%22http://datacite.org/schema/kernel-3%22%20xsi:schemaLocation%3D%22http://datacite.org/schema/kernel-3%20http://schema.datacite.org/meta/kernel-3/metadata.xsd%22>%0A%20%20<identifier%20identifierType%3D%22DOI%22>10.7297/X2028PGT</identifier>%0A%20%20<creators>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Alto,%20Tommy</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Andrews,%20Sylvia</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Barber,%20Amy</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Barker,%20Nora</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Blind%20Mike</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Brown,%20Florence</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Brown,%20Martin</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Butler,%20Charles</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Charlie,%20Haltie</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Chipps,%20Mary</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Colfax,%20Lyda</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Cornbread,%20Bill</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Cranmer%20Webster,%20Gloria</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Dick,%20Sam</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Dressler,%20Marvin</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Edgar,%20Joshua</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Encinales,%20Dolores</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Evans,%20Lizzie</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Fillmore,%20Benny</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Fillmore,%20Bill</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Frank,%20Clara</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Frank,%20John</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Frank,%20Shirley</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Frank,%20Vernelle</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>George%20Jr.,%20Art</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>George,%20Agnes</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Higgins,%20Henry</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Higgins,%20Molly</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Holbrook,%20Bertha</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Holbrook,%20Herman</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Hunter,%20Connie</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Ides,%20Harold</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Ides,%20Hildred</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Ides,%20Isabel</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Ishi</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Jackson,%20Theresa</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>James,%20Adele</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>James,%20Roma</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>James,%20Roy</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>James,%20Steven</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>John,%20Wally</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Johnson,%20Viola</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Jones%20Sr.,%20Charlie</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Kizer,%20Marie</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>LaChester,%20Ralph</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>LaChester,%20Sebastian</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Mara,%20Ed</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Martinez,%20Joanne</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>McDonald,%20Daniel</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Mora,%20Dave</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Morgan,%20Frank</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Okoli,%20George</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Pane,%20Chris</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Pete,%20Hank</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Quintana,%20Elario</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Robertson,%20Mable</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Sam,%20Fred</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Smokey,%20Eleanore</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Snooks,%20George</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Wager,%20John</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Walker,%20John</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Ward,%20Irene</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Wiger,%20John</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Wyatt,%20Elwood</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Wyatt,%20Tina</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Ammons,%20Darlene</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Anderson,%20Lloyd%20B.</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Applegate,%20Richard%20B.</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Arnett,%20Florence%20E.</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Arrowsmith,%20Garry</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Austerlitz,%20Robert</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Beeler,%20Madison</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Bright,%20William</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Burkeuroad,%20David</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Cohn,%20Amy</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Dangberg,%20Grace</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Dyk,%20Walter</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Efrat,%20Barbara</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Elmendorf,%20William</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Fillmore,%20Laura</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Garey-
+Sage,%20Darla</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Golla,%20Victor</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Goss,%20Jim</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Green,%20James%20P.</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Haas,%20Mary%20R.</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Harrington,%20John</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Harris,%20Alice</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Henshaw,%20Henry%20W.</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Jacobsen,%20William%20H.</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Jenkins,%20Carolyn%20J.</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Keeler,%20Charles</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Klokeid,%20Terry%20J.</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Kuipers,%20Aert%20H.</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Kwan,%20Julia%20Chin</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Langacker,%20Ronald</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Marsh,%20Gordon</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>McLendon,%20Sally</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Mithun,%20Marianne</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Mixco,%20Mauricio%20J.</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Mordy,%20Brooke</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Nevin,%20Bruce%20E.</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Nichols,%20Michael%20Porter</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Oswalt,%20Robert%20L.</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Pharies,%20David%20A.</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Phelps,%20E.</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Powell,%20Jay</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Powers,%20Stephen</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Rhodes,%20Richard</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Ridgeway,%20Robert</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Sableski,%20Julia%20A.</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Sapir,%20Edward</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Sastil,%20Raymond</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Silverstein,%20Michael</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Sloan,%20G.</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Soemarmo</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Suttles,%20Wayne</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Swadesh,%20Morris</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Tagaskira,%20Yoeliko</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Thompson,%20Laurence%20C.</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Thompson,%20M.%20Terry</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Turner,%20Paul%20R.</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Van%20Winkle,%20Barrick</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Waterman,%20Thomas%20Talbot</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Whistler,%20Kenneth%20W.</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Winter,%20Werner</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>d%27Azevedo,%20Warren</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>de%20Angulo,%20Jaime</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>hfeldt,%20Lee%20R.</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Baumoff,%20M.A.</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Davis,%20Henry</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Duff,%20Wilson</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Flinn%20Jr.,%20Arlington%20A.</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Lee,%20Dr.%20S.L.</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Wahnetah,%20Lisa</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Wojdak,%20Rachel</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Aoki,%20Haruo</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Barker,%20Phillip</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Biggoose,%20Anne</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Boneno,%20Richard%20N.</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Collett%20Jr.,%20Howard</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Enjady,%20Rena%20J.</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Fillmore,%20Helen</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Fillmore,%20Hunter</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Hayes,%20Alfred%20S.</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>James,%20Gloria</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Jim,%20Harvey</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Kaufman,%20Terrence</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Langdon,%20Margaret</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Lomax,%20Alan</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Rupert,%20Henry%20Moses</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Shipley,%20William</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Smokey,%20Carnegie</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Starosta,%20Stanley</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Wahnetah,%20Howard</creatorName>%0A%20%20%20%20</creator>%0A%20%20%20%20<creator>%0A%20%20%20%20%20%20<creatorName>Wahnetah,%20Tiva%20Bear</creatorName>%0A%20%20%20%20</creator>%0A%20%20</creators>%0A%20%20<titles>%0A%20%20%20%20<title>William%20H.%20Jacobsen%20Materials%20on%20Indigenous%20Languages%20of%20North%20America</title>%0A%20%20</titles>%0A%20%20<publisher>California%20Language%20Archive,%20University%20of%20California,%20Berkeley</publisher>%0A%20%20<publicationYear>2015</publicationYear>%0A%20%20<alternateIdentifiers>%0A%20%20%20%20<alternateIdentifier%20alternateIdentifierType%3D%22A%20local%20accession%20number%22>SCL%202014-21</alternateIdentifier>%0A%20%20%20%20<alternateIdentifier%20alternateIdentifierType%3D%22URL%22>http://cla.berkeley.edu/collection/11110</alternateIdentifier>%0A%20%20</alternateIdentifiers>%0A%20%20<rightsList>%0A%20%20%20%20<rights>Items%20catalogued%20in%20the%20California%20Language%20Archive%20are%20the%20physical%20property%20of%20their%20respective%20physical%20repositories.%20Intellectual%20rights,%20including%20copyright,%20belong%20to%20item%20creators%20or%20their%20legal%20heirs%20and%20assigns.</rights>%0A%20%20</rightsList>%0A%20%20<descriptions>%0A%20%20%20%20<description%20descriptionType%3D%22Abstract%22>These%20materials%20document%20the%20linguistic%20work%20of%20William%20H.%20Jacobsen%20on%20various%20indigenous%20languages%20of%20North%20America,%20especially%20Washo,%20Makah,%20and%20Salinan,%20as%20well%20as%20on%20other%20languages%20and%20linguistic%20topics%20Jacobsen%20came%20into%20contact%20with%20throughout%20his%20academic%20career.%20The%20collection%20includes%20Jacobsen%2019s%20original%20field%20notebooks%20from%20work%20on%20Washo,%20Makah,%20and%20Salinan,%20as%20well%20as%20smaller%20aggregates%20of%20field%20notes%20on%20Diegue%F1o,%20Northern%20Paiute,%20Kwak%2019wala,%20and%20Cowichan.%20%20In%20addition%20to%20original%20field%20notes,%20the%20collection%20includes%20derived%20research%20notes%3B%20many%20of%20these%20derived%20materials%20were%20organized%20by%20Jacobsen%20into%20separate%20folders%20by%20topic,%20and%20have%20been%20catalogued%20as%20they%20were%20found%20in%20order%20to%20reflect%20Jacobsen%2019s%20own%20organization.%20%20These%20research%20notes%20encompass%20work%20on%20Washo,%20Makah%20and%20other%20Southern%20Wakashan%20languages,%20Salinan,%20Yana%20and%20other%20Hokan%20languages,%20other%20Californian%20languages,%20and%20other%20topics%20related%20to%20general%20linguistic%20theory.%20%20A%20set%20of%20finished%20or%20near-
+finished%20manuscripts%20and%20handouts%20is%20also%20included,%20in%20many%20cases%20constituting%20completed%20work%20derived%20from%20Jacobsen%2019s%20research%20notes.%20%20Also%20included%20are%20transcriptions%20of%20texts%20and%20conversations%20in%20Washo%20and%20Makah,%20notes%20from%20collaborative%20work%20with%20Grace%20Dangberg%20on%20Washo%20texts,%20and%20materials%20Jacobsen%20developed%20in%20order%20to%20teach%20both%20Washo%20and%20Makah.%20%20Original%20file%20slips%20from%20Jacobsen%2019s%20work%20in%20organizing%20lexical%20material%20from%20Washo,%20Makah,%20Salinan,%20comparative%20Wakashan%20and%20Hokan,%20and%20Tagalog%20are%20also%20included.%20%20In%20addition%20to%20materials%20from%20Jacobsen%2019s%20original%20fieldwork%20and%20research,%20the%20collection%20includes%20a%20wealth%20of%20materials%20that%20Jacobsen%20obtained%20from%20other%20researchers.%20These%20obtained%20materials%20include%20an%20extensive%20collection%20of%20original%20Washo%20field%20notebooks%20originally%20belonging%20to%20Grace%20Dangberg,%20Gordon%20Marsh,%20Walter%20Dyk,%20Phillip%20Barker%20and%20William%20Shipley,%20and%20Brooke%20Mordy.%20%20In%20addition,%20the%20collection%20includes%20file%20slips%20and%20derived%20field%20notes%20from%20various%20sources.%20%20On%20Washo,%20these%20materials%20include%20Gordon%20Marsh%2019s%20file%20slips,%20research%20notes%20from%20Grace%20Dangberg%20and%20Walter%20Dyk,%20and%20photocopies%20of%20various%20vocabulary%20lists%20obtained%20from%20the%20Smithsonian%20Institution%3B%20on%20Wakashan,%20this%20includes%20a%20set%20of%20file%20slips%20from%20an%20unknown%20source%3B%20and%20on%20Yana,%20this%20includes%20a%20variety%20of%20research%20notes%20and%20a%20box%20of%20file%20slips%20obtained%20from%20Bruce%20Nevin,%20along%20with%20various%20photocopied%20materials%20on%20Yana%20obtained%20from%20museums.%20%20Other%20obtained%20materials%20include%20derived%20work%20on%20Washo%20texts%20by%20Brooke%20Mordy%20and%20on%20Yahi%20by%20T.%20T.%20Waterman,%20a%20collection%20of%20rare,%20unpublished,%20or%20difficult%20to%20obtain%20manuscripts%20concerning%20various%20North%20American%20indigenous%20languages,%20and%20published%20curricular%20materials%20on%20Washo%20and%20Makah.%20%20Various%20materials%20related%20to%20Jacobsen%2019s%20academic,%20scholarly,%20and%20teaching%20activities%20are%20catalogued%20as%20a%20separate%20series%20in%20the%20collection,%20in%20addition%20to%20being%20scattered%20throughout%20Jacobsen%2019s%20research%20notes.%20%20Finally,%20the%20collection%20includes%20a%20set%20of%20sound%20recordings%20that%20were%20discovered%20in%20Jacobsen%2019s%20possession%20but%20are%20not%20otherwise%20catalogued%20in%20earlier%20CLA%20collections.%20%20These%20recordings%20include%20recordings%20of%20Washo,%20Makah,%20Bella%20Coola,%20Ibo,%20Abaza,%20and%20at%20least%20one%20other%20unidentified%20language%3B%20some%20of%20the%20recordings%20were%20made%20by%20Jacobsen%20with%20various%20identified%20consultants,%20while%20others%20were%20obtained%20from%20colleagues%20including%20Brooke%20Mordy,%20Laura%20Fillmore,%20and%20Warren%20d%2019Azevedo,%20among%20possible%20others.%20</description>%0A%20%20</descriptions>%0A</resource>
+mrt.creator ucbling_cla erc
+who:%20Alto,%20Tommy%3B%20Andrews,%20Sylvia%3B%20Barber,%20Amy%3B%20Barker,%20Nora%3B%20Blind%20Mike%3B%20Brown,%20Florence%3B%20Brown,%20Martin%3B%20Butler,%20Charles%3B%20Charlie,%20Haltie%3B%20Chipps,%20Mary%3B%20Colfax,%20Lyda%3B%20Cornbread,%20Bill%3B%20Cranmer%20Webster,%20Gloria%3B%20Dick,%20Sam%3B%20Dressler,%20Marvin%3B%20Edgar,%20Joshua%3B%20Encinales,%20Dolores%3B%20Evans,%20Lizzie%3B%20Fillmore,%20Benny%3B%20Fillmore,%20Bill%3B%20Frank,%20Clara%3B%20Frank,%20John%3B%20Frank,%20Shirley%3B%20Frank,%20Vernelle%3B%20George%20Jr.,%20Art%3B%20George,%20Agnes%3B%20Higgins,%20Henry%3B%20Higgins,%20Molly%3B%20Holbrook,%20Bertha%3B%20Holbrook,%20Herman%3B%20Hunter,%20Connie%3B%20Ides,%20Harold%3B%20Ides,%20Hildred%3B%20Ides,%20Isabel%3B%20Ishi%3B%20Jackson,%20Theresa%3B%20James,%20Adele%3B%20James,%20Roma%3B%20James,%20Roy%3B%20James,%20Steven%3B%20John,%20Wally%3B%20Johnson,%20Viola%3B%20Jones%20Sr.,%20Charlie%3B%20Kizer,%20Marie%3B%20LaChester,%20Ralph%3B%20LaChester,%20Sebastian%3B%20Mara,%20Ed%3B%20Martinez,%20Joanne%3B%20McDonald,%20Daniel%3B%20Mora,%20Dave%3B%20Morgan,%20Frank%3B%20Okoli,%20George%3B%20Pane,%20Chris%3B%20Pete,%20Hank%3B%20Quintana,%20Elario%3B%20Robertson,%20Mable%3B%20Sam,%20Fred%3B%20Smokey,%20Eleanore%3B%20Snooks,%20George%3B%20Wager,%20John%3B%20Walker,%20John%3B%20Ward,%20Irene%3B%20Wiger,%20John%3B%20Wyatt,%20Elwood%3B%20Wyatt,%20Tina%3B%20Ammons,%20Darlene%3B%20Anderson,%20Lloyd%20B.%3B%20Applegate,%20Richard%20B.%3B%20Arnett,%20Florence%20E.%3B%20Arrowsmith,%20Garry%3B%20Austerlitz,%20Robert%3B%20Beeler,%20Madison%3B%20Bright,%20William%3B%20Burkeuroad,%20David%3B%20Cohn,%20Amy%3B%20Dangberg,%20Grace%3B%20Dyk,%20Walter%3B%20Efrat,%20Barbara%3B%20Elmendorf,%20William%3B%20Fillmore,%20Laura%3B%20Garey-
+Sage,%20Darla%3B%20Golla,%20Victor%3B%20Goss,%20Jim%3B%20Green,%20James%20P.%3B%20Haas,%20Mary%20R.%3B%20Harrington,%20John%3B%20Harris,%20Alice%3B%20Henshaw,%20Henry%20W.%3B%20Jacobsen,%20William%20H.%3B%20Jenkins,%20Carolyn%20J.%3B%20Keeler,%20Charles%3B%20Klokeid,%20Terry%20J.%3B%20Kuipers,%20Aert%20H.%3B%20Kwan,%20Julia%20Chin%3B%20Langacker,%20Ronald%3B%20Marsh,%20Gordon%3B%20McLendon,%20Sally%3B%20Mithun,%20Marianne%3B%20Mixco,%20Mauricio%20J.%3B%20Mordy,%20Brooke%3B%20Nevin,%20Bruce%20E.%3B%20Nichols,%20Michael%20Porter%3B%20Oswalt,%20Robert%20L.%3B%20Pharies,%20David%20A.%3B%20Phelps,%20E.%3B%20Powell,%20Jay%3B%20Powers,%20Stephen%3B%20Rhodes,%20Richard%3B%20Ridgeway,%20Robert%3B%20Sableski,%20Julia%20A.%3B%20Sapir,%20Edward%3B%20Sastil,%20Raymond%3B%20Silverstein,%20Michael%3B%20Sloan,%20G.%3B%20Soemarmo%3B%20Suttles,%20Wayne%3B%20Swadesh,%20Morris%3B%20Tagaskira,%20Yoeliko%3B%20Thompson,%20Laurence%20C.%3B%20Thompson,%20M.%20Terry%3B%20Turner,%20Paul%20R.%3B%20Van%20Winkle,%20Barrick%3B%20Waterman,%20Thomas%20Talbot%3B%20Whistler,%20Kenneth%20W.%3B%20Winter,%20Werner%3B%20d%27Azevedo,%20Warren%3B%20de%20Angulo,%20Jaime%3B%20hfeldt,%20Lee%20R.%3B%20Baumoff,%20M.A.%3B%20Davis,%20Henry%3B%20Duff,%20Wilson%3B%20Flinn%20Jr.,%20Arlington%20A.%3B%20Lee,%20Dr.%20S.L.%3B%20Wahnetah,%20Lisa%3B%20Wojdak,%20Rachel%3B%20Aoki,%20Haruo%3B%20Barker,%20Phillip%3B%20Biggoose,%20Anne%3B%20Boneno,%20Richard%20N.%3B%20Collett%20Jr.,%20Howard%3B%20Enjady,%20Rena%20J.%3B%20Fillmore,%20Helen%3B%20Fillmore,%20Hunter%3B%20Hayes,%20Alfred%20S.%3B%20James,%20Gloria%3B%20Jim,%20Harvey%3B%20Kaufman,%20Terrence%3B%20Langdon,%20Margaret%3B%20Lomax,%20Alan%3B%20Rupert,%20Henry%20Moses%3B%20Shipley,%20William%3B%20Smokey,%20Carnegie%3B%20Starosta,%20Stanley%3B%20Wahnetah,%20Howard%3B%20Wahnetah,%20Tiva%20Bear%0Awhat:%20William%20H.%20Jacobsen%20Materials%20on%20Indigenous%20Languages%20of%20North%20America%0Awhen:%201952-2004%0Awhere:%20ark:/b7297/x2028pgt%0Awhere:%202014-21

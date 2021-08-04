@@ -1,0 +1,16 @@
+input_json=
+{"dc.date":"December 2010","dc.creator":"Tracy Seneca","dc.publisher":"California Digital Library","dc.title":"Web Archiving
+Service Enhancements: Site Management and Tagging"}
+~~~~~~~~~~
+dict_pp=
+{'dc.creator': 'Tracy Seneca',
+ 'dc.date': 'December 2010',
+ 'dc.publisher': 'California Digital Library',
+ 'dc.title': 'Web Archiving Service Enhancements: Site Management and Tagging'}
+~~~~~~~~~~
+keys=
+dc.date, dc.creator, dc.publisher, dc.title
+~~~~~~~~~~
+output_exchange=
+dc.date December%202010 dc.creator Tracy%20Seneca dc.publisher California%20Digital%20Library dc.title
+Web%20Archiving%20Service%20Enhancements:%20Site%20Management%20and%20Tagging

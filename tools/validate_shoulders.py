@@ -143,7 +143,7 @@ def testDatacenter(shoulder, datacenter):
     finally:
         if c is not None:
             c.close()
-    prefix = re.match("doi:(10\.\d+)/", shoulder).group(1)
+    prefix = re.match("doi:(10\\.\\d+)/", shoulder).group(1)
     if prefix not in prefixes:
         error("shoulder '%s': prefix is not supported by datacenter" % shoulder)
 

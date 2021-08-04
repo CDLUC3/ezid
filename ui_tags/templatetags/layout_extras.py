@@ -8,9 +8,7 @@ import urllib.response
 import django.conf
 import django.urls.resolvers
 import django.template
-import django.template
 import django.template.loader
-import django.utils.html
 import django.utils.html
 import django.utils.safestring
 

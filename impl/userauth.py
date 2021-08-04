@@ -22,7 +22,8 @@ import django.contrib.auth.hashers
 import django.contrib.auth.models
 import django.utils.encoding
 
-import ezidapp.models.store_user
+import ezidapp.models.user
+import ezidapp.models.util
 import impl.log
 import impl.util
 
@@ -35,15 +36,21 @@ logger = logging.getLogger(__name__)
 def authenticate(username, password, request=None, coAuthenticate=True):
     """Authenticates a username and password.
 
-    Returns a StoreUser object if the authentication is successful, None
-    if unsuccessful, or a string error message if an error occurs.  If
-    'request' is not None, the appropriate variables are added to the
-    request session.  If 'request' is not None and coAuthenticate is
-    True, and if the user is an administrative user, the user is
-    authenticated with the Django admin app as well.  Easter egg: if the
-    username has the form "@user" and the EZID administrator password is
-    given, and if username "user" exists, then a StoreUser object for
-    "user" is returned (even if logins are not enabled for the user).
+    Returns a StoreUser object if the authentication is successful, None if
+    unsuccessful, or a string error message if an error occurs.
+
+    This implements EZID's custom authentication, and in this context, the 'admin'
+    user authenticates like regular users.
+
+    If 'request' is not None, the appropriate variables are added to the request
+    session.
+
+    If 'request' is not None and coAuthenticate is True, and if the user is an
+    administrative user, the user is authenticated with the Django admin app as well.
+
+    Easter egg: if the username has the form "@user" and the EZID administrator password
+    is given, and if username "user" exists, then a StoreUser object for "user" is
+    returned (even if logins are not enabled for the user).
     """
     logger.debug('Authenticating user. username="{}"'.format(username))
     if username.startswith("@"):
@@ -69,7 +76,7 @@ def authenticate(username, password, request=None, coAuthenticate=True):
         return "error: bad request - password required"
 
     # noinspection PyUnresolvedReferences
-    user = ezidapp.models.store_user.getUserByUsername(username)
+    user = ezidapp.models.util.getUserByUsername(username)
     logger.debug('Username resolved. user="{}"'.format(user))
 
     if user is None or user.isAnonymous:
@@ -82,7 +89,7 @@ def authenticate(username, password, request=None, coAuthenticate=True):
         )
         return None
 
-    if (sudo and ezidapp.models.store_user.getAdminUser().authenticate(password)) or (
+    if (sudo and ezidapp.models.util.getAdminUser().authenticate(password)) or (
         not sudo and user.authenticate(password)
     ):
         logger.debug('Auth successful. user="{}" sudo="{}"'.format(user, sudo))
@@ -109,7 +116,7 @@ def authenticate(username, password, request=None, coAuthenticate=True):
                         "userauth.authenticate",
                         Exception(
                             "administrator password mismatch; run "
-                            + "'django-admin ezidadminsetpassword' to correct"
+                            + "'./manage.py diag-update-admin' to correct"
                         ),
                     )
         else:
@@ -128,13 +135,13 @@ def getUser(request, returnAnonymous=False):
     None.
     """
     if SESSION_KEY in request.session:
-        user = ezidapp.models.store_user.getUserById(request.session[SESSION_KEY])
+        user = ezidapp.models.util.getUserById(request.session[SESSION_KEY])
         if user is not None and user.loginEnabled:
             return user
         else:
-            return ezidapp.models.store_user.AnonymousUser if returnAnonymous else None
+            return ezidapp.models.util.AnonymousUser if returnAnonymous else None
     else:
-        return ezidapp.models.store_user.AnonymousUser if returnAnonymous else None
+        return ezidapp.models.util.AnonymousUser if returnAnonymous else None
 
 
 def authenticateRequest(request, storeSessionCookie=False):
@@ -144,7 +151,7 @@ def authenticateRequest(request, storeSessionCookie=False):
     if unsuccessful, or a string error message if an error occurs.
     """
     if SESSION_KEY in request.session:
-        user = ezidapp.models.store_user.getUserById(request.session[SESSION_KEY])
+        user = ezidapp.models.util.getUserById(request.session[SESSION_KEY])
         if user is not None and user.loginEnabled:
             return user
         else:

@@ -1,13 +1,12 @@
-"""Update the DataCenter for an existing DOI shoulder."""
-import ezidapp.models.store_datacenter
-import ezidapp.models.shoulder
+"""Update the Datacenter for an existing DOI shoulder."""
 import argparse
 import logging
 
 import django.core.management
 
-
-import impl.nog.reload
+import ezidapp.models.datacenter
+import ezidapp.models.shoulder
+# import impl.nog.reload
 import impl.nog.shoulder
 import impl.nog.util
 
@@ -40,7 +39,7 @@ class Command(django.core.management.BaseCommand):
 
     def handle(self, *_, **opt):
         self.opt = opt = argparse.Namespace(**opt)
-        impl.nog.util.log_to_console(__name__, opt.debug)
+        impl.nog.util.log_setup(__name__, opt.debug)
 
         impl.nog.shoulder.assert_valid_datacenter(opt.new_datacenter_str)
 
@@ -76,10 +75,8 @@ class Command(django.core.management.BaseCommand):
                 'Shoulder is registered with Crossref: {}'.format(namespace_str)
             )
 
-        new_datacenter_model = (
-            ezidapp.models.store_datacenter.StoreDatacenter.objects.get(
-                symbol=opt.new_datacenter_str
-            )
+        new_datacenter_model = ezidapp.models.datacenter.StoreDatacenter.objects.get(
+            symbol=opt.new_datacenter_str
         )
 
         old_datacenter_model = shoulder_model.datacenter
@@ -99,4 +96,4 @@ class Command(django.core.management.BaseCommand):
             )
         )
 
-        impl.nog.reload.trigger_reload()
+        # impl.nog.reload.trigger_reload()

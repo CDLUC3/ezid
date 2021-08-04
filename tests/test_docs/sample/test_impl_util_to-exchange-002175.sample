@@ -1,0 +1,66 @@
+input_json=
+{"mrt.creator":"cdl_oac","erc":"what: Matt Kennedy, alias Kid McMunn, An International Criminal. Born at Detroit, Michigan and
+started out as a boy to lead a criminal life. In 1884 with a gang of hoodlums robbed the Post Office at Windsor, Ontario, Canada.
+He was arrested for this and sent to Kingston, Ontario Penitentiary for twenty years. He escaped from this prison in 1885 and with
+his gang robbed a fur store at Cleveland, Ohio, was arrested for this crime at Allegheny City, Pa. Two officers from Cleveland
+were sent for him and started home on the train with him, he being handcuffed to Detective Wm. Hulligan. The train was boarded by
+a gang lead by an ex-convict Blinkey Morgan who assaulted the two officers, crushing the skull of one of the officers and killing
+Detective McHulligan. They then released Kennedy. Blinkey Morgan was arrested in Canada for this crime and tried and hanged for it
+at Cleveland, Ohio. The next heard of Kennedy, alias McMunn, was from Australia where he was under arrest and held for the
+Cleveland Police. The State of Ohio refused to send for him and he was let go. He remained in Australia for a number of years,
+spending most of his time in jail and he was at last forced to leave and return to the United States where he traveled with a gang
+all over the States, committing burglary and robbery. At last he left for Europe and a trip around the world. He kept the police
+of the world on the go, but they never could convict him. The next he was heard from was when he was killed by Officer Le Strange
+of the Berkeley Police on September 28th, 1905. He, with four others were attempting to rob a bank at Berkeley, California. He was
+a very handsome crook and was known as Raffles among the crooked fraternity. He paid his expenses twice around the world by
+robbing people. He was one of the last men in the world who, from his appearance, would ever be taken for a crook. The career of
+this man reads like a romance. He was one of the typical swell burglars of olden days. Commenting on his death Mr. Wm. Pinkerton
+said \"He lived by the sword and he died by the sword.\"
+where: ark:/13030/m53j446p
+where: ark:/13030/tf3f59p085"}
+~~~~~~~~~~
+dict_pp=
+{'erc': 'what: Matt Kennedy, alias Kid McMunn, An International Criminal. Born '
+        'at Detroit, Michigan and started out as a boy to lead a criminal '
+        'life. In 1884 with a gang of hoodlums robbed the Post Office at '
+        'Windsor, Ontario, Canada. He was arrested for this and sent to '
+        'Kingston, Ontario Penitentiary for twenty years. He escaped from this '
+        'prison in 1885 and with his gang robbed a fur store at Cleveland, '
+        'Ohio, was arrested for this crime at Allegheny City, Pa. Two officers '
+        'from Cleveland were sent for him and started home on the train with '
+        'him, he being handcuffed to Detective Wm. Hulligan. The train was '
+        'boarded by a gang lead by an ex-convict Blinkey Morgan who assaulted '
+        'the two officers, crushing the skull of one of the officers and '
+        'killing Detective McHulligan. They then released Kennedy. Blinkey '
+        'Morgan was arrested in Canada for this crime and tried and hanged for '
+        'it at Cleveland, Ohio. The next heard of Kennedy, alias McMunn, was '
+        'from Australia where he was under arrest and held for the Cleveland '
+        'Police. The State of Ohio refused to send for him and he was let go. '
+        'He remained in Australia for a number of years, spending most of his '
+        'time in jail and he was at last forced to leave and return to the '
+        'United States where he traveled with a gang all over the States, '
+        'committing burglary and robbery. At last he left for Europe and a '
+        'trip around the world. He kept the police of the world on the go, but '
+        'they never could convict him. The next he was heard from was when he '
+        'was killed by Officer Le Strange of the Berkeley Police on September '
+        '28th, 1905. He, with four others were attempting to rob a bank at '
+        'Berkeley, California. He was a very handsome crook and was known as '
+        'Raffles among the crooked fraternity. He paid his expenses twice '
+        'around the world by robbing people. He was one of the last men in the '
+        'world who, from his appearance, would ever be taken for a crook. The '
+        'career of this man reads like a romance. He was one of the typical '
+        'swell burglars of olden days. Commenting on his death Mr. Wm. '
+        'Pinkerton said "He lived by the sword and he died by the sword."
+'
+        'where: ark:/13030/m53j446p
+'
+        'where: ark:/13030/tf3f59p085',
+ 'mrt.creator': 'cdl_oac'}
+~~~~~~~~~~
+keys=
+mrt.creator, erc
+~~~~~~~~~~
+output_exchange=
+mrt.creator cdl_oac erc
+what:%20Matt%20Kennedy,%20alias%20Kid%20McMunn,%20An%20International%20Criminal.%20Born%20at%20Detroit,%20Michigan%20and%20started%20out%20as%20a%20boy%20to%20lead%20a%20criminal%20life.%20In%201884%20with%20a%20gang%20of%20hoodlums%20robbed%20the%20Post%20Office%20at%20Windsor,%20Ontario,%20Canada.%20He%20was%20arrested%20for%20this%20and%20sent%20to%20Kingston,%20Ontario%20Penitentiary%20for%20twenty%20years.%20He%20escaped%20from%20this%20prison%20in%201885%20and%20with%20his%20gang%20robbed%20a%20fur%20store%20at%20Cleveland,%20Ohio,%20was%20arrested%20for%20this%20crime%20at%20Allegheny%20City,%20Pa.%20Two%20officers%20from%20Cleveland%20were%20sent%20for%20him%20and%20started%20home%20on%20the%20train%20with%20him,%20he%20being%20handcuffed%20to%20Detective%20Wm.%20Hulligan.%20The%20train%20was%20boarded%20by%20a%20gang%20lead%20by%20an%20ex-
+convict%20Blinkey%20Morgan%20who%20assaulted%20the%20two%20officers,%20crushing%20the%20skull%20of%20one%20of%20the%20officers%20and%20killing%20Detective%20McHulligan.%20They%20then%20released%20Kennedy.%20Blinkey%20Morgan%20was%20arrested%20in%20Canada%20for%20this%20crime%20and%20tried%20and%20hanged%20for%20it%20at%20Cleveland,%20Ohio.%20The%20next%20heard%20of%20Kennedy,%20alias%20McMunn,%20was%20from%20Australia%20where%20he%20was%20under%20arrest%20and%20held%20for%20the%20Cleveland%20Police.%20The%20State%20of%20Ohio%20refused%20to%20send%20for%20him%20and%20he%20was%20let%20go.%20He%20remained%20in%20Australia%20for%20a%20number%20of%20years,%20spending%20most%20of%20his%20time%20in%20jail%20and%20he%20was%20at%20last%20forced%20to%20leave%20and%20return%20to%20the%20United%20States%20where%20he%20traveled%20with%20a%20gang%20all%20over%20the%20States,%20committing%20burglary%20and%20robbery.%20At%20last%20he%20left%20for%20Europe%20and%20a%20trip%20around%20the%20world.%20He%20kept%20the%20police%20of%20the%20world%20on%20the%20go,%20but%20they%20never%20could%20convict%20him.%20The%20next%20he%20was%20heard%20from%20was%20when%20he%20was%20killed%20by%20Officer%20Le%20Strange%20of%20the%20Berkeley%20Police%20on%20September%2028th,%201905.%20He,%20with%20four%20others%20were%20attempting%20to%20rob%20a%20bank%20at%20Berkeley,%20California.%20He%20was%20a%20very%20handsome%20crook%20and%20was%20known%20as%20Raffles%20among%20the%20crooked%20fraternity.%20He%20paid%20his%20expenses%20twice%20around%20the%20world%20by%20robbing%20people.%20He%20was%20one%20of%20the%20last%20men%20in%20the%20world%20who,%20from%20his%20appearance,%20would%20ever%20be%20taken%20for%20a%20crook.%20The%20career%20of%20this%20man%20reads%20like%20a%20romance.%20He%20was%20one%20of%20the%20typical%20swell%20burglars%20of%20olden%20days.%20Commenting%20on%20his%20death%20Mr.%20Wm.%20Pinkerton%20said%20%22He%20lived%20by%20the%20sword%20and%20he%20died%20by%20the%20sword.%22%0Awhere:%20ark:/13030/m53j446p%0Awhere:%20ark:/13030/tf3f59p085

@@ -1,0 +1,451 @@
+input_json=
+{"datacite.publisher":"KNB Data Repository","datacite.size":"108384","datacite":"<?xml version=\"1.0\"?>
+<resource xmlns=\"http://datacite.org/schema/kernel-3\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+xsi:schemaLocation=\"http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd\"><identifier
+identifierType=\"DOI\">10.5063/AA/DUC_MERP.154.5</identifier><creators><creator><creatorName>van der Valk,
+Arnold</creatorName><affiliation>Department of Botany, Iowa State University</affiliation></creator><creator><creatorName>Ducks
+Unlimited Canada</creatorName></creator></creators><titles><title xml:lang=\"en\">Marsh Ecology Research Program (MERP): Turnover
+plot data (1980-1989)</title></titles><publisher>KNB Data
+Repository</publisher><publicationYear>2011</publicationYear><subjects><subject xml:lang=\"en\">prairie wetland
+ecology</subject><subject xml:lang=\"en\">wetlands</subject><subject xml:lang=\"en\">MERP</subject><subject
+xml:lang=\"en\">marshes</subject><subject xml:lang=\"en\">wet-dry cycle</subject><subject xml:lang=\"en\">Delta
+Marsh</subject><subject xml:lang=\"en\">marsh management</subject><subject xml:lang=\"en\">hydrology</subject><subject
+xml:lang=\"en\">drawdown</subject><subject xml:lang=\"en\">flooding</subject><subject xml:lang=\"en\">marsh ecology research
+program</subject><subject xml:lang=\"en\">vegetation</subject><subject xml:lang=\"en\">turnover plot</subject><subject
+xml:lang=\"en\">macrophytes</subject><subject xml:lang=\"en\">flowering stems</subject><subject xml:lang=\"en\">vegetative
+stems</subject></subjects><language>en</language><resourceType resourceTypeGeneral=\"Dataset\"/><descriptions><description
+descriptionType=\"Abstract\" xml:lang=\"en\"> The Marsh Ecology Research Program (MERP) was a long-term interdisciplinary study on
+the ecology of prairie wetlands. A scientific team from a variety of disciplines (hydrology, plant ecology, invertebrate ecology,
+vertebrate ecology, nutrient dynamics, marsh management) was assembled to design and oversee a long-term experiment on the effects
+of water-level manipulation on northern prairie wetlands. Ten years of fieldwork (1980 -1989), combining a routine long-term
+monitoring program and a series of short-term studies, generated a wealth of new and diverse information on the ecology and
+function of prairie wetlands (Murkin, Batt, Caldwell, Kadlec and van der Valk, 2000). This data set includes turnover plot data,
+collected as part of the vegetation section of MERP.
+\tDetermination of aquatic macrophyte annual net primary production is vital to the understanding of the dynamics of freshwater
+marshes. Macrophyte biomass, both live and dead, is a major storage compartment for carbon, nitrogen and phosphorus in a marsh and
+a major potential energy and nutrient source for the faunal component of the marsh ecosystem. Macrophyte communities are also
+essential structural components of the habitat of both invertebrates and vertebrates. The major objective of the long-term
+monitoring of aquatic macrophytes was to determine the impact of the wet-dry cycle on macrophyte above and belowground net annual
+production. Standard harvest techniques were used because they were the most direct, simple and reliable techniques available for
+estimating net annual primary production of macrophytes per unit area (van der Valk, 1989). Sampling for aboveground macrophyte
+production occurred once in late July or early August during the sampling season, as this is the period where standing emergents
+reach their maximum standing crop. The appearance of fully-grown Typha sp. was generally used to gauge if macrophytes had reached
+their maximum standing crop. Both clip plot (MAGs; contained in a separate data package on the KNB) and turn-over plot (TOPs)
+methods were used to estimate aboveground production (van der Valk, 1989). As a single harvesting method would underestimate net
+primary productivity, turnover plots were used to correct the data.
+
+For further information on the Marsh Ecology Research Program (MERP), please visit:
+http://www.ducks.ca/conserve/research/projects/merp/index.html
+
+References
+Murkin, H.R., B.D.J. Batt, P.J. Caldwell, J.A. Kadlec and A.G. van der Valk. 2000a. Introduction to the Marsh Ecology Research
+Program. In Prairie Wetland Ecology: The Contribution of the Marsh Ecology Research Program. (Eds) H.R. Murkin, A.G. van der Valk
+and W.R. Clark. pp. 3-15. Ames: Iowa State University Press.
+van der Valk, A. 1989. Macrophyte production. In Marsh Ecology Research Program: Long-term Monitoring Procedures Manual. (Eds.)
+E.J. Murkin and H.R. Murkin, pp. 23-29. Manitoba, Canada: Delta Waterfowl Research Station.
+
+Resulting Publications
+van der Valk, A.G., and C.H. Welling. 1988. The development of zonation in freshwater wetlands: an experimental approach. In
+Diversity and Pattern in Plant Communities. (Eds.) H.J. During, M.J.A. Werger, and H.J. Willems, pp.l45-158. The Hague,
+Netherlands: SPB Publishers.
+van der Valk, A.G., C.H. Welling, and RL. Pederson. 1989. Vegetation change in a freshwater wetland: a test of a priori
+predictions. In Freshwater Wetlands and Wildlife. (Eds.) RR. Sharitz and J.W. Gibbons, pp.207-217. USDOE Symposium Series 61, Oak
+Ridge: USDOE Office of Scientific and Technical Information.
+van der Valk, A.G. 1994. Effects of prolonged flooding on the distribution and biomass of emergent species along a freshwater
+wetland coenocline. Vegetatio 110: 185-196.
+van der Valk, AG., L. Squires, and C.H. Welling. 1994. Identifying the impacts of an increase in water level on wetland vegetation
+undergoing succession. Ecological Applications 4:525-534.
+van der Valk, A.G. 2000. Vegetation dynamics and models. In Prairie Wetland Ecology: The Contribution of the Marsh Ecology
+Research Program. (Eds.) H.R. Murkin, A.G. van der Valk, and W.R. Clark, pp. 37-54. Iowa: Iowa State University Press.
+Welling, C.H., R.L. Pederson, and AG. van der Valk. 1988a. Recruitment from the seed bank and the development of zonation of
+emergent vegetation during drawdown in a prairie marsh. Journal of Ecology 76:483-496.
+Welling, C.H., R.L. Pederson, and AG. van der Valk. 1988b. Temporal patterns in recruitment from the seed bank during drawdowns in
+a prairie wetland. Journal of Applied Ecology 25:999-1007.
+
+
+Supporting literature on MERP vegetation data
+Cornwell, J.C., C. Neill, and J.C. Stevenson. 1995. Biogeochemical origin of \u039434S isotopic signatures in a prairie marsh.
+Canadian Journal of Fisheries and Aquatic Sciences 52: 1816-1820.
+de Swart, E.O.A.M., A.G. van der Valk, KJ. Koehler, and A. Barendregt. 1994. Experimental evaluation of realized niche models for
+predicting responses of plant species to a change in environmental conditions. Journal of Vegetation Science 5:541-552.
+Galinato, M.J., and A.G. van der Valk. 1986. Seed germination traits of annuals and emergents during drawdown in the Delta Marsh,
+Manitoba, Canada. Aquatic Botany 26:89-102.
+McKee, K.L., I.A Mendelssohn, and D.M. Burdick. 1989. Effect of long-term flooding on root metabolic response in five freshwater
+marsh plant species: Canadian Journal of Botany 67:3446-3452.
+Merendino, M.T., L.M. Smith, H.R. Murkin, and RL. Pederson. 1990. The response of prairie wetland vegetation to seasonality of
+drawdown. Wildlife Society Bulletin 18: 245-251.
+Merendino, M.T., and L.M. Smith. 1991. Influence of drawdown date and subsequent reflood depth on wetland vegetation
+establishment. Wildlife Society Bulletin 19: 143-150.
+Neckles, H.A., J.A. Nelson, and R.L. Pederson. 1985. Management of whitetop (Scolochloa festucacea) marshes for livestock forage
+and wildlife. Delta Waterfowl and Wetlands Research Station Technical Bulletin 1.
+Neckles, H.A., and R.L. Wetzel. 1989. Effects of forage harvest in seasonally flooded prairie marshes: simulation model
+experiments. In Freshwater Wetlands and Wildlife. (Eds.) RR. Sharitz and J.W. Gibbons, pp.127-143. USDOE Symposium Series 61, Oak
+Ridge: USDOE Office of Scientific and Technical Information.
+Neill. C. 1990. Effects of nutrients and water levels on emergent macrophyte biomass in a prairie marsh. Canadian Journal of
+Botany 68:1007-1014.
+Neill, C 1990. Nutrient limitation of hardstem bulrush (Scirpus acutus Muhl.) in a Manitoba Interlake Region Marsh. Wetlands 10:
+69-76.
+Neill, C. 1990. Effects of nutrients and water levels on species composition in prairie whitetop (Scolochloa festucacea) marshes.
+Canadian Journal of Botany 68: 1015-1020.
+Neill, C. 1992. Comparison of soil coring and ingrowth methods for measuring below ground production. Ecology 73:1918-1922.
+Neill, C. 1992. Life history and population dynamics of whitetop (Scolochloa festucacea) shoots under different levels of flooding
+and nitrogen supply. Aquatic Botany 42: 241-252.
+Neill, C. 1993. Growth and resource allocation of whitetop (Scolochloa festucacea) along a water depth gradient. Aquatic Botany
+46:235-246.
+Neill, C. 1993. Seasonal flooding, soil salinity and primary production in northern prairie marshes. Oecologia (Berl.) 95:499-505.
+Neill, C. 1995. Seasonal flooding, nitrogen mineralization and nitrogen utilization in a prairie marsh. Biogeochemistry
+30:171-189.
+Neill, C., and J.C. Cornwell. 1992. Stable carbon, nitrogen, and sulfur isotopes in a prairie marsh food web. Wetlands 12:217-224.
+Pederson, R.L. 1981. Seed bank characteristics of the Delta Marsh: applications for wetland management. In Selected Proceedings of
+the Midwest Conference on Wetland Values and Management. (Ed.) B. Richardson, pp.61-69. St. Paul: Minnesota Water Planning Board.
+Pederson, R.L., and A.G. van der Valk. 1984. Vegetation change and seed banks in marshes: ecological and management implications.
+Transactions of the North American Wildlife and Natural Resources Conference 49:271-280.
+Pederson, RL., and L.M. Smith. 1988. Implications of wetland seed bank research: a review of Great Basin and prairie marsh
+studies. In Interdisciplinary Approaches to Freshwater Wetlands Research. (Ed.) D.A. Wilcox, pp.81-95. East Lansing: Michigan
+State University Press.
+Seabloom, E.W., K.A. Moloney, and A.G. van der Valk. Constraints on the establishment of plants along a fluctuating water-depth
+gradient. Ecology 82: 2216-2232.
+Squires, L., and A.G. van der Valk. 1992. Water depth tolerances of the dominant emergent macrophytes of the Delta Marsh,
+Manitoba. Canadian Journal of Botany 70: 1860-1867.
+van der Valk, A.G. 1981. Succession in wetlands: a Gleasonian approach. Ecology 62:688-696.
+van der Valk, A.G. 1982. Succession in temperate North American wetlands. In Wetlands: Ecology and Management. (Eds.) B. Gopal,
+RE. Turner, R.G. Wetzel, and D.E Whigham, pp.169-179. Jaipur, India: National Institute of Ecology.
+van der Valk, A.G.1986. The impact of litter and annual plants on recruitment of species from the seed bank of a lacustrine marsh.
+Aquatic Botany 24:13-26.
+van der Valk, A.G. 1992. Establishment, colonization, and persistence. In Plant Succession: Theory and Prediction. (Eds.) D.C.
+Glenn-Lewin, R.K. Peet, and T.T. Veben, pp.60-102. New York: Chapman &amp; Hall.
+van der Valk, A.G. 1992. Response by wetland vegetation to a change in water level. Wetland Management and Restoration. Swedish
+Environmental Protection Agency Report 3492. (Eds.) C.M. Finlayson and T. Larsson, pp.7-16. Solna, Sweden: Swedish Environmental
+Protection Agency.
+van der Valk, A.G., and L. Squires. 1992. Indicators of flooding derived from aerial photography in northern prairie wetlands. In
+Ecological Indicators: Volume 1. (Eds.) D.H. McKenzie, D.E. Hyatt, and V.J. McDonald, pp.593-602. London, UK: Elsevier.
+van der Valk, A.G., and R.L. Pederson. 1989. Seed banks and the management and restoration of natural vegetation. In The Ecology
+of Seed Banks. (Eds.) M.A. Leck, VT. Parker, and RL. Simpson, pp.329-346. New York: Academic Press.
+van der Valk, A.G., R.L. Pederson, and C.B. Davis. 1992. Restoration and creation of freshwater wetlands using seed banks.
+Wetlands Ecology and Management 1:191-197.
+van der Valk, A.G., L. Squires, and C.H. Welling. 1994. Identifying the impacts of an increase in water level on wetland
+vegetation undergoing succession. Ecological Applications 4:525-534.
+ </description></descriptions><formats><format>text/xml</format></formats></resource>","datacite.title":"Marsh Ecology Research
+Program (MERP): Turnover plot data
+(1980-1989)","datacite.creator":"uid=duc_ldupuis,o=unaffiliated,dc=ecoinformatics,dc=org","datacite.publicationyear":"2011","datacite.resourcetype":"Dataset/metadata","datacite.format":"eml://ecoinformatics.org/eml-2.1.0"}
+~~~~~~~~~~
+dict_pp=
+{'datacite': '<?xml version="1.0"?>
+'
+             '<resource xmlns="http://datacite.org/schema/kernel-3" '
+             'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
+             'xsi:schemaLocation="http://datacite.org/schema/kernel-3 '
+             'http://schema.datacite.org/meta/kernel-3/metadata.xsd"><identifier '
+             'identifierType="DOI">10.5063/AA/DUC_MERP.154.5</identifier><creators><creator><creatorName>van '
+             'der Valk, Arnold</creatorName><affiliation>Department of Botany, '
+             'Iowa State '
+             'University</affiliation></creator><creator><creatorName>Ducks '
+             'Unlimited '
+             'Canada</creatorName></creator></creators><titles><title '
+             'xml:lang="en">Marsh Ecology Research Program (MERP): Turnover '
+             'plot data (1980-1989)</title></titles><publisher>KNB Data '
+             'Repository</publisher><publicationYear>2011</publicationYear><subjects><subject '
+             'xml:lang="en">prairie wetland ecology</subject><subject '
+             'xml:lang="en">wetlands</subject><subject '
+             'xml:lang="en">MERP</subject><subject '
+             'xml:lang="en">marshes</subject><subject xml:lang="en">wet-dry '
+             'cycle</subject><subject xml:lang="en">Delta '
+             'Marsh</subject><subject xml:lang="en">marsh '
+             'management</subject><subject '
+             'xml:lang="en">hydrology</subject><subject '
+             'xml:lang="en">drawdown</subject><subject '
+             'xml:lang="en">flooding</subject><subject xml:lang="en">marsh '
+             'ecology research program</subject><subject '
+             'xml:lang="en">vegetation</subject><subject '
+             'xml:lang="en">turnover plot</subject><subject '
+             'xml:lang="en">macrophytes</subject><subject '
+             'xml:lang="en">flowering stems</subject><subject '
+             'xml:lang="en">vegetative '
+             'stems</subject></subjects><language>en</language><resourceType '
+             'resourceTypeGeneral="Dataset"/><descriptions><description '
+             'descriptionType="Abstract" xml:lang="en"> The Marsh Ecology '
+             'Research Program (MERP) was a long-term interdisciplinary study '
+             'on the ecology of prairie wetlands. A scientific team from a '
+             'variety of disciplines (hydrology, plant ecology, invertebrate '
+             'ecology, vertebrate ecology, nutrient dynamics, marsh '
+             'management) was assembled to design and oversee a long-term '
+             'experiment on the effects of water-level manipulation on '
+             'northern prairie wetlands. Ten years of fieldwork (1980 -1989), '
+             'combining a routine long-term monitoring program and a series of '
+             'short-term studies, generated a wealth of new and diverse '
+             'information on the ecology and function of prairie wetlands '
+             '(Murkin, Batt, Caldwell, Kadlec and van der Valk, 2000). This '
+             'data set includes turnover plot data, collected as part of the '
+             'vegetation section of MERP.
+'
+             '\tDetermination of aquatic macrophyte annual net primary '
+             'production is vital to the understanding of the dynamics of '
+             'freshwater marshes. Macrophyte biomass, both live and dead, is a '
+             'major storage compartment for carbon, nitrogen and phosphorus in '
+             'a marsh and a major potential energy and nutrient source for the '
+             'faunal component of the marsh ecosystem. Macrophyte communities '
+             'are also essential structural components of the habitat of both '
+             'invertebrates and vertebrates. The major objective of the '
+             'long-term monitoring of aquatic macrophytes was to determine the '
+             'impact of the wet-dry cycle on macrophyte above and belowground '
+             'net annual production. Standard harvest techniques were used '
+             'because they were the most direct, simple and reliable '
+             'techniques available for estimating net annual primary '
+             'production of macrophytes per unit area (van der Valk, 1989). '
+             'Sampling for aboveground macrophyte production occurred once in '
+             'late July or early August during the sampling season, as this is '
+             'the period where standing emergents reach their maximum standing '
+             'crop. The appearance of fully-grown Typha sp. was generally used '
+             'to gauge if macrophytes had reached their maximum standing crop. '
+             'Both clip plot (MAGs; contained in a separate data package on '
+             'the KNB) and turn-over plot (TOPs) methods were used to estimate '
+             'aboveground production (van der Valk, 1989). As a single '
+             'harvesting method would underestimate net primary productivity, '
+             'turnover plots were used to correct the data.
+'
+             '
+'
+             'For further information on the Marsh Ecology Research Program '
+             '(MERP), please visit: '
+             'http://www.ducks.ca/conserve/research/projects/merp/index.html
+'
+             '
+'
+             'References
+'
+             'Murkin, H.R., B.D.J. Batt, P.J. Caldwell, J.A. Kadlec and A.G. '
+             'van der Valk. 2000a. Introduction to the Marsh Ecology Research '
+             'Program. In Prairie Wetland Ecology: The Contribution of the '
+             'Marsh Ecology Research Program. (Eds) H.R. Murkin, A.G. van der '
+             'Valk and W.R. Clark. pp. 3-15. Ames: Iowa State University '
+             'Press.
+'
+             'van der Valk, A. 1989. Macrophyte production. In Marsh Ecology '
+             'Research Program: Long-term Monitoring Procedures Manual. (Eds.) '
+             'E.J. Murkin and H.R. Murkin, pp. 23-29. Manitoba, Canada: Delta '
+             'Waterfowl Research Station.
+'
+             '
+'
+             'Resulting Publications
+'
+             'van der Valk, A.G., and C.H. Welling. 1988. The development of '
+             'zonation in freshwater wetlands: an experimental approach. In '
+             'Diversity and Pattern in Plant Communities. (Eds.) H.J. During, '
+             'M.J.A. Werger, and H.J. Willems, pp.l45-158. The Hague, '
+             'Netherlands: SPB Publishers.
+'
+             'van der Valk, A.G., C.H. Welling, and RL. Pederson. 1989. '
+             'Vegetation change in a freshwater wetland: a test of a priori '
+             'predictions. In Freshwater Wetlands and Wildlife. (Eds.) RR. '
+             'Sharitz and J.W. Gibbons, pp.207-217. USDOE Symposium Series 61, '
+             'Oak Ridge: USDOE Office of Scientific and Technical '
+             'Information.
+'
+             'van der Valk, A.G. 1994. Effects of prolonged flooding on the '
+             'distribution and biomass of emergent species along a freshwater '
+             'wetland coenocline. Vegetatio 110: 185-196.
+'
+             'van der Valk, AG., L. Squires, and C.H. Welling. 1994. '
+             'Identifying the impacts of an increase in water level on wetland '
+             'vegetation undergoing succession. Ecological Applications '
+             '4:525-534.
+'
+             'van der Valk, A.G. 2000. Vegetation dynamics and models. In '
+             'Prairie Wetland Ecology: The Contribution of the Marsh Ecology '
+             'Research Program. (Eds.) H.R. Murkin, A.G. van der Valk, and '
+             'W.R. Clark, pp. 37-54. Iowa: Iowa State University Press.
+'
+             'Welling, C.H., R.L. Pederson, and AG. van der Valk. 1988a. '
+             'Recruitment from the seed bank and the development of zonation '
+             'of emergent vegetation during drawdown in a prairie marsh. '
+             'Journal of Ecology 76:483-496.
+'
+             'Welling, C.H., R.L. Pederson, and AG. van der Valk. 1988b. '
+             'Temporal patterns in recruitment from the seed bank during '
+             'drawdowns in a prairie wetland. Journal of Applied Ecology '
+             '25:999-1007.
+'
+             '
+'
+             '
+'
+             'Supporting literature on MERP vegetation data
+'
+             'Cornwell, J.C., C. Neill, and J.C. Stevenson. 1995. '
+             'Biogeochemical origin of Δ34S isotopic signatures in a prairie '
+             'marsh. Canadian Journal of Fisheries and Aquatic Sciences 52: '
+             '1816-1820.
+'
+             'de Swart, E.O.A.M., A.G. van der Valk, KJ. Koehler, and A. '
+             'Barendregt. 1994. Experimental evaluation of realized niche '
+             'models for predicting responses of plant species to a change in '
+             'environmental conditions. Journal of Vegetation Science '
+             '5:541-552.
+'
+             'Galinato, M.J., and A.G. van der Valk. 1986. Seed germination '
+             'traits of annuals and emergents during drawdown in the Delta '
+             'Marsh, Manitoba, Canada. Aquatic Botany 26:89-102.
+'
+             'McKee, K.L., I.A Mendelssohn, and D.M. Burdick. 1989. Effect of '
+             'long-term flooding on root metabolic response in five freshwater '
+             'marsh plant species: Canadian Journal of Botany 67:3446-3452.
+'
+             'Merendino, M.T., L.M. Smith, H.R. Murkin, and RL. Pederson. '
+             '1990. The response of prairie wetland vegetation to seasonality '
+             'of drawdown. Wildlife Society Bulletin 18: 245-251.
+'
+             'Merendino, M.T., and L.M. Smith. 1991. Influence of drawdown '
+             'date and subsequent reflood depth on wetland vegetation '
+             'establishment. Wildlife Society Bulletin 19: 143-150.
+'
+             'Neckles, H.A., J.A. Nelson, and R.L. Pederson. 1985. Management '
+             'of whitetop (Scolochloa festucacea) marshes for livestock forage '
+             'and wildlife. Delta Waterfowl and Wetlands Research Station '
+             'Technical Bulletin 1.
+'
+             'Neckles, H.A., and R.L. Wetzel. 1989. Effects of forage harvest '
+             'in seasonally flooded prairie marshes: simulation model '
+             'experiments. In Freshwater Wetlands and Wildlife. (Eds.) RR. '
+             'Sharitz and J.W. Gibbons, pp.127-143. USDOE Symposium Series 61, '
+             'Oak Ridge: USDOE Office of Scientific and Technical '
+             'Information.
+'
+             'Neill. C. 1990. Effects of nutrients and water levels on '
+             'emergent macrophyte biomass in a prairie marsh. Canadian Journal '
+             'of Botany 68:1007-1014.
+'
+             'Neill, C 1990. Nutrient limitation of hardstem bulrush (Scirpus '
+             'acutus Muhl.) in a Manitoba Interlake Region Marsh. Wetlands 10: '
+             '69-76.
+'
+             'Neill, C. 1990. Effects of nutrients and water levels on species '
+             'composition in prairie whitetop (Scolochloa festucacea) marshes. '
+             'Canadian Journal of Botany 68: 1015-1020.
+'
+             'Neill, C. 1992. Comparison of soil coring and ingrowth methods '
+             'for measuring below ground production. Ecology 73:1918-1922.
+'
+             'Neill, C. 1992. Life history and population dynamics of whitetop '
+             '(Scolochloa festucacea) shoots under different levels of '
+             'flooding and nitrogen supply. Aquatic Botany 42: 241-252.
+'
+             'Neill, C. 1993. Growth and resource allocation of whitetop '
+             '(Scolochloa festucacea) along a water depth gradient. Aquatic '
+             'Botany 46:235-246.
+'
+             'Neill, C. 1993. Seasonal flooding, soil salinity and primary '
+             'production in northern prairie marshes. Oecologia (Berl.) '
+             '95:499-505.
+'
+             'Neill, C. 1995. Seasonal flooding, nitrogen mineralization and '
+             'nitrogen utilization in a prairie marsh. Biogeochemistry '
+             '30:171-189.
+'
+             'Neill, C., and J.C. Cornwell. 1992. Stable carbon, nitrogen, and '
+             'sulfur isotopes in a prairie marsh food web. Wetlands '
+             '12:217-224.
+'
+             'Pederson, R.L. 1981. Seed bank characteristics of the Delta '
+             'Marsh: applications for wetland management. In Selected '
+             'Proceedings of the Midwest Conference on Wetland Values and '
+             'Management. (Ed.) B. Richardson, pp.61-69. St. Paul: Minnesota '
+             'Water Planning Board.
+'
+             'Pederson, R.L., and A.G. van der Valk. 1984. Vegetation change '
+             'and seed banks in marshes: ecological and management '
+             'implications. Transactions of the North American Wildlife and '
+             'Natural Resources Conference 49:271-280.
+'
+             'Pederson, RL., and L.M. Smith. 1988. Implications of wetland '
+             'seed bank research: a review of Great Basin and prairie marsh '
+             'studies. In Interdisciplinary Approaches to Freshwater Wetlands '
+             'Research. (Ed.) D.A. Wilcox, pp.81-95. East Lansing: Michigan '
+             'State University Press.
+'
+             'Seabloom, E.W., K.A. Moloney, and A.G. van der Valk. Constraints '
+             'on the establishment of plants along a fluctuating water-depth '
+             'gradient. Ecology 82: 2216-2232.
+'
+             'Squires, L., and A.G. van der Valk. 1992. Water depth tolerances '
+             'of the dominant emergent macrophytes of the Delta Marsh, '
+             'Manitoba. Canadian Journal of Botany 70: 1860-1867.
+'
+             'van der Valk, A.G. 1981. Succession in wetlands: a Gleasonian '
+             'approach. Ecology 62:688-696.
+'
+             'van der Valk, A.G. 1982. Succession in temperate North American '
+             'wetlands. In Wetlands: Ecology and Management. (Eds.) B. Gopal, '
+             'RE. Turner, R.G. Wetzel, and D.E Whigham, pp.169-179. Jaipur, '
+             'India: National Institute of Ecology.
+'
+             'van der Valk, A.G.1986. The impact of litter and annual plants '
+             'on recruitment of species from the seed bank of a lacustrine '
+             'marsh. Aquatic Botany 24:13-26.
+'
+             'van der Valk, A.G. 1992. Establishment, colonization, and '
+             'persistence. In Plant Succession: Theory and Prediction. (Eds.) '
+             'D.C. Glenn-Lewin, R.K. Peet, and T.T. Veben, pp.60-102. New '
+             'York: Chapman &amp; Hall.
+'
+             'van der Valk, A.G. 1992. Response by wetland vegetation to a '
+             'change in water level. Wetland Management and Restoration. '
+             'Swedish Environmental Protection Agency Report 3492. (Eds.) C.M. '
+             'Finlayson and T. Larsson, pp.7-16. Solna, Sweden: Swedish '
+             'Environmental Protection Agency.
+'
+             'van der Valk, A.G., and L. Squires. 1992. Indicators of flooding '
+             'derived from aerial photography in northern prairie wetlands. In '
+             'Ecological Indicators: Volume 1. (Eds.) D.H. McKenzie, D.E. '
+             'Hyatt, and V.J. McDonald, pp.593-602. London, UK: Elsevier.
+'
+             'van der Valk, A.G., and R.L. Pederson. 1989. Seed banks and the '
+             'management and restoration of natural vegetation. In The Ecology '
+             'of Seed Banks. (Eds.) M.A. Leck, VT. Parker, and RL. Simpson, '
+             'pp.329-346. New York: Academic Press.
+'
+             'van der Valk, A.G., R.L. Pederson, and C.B. Davis. 1992. '
+             'Restoration and creation of freshwater wetlands using seed '
+             'banks. Wetlands Ecology and Management 1:191-197.
+'
+             'van der Valk, A.G., L. Squires, and C.H. Welling. 1994. '
+             'Identifying the impacts of an increase in water level on wetland '
+             'vegetation undergoing succession. Ecological Applications '
+             '4:525-534.
+'
+             ' '
+             '</description></descriptions><formats><format>text/xml</format></formats></resource>',
+ 'datacite.creator': 'uid=duc_ldupuis,o=unaffiliated,dc=ecoinformatics,dc=org',
+ 'datacite.format': 'eml://ecoinformatics.org/eml-2.1.0',
+ 'datacite.publicationyear': '2011',
+ 'datacite.publisher': 'KNB Data Repository',
+ 'datacite.resourcetype': 'Dataset/metadata',
+ 'datacite.size': '108384',
+ 'datacite.title': 'Marsh Ecology Research Program (MERP): Turnover plot data '
+                   '(1980-1989)'}
+~~~~~~~~~~
+keys=
+datacite.publisher, datacite.size, datacite, datacite.title, datacite.creator, datacite.publicationyear, datacite.resourcetype,
+datacite.format
+~~~~~~~~~~
+output_exchange=
+datacite.publisher KNB%20Data%20Repository datacite.size 108384 datacite
+<?xml%20version%3D%221.0%22?>%0A<resource%20xmlns%3D%22http://datacite.org/schema/kernel-3%22%20xmlns:xsi%3D%22http://www.w3.org/2001/XMLSchema-
+instance%22%20xsi:schemaLocation%3D%22http://datacite.org/schema/kernel-3%20http://schema.datacite.org/meta/kernel-3/metadata.xsd%22><identifier%20identifierType%3D%22DOI%22>10.5063/AA/DUC_MERP.154.5</identifier><creators><creator><creatorName>van%20der%20Valk,%20Arnold</creatorName><affiliation>Department%20of%20Botany,%20Iowa%20State%20University</affiliation></creator><creator><creatorName>Ducks%20Unlimited%20Canada</creatorName></creator></creators><titles><title%20xml:lang%3D%22en%22>Marsh%20Ecology%20Research%20Program%20%28MERP%29:%20Turnover%20plot%20data%20%281980-1989%29</title></titles><publisher>KNB%20Data%20Repository</publisher><publicationYear>2011</publicationYear><subjects><subject%20xml:lang%3D%22en%22>prairie%20wetland%20ecology</subject><subject%20xml:lang%3D%22en%22>wetlands</subject><subject%20xml:lang%3D%22en%22>MERP</subject><subject%20xml:lang%3D%22en%22>marshes</subject><subject%20xml:lang%3D%22en%22>wet-
+dry%20cycle</subject><subject%20xml:lang%3D%22en%22>Delta%20Marsh</subject><subject%20xml:lang%3D%22en%22>marsh%20management</subject><subject%20xml:lang%3D%22en%22>hydrology</subject><subject%20xml:lang%3D%22en%22>drawdown</subject><subject%20xml:lang%3D%22en%22>flooding</subject><subject%20xml:lang%3D%22en%22>marsh%20ecology%20research%20program</subject><subject%20xml:lang%3D%22en%22>vegetation</subject><subject%20xml:lang%3D%22en%22>turnover%20plot</subject><subject%20xml:lang%3D%22en%22>macrophytes</subject><subject%20xml:lang%3D%22en%22>flowering%20stems</subject><subject%20xml:lang%3D%22en%22>vegetative%20stems</subject></subjects><language>en</language><resourceType%20resourceTypeGeneral%3D%22Dataset%22/><descriptions><description%20descriptionType%3D%22Abstract%22%20xml:lang%3D%22en%22>%20The%20Marsh%20Ecology%20Research%20Program%20%28MERP%29%20was%20a%20long-
+term%20interdisciplinary%20study%20on%20the%20ecology%20of%20prairie%20wetlands.%20A%20scientific%20team%20from%20a%20variety%20of%20disciplines%20%28hydrology,%20plant%20ecology,%20invertebrate%20ecology,%20vertebrate%20ecology,%20nutrient%20dynamics,%20marsh%20management%29%20was%20assembled%20to%20design%20and%20oversee%20a%20long-
+term%20experiment%20on%20the%20effects%20of%20water-
+level%20manipulation%20on%20northern%20prairie%20wetlands.%20Ten%20years%20of%20fieldwork%20%281980%20-1989%29,%20combining%20a%20routine%20long-
+term%20monitoring%20program%20and%20a%20series%20of%20short-
+term%20studies,%20generated%20a%20wealth%20of%20new%20and%20diverse%20information%20on%20the%20ecology%20and%20function%20of%20prairie%20wetlands%20%28Murkin,%20Batt,%20Caldwell,%20Kadlec%20and%20van%20der%20Valk,%202000%29.%20This%20data%20set%20includes%20turnover%20plot%20data,%20collected%20as%20part%20of%20the%20vegetation%20section%20of%20MERP.%0A%09Determination%20of%20aquatic%20macrophyte%20annual%20net%20primary%20production%20is%20vital%20to%20the%20understanding%20of%20the%20dynamics%20of%20freshwater%20marshes.%20Macrophyte%20biomass,%20both%20live%20and%20dead,%20is%20a%20major%20storage%20compartment%20for%20carbon,%20nitrogen%20and%20phosphorus%20in%20a%20marsh%20and%20a%20major%20potential%20energy%20and%20nutrient%20source%20for%20the%20faunal%20component%20of%20the%20marsh%20ecosystem.%20Macrophyte%20communities%20are%20also%20essential%20structural%20components%20of%20the%20habitat%20of%20both%20invertebrates%20and%20vertebrates.%20The%20major%20objective%20of%20the%20long-
+term%20monitoring%20of%20aquatic%20macrophytes%20was%20to%20determine%20the%20impact%20of%20the%20wet-
+dry%20cycle%20on%20macrophyte%20above%20and%20belowground%20net%20annual%20production.%20Standard%20harvest%20techniques%20were%20used%20because%20they%20were%20the%20most%20direct,%20simple%20and%20reliable%20techniques%20available%20for%20estimating%20net%20annual%20primary%20production%20of%20macrophytes%20per%20unit%20area%20%28van%20der%20Valk,%201989%29.%20Sampling%20for%20aboveground%20macrophyte%20production%20occurred%20once%20in%20late%20July%20or%20early%20August%20during%20the%20sampling%20season,%20as%20this%20is%20the%20period%20where%20standing%20emergents%20reach%20their%20maximum%20standing%20crop.%20The%20appearance%20of%20fully-
+grown%20Typha%20sp.%20was%20generally%20used%20to%20gauge%20if%20macrophytes%20had%20reached%20their%20maximum%20standing%20crop.%20Both%20clip%20plot%20%28MAGs%3B%20contained%20in%20a%20separate%20data%20package%20on%20the%20KNB%29%20and%20turn-
+over%20plot%20%28TOPs%29%20methods%20were%20used%20to%20estimate%20aboveground%20production%20%28van%20der%20Valk,%201989%29.%20As%20a%20single%20harvesting%20method%20would%20underestimate%20net%20primary%20productivity,%20turnover%20plots%20were%20used%20to%20correct%20the%20data.%20%0A%0AFor%20further%20information%20on%20the%20Marsh%20Ecology%20Research%20Program%20%28MERP%29,%20please%20visit:%20http://www.ducks.ca/conserve/research/projects/merp/index.html%0A%0AReferences%0AMurkin,%20H.R.,%20B.D.J.%20Batt,%20P.J.%20Caldwell,%20J.A.%20Kadlec%20and%20A.G.%20van%20der%20Valk.%202000a.%20Introduction%20to%20the%20Marsh%20Ecology%20Research%20Program.%20In%20Prairie%20Wetland%20Ecology:%20The%20Contribution%20of%20the%20Marsh%20Ecology%20Research%20Program.%20%28Eds%29%20H.R.%20Murkin,%20A.G.%20van%20der%20Valk%20and%20W.R.%20Clark.%20pp.%203-15.%20Ames:%20Iowa%20State%20University%20Press.%20%0Avan%20der%20Valk,%20A.%201989.%20Macrophyte%20production.%20In%20Marsh%20Ecology%20Research%20Program:%20Long-
+term%20Monitoring%20Procedures%20Manual.%20%28Eds.%29%20E.J.%20Murkin%20and%20H.R.%20Murkin,%20pp.%2023-29.%20Manitoba,%20Canada:%20Delta%20Waterfowl%20Research%20Station.%0A%0AResulting%20Publications%0Avan%20der%20Valk,%20A.G.,%20and%20C.H.%20Welling.%201988.%20The%20development%20of%20zonation%20in%20freshwater%20wetlands:%20an%20experimental%20approach.%20In%20Diversity%20and%20Pattern%20in%20Plant%20Communities.%20%28Eds.%29%20H.J.%20During,%20M.J.A.%20Werger,%20and%20H.J.%20Willems,%20pp.l45-158.%20The%20Hague,%20Netherlands:%20SPB%20Publishers.%0Avan%20der%20Valk,%20A.G.,%20C.H.%20Welling,%20and%20RL.%20Pederson.%201989.%20Vegetation%20change%20in%20a%20freshwater%20wetland:%20a%20test%20of%20a%20priori%20predictions.%20In%20Freshwater%20Wetlands%20and%20Wildlife.%20%28Eds.%29%20RR.%20Sharitz%20and%20J.W.%20Gibbons,%20pp.207-217.%20USDOE%20Symposium%20Series%2061,%20Oak%20Ridge:%20USDOE%20Office%20of%20Scientific%20and%20Technical%20Information.%0Avan%20der%20Valk,%20A.G.%201994.%20Effects%20of%20prolonged%20flooding%20on%20the%20distribution%20and%20biomass%20of%20emergent%20species%20along%20a%20freshwater%20wetland%20coenocline.%20Vegetatio%20110:%20185-196.%0Avan%20der%20Valk,%20AG.,%20L.%20Squires,%20and%20C.H.%20Welling.%201994.%20Identifying%20the%20impacts%20of%20an%20increase%20in%20water%20level%20on%20wetland%20vegetation%20undergoing%20succession.%20Ecological%20Applications%204:525-534.%0Avan%20der%20Valk,%20A.G.%202000.%20Vegetation%20dynamics%20and%20models.%20In%20Prairie%20Wetland%20Ecology:%20The%20Contribution%20of%20the%20Marsh%20Ecology%20Research%20Program.%20%28Eds.%29%20H.R.%20Murkin,%20A.G.%20van%20der%20Valk,%20and%20W.R.%20Clark,%20pp.%2037-54.%20Iowa:%20Iowa%20State%20University%20Press.%0AWelling,%20C.H.,%20R.L.%20Pederson,%20and%20AG.%20van%20der%20Valk.%201988a.%20Recruitment%20from%20the%20seed%20bank%20and%20the%20development%20of%20zonation%20of%20emergent%20vegetation%20during%20drawdown%20in%20a%20prairie%20marsh.%20Journal%20of%20Ecology%2076:483-496.%0AWelling,%20C.H.,%20R.L.%20Pederson,%20and%20AG.%20van%20der%20Valk.%201988b.%20Temporal%20patterns%20in%20recruitment%20from%20the%20seed%20bank%20during%20drawdowns%20in%20a%20prairie%20wetland.%20Journal%20of%20Applied%20Ecology%2025:999-1007.%0A%0A%0ASupporting%20literature%20on%20MERP%20vegetation%20data%0ACornwell,%20J.C.,%20C.%20Neill,%20and%20J.C.%20Stevenson.%201995.%20Biogeochemical%20origin%20of%20%39434S%20isotopic%20signatures%20in%20a%20prairie%20marsh.%20Canadian%20Journal%20of%20Fisheries%20and%20Aquatic%20Sciences%2052:%201816-1820.%0Ade%20Swart,%20E.O.A.M.,%20A.G.%20van%20der%20Valk,%20KJ.%20Koehler,%20and%20A.%20Barendregt.%201994.%20Experimental%20evaluation%20of%20realized%20niche%20models%20for%20predicting%20responses%20of%20plant%20species%20to%20a%20change%20in%20environmental%20conditions.%20Journal%20of%20Vegetation%20Science%205:541-552.%0AGalinato,%20M.J.,%20and%20A.G.%20van%20der%20Valk.%201986.%20Seed%20germination%20traits%20of%20annuals%20and%20emergents%20during%20drawdown%20in%20the%20Delta%20Marsh,%20Manitoba,%20Canada.%20Aquatic%20Botany%2026:89-102.%0AMcKee,%20K.L.,%20I.A%20Mendelssohn,%20and%20D.M.%20Burdick.%201989.%20Effect%20of%20long-
+term%20flooding%20on%20root%20metabolic%20response%20in%20five%20freshwater%20marsh%20plant%20species:%20Canadian%20Journal%20of%20Botany%2067:3446-3452.%0AMerendino,%20M.T.,%20L.M.%20Smith,%20H.R.%20Murkin,%20and%20RL.%20Pederson.%201990.%20The%20response%20of%20prairie%20wetland%20vegetation%20to%20seasonality%20of%20drawdown.%20Wildlife%20Society%20Bulletin%2018:%20245-251.%0AMerendino,%20M.T.,%20and%20L.M.%20Smith.%201991.%20Influence%20of%20drawdown%20date%20and%20subsequent%20reflood%20depth%20on%20wetland%20vegetation%20establishment.%20Wildlife%20Society%20Bulletin%2019:%20143-150.%0ANeckles,%20H.A.,%20J.A.%20Nelson,%20and%20R.L.%20Pederson.%201985.%20Management%20of%20whitetop%20%28Scolochloa%20festucacea%29%20marshes%20for%20livestock%20forage%20and%20wildlife.%20Delta%20Waterfowl%20and%20Wetlands%20Research%20Station%20Technical%20Bulletin%201.%20%0ANeckles,%20H.A.,%20and%20R.L.%20Wetzel.%201989.%20Effects%20of%20forage%20harvest%20in%20seasonally%20flooded%20prairie%20marshes:%20simulation%20model%20experiments.%20In%20Freshwater%20Wetlands%20and%20Wildlife.%20%28Eds.%29%20RR.%20Sharitz%20and%20J.W.%20Gibbons,%20pp.127-143.%20USDOE%20Symposium%20Series%2061,%20Oak%20Ridge:%20USDOE%20Office%20of%20Scientific%20and%20Technical%20Information.%0ANeill.%20C.%201990.%20Effects%20of%20nutrients%20and%20water%20levels%20on%20emergent%20macrophyte%20biomass%20in%20a%20prairie%20marsh.%20Canadian%20Journal%20of%20Botany%2068:1007-1014.%0ANeill,%20C%201990.%20Nutrient%20limitation%20of%20hardstem%20bulrush%20%28Scirpus%20acutus%20Muhl.%29%20in%20a%20Manitoba%20Interlake%20Region%20Marsh.%20Wetlands%2010:%2069-76.%0ANeill,%20C.%201990.%20Effects%20of%20nutrients%20and%20water%20levels%20on%20species%20composition%20in%20prairie%20whitetop%20%28Scolochloa%20festucacea%29%20marshes.%20Canadian%20Journal%20of%20Botany%2068:%201015-1020.%0ANeill,%20C.%201992.%20Comparison%20of%20soil%20coring%20and%20ingrowth%20methods%20for%20measuring%20below%20ground%20production.%20Ecology%2073:1918-1922.%0ANeill,%20C.%201992.%20Life%20history%20and%20population%20dynamics%20of%20whitetop%20%28Scolochloa%20festucacea%29%20shoots%20under%20different%20levels%20of%20flooding%20and%20nitrogen%20supply.%20Aquatic%20Botany%2042:%20241-252.%0ANeill,%20C.%201993.%20Growth%20and%20resource%20allocation%20of%20whitetop%20%28Scolochloa%20festucacea%29%20along%20a%20water%20depth%20gradient.%20Aquatic%20Botany%2046:235-246.%0ANeill,%20C.%201993.%20Seasonal%20flooding,%20soil%20salinity%20and%20primary%20production%20in%20northern%20prairie%20marshes.%20Oecologia%20%28Berl.%29%2095:499-505.%0ANeill,%20C.%201995.%20Seasonal%20flooding,%20nitrogen%20mineralization%20and%20nitrogen%20utilization%20in%20a%20prairie%20marsh.%20Biogeochemistry%2030:171-189.%0ANeill,%20C.,%20and%20J.C.%20Cornwell.%201992.%20Stable%20carbon,%20nitrogen,%20and%20sulfur%20isotopes%20in%20a%20prairie%20marsh%20food%20web.%20Wetlands%2012:217-224.%0APederson,%20R.L.%201981.%20Seed%20bank%20characteristics%20of%20the%20Delta%20Marsh:%20applications%20for%20wetland%20management.%20In%20Selected%20Proceedings%20of%20the%20Midwest%20Conference%20on%20Wetland%20Values%20and%20Management.%20%28Ed.%29%20B.%20Richardson,%20pp.61-69.%20St.%20Paul:%20Minnesota%20Water%20Planning%20Board.%0APederson,%20R.L.,%20and%20A.G.%20van%20der%20Valk.%201984.%20Vegetation%20change%20and%20seed%20banks%20in%20marshes:%20ecological%20and%20management%20implications.%20Transactions%20of%20the%20North%20American%20Wildlife%20and%20Natural%20Resources%20Conference%2049:271-280.%0APederson,%20RL.,%20and%20L.M.%20Smith.%201988.%20Implications%20of%20wetland%20seed%20bank%20research:%20a%20review%20of%20Great%20Basin%20and%20prairie%20marsh%20studies.%20In%20Interdisciplinary%20Approaches%20to%20Freshwater%20Wetlands%20Research.%20%28Ed.%29%20D.A.%20Wilcox,%20pp.81-95.%20East%20Lansing:%20Michigan%20State%20University%20Press.%0ASeabloom,%20E.W.,%20K.A.%20Moloney,%20and%20A.G.%20van%20der%20Valk.%20Constraints%20on%20the%20establishment%20of%20plants%20along%20a%20fluctuating%20water-
+depth%20gradient.%20Ecology%2082:%202216-2232.%0ASquires,%20L.,%20and%20A.G.%20van%20der%20Valk.%201992.%20Water%20depth%20tolerances%20of%20the%20dominant%20emergent%20macrophytes%20of%20the%20Delta%20Marsh,%20Manitoba.%20Canadian%20Journal%20of%20Botany%2070:%201860-1867.%0Avan%20der%20Valk,%20A.G.%201981.%20Succession%20in%20wetlands:%20a%20Gleasonian%20approach.%20Ecology%2062:688-696.%0Avan%20der%20Valk,%20A.G.%201982.%20Succession%20in%20temperate%20North%20American%20wetlands.%20In%20Wetlands:%20Ecology%20and%20Management.%20%28Eds.%29%20B.%20Gopal,%20RE.%20Turner,%20R.G.%20Wetzel,%20and%20D.E%20Whigham,%20pp.169-179.%20Jaipur,%20India:%20National%20Institute%20of%20Ecology.%0Avan%20der%20Valk,%20A.G.1986.%20The%20impact%20of%20litter%20and%20annual%20plants%20on%20recruitment%20of%20species%20from%20the%20seed%20bank%20of%20a%20lacustrine%20marsh.%20Aquatic%20Botany%2024:13-26.%0Avan%20der%20Valk,%20A.G.%201992.%20Establishment,%20colonization,%20and%20persistence.%20In%20Plant%20Succession:%20Theory%20and%20Prediction.%20%28Eds.%29%20D.C.%20Glenn-
+Lewin,%20R.K.%20Peet,%20and%20T.T.%20Veben,%20pp.60-102.%20New%20York:%20Chapman%20%26amp%3B%20Hall.%0Avan%20der%20Valk,%20A.G.%201992.%20Response%20by%20wetland%20vegetation%20to%20a%20change%20in%20water%20level.%20Wetland%20Management%20and%20Restoration.%20Swedish%20Environmental%20Protection%20Agency%20Report%203492.%20%28Eds.%29%20C.M.%20Finlayson%20and%20T.%20Larsson,%20pp.7-16.%20Solna,%20Sweden:%20Swedish%20Environmental%20Protection%20Agency.%0Avan%20der%20Valk,%20A.G.,%20and%20L.%20Squires.%201992.%20Indicators%20of%20flooding%20derived%20from%20aerial%20photography%20in%20northern%20prairie%20wetlands.%20In%20Ecological%20Indicators:%20Volume%201.%20%28Eds.%29%20D.H.%20McKenzie,%20D.E.%20Hyatt,%20and%20V.J.%20McDonald,%20pp.593-602.%20London,%20UK:%20Elsevier.%0Avan%20der%20Valk,%20A.G.,%20and%20R.L.%20Pederson.%201989.%20Seed%20banks%20and%20the%20management%20and%20restoration%20of%20natural%20vegetation.%20In%20The%20Ecology%20of%20Seed%20Banks.%20%28Eds.%29%20M.A.%20Leck,%20VT.%20Parker,%20and%20RL.%20Simpson,%20pp.329-346.%20New%20York:%20Academic%20Press.%0Avan%20der%20Valk,%20A.G.,%20R.L.%20Pederson,%20and%20C.B.%20Davis.%201992.%20Restoration%20and%20creation%20of%20freshwater%20wetlands%20using%20seed%20banks.%20Wetlands%20Ecology%20and%20Management%201:191-197.%0Avan%20der%20Valk,%20A.G.,%20L.%20Squires,%20and%20C.H.%20Welling.%201994.%20Identifying%20the%20impacts%20of%20an%20increase%20in%20water%20level%20on%20wetland%20vegetation%20undergoing%20succession.%20Ecological%20Applications%204:525-534.%0A%20</description></descriptions><formats><format>text/xml</format></formats></resource>
+datacite.title Marsh%20Ecology%20Research%20Program%20%28MERP%29:%20Turnover%20plot%20data%20%281980-1989%29 datacite.creator
+uid%3Dduc_ldupuis,o%3Dunaffiliated,dc%3Decoinformatics,dc%3Dorg datacite.publicationyear 2011 datacite.resourcetype
+Dataset/metadata datacite.format eml://ecoinformatics.org/eml-2.1.0

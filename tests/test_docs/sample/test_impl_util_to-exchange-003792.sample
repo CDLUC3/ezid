@@ -1,0 +1,114 @@
+input_json=
+{"erc.who":"Bakken, T; Roddey, J; Djurovic, S; Akshoomoff, N; Amaral, D; Bloss, C; Casey, B; Chang, L; Ernst, T; Gruen, J;
+Jernigan, T; Kaufmann, W; Kenet, T; Kennedy, D; Kuperman, J; Murray, S; Sowell, E; Rimol, L; Mattingsdal, M; Melle, I; Agartz, I;
+Andreassen, O; Schork, N; Dale, A; Weiner, M; Aisen, P; Petersen, R; Jack, C; Jagust, W; Trojanowki, J; Toga, A; Beckett, L;
+Green, R; Saykin, A; Morris, J; Liu, E; Montine, T; Gamst, A; Thomas, R; Donohue, M; Walter, S; Gessert, D; Sather, T; Harvey, D;
+Kornak, J; Dale, A; Bernstein, M; Felmlee, J; Fox, N; Thompson, P; Schuff, N; Alexander, G; DeCarli, C; Bandy, D; Koeppe, R;
+Foster, N; Reiman, E; Chen, K; Mathis, C; Cairns, N; Taylor-Reinwald, L; Trojanowki, J; Shaw, L; Lee, V; Korecka, M; Crawford, K;
+Neu, S; Foroud, T; Potkin, S; Shen, L; Kachaturian, Z; Frank, R; Snyder, P; Molchan, S; Kaye, J; Quinn, J; Lind, B; Dolen, S;
+Schneider, L; Pawluczyk, S; Spann, B; Brewer, J; Vanderswag, H; Heidebrink, J; Lord, J; Johnson, K; Doody, R; Villanueva-Meyer, J;
+Chowdhury, M; Stern, Y; Honig, L; Bell, K; Morris, J; Ances, B; Carroll, M; Leon, S; Mintun, M; Schneider, S; Marson, D; Griffith,
+R; Clark, D; Grossman, H; Mitsis, E; Romirowsky, A; deToledo-Morrell, L; Shah, R; Duara, R; Varon, D; Roberts, P; Albert, M;
+Onyike, C; Kielb, S; Rusinek, H; de Leon, M; Glodzik, L; De Santi, S; Doraiswamy, P; Petrella, J; Coleman, R; Arnold, S;
+Karlawish, J; Wolk, D; Smith, C; Jicha, G; Hardy, P; Lopez, O; Oakley, M; Simpson, D; Porsteinsson, A; Goldstein, B; Martin, K;
+Makino, K; Ismail, M; Brand, C; Mulnard, R; Thai, G; Mc-Adams-Ortiz, C; Womack, K; Mathews, D; Quiceno, M; Diaz-Arrastia, R; King,
+R; Weiner, M; Martin-Cook, K; DeVous, M; Levey, A; Lah, J; Cellar, J; Burns, J; Anderson, H; Swerdlow, R; Apostolova, L; Lu, P;
+Bartzokis, G; Silverman, D; Graff-Radford, N; Parfitt, F; Johnson, H; Farlow, M; Hake, A; Matthews, B; Herring, S; van Dyck, C;
+Carson, R; MacAvoy, M; Chertkow, H; Bergman, H; Hosein, C; Black, S; Stefanovic, B; Caldwell, C; Ging-Yuek, none given; Hsiung, R;
+Feldman, H; Mudge, B; Assaly, M; Kertesz, A; Rogers, J; Trost, D; Bernick, C; Munic, D; Kerwin, D; Mesulam, M; Lipowski, K; Wu, C;
+Johnson, N; Sadowsky, C; Martinez, W; Villena, T; Turner, R; Johnson, K; Reynolds, B; Sperling, R; Johnson, K; Marshall, G; Frey,
+M; Yesavage, J; Taylor, J; Lane, B; Rosen, A; Tinklenberg, J; Sabbagh, M; Belden, C; Jacobson, S; Kowall, N; Killiany, R; Budson,
+A; Norbash, A; Johnson, P; Obisesan, T; Wolday, S; Bwayo, S; Lerner, A; Hudson, L; Ogrocki, P; Fletcher, E; Carmichael, O;
+Olichney, J; Kittur, S; Borrie, M; Lee, T; Bartha, R; Johnson, S; Asthana, S; Carlsson, C; Potkin, S; Preda, A; Nguyen, D; Tariot,
+P; Fleisher, A; Reeder, S; Bates, V; Capote, H; Rainka, M; Scharre, D; Kataki, M; Zimmerman, E; Celmins, D; Brown, A; Pearlson, G;
+Blank, K; Anderson, K; Santulli, R; Schwartz, E; Sink, K; Williamson, J; Garg, P; Watkins, F; Ott, B; Querfurth, H; Tremont, G;
+Salloway, S; Malloy, P; Correia, S; Rosen, H; Miller, B; Mintzer, J; Longmire, C; Spicer, K; Finger, E; Rachinsky, I; Drost, D;
+Jernigan, T; McCabe, C; Grant, E; Ernst, T; Kuperman, J; Chung, Y; Murray, S; Bloss, C; Darst, B; Pritchett, L; Saito, A; Amaral,
+D; DiNino, M; Eyngorina, B; Sowell, E; Houston, S; Soderberg, L; Kaufmann, W; van Zijl, P; Rizzo-Busack, H; Javid, M; Mehta, N;
+Ruberry, E; Powers, A; Rosen, B; Gebhard, N; Manigan, H; Frazier, J; Kennedy, D; Yakutis, L; Hill, M; Gruen, J; Bosson-Heenan, J;
+Carlson, H","erc.when":"2014-10-17T13:47:58-07:00","erc.what":"Grouped OA Publication record for 'Association of common genetic
+variants in GPCPD1 with scaling of visual cortical surface area in humans.' [IDs c-ucsf-
+id::http://profiles.ucsf.edu/profile/225740 pubmed::22343285 c-eschol-id::ark:/13030/qt7r02n9q4 pmid::22343285]"}
+~~~~~~~~~~
+dict_pp=
+{'erc.what': "Grouped OA Publication record for 'Association of common genetic "
+             'variants in GPCPD1 with scaling of visual cortical surface area '
+             "in humans.' [IDs "
+             'c-ucsf-id::http://profiles.ucsf.edu/profile/225740 '
+             'pubmed::22343285 c-eschol-id::ark:/13030/qt7r02n9q4 '
+             'pmid::22343285]',
+ 'erc.when': '2014-10-17T13:47:58-07:00',
+ 'erc.who': 'Bakken, T; Roddey, J; Djurovic, S; Akshoomoff, N; Amaral, D; '
+            'Bloss, C; Casey, B; Chang, L; Ernst, T; Gruen, J; Jernigan, T; '
+            'Kaufmann, W; Kenet, T; Kennedy, D; Kuperman, J; Murray, S; '
+            'Sowell, E; Rimol, L; Mattingsdal, M; Melle, I; Agartz, I; '
+            'Andreassen, O; Schork, N; Dale, A; Weiner, M; Aisen, P; Petersen, '
+            'R; Jack, C; Jagust, W; Trojanowki, J; Toga, A; Beckett, L; Green, '
+            'R; Saykin, A; Morris, J; Liu, E; Montine, T; Gamst, A; Thomas, R; '
+            'Donohue, M; Walter, S; Gessert, D; Sather, T; Harvey, D; Kornak, '
+            'J; Dale, A; Bernstein, M; Felmlee, J; Fox, N; Thompson, P; '
+            'Schuff, N; Alexander, G; DeCarli, C; Bandy, D; Koeppe, R; Foster, '
+            'N; Reiman, E; Chen, K; Mathis, C; Cairns, N; Taylor-Reinwald, L; '
+            'Trojanowki, J; Shaw, L; Lee, V; Korecka, M; Crawford, K; Neu, S; '
+            'Foroud, T; Potkin, S; Shen, L; Kachaturian, Z; Frank, R; Snyder, '
+            'P; Molchan, S; Kaye, J; Quinn, J; Lind, B; Dolen, S; Schneider, '
+            'L; Pawluczyk, S; Spann, B; Brewer, J; Vanderswag, H; Heidebrink, '
+            'J; Lord, J; Johnson, K; Doody, R; Villanueva-Meyer, J; Chowdhury, '
+            'M; Stern, Y; Honig, L; Bell, K; Morris, J; Ances, B; Carroll, M; '
+            'Leon, S; Mintun, M; Schneider, S; Marson, D; Griffith, R; Clark, '
+            'D; Grossman, H; Mitsis, E; Romirowsky, A; deToledo-Morrell, L; '
+            'Shah, R; Duara, R; Varon, D; Roberts, P; Albert, M; Onyike, C; '
+            'Kielb, S; Rusinek, H; de Leon, M; Glodzik, L; De Santi, S; '
+            'Doraiswamy, P; Petrella, J; Coleman, R; Arnold, S; Karlawish, J; '
+            'Wolk, D; Smith, C; Jicha, G; Hardy, P; Lopez, O; Oakley, M; '
+            'Simpson, D; Porsteinsson, A; Goldstein, B; Martin, K; Makino, K; '
+            'Ismail, M; Brand, C; Mulnard, R; Thai, G; Mc-Adams-Ortiz, C; '
+            'Womack, K; Mathews, D; Quiceno, M; Diaz-Arrastia, R; King, R; '
+            'Weiner, M; Martin-Cook, K; DeVous, M; Levey, A; Lah, J; Cellar, '
+            'J; Burns, J; Anderson, H; Swerdlow, R; Apostolova, L; Lu, P; '
+            'Bartzokis, G; Silverman, D; Graff-Radford, N; Parfitt, F; '
+            'Johnson, H; Farlow, M; Hake, A; Matthews, B; Herring, S; van '
+            'Dyck, C; Carson, R; MacAvoy, M; Chertkow, H; Bergman, H; Hosein, '
+            'C; Black, S; Stefanovic, B; Caldwell, C; Ging-Yuek, none given; '
+            'Hsiung, R; Feldman, H; Mudge, B; Assaly, M; Kertesz, A; Rogers, '
+            'J; Trost, D; Bernick, C; Munic, D; Kerwin, D; Mesulam, M; '
+            'Lipowski, K; Wu, C; Johnson, N; Sadowsky, C; Martinez, W; '
+            'Villena, T; Turner, R; Johnson, K; Reynolds, B; Sperling, R; '
+            'Johnson, K; Marshall, G; Frey, M; Yesavage, J; Taylor, J; Lane, '
+            'B; Rosen, A; Tinklenberg, J; Sabbagh, M; Belden, C; Jacobson, S; '
+            'Kowall, N; Killiany, R; Budson, A; Norbash, A; Johnson, P; '
+            'Obisesan, T; Wolday, S; Bwayo, S; Lerner, A; Hudson, L; Ogrocki, '
+            'P; Fletcher, E; Carmichael, O; Olichney, J; Kittur, S; Borrie, M; '
+            'Lee, T; Bartha, R; Johnson, S; Asthana, S; Carlsson, C; Potkin, '
+            'S; Preda, A; Nguyen, D; Tariot, P; Fleisher, A; Reeder, S; Bates, '
+            'V; Capote, H; Rainka, M; Scharre, D; Kataki, M; Zimmerman, E; '
+            'Celmins, D; Brown, A; Pearlson, G; Blank, K; Anderson, K; '
+            'Santulli, R; Schwartz, E; Sink, K; Williamson, J; Garg, P; '
+            'Watkins, F; Ott, B; Querfurth, H; Tremont, G; Salloway, S; '
+            'Malloy, P; Correia, S; Rosen, H; Miller, B; Mintzer, J; Longmire, '
+            'C; Spicer, K; Finger, E; Rachinsky, I; Drost, D; Jernigan, T; '
+            'McCabe, C; Grant, E; Ernst, T; Kuperman, J; Chung, Y; Murray, S; '
+            'Bloss, C; Darst, B; Pritchett, L; Saito, A; Amaral, D; DiNino, M; '
+            'Eyngorina, B; Sowell, E; Houston, S; Soderberg, L; Kaufmann, W; '
+            'van Zijl, P; Rizzo-Busack, H; Javid, M; Mehta, N; Ruberry, E; '
+            'Powers, A; Rosen, B; Gebhard, N; Manigan, H; Frazier, J; Kennedy, '
+            'D; Yakutis, L; Hill, M; Gruen, J; Bosson-Heenan, J; Carlson, H'}
+~~~~~~~~~~
+keys=
+erc.who, erc.when, erc.what
+~~~~~~~~~~
+output_exchange=
+erc.who
+Bakken,%20T%3B%20Roddey,%20J%3B%20Djurovic,%20S%3B%20Akshoomoff,%20N%3B%20Amaral,%20D%3B%20Bloss,%20C%3B%20Casey,%20B%3B%20Chang,%20L%3B%20Ernst,%20T%3B%20Gruen,%20J%3B%20Jernigan,%20T%3B%20Kaufmann,%20W%3B%20Kenet,%20T%3B%20Kennedy,%20D%3B%20Kuperman,%20J%3B%20Murray,%20S%3B%20Sowell,%20E%3B%20Rimol,%20L%3B%20Mattingsdal,%20M%3B%20Melle,%20I%3B%20Agartz,%20I%3B%20Andreassen,%20O%3B%20Schork,%20N%3B%20Dale,%20A%3B%20Weiner,%20M%3B%20Aisen,%20P%3B%20Petersen,%20R%3B%20Jack,%20C%3B%20Jagust,%20W%3B%20Trojanowki,%20J%3B%20Toga,%20A%3B%20Beckett,%20L%3B%20Green,%20R%3B%20Saykin,%20A%3B%20Morris,%20J%3B%20Liu,%20E%3B%20Montine,%20T%3B%20Gamst,%20A%3B%20Thomas,%20R%3B%20Donohue,%20M%3B%20Walter,%20S%3B%20Gessert,%20D%3B%20Sather,%20T%3B%20Harvey,%20D%3B%20Kornak,%20J%3B%20Dale,%20A%3B%20Bernstein,%20M%3B%20Felmlee,%20J%3B%20Fox,%20N%3B%20Thompson,%20P%3B%20Schuff,%20N%3B%20Alexander,%20G%3B%20DeCarli,%20C%3B%20Bandy,%20D%3B%20Koeppe,%20R%3B%20Foster,%20N%3B%20Reiman,%20E%3B%20Chen,%20K%3B%20Mathis,%20C%3B%20Cairns,%20N%3B%20Taylor-
+Reinwald,%20L%3B%20Trojanowki,%20J%3B%20Shaw,%20L%3B%20Lee,%20V%3B%20Korecka,%20M%3B%20Crawford,%20K%3B%20Neu,%20S%3B%20Foroud,%20T%3B%20Potkin,%20S%3B%20Shen,%20L%3B%20Kachaturian,%20Z%3B%20Frank,%20R%3B%20Snyder,%20P%3B%20Molchan,%20S%3B%20Kaye,%20J%3B%20Quinn,%20J%3B%20Lind,%20B%3B%20Dolen,%20S%3B%20Schneider,%20L%3B%20Pawluczyk,%20S%3B%20Spann,%20B%3B%20Brewer,%20J%3B%20Vanderswag,%20H%3B%20Heidebrink,%20J%3B%20Lord,%20J%3B%20Johnson,%20K%3B%20Doody,%20R%3B%20Villanueva-
+Meyer,%20J%3B%20Chowdhury,%20M%3B%20Stern,%20Y%3B%20Honig,%20L%3B%20Bell,%20K%3B%20Morris,%20J%3B%20Ances,%20B%3B%20Carroll,%20M%3B%20Leon,%20S%3B%20Mintun,%20M%3B%20Schneider,%20S%3B%20Marson,%20D%3B%20Griffith,%20R%3B%20Clark,%20D%3B%20Grossman,%20H%3B%20Mitsis,%20E%3B%20Romirowsky,%20A%3B%20deToledo-
+Morrell,%20L%3B%20Shah,%20R%3B%20Duara,%20R%3B%20Varon,%20D%3B%20Roberts,%20P%3B%20Albert,%20M%3B%20Onyike,%20C%3B%20Kielb,%20S%3B%20Rusinek,%20H%3B%20de%20Leon,%20M%3B%20Glodzik,%20L%3B%20De%20Santi,%20S%3B%20Doraiswamy,%20P%3B%20Petrella,%20J%3B%20Coleman,%20R%3B%20Arnold,%20S%3B%20Karlawish,%20J%3B%20Wolk,%20D%3B%20Smith,%20C%3B%20Jicha,%20G%3B%20Hardy,%20P%3B%20Lopez,%20O%3B%20Oakley,%20M%3B%20Simpson,%20D%3B%20Porsteinsson,%20A%3B%20Goldstein,%20B%3B%20Martin,%20K%3B%20Makino,%20K%3B%20Ismail,%20M%3B%20Brand,%20C%3B%20Mulnard,%20R%3B%20Thai,%20G%3B%20Mc-
+Adams-Ortiz,%20C%3B%20Womack,%20K%3B%20Mathews,%20D%3B%20Quiceno,%20M%3B%20Diaz-
+Arrastia,%20R%3B%20King,%20R%3B%20Weiner,%20M%3B%20Martin-
+Cook,%20K%3B%20DeVous,%20M%3B%20Levey,%20A%3B%20Lah,%20J%3B%20Cellar,%20J%3B%20Burns,%20J%3B%20Anderson,%20H%3B%20Swerdlow,%20R%3B%20Apostolova,%20L%3B%20Lu,%20P%3B%20Bartzokis,%20G%3B%20Silverman,%20D%3B%20Graff-
+Radford,%20N%3B%20Parfitt,%20F%3B%20Johnson,%20H%3B%20Farlow,%20M%3B%20Hake,%20A%3B%20Matthews,%20B%3B%20Herring,%20S%3B%20van%20Dyck,%20C%3B%20Carson,%20R%3B%20MacAvoy,%20M%3B%20Chertkow,%20H%3B%20Bergman,%20H%3B%20Hosein,%20C%3B%20Black,%20S%3B%20Stefanovic,%20B%3B%20Caldwell,%20C%3B%20Ging-
+Yuek,%20none%20given%3B%20Hsiung,%20R%3B%20Feldman,%20H%3B%20Mudge,%20B%3B%20Assaly,%20M%3B%20Kertesz,%20A%3B%20Rogers,%20J%3B%20Trost,%20D%3B%20Bernick,%20C%3B%20Munic,%20D%3B%20Kerwin,%20D%3B%20Mesulam,%20M%3B%20Lipowski,%20K%3B%20Wu,%20C%3B%20Johnson,%20N%3B%20Sadowsky,%20C%3B%20Martinez,%20W%3B%20Villena,%20T%3B%20Turner,%20R%3B%20Johnson,%20K%3B%20Reynolds,%20B%3B%20Sperling,%20R%3B%20Johnson,%20K%3B%20Marshall,%20G%3B%20Frey,%20M%3B%20Yesavage,%20J%3B%20Taylor,%20J%3B%20Lane,%20B%3B%20Rosen,%20A%3B%20Tinklenberg,%20J%3B%20Sabbagh,%20M%3B%20Belden,%20C%3B%20Jacobson,%20S%3B%20Kowall,%20N%3B%20Killiany,%20R%3B%20Budson,%20A%3B%20Norbash,%20A%3B%20Johnson,%20P%3B%20Obisesan,%20T%3B%20Wolday,%20S%3B%20Bwayo,%20S%3B%20Lerner,%20A%3B%20Hudson,%20L%3B%20Ogrocki,%20P%3B%20Fletcher,%20E%3B%20Carmichael,%20O%3B%20Olichney,%20J%3B%20Kittur,%20S%3B%20Borrie,%20M%3B%20Lee,%20T%3B%20Bartha,%20R%3B%20Johnson,%20S%3B%20Asthana,%20S%3B%20Carlsson,%20C%3B%20Potkin,%20S%3B%20Preda,%20A%3B%20Nguyen,%20D%3B%20Tariot,%20P%3B%20Fleisher,%20A%3B%20Reeder,%20S%3B%20Bates,%20V%3B%20Capote,%20H%3B%20Rainka,%20M%3B%20Scharre,%20D%3B%20Kataki,%20M%3B%20Zimmerman,%20E%3B%20Celmins,%20D%3B%20Brown,%20A%3B%20Pearlson,%20G%3B%20Blank,%20K%3B%20Anderson,%20K%3B%20Santulli,%20R%3B%20Schwartz,%20E%3B%20Sink,%20K%3B%20Williamson,%20J%3B%20Garg,%20P%3B%20Watkins,%20F%3B%20Ott,%20B%3B%20Querfurth,%20H%3B%20Tremont,%20G%3B%20Salloway,%20S%3B%20Malloy,%20P%3B%20Correia,%20S%3B%20Rosen,%20H%3B%20Miller,%20B%3B%20Mintzer,%20J%3B%20Longmire,%20C%3B%20Spicer,%20K%3B%20Finger,%20E%3B%20Rachinsky,%20I%3B%20Drost,%20D%3B%20Jernigan,%20T%3B%20McCabe,%20C%3B%20Grant,%20E%3B%20Ernst,%20T%3B%20Kuperman,%20J%3B%20Chung,%20Y%3B%20Murray,%20S%3B%20Bloss,%20C%3B%20Darst,%20B%3B%20Pritchett,%20L%3B%20Saito,%20A%3B%20Amaral,%20D%3B%20DiNino,%20M%3B%20Eyngorina,%20B%3B%20Sowell,%20E%3B%20Houston,%20S%3B%20Soderberg,%20L%3B%20Kaufmann,%20W%3B%20van%20Zijl,%20P%3B%20Rizzo-
+Busack,%20H%3B%20Javid,%20M%3B%20Mehta,%20N%3B%20Ruberry,%20E%3B%20Powers,%20A%3B%20Rosen,%20B%3B%20Gebhard,%20N%3B%20Manigan,%20H%3B%20Frazier,%20J%3B%20Kennedy,%20D%3B%20Yakutis,%20L%3B%20Hill,%20M%3B%20Gruen,%20J%3B%20Bosson-
+Heenan,%20J%3B%20Carlson,%20H erc.when 2014-10-17T13:47:58-07:00 erc.what
+Grouped%20OA%20Publication%20record%20for%20%27Association%20of%20common%20genetic%20variants%20in%20GPCPD1%20with%20scaling%20of%20visual%20cortical%20surface%20area%20in%20humans.%27%20%5BIDs%20c-ucsf-
+id::http://profiles.ucsf.edu/profile/225740%20pubmed::22343285%20c-eschol-id::ark:/13030/qt7r02n9q4%20pmid::22343285%5D

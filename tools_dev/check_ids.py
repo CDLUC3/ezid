@@ -34,7 +34,7 @@ TABLE_NAME_TO_ORM = {
 #     "CnfTup", ["cnf_name", "connect_name", "default", "desc"], verbose=True
 # )
 
-# Map MySQL config file keys to aiohttp.connect() params
+# Map MySQL config file keys to aiomysql.connect() params
 CONFIG_TO_CONNECT = {
     "host": "host",
     "port": "port",
@@ -171,7 +171,7 @@ class CheckIdentifiers:
             log.info(f"Yield: {id_str}")
             yield id_str.strip()
 
-    async def worker(self):
+    async def Worker(self):
         while True:
             async with (await self.connect()).cursor() as cur:
                 while True:
@@ -195,7 +195,7 @@ class CheckIdentifiers:
                             # 'IncompleteReadError'" here. Must be a bug in aiomysql.
                             raise asyncio.CancelledError(repr(e))
 
-                        msg_str = f"Exception in worker: {repr(e)}"
+                        msg_str = f"Exception in Worker: {repr(e)}"
                         log.error(msg_str)
                         count(id_str, msg_str)
                         # Create a new connection, just in case the exception was caused by a

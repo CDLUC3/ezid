@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Generate CrossRef, DataCite and DC metadata test objects.
+"""Generate Crossref, DataCite and DC metadata test objects.
 
 The objects are based on samples from the EZID production database. The text nodes have
 been modified to indicate that they are generic test objects.
@@ -16,26 +16,26 @@ import lxml.etree
 log = logging.getLogger(__name__)
 
 
-def get_metadata(id_ns, test_docs, meta_type=None):
+def get_metadata(id_ns, test_docs=None, meta_type=None):
     """Return metadata in an interleaved list, ready to be passed to the ANVL formatter.
-    meta_type must be 'datacite' or 'crossref'.
+
+    Args:
+        id_ns ():
+        test_docs ():
+        meta_type ():
+            None or 'dc': Dublin Core
+            'datacite': DataCite
+            'crossref': Crossref
     """
-    if meta_type is None:
-        return _get_dc_metadata(id_ns)
-    return _get_metadata_with_xml(id_ns, test_docs, meta_type)
+    if meta_type is None or meta_type == 'dc':
+        return get_dc_metadata(id_ns)
+    if meta_type in ('datacite', 'crossref'):
+        return _get_metadata_with_xml(id_ns, test_docs, meta_type)
+    raise AssertionError(f'Invalid meta_type: {meta_type}')
 
 
-def _get_metadata_with_xml(id_ns, test_docs, meta_type):
-    meta_dict = _TYPE_DICT[meta_type]
-    root_el = _parse_xml((test_docs / meta_dict['xml']).read_text())
-    anvl_dict = meta_dict['anvl'].copy()
-    meta_dict['set_id'](root_el, id_ns)
-    xml_str = _to_compact_string(root_el)
-    anvl_dict[meta_type] = xml_str
-    return _to_interleaved_list(anvl_dict)
-
-
-def _get_dc_metadata(id_ns):
+def get_dc_metadata(id_ns):
+    """Return Dublin Core metadata in interleaved format, ready to be passed to the ANVL formatter"""
     return _to_interleaved_list(
         {
             'dc.creator': 'Test creator for DC metadata record',
@@ -47,9 +47,36 @@ def _get_dc_metadata(id_ns):
     )
 
 
+def get_datacite_metadata(id_ns, test_docs):
+    """Return DataCite metadata in interleaved format, ready to be passed to the ANVL formatter"""
+    return _get_metadata_with_xml(id_ns, test_docs, 'datacite')
+
+
+def get_crossref_metadata(id_ns, test_docs):
+    """Return DataCite metadata in interleaved format, ready to be passed to the ANVL formatter"""
+    return _get_metadata_with_xml(id_ns, test_docs, 'crossref')
+
+
+def _get_metadata_with_xml(id_ns, test_docs, meta_type):
+    """Return metadata in an interleaved list, ready to be passed to the ANVL formatter.
+
+    If provided, meta_type must be 'datacite' or 'crossref'. If not provided, defaults to
+    'dc (Dublin Core)'.
+    """
+    meta_dict = _TYPE_DICT[meta_type]
+    root_el = _parse_xml((test_docs / meta_dict['xml']).read_text())
+    anvl_dict = meta_dict['anvl'].copy()
+    meta_dict['set_id'](root_el, id_ns)
+    xml_str = _to_compact_string(root_el)
+    anvl_dict[meta_type] = xml_str
+    return _to_interleaved_list(anvl_dict)
+
+
 NAMESPACE_DICT = {
     'datacite': 'http://datacite.org/schema/kernel-3',
     'crossref': 'http://www.crossref.org/schema/4.4.0',
+    'dc': 'http://ns.dataone.org/metadata/schema/onedcx/v1.0',
+    'dcterms': 'http://purl.org/dc/terms/',
 }
 
 _CROSSREF_METADATA_DICT = {
@@ -65,6 +92,10 @@ _DATACITE_METADATA_DICT = {
     'datacite.resourcetype': 'Dataset / data',
     'datacite.size': '1234567',
     'datacite.title': '(:unkn)',
+}
+
+_DC_METADATA_DICT = {
+    'dc': None,
 }
 
 
@@ -84,9 +115,16 @@ def _set_crossref_identifier(root_el, id_ns):
     # id_type: Always DOI
     # id_value: /database/doi_data/doi/text()
     log.debug(_to_pretty_string(root_el))
-    el = root_el.xpath('.//crossref:doi_data/crossref:doi', namespaces=NAMESPACE_DICT)[
-        0
-    ]
+    el = root_el.xpath('.//crossref:doi_data/crossref:doi', namespaces=NAMESPACE_DICT)[0]
+    el.text = str(id_ns)
+
+
+def _set_dc_identifier(root_el, id_ns):
+    # id_type: Always DOI
+    # id_value: /database/doi_data/doi/text()
+    log.debug(_to_pretty_string(root_el))
+    el = root_el.xpath('.//dc:simpleDc/dcterms:identifier', namespaces=NAMESPACE_DICT)[0]
+    # ''
     el.text = str(id_ns)
 
 
@@ -100,6 +138,11 @@ _TYPE_DICT = {
         'xml': 'crossref_metadata.xml',
         'anvl': _CROSSREF_METADATA_DICT,
         'set_id': _set_crossref_identifier,
+    },
+    'dc': {
+        'xml': 'dc_dublin_core_metadata.xml',
+        'anvl': _CROSSREF_METADATA_DICT,
+        'set_id': _set_dc_identifier,
     },
 }
 
@@ -136,7 +179,7 @@ def _to_pretty_string(root_el):
 def _to_interleaved_list(meta_dict):
     """Convert a metadata dict (key/value) to the flat interleaved list format required
     by our ANVL formatter."""
-    return tuple(s.strip() for kv in meta_dict.items() for s in kv)
+    return tuple((s or '').strip() for kv in meta_dict.items() for s in kv)
 
 
 def _parse_xml(xml_str):

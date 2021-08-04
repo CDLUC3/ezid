@@ -1,13 +1,24 @@
 """EZID settings
 """
-
+import collections
 import logging.config
 import os
 import pathlib
 import socket
 import sys
 
+import django.db.models
 import django.utils.translation
+
+import impl.nog.tb
+
+
+def my_excepthook(type, value, traceback):
+    impl.nog.tb.traceback_with_local_vars(type, value, traceback)
+    # print ('Unhandled error:', type, value)
+
+# print('Installing exception hook')
+# sys.excepthook = my_excepthook
 
 # When DEBUG == True, any errors in EZID are returned to the user as pages containing
 # full stack traces and additional information. Should only be used for development.
@@ -15,6 +26,7 @@ DEBUG = True
 
 # When STANDALONE == True, Django handles serving of static files. Should only be used
 # for development.
+# TODO: Fix 'index out of range' when set to True
 STANDALONE = False
 
 # Absolute paths
@@ -55,20 +67,20 @@ STATICFILES_DIRS = [
 
 # Async processing daemons
 
-# DAEMON_THREADS_ENABLED:
+# DAEMONS_ENABLED:
 #   - True: Always enable daemon threads
 #   - False: Always disable daemon threads
 #   - 'auto': Enable daemon threads only if process is running under Apache /
 #      mod_wsgi.
-DAEMON_THREADS_ENABLED = 'auto'
+DAEMONS_ENABLED = True
 
-assert DAEMON_THREADS_ENABLED in (True, False, 'auto')
-if DAEMON_THREADS_ENABLED == 'auto':
-    DAEMON_THREADS_ENABLED = os.environ.get('IS_RUNNING_UNDER_MOD_WSGI', False)
+assert DAEMONS_ENABLED in (True, False, 'auto')
+if DAEMONS_ENABLED == 'auto':
+    DAEMONS_ENABLED = os.environ.get('IS_RUNNING_UNDER_MOD_WSGI', False)
 
-# The following enablement flags are subservient to the DAEMON_THREADS_ENABLED Django
+# The following enablement flags are subservient to the DAEMONS_ENABLED Django
 # setting.
-DAEMONS_BACKPROC_ENABLED = True
+DAEMONS_SEARCHDB_ENABLED = True
 DAEMONS_NEWSFEED_ENABLED = True
 DAEMONS_STATUS_ENABLED = True
 DAEMONS_BINDER_ENABLED = True
@@ -76,10 +88,11 @@ DAEMONS_DATACITE_ENABLED = True
 DAEMONS_CROSSREF_ENABLED = True
 DAEMONS_DOWNLOAD_ENABLED = True
 DAEMONS_LINKCHECK_UPDATE_ENABLED = True
+DAEMONS_LINKCHECKER_ENABLED = True
 DAEMONS_STATISTICS_ENABLED = True
 
 DAEMONS_BACKGROUND_PROCESSING_IDLE_SLEEP = 5
-DAEMONS_STATUS_LOGGING_INTERVAL = 60
+DAEMONS_STATUS_LOGGING_INTERVAL = 1  ################# 60
 DAEMONS_BINDER_PROCESSING_IDLE_SLEEP = 5
 DAEMONS_BINDER_PROCESSING_ERROR_SLEEP = 300
 DAEMONS_BINDER_NUM_WORKER_THREADS = 3
@@ -100,7 +113,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'HOST': 'localhost',
-        "NAME": "ezid_tests",
+        "NAME": "test3",
+        # "NAME": "ezid_test_db",
         'USER': 'ezid_test_user',
         "PASSWORD": '',
         'PORT': '3306',
@@ -162,7 +176,6 @@ EMAIL_ERROR_SUPPRESSION_WINDOW = 3600
 EMAIL_ERROR_LIFETIME = 14400
 EMAIL_ERROR_SIMILARITY_THRESHOLD = 0.6
 
-
 # EZID errors are automatically emailed to this list.
 MANAGERS = ADMINS = []
 
@@ -193,24 +206,25 @@ logging.config.dictConfig(
                 'level': 'DEBUG',
                 'class': 'logging.StreamHandler',
                 'formatter': 'verbose',
-                'stream': sys.stdout,
+                # 'formatter': 'simple',
+                # 'stream': sys.stdout,
             },
         },
         'loggers': {
             '': {
                 'handlers': ['console'],
                 'propagate': True,
-                'level': 'DEBUG',
+                'level': 'DEBUG', # 'INFO'
             },
             # Increase logging level on loggers that are noisy at debug level
             # Note: django.server logs at warning level for 404s.
             'django.server': {
-                # 'level': 'DEBUG',
-                'level': 'ERROR',
+                'level': 'DEBUG',
+                # 'level': 'ERROR',
             },
             'django.db': {
-                # 'level': 'DEBUG',
-                'level': 'ERROR',
+                'level': 'DEBUG',
+                # 'level': 'ERROR',
             },
             'django.request': {
                 'level': 'ERROR',
@@ -225,6 +239,10 @@ logging.config.dictConfig(
             'django.utils.autoreload': {
                 'level': 'ERROR',
             },
+            # Suppress 'Using selector: EpollSelector'
+            'asyncio': {
+                'level': 'WARNING',
+            },
         },
     }
 )
@@ -233,7 +251,7 @@ logging.config.dictConfig(
 
 EZID_BASE_URL = 'https://ezid.cdlib.org'
 ALLOWED_HOSTS = ['*']
-SECRET_KEY = '< placeholder - do not modify >'
+SECRET_KEY = 'nb6@8#38y4o)^!b&*ax(zy-cpf^%a^t=#@uk+4j*q7ho09m6=9'
 
 # i18n / locale
 
@@ -261,6 +279,44 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 SESSION_COOKIE_PATH = '/'
 
+# EZID administrator account
+
+# Note: The `diag-apply-admin-password` management command must be run in order to apply
+# changes made to any of the `ADMIN_` settings. E.g.,
+#
+# $ cd ezid
+# $ ./manage.py diag-apply-admin-password
+
+ADMIN_USERNAME = 'admin'
+ADMIN_PASSWORD = 'admin'
+ADMIN_GROUPNAME = 'admin'
+ADMIN_NOTES = 'This user owns 1 identifier under former shoulder doi:10.5060/D2'
+ADMIN_EMAIL = 'ezid@ucop.edu'
+ADMIN_DISPLAY_NAME = 'EZID superuser'
+
+ADMIN_ORG_ACRONYM = 'CDL'
+ADMIN_ORG_NAME = 'EZID'
+ADMIN_ORG_URL = 'http://ezid.cdlib.org/'
+
+ADMIN_CROSSREF_EMAIL = ''
+ADMIN_CROSSREF_ENABLED = False
+
+ADMIN_PRIMARY_CONTACT_EMAIL = 'ezid@ucop.edu'
+ADMIN_PRIMARY_CONTACT_NAME = 'EZID superuser'
+ADMIN_PRIMARY_CONTACT_PHONE = '(510) 987-0555'
+
+ADMIN_SECONDARY_CONTACT_EMAIL = 'ezid@ucop.edu'
+ADMIN_SECONDARY_CONTACT_NAME = 'EZID superuser'
+ADMIN_SECONDARY_CONTACT_PHONE = '(510) 987-0555'
+
+ADMIN_STORE_REALM = 'CDL'
+ADMIN_STORE_USER_PID = 'ark:/99166/p9kw57h4w'
+ADMIN_STORE_GROUP_PID = 'ark:/99166/p9g44hq02'
+
+ADMIN_SEARCH_REALM = 'CDL'
+ADMIN_SEARCH_USER_PID = 'ark:/99166/p9kw57h4w'
+ADMIN_SEARCH_GROUP_PID = 'ark:/99166/p9g44hq02'
+
 # Credentials
 
 ARK_PROFILE = 'erc'
@@ -271,9 +327,6 @@ GOOGLE_ANALYTICS_ID = None
 
 GZIP_COMMAND = '/usr/bin/gzip'
 ZIP_COMMAND = '/usr/bin/zip'
-
-AUTH_ADMIN_USERNAME = 'admin'
-AUTH_ADMIN_PASSWORD = 'admin'
 
 BINDER_URL = 'https://n2t-stg.n2t.net/a/ezid/b'
 BINDER_USERNAME = 'ezid'
@@ -290,6 +343,11 @@ SHOULDERS_ARK_TEST = 'ark:/99999/fk4'
 SHOULDERS_DOI_TEST = 'doi:10.5072/FK2'
 SHOULDERS_CROSSREF_TEST = 'doi:10.15697/'
 SHOULDERS_AGENT = 'ark:/99166/p9'
+
+TEST_SHOULDER_DICT = [
+    {"namespace": 'ARK Test', "prefix": SHOULDERS_ARK_TEST},
+    {"namespace": 'DOI Test', "prefix": SHOULDERS_DOI_TEST},
+]
 
 # DataCite
 
@@ -310,7 +368,7 @@ DATACITE_ALLOCATORS = 'CDL,PURDUE'
 ALLOCATOR_CDL_PASSWORD = ''
 ALLOCATOR_PURDUE_PASSWORD = ''
 
-# CrossRef
+# Crossref
 
 # The 'daemons.crossref_enabled' flag governs whether the Crossref
 # daemon thread runs.  The flag below governs if the daemon actually
@@ -400,6 +458,7 @@ LINKCHECKER_MAX_READ = 104857600
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 INSTALLED_APPS = [
+    'django_extensions',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -441,3 +500,62 @@ TEMPLATES = [
         },
     }
 ]
+
+
+QUERY_PAGE_SIZE = 10000
+
+BlobField = collections.namedtuple(
+    'BlobField', ['model', 'field', 'is_queue']
+)
+
+BLOB_FIELD_LIST = [
+    # metadata = Python, JSON, and legacy compound objects
+    BlobField('BinderQueue', 'metadata', True),
+    BlobField('CrossrefQueue', 'metadata', True),
+    BlobField('DataciteQueue', 'metadata', True),
+
+    # object = StoreIdentifier (Model)
+    BlobField('DownloadQueue', 'object', True),
+    BlobField('UpdateQueue',   'object', True),
+
+    # cm = CompressedJsonField (Field)
+    BlobField('SearchIdentifier', 'cm', False),
+    BlobField('StoreIdentifier', 'cm', False),
+
+    BlobField('LinkChecker', '', False),
+]
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+# SERIALIZATION_MODULES = {
+#     'extjson': 'ezidapp.models.serialization',
+# }
+
+
+# From django_extensions
+
+# BASE_DIR = os.path.dirname(os.path.realpath(__file__))
+# REPLACEMENTS = getattr(settings, 'EXTENSIONS_REPLACEMENTS', {})
+#
+# DEFAULT_SQLITE_ENGINES = (
+#     'django.db.backends.sqlite3',
+#     'django.db.backends.spatialite',
+# )
+# DEFAULT_MYSQL_ENGINES = (
+#     'django.db.backends.mysql',
+#     'django.contrib.gis.db.backends.mysql',
+#     'mysql.connector.django',
+# )
+# DEFAULT_POSTGRESQL_ENGINES = (
+#     'django.db.backends.postgresql',
+#     'django.db.backends.postgresql_psycopg2',
+#     'django.db.backends.postgis',
+#     'django.contrib.gis.db.backends.postgis',
+#     'psqlextra.backend',
+#     'django_zero_downtime_migrations.backends.postgres',
+#     'django_zero_downtime_migrations.backends.postgis',
+# )
+#
+# SQLITE_ENGINES = getattr(settings, 'DJANGO_EXTENSIONS_RESET_DB_SQLITE_ENGINES', DEFAULT_SQLITE_ENGINES)
+# MYSQL_ENGINES = getattr(settings, 'DJANGO_EXTENSIONS_RESET_DB_MYSQL_ENGINES', DEFAULT_MYSQL_ENGINES)
+# POSTGRESQL_ENGINES = getattr(settings, 'DJANGO_EXTENSIONS_RESET_DB_POSTGRESQL_ENGINES', DEFAULT_POSTGRESQL_ENGINES)

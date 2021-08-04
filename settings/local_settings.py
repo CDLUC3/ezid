@@ -5,7 +5,7 @@ for db_name in ('default', 'search'):
         {
             "HOST": "r2",
             "NAME": "ezid",
-            # "NAME": "ezid_tests",
+            # "NAME": "ezid_test_db",
             "USER": "ezid_test_user",
             "PASSWORD": "",
         }

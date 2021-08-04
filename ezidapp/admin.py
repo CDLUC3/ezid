@@ -16,42 +16,37 @@
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
-import django.conf
-import django.conf
 import copy
+
+import django
+import django.apps
+import django.conf
 import django.contrib.admin
 import django.contrib.admin.sites
 import django.contrib.admin.widgets
 import django.contrib.messages
-
-# import django.core.mail
-# import django.core.validators
-# import django.core.mail
-# import django.urls.resolvers
+import django.core
 import django.core.mail
 import django.core.validators
 import django.db
 import django.db.models
 import django.forms
 import django.forms.widgets
+import django.urls
 import django.urls.resolvers
 import django.utils.html
 
-import ezidapp.models.search_identifier
-import ezidapp.models.store_group
-
-import ezidapp.models.store_user
-import ezidapp.models.store_user
+import ezidapp.models.util
+import impl.util
+from ezidapp.models.datacenter import StoreDatacenter
+from ezidapp.models.group import SearchGroup
+from ezidapp.models.group import StoreGroup
 from ezidapp.models.new_account_worksheet import NewAccountWorksheet
-from ezidapp.models.search_group import SearchGroup
-from ezidapp.models.search_realm import SearchRealm
-from ezidapp.models.search_user import SearchUser
-from ezidapp.models.server_variables import ServerVariables
+from ezidapp.models.realm import SearchRealm
+from ezidapp.models.realm import StoreRealm
 from ezidapp.models.shoulder import Shoulder
-from ezidapp.models.store_datacenter import StoreDatacenter
-from ezidapp.models.store_group import StoreGroup
-from ezidapp.models.store_realm import StoreRealm
-from ezidapp.models.store_user import StoreUser
+from ezidapp.models.user import SearchUser
+from ezidapp.models.user import StoreUser
 
 
 class SuperuserSite(django.contrib.admin.sites.AdminSite):
@@ -67,47 +62,6 @@ class SuperuserSite(django.contrib.admin.sites.AdminSite):
 
 
 superuser = SuperuserSite()
-
-
-class ServerVariablesForm(django.forms.ModelForm):
-    def clean(self):
-        super(ServerVariablesForm, self).clean()
-        if "secretKey" in self.changed_data and self.cleaned_data["secretKey"] != "":
-            raise django.core.validators.ValidationError(
-                {"secretKey": "The secret key can only be set to blank."}
-            )
-
-
-class ServerVariablesAdmin(django.contrib.admin.ModelAdmin):
-    actions = None
-    fieldsets = [
-        (None, {"fields": ["alertMessage"]}),
-        ("Advanced", {"fields": ["secretKey"], "classes": ["collapse"]}),
-    ]
-    form = ServerVariablesForm
-
-    def has_add_permission(self, request, obj=None):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        return False
-
-    def save_model(self, request, obj, form, change):
-        assert change
-        obj.save()
-        if "alertMessage" in form.changed_data:
-            import impl.ui_common
-
-            impl.ui_common.alertMessage = obj.alertMessage
-        if obj.secretKey == "":
-            import impl.config
-
-            impl.config.reload()
-            django.contrib.messages.success(request, "Server reloaded.")
-        return obj
-
-
-superuser.register(ServerVariables, ServerVariablesAdmin)
 
 
 class ShoulderForm(django.forms.ModelForm):
@@ -178,7 +132,8 @@ class ShoulderUnusedFilter(django.contrib.admin.SimpleListFilter):
 
 
 class StoreGroupInline(django.contrib.admin.TabularInline):
-    model = StoreGroup.shoulders.through
+    store_group_model = django.apps.apps.get_model('ezidapp', 'StoreGroup')
+    model = store_group_model.shoulders.through
     verbose_name_plural = "Groups using this shoulder"
 
     def groupLink(self, obj):
@@ -211,7 +166,8 @@ class StoreGroupInline(django.contrib.admin.TabularInline):
 
 
 class StoreUserInlineForShoulder(django.contrib.admin.TabularInline):
-    model = StoreUser.shoulders.through
+    store_user_model = django.apps.apps.get_model('ezidapp', 'StoreUser')
+    model = store_user_model.shoulders.through
     verbose_name_plural = "Users using this shoulder"
 
     def userLink(self, obj):
@@ -468,7 +424,6 @@ class NewAccountWorksheetAdmin(django.contrib.admin.ModelAdmin):
                 # noinspection PyProtectedMember
                 newStatus.append(obj._meta.get_field(f).verbose_name)
         if len(newStatus) > 0:
-            import impl.config
 
             addresses = [
                 a
@@ -524,7 +479,7 @@ class NewAccountWorksheetAdmin(django.contrib.admin.ModelAdmin):
                     obj.orgName,
                     obj.orgAcronym,
                     obj.orgUrl,
-                    util.oneLine(obj.orgStreetAddress),
+                    impl.util.oneLine(obj.orgStreetAddress),
                     obj.reqName,
                     obj.reqEmail,
                     obj.reqPhone,
@@ -539,14 +494,14 @@ class NewAccountWorksheetAdmin(django.contrib.admin.ModelAdmin):
                     str(obj.reqDois),
                     str(obj.reqCrossref),
                     obj.reqCrossrefEmail,
-                    util.oneLine(obj.reqComments),
+                    impl.util.oneLine(obj.reqComments),
                     obj.setRealm,
                     obj.setGroupname,
                     obj.setUsername,
                     obj.setUserDisplayName,
                     obj.setShoulderDisplayName,
                     str(obj.setNonDefaultSetup),
-                    util.oneLine(obj.setNotes),
+                    impl.util.oneLine(obj.setNotes),
                 )
                 try:
                     django.core.mail.send_mail(
@@ -658,7 +613,7 @@ def createOrUpdateGroupPid(request, obj, change):
     f = impl.ezid.setMetadata if change else impl.ezid.createIdentifier
     r = f(
         obj.pid,
-        ezidapp.models.store_user.getAdminUser(),
+        ezidapp.models.util.getAdminUser(),
         {
             "_ezid_role": "group",
             "_export": "no",
@@ -699,7 +654,7 @@ def updateUserPids(request, users):
     for u in users:
         r = impl.ezid.setMetadata(
             u.pid,
-            ezidapp.models.store_user.getAdminUser(),
+            ezidapp.models.util.getAdminUser(),
             {
                 "ezid.user.shoulders": " ".join(s.prefix for s in u.shoulders.all()),
                 "ezid.user.crossrefEnabled": str(u.crossrefEnabled),
@@ -814,11 +769,9 @@ class StoreGroupAdmin(django.contrib.admin.ModelAdmin):
     form = StoreGroupForm
 
     def save_model(self, request, obj, form, change):
-        clearCaches = False
         if change:
             obj.save()
             SearchGroup.objects.filter(pid=obj.pid).update(groupname=obj.groupname)
-            clearCaches = True
         else:
             sg = SearchGroup(
                 pid=obj.pid,
@@ -833,11 +786,6 @@ class StoreGroupAdmin(django.contrib.admin.ModelAdmin):
         # the relevant caches.  While not obvious, the following calls
         # rely on the django-transaction-hooks 3rd party package.  (Django
         # 1.9 incorporates this functionality directly.)
-        if clearCaches:
-            django.db.connection.on_commit(ezidapp.models.store_group.clearCaches)
-            django.db.connection.on_commit(
-                ezidapp.models.search_identifier.clearGroupCache
-            )
         onCommitWithSqliteHack(lambda: createOrUpdateGroupPid(request, obj, change))
         # Changes to shoulders and Crossref enablement may trigger
         # adjustments to users in the group.
@@ -863,10 +811,6 @@ class StoreGroupAdmin(django.contrib.admin.ModelAdmin):
                 obj.users.all().update(crossrefEnabled=False, crossrefEmail="")
                 doUpdateUserPids = True
             if doUpdateUserPids:
-                django.db.connection.on_commit(ezidapp.models.store_user.clearCaches)
-                django.db.connection.on_commit(
-                    ezidapp.models.search_identifier.clearUserCache
-                )
                 users = list(obj.users.all())
                 onCommitWithSqliteHack(lambda: updateUserPids(request, users))
 
@@ -877,9 +821,6 @@ class StoreGroupAdmin(django.contrib.admin.ModelAdmin):
             request,
             f"Now-defunct group PID {obj.pid} not deleted; you may consider doing so.",
         )
-        # See comment above.
-        django.db.connection.on_commit(ezidapp.models.store_group.clearCaches)
-        django.db.connection.on_commit(ezidapp.models.search_identifier.clearGroupCache)
 
     class Media:
         css = {"all": ["admin/css/base-group.css"]}
@@ -1016,7 +957,7 @@ def createOrUpdateUserPid(request, obj, change):
     f = impl.ezid.setMetadata if change else impl.ezid.createIdentifier
     r = f(
         obj.pid,
-        ezidapp.models.store_user.getAdminUser(),
+        ezidapp.models.util.getAdminUser(),
         {
             "_ezid_role": "user",
             "_export": "no",
@@ -1247,11 +1188,9 @@ class StoreUserAdmin(django.contrib.admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if "password" in form.cleaned_data:
             obj.setPassword(form.cleaned_data["password"])
-        clearCaches = False
         if change:
             obj.save()
             SearchUser.objects.filter(pid=obj.pid).update(username=obj.username)
-            clearCaches = True
         else:
             su = SearchUser(
                 pid=obj.pid,
@@ -1263,11 +1202,6 @@ class StoreUserAdmin(django.contrib.admin.ModelAdmin):
             obj.save()
             su.save()
         # See discussion in StoreGroupAdmin above.
-        if clearCaches:
-            django.db.connection.on_commit(ezidapp.models.store_user.clearCaches)
-            django.db.connection.on_commit(
-                ezidapp.models.search_identifier.clearUserCache
-            )
         onCommitWithSqliteHack(lambda: createOrUpdateUserPid(request, obj, change))
 
     def delete_model(self, request, obj):
@@ -1277,8 +1211,6 @@ class StoreUserAdmin(django.contrib.admin.ModelAdmin):
             request,
             f"Now-defunct user PID {obj.pid} not deleted; you may consider doing so.",
         )
-        django.db.connection.on_commit(ezidapp.models.store_user.clearCaches)
-        django.db.connection.on_commit(ezidapp.models.search_identifier.clearUserCache)
 
     class Media:
         css = {"all": ["admin/css/base-user.css"]}
@@ -1291,6 +1223,4 @@ def scheduleUserChangePostCommitActions(user):
     # This function should be called when a StoreUser object is updated
     # and saved outside this module; it should be called within the
     # transaction making the updates.
-    django.db.connection.on_commit(ezidapp.models.store_user.clearCaches)
-    django.db.connection.on_commit(ezidapp.models.search_identifier.clearUserCache)
     onCommitWithSqliteHack(lambda: createOrUpdateUserPid(None, user, True))

@@ -25,26 +25,27 @@ class CrossrefQueue(django.db.models.Model):
     # are.)  Also, identifiers whose submission resulted in a warning or
     # error are retained indefinitely in this table.
 
-    seq = django.db.models.AutoField(primary_key=True)
     # Order of insertion into this table; also, the order in which
     # identifier operations occurred.
+    seq = django.db.models.AutoField(primary_key=True)
 
+    # The identifier in qualified, normalized form, e.g.,
+    # "doi:10.5060/FOO".  Always a DOI.
     identifier = django.db.models.CharField(
         max_length=impl.util.maxIdentifierLength, db_index=True
     )
-    # The identifier in qualified, normalized form, e.g.,
-    # "doi:10.5060/FOO".  Always a DOI.
 
+    # The identifier's owner, referenced by the owner's persistent
+    # identifier, e.g., "ark:/99166/p92z12p14".
     owner = django.db.models.CharField(
         max_length=impl.util.maxIdentifierLength, db_index=True
     )
-    # The identifier's owner, referenced by the owner's persistent
-    # identifier, e.g., "ark:/99166/p92z12p14".
 
-    metadata = django.db.models.BinaryField()
     # The identifier's metadata dictionary, stored as a gzipped blob as
     # in the store database.
+    metadata = django.db.models.BinaryField()
 
+    # The operation that caused the identifier to be placed in this table.
     CREATE = "C"
     UPDATE = "U"
     DELETE = "D"
@@ -52,7 +53,6 @@ class CrossrefQueue(django.db.models.Model):
         max_length=1,
         choices=[(CREATE, "create"), (UPDATE, "update"), (DELETE, "delete")],
     )
-    # The operation that caused the identifier to be placed in this table.
 
     _operationMapping = {"create": CREATE, "update": UPDATE, "delete": DELETE}
 
@@ -60,6 +60,7 @@ class CrossrefQueue(django.db.models.Model):
     def operationLabelToCode(label):
         return CrossrefQueue._operationMapping[label]
 
+    # The status of the submission.
     UNSUBMITTED = "U"
     SUBMITTED = "S"
     WARNING = "W"
@@ -75,18 +76,17 @@ class CrossrefQueue(django.db.models.Model):
         default=UNSUBMITTED,
         db_index=True,
     )
-    # The status of the submission.
 
-    message = django.db.models.TextField(blank=True)
     # Once submitted and polled at least once, any additional status
     # information as received from Crossref.  See
     # crossref._pollDepositStatus.
+    message = django.db.models.TextField(blank=True)
 
-    batchId = django.db.models.CharField(max_length=36, blank=True)
     # Once submitted, the ID of the submission batch.  A UUID, e.g.,
     # "84c91897-5ebe-11e4-b58e-10ddb1cf39e7".  The fictitious filename
     # associated with the submission is the batch ID followed by ".xml".
+    batchId = django.db.models.CharField(max_length=36, blank=True)
 
-    submitTime = django.db.models.IntegerField(blank=True, null=True)
     # Once submitted, the time the submission took place as a Unix
     # timestamp.
+    submitTime = django.db.models.IntegerField(blank=True, null=True)

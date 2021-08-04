@@ -6,10 +6,10 @@ import urllib.request
 import urllib.response
 
 import django.contrib.messages
-import django.urls.resolvers
 import django.db.models
 import django.http
 import django.shortcuts
+import django.urls.resolvers
 from django.utils.translation import ugettext as _
 
 import impl.datacite
@@ -164,7 +164,7 @@ def _assignManualTemplate(d):
 def edit(request, identifier):
     """Edit page for a given ID."""
     d = {'menu_item': 'ui_manage.null'}
-    d["testPrefixes"] = impl.ui_common.testPrefixes
+    # d["testPrefixes"] = impl.ui_common.testPrefixes
     r = _getLatestMetadata(identifier, request)
     if type(r) is str:
         django.contrib.messages.error(request, impl.ui_common.formatError(r))
@@ -376,7 +376,7 @@ def _schemaDotOrgMetadata(km, id_as_url):
 def details(request):
     """ID Details page for a given ID."""
     d = {'menu_item': 'ui_manage.null'}
-    d["testPrefixes"] = impl.ui_common.testPrefixes
+    # d["testPrefixes"] = impl.ui_common.testPrefixes
     identifier = request.path_info[len("/id/") :]
     r = _getLatestMetadata(
         identifier,
@@ -507,7 +507,7 @@ def download(request):
 
     # In case you only want to download IDs based on owner selection:
     # username = impl.ui_common.getOwnerOrGroup(request.GET['owner_selected'])
-    # q['owner'] = ezidapp.models.store_user.StoreUser.objects.get(name=username)
+    # q['owner'] = ezidapp.models.user.StoreUser.objects.get(name=username)
     user = impl.userauth.getUser(request)
     q['notify'] = d['mail'] = user.accountEmail
     # ToDo make changes to download.enqueueRequest() to accept multiple groups

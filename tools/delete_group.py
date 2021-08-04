@@ -22,9 +22,9 @@
 import argparse
 import sys
 
-import ezidapp.models.search_group
-import ezidapp.models.store_group
-import ezidapp.models.store_user
+import ezidapp.models.group
+import ezidapp.models.user
+import ezidapp.models.util
 from impl import ezid
 
 STEPS = [
@@ -53,7 +53,7 @@ p.add_argument("step", type=int, choices=[2], nargs="?", help="processing step")
 
 args = p.parse_args(sys.argv[1:])
 
-group = ezidapp.models.store_group.getGroupByGroupname(args.group)
+group = ezidapp.models.util.getGroupByGroupname(args.group)
 if group is None or args.group == "anonymous":
     error("no such group: " + args.group)
 
@@ -63,13 +63,11 @@ if group.users.count() > 0 or group.shoulders.count() > 0:
 if args.step != 2:
     p.error("run with -h for usage")
 
-searchGroup = ezidapp.models.search_group.SearchGroup.objects.get(
-    groupname=group.groupname
-)
+searchGroup = ezidapp.models.group.SearchGroup.objects.get(groupname=group.groupname)
 group.delete()
 searchGroup.delete()
 
-s = ezid.deleteIdentifier(group.pid, ezidapp.models.store_user.getAdminUser())
+s = ezid.deleteIdentifier(group.pid, ezidapp.models.util.getAdminUser())
 if not s.startswith("success"):
     print(f'delete-group: agent PID deletion failed: {s}')
 

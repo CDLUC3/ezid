@@ -1,0 +1,23 @@
+input_json=
+{"dc.date":"1923","dc.creator":"(:unav)","dc.relation":"http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx","dc.title":"Dairy
+Manufacturing Laboratory, The Dairy Manufacturing Laboratory at the Branch of the College of Agriculture, University Farm, Davis,
+is equipped to train students in the art and science of dairy products processing and manufacture. Student who have received
+training in this work are connected with dairy products plants throughout the state."}
+~~~~~~~~~~
+dict_pp=
+{'dc.creator': '(:unav)',
+ 'dc.date': '1923',
+ 'dc.relation': 'http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx',
+ 'dc.title': 'Dairy Manufacturing Laboratory, The Dairy Manufacturing '
+             'Laboratory at the Branch of the College of Agriculture, '
+             'University Farm, Davis, is equipped to train students in the art '
+             'and science of dairy products processing and manufacture. '
+             'Student who have received training in this work are connected '
+             'with dairy products plants throughout the state.'}
+~~~~~~~~~~
+keys=
+dc.date, dc.creator, dc.relation, dc.title
+~~~~~~~~~~
+output_exchange=
+dc.date 1923 dc.creator %28:unav%29 dc.relation http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx dc.title
+Dairy%20Manufacturing%20Laboratory,%20The%20Dairy%20Manufacturing%20Laboratory%20at%20the%20Branch%20of%20the%20College%20of%20Agriculture,%20University%20Farm,%20Davis,%20is%20equipped%20to%20train%20students%20in%20the%20art%20and%20science%20of%20dairy%20products%20processing%20and%20manufacture.%20Student%20who%20have%20received%20training%20in%20this%20work%20are%20connected%20with%20dairy%20products%20plants%20throughout%20the%20state.

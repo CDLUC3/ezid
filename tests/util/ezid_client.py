@@ -39,7 +39,7 @@ class EZIDClient(object):
         encoding="utf-8",
     ):
         self._L = logging.getLogger(self.__class__.__name__)
-        self._server = server_url.strip("/")
+        self.django.conf.settings.BINDER_URL = server_url.strip("/")
         self._cookie = session_id
         self._encoding = encoding
         self._opener = urllib.request.build_opener(EZIDHTTPErrorProcessor())
@@ -52,7 +52,7 @@ class EZIDClient(object):
 
     def _setAuthHandler(self, username, password):
         h = urllib.request.HTTPBasicAuthHandler()
-        h.add_password("EZID", self._server, username, password)
+        h.add_password("EZID", self.django.conf.settings.BINDER_URL, username, password)
         self._opener.add_handler(h)
 
     def formatAnvlRequest(self, args):
@@ -149,7 +149,7 @@ class EZIDClient(object):
         return b"\n".join(lines)
 
     def issueRequest(self, path, method, data=None, dest_f=None):
-        url = f"{self._server}/{path}"
+        url = f"{self.django.conf.settings.BINDER_URL}/{path}"
         self._L.info("sending request: %s", url)
         request = urllib.request.Request(url)
         request.get_method = lambda: method

@@ -1,0 +1,22 @@
+input_json=
+{"dc.date":"1952","dc.creator":"(:unav)","dc.relation":"http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx","dc.title":"Farm
+Practice, Wesley Hackett (left) instructor in Farm Practice on the Davis campus of the University of California, explains tractor
+transmission operation to four of his students, left to right: Joseph M. Traynor, Gilbert Crowell Jr., Robert E. Mowll, and Garry
+L. Lyon."}
+~~~~~~~~~~
+dict_pp=
+{'dc.creator': '(:unav)',
+ 'dc.date': '1952',
+ 'dc.relation': 'http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx',
+ 'dc.title': 'Farm Practice, Wesley Hackett (left) instructor in Farm Practice '
+             'on the Davis campus of the University of California, explains '
+             'tractor transmission operation to four of his students, left to '
+             'right: Joseph M. Traynor, Gilbert Crowell Jr., Robert E. Mowll, '
+             'and Garry L. Lyon.'}
+~~~~~~~~~~
+keys=
+dc.date, dc.creator, dc.relation, dc.title
+~~~~~~~~~~
+output_exchange=
+dc.date 1952 dc.creator %28:unav%29 dc.relation http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx dc.title
+Farm%20Practice,%20Wesley%20Hackett%20%28left%29%20instructor%20in%20Farm%20Practice%20on%20the%20Davis%20campus%20of%20the%20University%20of%20California,%20explains%20tractor%20transmission%20operation%20to%20four%20of%20his%20students,%20left%20to%20right:%20Joseph%20M.%20Traynor,%20Gilbert%20Crowell%20Jr.,%20Robert%20E.%20Mowll,%20and%20Garry%20L.%20Lyon.

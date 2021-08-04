@@ -1,0 +1,26 @@
+input_json=
+{"dc.date":"1966","dc.creator":"(:unav)","dc.relation":"http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx","dc.title":"Crocker
+Nuclear Laboratory, Mrs. Henry Russell of San Francisco removes the cover from the bust of her father, William H. Crocker, for
+whom the Crocker Nuclear Laboratory at the University of California, Davis, was dedicated April 18. With Mrs. Russell is
+Chancellor Emil Mrak. Crocker served twenty-nine years as a university regent and donated funds to science and medical research
+before he died on September 25, 1937."}
+~~~~~~~~~~
+dict_pp=
+{'dc.creator': '(:unav)',
+ 'dc.date': '1966',
+ 'dc.relation': 'http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx',
+ 'dc.title': 'Crocker Nuclear Laboratory, Mrs. Henry Russell of San Francisco '
+             'removes the cover from the bust of her father, William H. '
+             'Crocker, for whom the Crocker Nuclear Laboratory at the '
+             'University of California, Davis, was dedicated April 18. With '
+             'Mrs. Russell is Chancellor Emil Mrak. Crocker served twenty-nine '
+             'years as a university regent and donated funds to science and '
+             'medical research before he died on September 25, 1937.'}
+~~~~~~~~~~
+keys=
+dc.date, dc.creator, dc.relation, dc.title
+~~~~~~~~~~
+output_exchange=
+dc.date 1966 dc.creator %28:unav%29 dc.relation http://oac.cdlib.org/findaid/ark:/13030/kt5h4nf5dx dc.title
+Crocker%20Nuclear%20Laboratory,%20Mrs.%20Henry%20Russell%20of%20San%20Francisco%20removes%20the%20cover%20from%20the%20bust%20of%20her%20father,%20William%20H.%20Crocker,%20for%20whom%20the%20Crocker%20Nuclear%20Laboratory%20at%20the%20University%20of%20California,%20Davis,%20was%20dedicated%20April%2018.%20With%20Mrs.%20Russell%20is%20Chancellor%20Emil%20Mrak.%20Crocker%20served%20twenty-
+nine%20years%20as%20a%20university%20regent%20and%20donated%20funds%20to%20science%20and%20medical%20research%20before%20he%20died%20on%20September%2025,%201937.

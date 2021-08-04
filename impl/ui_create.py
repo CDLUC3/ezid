@@ -36,7 +36,7 @@ def index(_request):
 @impl.ui_common.user_login_required
 def simple(request):
     d = {'menu_item': 'ui_create.simple'}
-    d["testPrefixes"] = impl.ui_common.testPrefixes
+    # d["testPrefixes"] = impl.ui_common.testPrefixes
     user = impl.userauth.getUser(request)
     if user.isSuperuser:
         shoulders = [

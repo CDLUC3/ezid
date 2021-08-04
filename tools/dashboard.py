@@ -43,7 +43,7 @@ import urllib.request
 import uuid
 
 # import ezidapp.models
-import ezidapp.models.search_identifier
+import ezidapp.models.identifier
 
 usageText = """Usage:
 
@@ -106,7 +106,7 @@ if doCompute:
     lastIdentifier = ""
     while True:
         qs = (
-            ezidapp.models.search_identifier.SearchIdentifier.objects.filter(
+            ezidapp.models.identifier.SearchIdentifier.objects.filter(
                 identifier__gt=lastIdentifier
             )
             .only("identifier", "createTime", "isTest")

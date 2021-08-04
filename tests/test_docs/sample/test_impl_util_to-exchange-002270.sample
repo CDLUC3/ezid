@@ -1,0 +1,72 @@
+input_json=
+{"mrt.creator":"cdl_mcgrawhill_ebooks","erc":"who: Karassik, Igor J.,1911-; Messina, Joseph P.; Cooper, Paul.; Heald, Charles C.;
+Krutzsch, W. C.; Hosangadi, Ashvin.; Kittredge, C. P.; Fraser, Warren H.; Marscher, William D.; Boyadjis, Paul A.; Cronin, Richard
+J.; Gaydon, Matthew A.; Kelly, William J.; Olson, Eric J.; Onari, Maki M.; Tullo, C. J.; Buse, Frederic W.; Jaskiewicz, Stephen
+A.; Denault, Gregory M.; Chaplis, William K.; Freeborough, Robert M.; Wachel, J. C.; Szenasi, Fred R.; Smith Will.; Able, Stephen
+D.; Bean, Robert.; Rupp, Warren E.; Prang, A. J.; Brennan, J. R.; Czarnecki, G. J.; Lippincott, J. K.; Nelik, Lev.; Platt, Robert
+A.; Little, C. W.; Wilson, Kenneth C.; Sellgren, Anders.; Addie, Graeme.; Netzel, James P.; Huebner, Michael B.; Ashton, Robert
+D.; Wotring, Timothy L.; Goodman, W. G.; Shapiro, Wilbur.; Jones, Graham.; Hawkins, Larry.; Cunningham, Richard G.; Jumpeter, Alex
+M.; McCaul, Colin O.; Miller, Ronald S.; Link, Ellen E.; Vandersluijs, Kees.; Divona, A. A.; Dolan, A. J.; Hendershot, J. R.;
+Bergeron, Wallace L.; Gunther, F. J.; Whippen, Warren G.; Mayo, Howard A., Jr.; Webb, Donald R.; Olson, Richard G.; Highfill, G.
+S.; Halverson, L. A.; Potthoff, E. O.; Giberson, Melbourne F.; Arnold, Conrad L.; Kron, H. O.; Vanlaningham, F. L.; Beckman, K.
+O.; Landon, Fred K.; Cutler, Donald B.; Mahan, James W.; Sparks, Cecil R.; Sloteman, Donald P.; Martin, C. Samuel.; Maxwell,
+Horace J.; Kalix, David A.; Bird, Jim.; Benjes, H. H.; Foster, W. E.; House, D. A.; Robertson, John S.; DiMasi, Mario.; Kawohl,
+Rudolph.; Koch, Richard P.; Behnke, Paul W.; Wepfer, W. M.; Parry, W. W.; Nuta, D.; Clasby, Gary.; Spence, Thomas C.; Jones, R.
+L.; Elvitsky, A. W.; Mcguire, J. T.; Giddings, J. F.; Roll, D. R.; Cappellino, C. A.; Day, Michael.; Nardone, Richard A.;
+Costigan, James L.; Drane, John.; Haentjens, W. D.; Sembler, William J.; Rishel, Burt.; Glanville, Robert H.; Taylor, Ken W.; Lee,
+Jinkook.; Nolte, P. A.; Cygnor, J. E.; Chu, Y. J.; Palombo, D.; Furst, Raymond B.; Guinzburg, Adiel.; Dornaus, Wilson L.; Dijkers,
+Ronald J. H.; Padmanabhan, Mahadevan.; Larsen, Johannes.; Dahl, Trygve.; Patel, Vinod.; Beck, Wesley W.; Miller, Alan C.
+what: Pump handbook (4th Ed.)
+when: [2008]
+where: ark:/13030/m51g0mzh
+where: 007160314X"}
+~~~~~~~~~~
+dict_pp=
+{'erc': 'who: Karassik, Igor J.,1911-; Messina, Joseph P.; Cooper, Paul.; '
+        'Heald, Charles C.; Krutzsch, W. C.; Hosangadi, Ashvin.; Kittredge, C. '
+        'P.; Fraser, Warren H.; Marscher, William D.; Boyadjis, Paul A.; '
+        'Cronin, Richard J.; Gaydon, Matthew A.; Kelly, William J.; Olson, '
+        'Eric J.; Onari, Maki M.; Tullo, C. J.; Buse, Frederic W.; Jaskiewicz, '
+        'Stephen A.; Denault, Gregory M.; Chaplis, William K.; Freeborough, '
+        'Robert M.; Wachel, J. C.; Szenasi, Fred R.; Smith Will.; Able, '
+        'Stephen D.; Bean, Robert.; Rupp, Warren E.; Prang, A. J.; Brennan, J. '
+        'R.; Czarnecki, G. J.; Lippincott, J. K.; Nelik, Lev.; Platt, Robert '
+        'A.; Little, C. W.; Wilson, Kenneth C.; Sellgren, Anders.; Addie, '
+        'Graeme.; Netzel, James P.; Huebner, Michael B.; Ashton, Robert D.; '
+        'Wotring, Timothy L.; Goodman, W. G.; Shapiro, Wilbur.; Jones, '
+        'Graham.; Hawkins, Larry.; Cunningham, Richard G.; Jumpeter, Alex M.; '
+        'McCaul, Colin O.; Miller, Ronald S.; Link, Ellen E.; Vandersluijs, '
+        'Kees.; Divona, A. A.; Dolan, A. J.; Hendershot, J. R.; Bergeron, '
+        'Wallace L.; Gunther, F. J.; Whippen, Warren G.; Mayo, Howard A., Jr.; '
+        'Webb, Donald R.; Olson, Richard G.; Highfill, G. S.; Halverson, L. '
+        'A.; Potthoff, E. O.; Giberson, Melbourne F.; Arnold, Conrad L.; Kron, '
+        'H. O.; Vanlaningham, F. L.; Beckman, K. O.; Landon, Fred K.; Cutler, '
+        'Donald B.; Mahan, James W.; Sparks, Cecil R.; Sloteman, Donald P.; '
+        'Martin, C. Samuel.; Maxwell, Horace J.; Kalix, David A.; Bird, Jim.; '
+        'Benjes, H. H.; Foster, W. E.; House, D. A.; Robertson, John S.; '
+        'DiMasi, Mario.; Kawohl, Rudolph.; Koch, Richard P.; Behnke, Paul W.; '
+        'Wepfer, W. M.; Parry, W. W.; Nuta, D.; Clasby, Gary.; Spence, Thomas '
+        'C.; Jones, R. L.; Elvitsky, A. W.; Mcguire, J. T.; Giddings, J. F.; '
+        'Roll, D. R.; Cappellino, C. A.; Day, Michael.; Nardone, Richard A.; '
+        'Costigan, James L.; Drane, John.; Haentjens, W. D.; Sembler, William '
+        'J.; Rishel, Burt.; Glanville, Robert H.; Taylor, Ken W.; Lee, '
+        'Jinkook.; Nolte, P. A.; Cygnor, J. E.; Chu, Y. J.; Palombo, D.; '
+        'Furst, Raymond B.; Guinzburg, Adiel.; Dornaus, Wilson L.; Dijkers, '
+        'Ronald J. H.; Padmanabhan, Mahadevan.; Larsen, Johannes.; Dahl, '
+        'Trygve.; Patel, Vinod.; Beck, Wesley W.; Miller, Alan C.
+'
+        'what: Pump handbook (4th Ed.)
+'
+        'when: [2008]
+'
+        'where: ark:/13030/m51g0mzh
+'
+        'where: 007160314X',
+ 'mrt.creator': 'cdl_mcgrawhill_ebooks'}
+~~~~~~~~~~
+keys=
+mrt.creator, erc
+~~~~~~~~~~
+output_exchange=
+mrt.creator cdl_mcgrawhill_ebooks erc
+who:%20Karassik,%20Igor%20J.,1911-%3B%20Messina,%20Joseph%20P.%3B%20Cooper,%20Paul.%3B%20Heald,%20Charles%20C.%3B%20Krutzsch,%20W.%20C.%3B%20Hosangadi,%20Ashvin.%3B%20Kittredge,%20C.%20P.%3B%20Fraser,%20Warren%20H.%3B%20Marscher,%20William%20D.%3B%20Boyadjis,%20Paul%20A.%3B%20Cronin,%20Richard%20J.%3B%20Gaydon,%20Matthew%20A.%3B%20Kelly,%20William%20J.%3B%20Olson,%20Eric%20J.%3B%20Onari,%20Maki%20M.%3B%20Tullo,%20C.%20J.%3B%20Buse,%20Frederic%20W.%3B%20Jaskiewicz,%20Stephen%20A.%3B%20Denault,%20Gregory%20M.%3B%20Chaplis,%20William%20K.%3B%20Freeborough,%20Robert%20M.%3B%20Wachel,%20J.%20C.%3B%20Szenasi,%20Fred%20R.%3B%20Smith%20Will.%3B%20Able,%20Stephen%20D.%3B%20Bean,%20Robert.%3B%20Rupp,%20Warren%20E.%3B%20Prang,%20A.%20J.%3B%20Brennan,%20J.%20R.%3B%20Czarnecki,%20G.%20J.%3B%20Lippincott,%20J.%20K.%3B%20Nelik,%20Lev.%3B%20Platt,%20Robert%20A.%3B%20Little,%20C.%20W.%3B%20Wilson,%20Kenneth%20C.%3B%20Sellgren,%20Anders.%3B%20Addie,%20Graeme.%3B%20Netzel,%20James%20P.%3B%20Huebner,%20Michael%20B.%3B%20Ashton,%20Robert%20D.%3B%20Wotring,%20Timothy%20L.%3B%20Goodman,%20W.%20G.%3B%20Shapiro,%20Wilbur.%3B%20Jones,%20Graham.%3B%20Hawkins,%20Larry.%3B%20Cunningham,%20Richard%20G.%3B%20Jumpeter,%20Alex%20M.%3B%20McCaul,%20Colin%20O.%3B%20Miller,%20Ronald%20S.%3B%20Link,%20Ellen%20E.%3B%20Vandersluijs,%20Kees.%3B%20Divona,%20A.%20A.%3B%20Dolan,%20A.%20J.%3B%20Hendershot,%20J.%20R.%3B%20Bergeron,%20Wallace%20L.%3B%20Gunther,%20F.%20J.%3B%20Whippen,%20Warren%20G.%3B%20Mayo,%20Howard%20A.,%20Jr.%3B%20Webb,%20Donald%20R.%3B%20Olson,%20Richard%20G.%3B%20Highfill,%20G.%20S.%3B%20Halverson,%20L.%20A.%3B%20Potthoff,%20E.%20O.%3B%20Giberson,%20Melbourne%20F.%3B%20Arnold,%20Conrad%20L.%3B%20Kron,%20H.%20O.%3B%20Vanlaningham,%20F.%20L.%3B%20Beckman,%20K.%20O.%3B%20Landon,%20Fred%20K.%3B%20Cutler,%20Donald%20B.%3B%20Mahan,%20James%20W.%3B%20Sparks,%20Cecil%20R.%3B%20Sloteman,%20Donald%20P.%3B%20Martin,%20C.%20Samuel.%3B%20Maxwell,%20Horace%20J.%3B%20Kalix,%20David%20A.%3B%20Bird,%20Jim.%3B%20Benjes,%20H.%20H.%3B%20Foster,%20W.%20E.%3B%20House,%20D.%20A.%3B%20Robertson,%20John%20S.%3B%20DiMasi,%20Mario.%3B%20Kawohl,%20Rudolph.%3B%20Koch,%20Richard%20P.%3B%20Behnke,%20Paul%20W.%3B%20Wepfer,%20W.%20M.%3B%20Parry,%20W.%20W.%3B%20Nuta,%20D.%3B%20Clasby,%20Gary.%3B%20Spence,%20Thomas%20C.%3B%20Jones,%20R.%20L.%3B%20Elvitsky,%20A.%20W.%3B%20Mcguire,%20J.%20T.%3B%20Giddings,%20J.%20F.%3B%20Roll,%20D.%20R.%3B%20Cappellino,%20C.%20A.%3B%20Day,%20Michael.%3B%20Nardone,%20Richard%20A.%3B%20Costigan,%20James%20L.%3B%20Drane,%20John.%3B%20Haentjens,%20W.%20D.%3B%20Sembler,%20William%20J.%3B%20Rishel,%20Burt.%3B%20Glanville,%20Robert%20H.%3B%20Taylor,%20Ken%20W.%3B%20Lee,%20Jinkook.%3B%20Nolte,%20P.%20A.%3B%20Cygnor,%20J.%20E.%3B%20Chu,%20Y.%20J.%3B%20Palombo,%20D.%3B%20Furst,%20Raymond%20B.%3B%20Guinzburg,%20Adiel.%3B%20Dornaus,%20Wilson%20L.%3B%20Dijkers,%20Ronald%20J.%20H.%3B%20Padmanabhan,%20Mahadevan.%3B%20Larsen,%20Johannes.%3B%20Dahl,%20Trygve.%3B%20Patel,%20Vinod.%3B%20Beck,%20Wesley%20W.%3B%20Miller,%20Alan%20C.%0Awhat:%20Pump%20handbook%20%284th%20Ed.%29%0Awhen:%20%5B2008%5D%0Awhere:%20ark:/13030/m51g0mzh%0Awhere:%20007160314X

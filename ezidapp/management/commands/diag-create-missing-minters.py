@@ -9,7 +9,6 @@ import re
 import django.conf
 import django.contrib.auth.models
 import django.core.management
-import django.core.management
 import django.db.transaction
 
 import ezidapp.models.shoulder
@@ -43,7 +42,7 @@ class Command(django.core.management.BaseCommand):
 
     def handle(self, *_, **opt):
         self.opt = opt = argparse.Namespace(**opt)
-        impl.nog.util.log_to_console(__name__, opt.debug)
+        impl.nog.util.log_setup(__name__, opt.debug)
 
         log.info('Creating missing minters...')
 

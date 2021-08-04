@@ -68,13 +68,13 @@ class TagLog:
             ),
             ark=dict(
                 rx=re.compile(
-                    r'((ark(?::/))([0-9bcdfghjkmnpqrstvwxz]\d{3,4})(?:(/)([0-9a-z./]*)))'
+                    r'((ark(?::/))([0-9bcdfghjkmnpqrstvwxz]\\d{3,4})(?:(/)([0-9a-z./]*)))'
                 ),
                 id_dict={},
             ),
             doi=dict(
                 rx=re.compile(
-                    r'((?:(doi)(?::10.))(\d{4,5})(?:(/)([0-9A-Z./]*))?)',
+                    r'((?:(doi)(?::10.))(\\d{4,5})(?:(/)([0-9A-Z./]*))?)',
                 ),
                 id_dict={},
             ),

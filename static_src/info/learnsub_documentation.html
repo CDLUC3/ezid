@@ -1,0 +1,137 @@
+<div class="panel-body">
+<h3 class="heading_2">Non-technical Documentation</h3>
+
+<!-- ************************************************** -->
+<!-- ***** Please do not modify this next section ***** -->
+<!-- ************************************************** -->
+  <div class="accordion" id="accordion_understanding_identifiers">
+    <div class="accordion-group">
+      <div class="accordion-heading">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_understanding_identifiers" href="#accordion_understanding_identifiers_collapse01">
+          Understanding Identifiers
+        </a>
+      </div>
+      <div id="accordion_understanding_identifiers_collapse01" class="accordion-body collapse">
+        <div class="accordion-inner horizontal-buffer-xs vertical-buffer-xs vertical-buffer-bot-lg">
+<!-- ************************************************** -->
+<!-- ******* Please do not modify section above ******* -->
+<!-- ************************************************** -->
+
+
+<!-- ********************************************************************** -->
+<!-- ************  Editable content: Understanding Identifiers  *********** -->
+<!-- ********************************************************************** -->
+          <h4 class="heading_3">What is a long-term identifier?</h4>
+
+            <p>An identifier is an association between a character string and an object.
+            Objects can be files, parts of files, names of persons or
+            organizations, abstractions, etc. Objects can be online or
+            offline. Character strings include URLs, serial numbers,
+            names, addresses, etc. A &quot;persistent identifier&quot; is an
+            identifier that is available and managed over time; it will
+            not change if the item is moved or renamed. This means that
+            an item can be reliably referenced for future access by
+            humans and software. EZID currently supports persistence for
+            two kinds of identifiers: DataCite Digital Object Identifiers (DOIs) and lower-cost
+            Archival Resource Keys (ARKs).</p>
+
+          <h4 class="heading_3">What is a DOI?</h4>
+            <p>DOI stands for &quot;Digital Object
+              Identifier.&quot; It is an identifier originating from the
+              publishing world and in widespread use for journal articles.
+              DOIs become persistent when the objects and identifier
+              forwarding information are maintained.</p>
+
+          <h4 class="heading_3">What is an ARK?</h4>
+            <p>ARK stands for &quot;Archival Resource Key.&quot; It is an identifier
+              originating from the library, archive and museum community.
+              ARKs become persistent when the objects and identifier
+              forwarding information are maintained.</p>
+
+          <h4 class="heading_3">Can DOIs and ARKs be used together?</h4>
+            <p>ARK identifiers have certain features that can be very useful for:<p>
+            <ul>
+              <li>Keeping track of many granules of a dataset (ARKs will be able to &quot;pass through&quot; a suffix, so many thousands of items can be referenced on the basis of a single registration);</li>
+              <li>Keeping track of data before a decision has been made about whether or not it is going to be retained (ARKs can be deleted).</li>
+            </ul>
+            <p>This can make it attractive to use ARKs during the early part of a dataset&#39;s &quot;life&quot; or the early stages of the research process. Then, when the time comes to begin writing up results and it becomes clear which object(s) will be cited, it may appropriate to get DOIs for those objects.</p>
+            <p>DOIs have the citation-level &quot;reputation&quot; and it is possible to use the ARK of the cited object as the &quot;suffix&quot; for the DOI so that there is a traceable connection between the two. Here is what that means:</p>
+            <p>Step 1. You assign an ARK to a resource for good management and tracking: ark:/99999/<span class="hl1">fk4sf2w65j</span></p>
+            <p>Step 2. You decide to cite the resource, so you want a DOI.</p>
+            <p>Step 3. Using either the Advanced Create UI or the API, request a doi with this form: doi:10.5072/<span class="hl1">FK2fk4sf2w65j</span></p>
+            <p>In this way, the two identifiers have a relationship, so the object can be tracked throughout its life cycle. With EZID, clients get access to both of these identifiers and can take best advantage of both approaches.<p>
+
+          <h4 class="heading_3">What is identifier resolution?</h4>
+            <p>Instead of leading directly to an object, one
+            identifier frequently points to another, or &quot;target
+            URL&quot;, that leads directly to the object. The process
+            of getting to the final target name, possibly via a chain of
+            intermediate names, is called &quot;resolution.&quot; Resolution on
+            the web is usually fast and invisible. It is done behind the
+            scenes on your behalf by web browsers. Unsuccessful
+            resolution, however, usually means visible failure to access
+            the object that you were expecting, resulting in a &quot;broken
+            identifier.&quot; Objects tend to move, so identifier persistence
+            depends on resolution using up-to-date target URLs. To make this happen, EZID 
+            provides a way for people to update target URLs as
+            they change when objects move around. This is very similar
+            to leaving a forwarding address when you change your
+            residence. As the starting point for resolution, the
+            resolver effectively lets you publicize an unchanging
+            identifier that you maintain so that it will consistently
+            hit a target that may be moving. EZID currently updates two
+            resolvers: N2T (Name-to-Thing) based at n2t.net and the DOI
+            (Digital Object Identifier) resolver based at doi.dx.org.</p>
+
+          <h4 class="heading_3">What is metadata?</h4>
+            <p>Metadata is information (data) about the object, such as the name of the object's creator,
+              the date of creation, the target URL, the version of the
+              object, its title, and so on. EZID allows the user to enter
+              metadata at the same time as an identifier is requested.
+              Associating metadata with identifiers enables more
+              sophisticated mechanisms for digital content discovery and
+              higher-level assurances of long-term persistence.
+            </p>
+
+          <h4 class="heading_3">Who should I contact for more information?</h4>
+            <p>Please <a class="link__primary"  href="/contact">contact us</a>
+              with any questions or comments. Also, see
+              <a class="link__primary"  href="/learn/id_basics">Identifier Basics</a>
+              for more information about the identifier practices implemented by the EZID team.</p>
+
+
+
+
+<!-- ************************************************** -->
+<!-- ***** Please do not modify this next section ***** -->
+<!-- ************************************************** -->
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- ************************************************** -->
+<!-- ******* Please do not modify section above ******* -->
+<!-- ************************************************** -->
+  
+
+
+  <p><a href="http://www.cdlib.org/services/infrastructure/docs/EZIDServiceGuidelines.pdf" class="link__primary" title="PDF Document" target="_blank">EZID Service Guidelines</a></p>
+
+
+  <h3 class="heading_2">Technical Documentation</h3>
+
+  <p><a class="link__primary" href="/doc/apidoc.html">API Documentation</a></p>
+  <p><a class="link__primary" href="/doc/apidoc.html#oai-pmh-harvesting">OAI-PMH Service Documentation</a></p>
+  <p><a class="link__primary" href="/learn/id_basics">Identifier Basics</a></p>
+  <p><a class="link__primary" href="/learn/open_source">Open Source Software for EZID</a></p>
+  <p><a class="link__primary" href="/learn/suffix_passthrough">Suffix Passthrough Explained</a></p>
+
+  <h3 class="heading_2">Status Information</h3>
+
+  <p>For information about the status of the EZID system, please consider the following options:</p>
+
+  <p><a class="link__primary" href="/doc/apidoc.html#server-status">API inquiries<a></p	>
+  <p><a href="http://www.cdlib.org/contact/system.html" class="ext-link">The CDL System Status Page</a></p>
+  <p><a href="http://ezidstatus.wordpress.com/" class="ext-link">The EZID Status Blog</a></p>
+  <p><a href="http://ezidstatus.wordpress.com/feed/" class="ext-link">The RSS Feed from the Status Blog</a></p>
+</div>

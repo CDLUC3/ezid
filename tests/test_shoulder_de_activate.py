@@ -14,9 +14,7 @@ class TestShoulderDeactivateActivate:
     def test_0100(self, caplog):
         """Deactivating a shoulder that is already deactivated returns
         error."""
-        s = ezidapp.models.shoulder.Shoulder.objects.filter(
-            prefix='ark:/87610/t6'
-        ).get()
+        s = ezidapp.models.shoulder.Shoulder.objects.filter(prefix='ark:/87610/t6').get()
         assert not s.active
         with pytest.raises(
             django.core.management.CommandError, match='already deactivated'
