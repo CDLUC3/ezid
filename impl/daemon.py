@@ -1,13 +1,8 @@
-import contextlib
+import impl.util
 import logging
-import os
-import pathlib
-import tempfile
-import threading
 import time
 
 import django.conf
-import fasteners
 
 import ezidapp.models.binder_queue
 import ezidapp.models.crossref_queue
@@ -15,6 +10,60 @@ import ezidapp.models.datacite_queue
 import ezidapp.models.registration_queue
 
 log = logging.getLogger(__name__)
+
+
+def enqueueTask():
+    for update_model in update_list:
+        if not self._checkContinue():
+            break
+        # The use of legacy representations and blobs will go away soon.
+        metadata = update_model.actualObject.toLegacy()
+        blob = impl.util.blobify(metadata)
+        if update_model.actualObject.owner is not None:
+            try:
+                impl.search_util.withAutoReconnect(
+                    "searchDb._updateSearchDatabase",
+                    lambda: self._updateSearchDatabase(
+                        update_model.identifier,
+                        update_model.get_operation_display(),
+                        metadata,
+                        blob,
+                    ),
+                    self._checkContinue,
+                )
+            except impl.search_util.AbortException:
+                log.exception(' impl.search_util.AbortException')
+                break
+
+        with django.db.transaction.atomic():
+            if not update_model.actualObject.isReserved:
+                impl.daemon.enqueueBinderIdentifier(
+                    update_model.identifier,
+                    update_model.get_operation_display(),
+                    blob,
+                )
+                if update_model.updateExternalServices:
+                    if update_model.actualObject.isDatacite:
+                        if not update_model.actualObject.isTest:
+                            impl.queue.enqueueDataCiteIdentifier(
+                                update_model.identifier,
+                                update_model.get_operation_display(),
+                                blob,
+                            )
+                    elif update_model.actualObject.isCrossref:
+                        impl.daemon.enqueueCrossrefIdentifier(
+                            update_model.identifier,
+                            update_model.get_operation_display(),
+                            metadata,
+                            blob,
+                        )
+            update_model.delete()
+
+    # else:
+    #     django.db.connections["default"].close()
+    #     django.db.connections["search"].close()
+    #     noinspection PyTypeChecker
+
 
 
 def enqueueBinderIdentifier(identifier, operation, blob):

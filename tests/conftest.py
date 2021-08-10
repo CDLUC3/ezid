@@ -1,10 +1,8 @@
 import base64
-import datetime
-
-import impl.nog.minter
 import bz2
 import collections
 import csv
+import datetime
 import io
 import json
 import logging
@@ -35,15 +33,17 @@ import ezidapp.models.datacenter
 import ezidapp.models.datacite_queue
 import ezidapp.models.download_queue
 import ezidapp.models.link_checker
-import ezidapp.models.shoulder
-import ezidapp.models.update_queue
 
+import ezidapp.models.shoulder
+import ezidapp.models.user
 import ezidapp.models.user
 import ezidapp.models.util
 import impl.nog.filesystem
+import impl.nog.minter
 import impl.nog.shoulder
 import tests.util.metadata_generator
 import tests.util.sample
+import tests.util.util
 import tests.util.util
 
 APP_LABEL = 'ezidapp'
@@ -342,6 +342,37 @@ def admin_admin():
         o.save()
 
 
+# API Test Account
+
+@pytest.fixture()
+def apitest_minter(tmp_bdb_root):
+    """Create a minter and corresponding shoulder for the apitest user.
+
+    The minter us stored below the temporary root created by tmp_bdb_root. The shoulders are
+    registered to the admin user in the DB, and are ready for use.
+    """
+    # ns_str = 'doi:10.39999/SD2'
+    ns_str = 'ark:/99936/x3'
+
+    shoulder_model = tests.util.util.create_shoulder(
+        namespace_str=ns_str,
+        organization_name=f'API TEST Shoulder: {ns_str}',
+        # datacenter_model=None,
+        # is_crossref=True,
+        # is_test=True,
+        # is_super_shoulder=False,
+        # is_sharing_datacenter=False,
+        # is_force=False,
+        # is_debug=True,
+    )
+
+    user_model = ezidapp.models.user.StoreUser.objects.get(username='apitest')
+
+    tests.util.util.add_shoulder_to_user(shoulder_model, user_model)
+
+    yield ns_str
+
+
 @pytest.fixture(scope='function')
 def apitest_client(client, django_user_model):
     """Django test client set up to call the EZID API and logged in as the apitest user
@@ -425,21 +456,12 @@ def ez_admin(admin_client, admin_admin, skip_auth):
 @pytest.fixture(scope='function')
 def ez_user(client, django_user_model):
     """A Django test client that has been logged in as a regular user named
-    "ezuser", with password "password"."""
+    "ezuser", with password "password".
+    """
     username, password = "ezuser", "password"
     django_user_model.objects.create_user(username=username, password=password)
     client.login(username=username, password=password)
     return client
-
-
-@pytest.fixture()
-def apitest_minter(tmp_bdb_root):
-    """Create a shoulder entry in the database and a minter BerkeleyDB for the apitest user.
-    Returns the DOI for apitest's shoulder.
-    """
-    ns_str = 'doi:10.39999/SD2'
-    tests.util.util.create_shoulder(ns_str)
-    return ns_str
 
 
 @pytest.fixture()
@@ -598,13 +620,6 @@ def binder_queue(request):
 # ezidapp.models.download_queue
 # ezidapp.models.link_checker
 
-
-@pytest.fixture()
-def update_queue(request):
-    """UpdateQueue populated with tasks marked as not yet processed"""
-    ezidapp.models.update_queue.UpdateQueue()
-
-
 # Util
 
 
@@ -634,7 +649,6 @@ def create_fixtures():
         'CrossrefQueue',
         'DataciteQueue',
         'DownloadQueue',
-        'UpdateQueue',
         # 'LinkChecker',
     ):
         log.info(f'Creating DB fixture for model: {model_label}')

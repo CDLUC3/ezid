@@ -20,7 +20,6 @@ EZID stores compressed blobs in the following locations:
     DataciteQueue     metadata    ezidapp_datacitequeue
     SearchIdentifier  cm          ezidapp_searchidentifier
     StoreIdentifier   cm          ezidapp_storeidentifier
-    UpdateQueue       object      ezidapp_updatequeue
 
 There are three basic types of blobs:
 

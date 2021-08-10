@@ -92,9 +92,6 @@ if args.step is None:
 if args.step == 2:
     if newGroup == user.group:
         error("user is already in group, nothing to do")
-    for r in ezidapp.models.update_queue.UpdateQueue.objects.all().order_by("seq"):
-        if r.actualObject.owner == user:
-            error("user can't be moved: has identifiers in the update queue")
     user.group = newGroup
     user.realm = newGroup.realm
     user.save()

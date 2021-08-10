@@ -513,7 +513,6 @@ BLOB_FIELD_LIST = [
     BlobField('DataciteQueue', 'metadata', True),
     # object = StoreIdentifier (Model)
     BlobField('DownloadQueue', 'object', True),
-    BlobField('UpdateQueue', 'object', True),
     # cm = CompressedJsonField (Field)
     BlobField('SearchIdentifier', 'cm', False),
     BlobField('StoreIdentifier', 'cm', False),

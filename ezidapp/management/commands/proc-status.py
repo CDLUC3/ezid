@@ -27,7 +27,6 @@ import django.core.management
 import django.db
 
 import ezidapp.management.commands.proc_base
-import ezidapp.models.update_queue
 import impl.datacite
 import impl.ezid
 import impl.log
@@ -85,7 +84,6 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             numActiveUsers=sum(activeUsers.values()),
             numWaitingUsers=sum(waitingUsers.values()),
             numActiveOperations=impl.datacite.numActiveOperations(),
-            updateQueueLength=impl.statistics.getUpdateQueueLength(),
             binderQueueLength=impl.statistics.getBinderQueueLength(),
             dataCiteQueueLength=impl.statistics.getDataCiteQueueLength(),
             crossrefQueueStatistics=impl.statistics.getCrossrefQueueStatistics(),
@@ -135,7 +133,6 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             "ActiveOperations": status_sn.numActiveUsers,
             "WaitingRequests": status_sn.numWaitingUsers,
             "ActiveDataciteOperations": status_sn.numActiveOperations,
-            "UpdateQueueLength": status_sn.updateQueueLength,
             "BinderQueueLength": status_sn.binderQueueLength,
             "DataciteQueueLength": status_sn.dataCiteQueueLength,
             "CrossrefQueueLength": xd.awaiting_submission + xd.submitted,

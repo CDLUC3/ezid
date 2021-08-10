@@ -5,11 +5,12 @@ import django.conf
 import django.db.transaction
 import freezegun
 
+import impl.datacite
 import impl.nog.util
 import impl.util
-import tests.util.anvl as anvl
+import tests.util.anvl
 import tests.util.metadata_generator
-import tests.util.sample as sample
+import tests.util.sample
 import tests.util.util
 
 log = logging.getLogger(__name__)
@@ -19,14 +20,26 @@ log = logging.getLogger(__name__)
 class TestAPI:
     def _mint(self, ez_admin, ns, meta_type=None, test_docs=None):
         meta_list = tests.util.metadata_generator._get_metadata_with_xml(ns, test_docs, meta_type)
-        data_bytes = anvl.format_request(meta_list).encode('utf-8')
+        data_bytes = tests.util.anvl.format_request(meta_list).encode('utf-8')
         response = ez_admin.post(
             "/shoulder/{}".format(tests.util.util.encode(str(ns))),
             data=data_bytes,
             content_type="text/plain; charset=utf-8",
         )
-        result_dict = anvl.response_to_dict(response.content)
+        result_dict = tests.util.anvl.response_to_dict(response.content)
         result_dict['_url'] = ns
+        return result_dict
+
+    def _mint_by_client(self, client, ns_str):
+        # meta_list = tests.util.metadata_generator._get_metadata_with_xml(ns, test_docs, meta_type)
+        data_bytes = tests.util.anvl.format_request(('test_key', 'test_value')).encode('utf-8')
+        response = client.post(
+            "/shoulder/{}".format(tests.util.util.encode(ns_str)),
+            data=data_bytes,
+            content_type="text/plain; charset=utf-8",
+        )
+        result_dict = tests.util.anvl.response_to_dict(response.content)
+        # result_dict['_url'] = ns
         return result_dict
 
     def test_1000(
@@ -45,7 +58,7 @@ class TestAPI:
         ns, arg_tup = minters
         result_dict = self._mint(ez_admin, ns, meta_type, test_docs)
         result_list.append(result_dict)
-        sample.assert_match(
+        tests.util.sample.assert_match(
             result_list, 'mint-{}'.format(request.node.name)
         )  # re.sub("[^\\d\\w]+", "-",request.node.name)))
 
@@ -59,7 +72,7 @@ class TestAPI:
             "/id/{}".format(tests.util.util.encode(minted_id)),
             content_type="text/plain; charset=utf-8",
         )
-        result_dict = anvl.response_to_dict(response.content)
+        result_dict = tests.util.anvl.response_to_dict(response.content)
         result_dict['_url'] = str(ns)
         assert '_created' in result_dict
         #     result_list.append(result_dict)
@@ -132,7 +145,7 @@ class TestAPI:
         tasks queued for the async processes, to final push of operation to N2T, Crossref and
         DataCite.
         """
-        print(apitest_client)
+        # print(apitest_client)
 
         result_list = []
         ns, arg_tup = minters
@@ -146,7 +159,7 @@ class TestAPI:
             # Content-Type other than HTML is dispatched to the API
             content_type="text/plain; charset=utf-8",
         )
-        result_dict = anvl.response_to_dict(response.content)
+        result_dict = tests.util.anvl.response_to_dict(response.content)
 
         log.debug(f'result_dict="{result_dict}"')
 
@@ -156,15 +169,12 @@ class TestAPI:
             result_list.append(result_dict)
 
         impl.util.log_obj(result_list, msg='result_list')
-        sample.assert_match(result_list, 'view')
+        tests.util.sample.assert_match(result_list, 'view')
 
     def test_1030(
         self,
-        # minters,
         apitest_client,
         apitest_minter,
-        # test_docs,
-        # meta_type,
     ):
         """
         Update an identifier:
@@ -190,107 +200,37 @@ class TestAPI:
         # r:HttpResponse
         # assert r.status_code == 200
 
-        m = str(apitest_minter)
-        log.info(f'm="{m}"')
+        # print(apitest_minter)
+        #
+        # return
 
-        meta_list = tests.util.metadata_generator.get_metadata('doi:10.39999/SD2')
-        data_bytes = anvl.format_request(meta_list).encode('utf-8')
+        # ns, arg_tup = minters
 
+        # meta_list = tests.util.metadata_generator.get_metadata('doi:10.39999/SD2')
+        meta_list = tests.util.metadata_generator.get_metadata('qwer')
+        data_bytes = tests.util.anvl.format_request(meta_list).encode('utf-8')
         # metadata_anvl=anvl.format_request().response_to_dict(response.content)
 
+        result_list = []
+        result_dict = self._mint_by_client(apitest_client, apitest_minter)
+        minted_id = result_dict['status_message'].decode('utf-8')
+
+        log.debug(f'minted_id="{minted_id}"')
+        log.debug('#'*100)
         r = apitest_client.post(
-            "/id/{}".format(tests.util.util.encode(apitest_minter)),
-            # Content-Type other than HTML is dispatched to the API
+            "/id/{}".format(tests.util.util.encode(minted_id)),
+            # Content-Type other than HTML is dispatched to the API endpoint instead of the UI.
             content_type="text/plain; charset=utf-8",
-            # data=b'{"a":"b"}',
             data=data_bytes,
         )
-        assert r.status_code == 200
 
-        # print('ok')
-        # django_user_model.objects.create_user(username=username, password=password)
-        # client.login(username=username, password=password)
-        # django_user_model.objects.create_user(username=username, email='apitest@ez.invalid', password=password)
-        # r = client.get(f'/login', auth=('apitest', 'apitest'))
-        # r.raise_for_status()
-        # print(f'Login result: {r}')
-        # result_list = []
-        # client.login(username=username, password=password)
-        # r = client.get('/', auth=('apitest', 'apitest'))
-        # r:HttpResponse
-        # assert r.status_code == 200
-        # print(r.content)
-        # html_pp(r.content)
-        # print(f'Login result: {r}')
+        assert (
+            r.status_code == 200
+        ), f'Error. r.status_code="{r.status_code}" r.content="{r.content}"'
 
-        # response = apitest_client.post(
-        #     "/id/{}".format(tests.util.util.encode(apitest_minter)),
-        #     # Content-Type other than HTML is dispatched to the API
-        #     content_type="text/plain; charset=utf-8",
-        #     # data=metadata, #b'{"a":"b"}',
-        # )
-        #
-        # # response.raise_for_status()
-        # # print(response)
-        # # import os
-        # # os._exit(0)
-        # #
-        # return client
-        #
-        # # with django.db.transaction.atomic():
-        # #     user = ezidapp.models.util.getUserByUsername('apitest')
-        # #     user.setPassword('apitest')
-        # #     user.save()
-        # #     client = django.test.client.Client()
-        # #     client.login(username='apitest', password='apitest')
-        # #     # client.force_login(admin_user)
-        # #     return client
-        # #     # o = ezidapp.models.user.getUserByUsername('admin')
-        # #     # o.setPassword('admin')
-        # #     # o.save()
-        # #     # reloaded()
-        #
-        # ns, arg_tup = minters
-        # logging.info(f'ns="{ns}", arg_tup="{arg_tup}"')
-        #
-        # # result_dict = self._mint(apitest_client, ns, meta_type, test_docs)
-        # # impl.util.log_obj(result_dict, msg='result_dict')
-        # # minted_id = result_dict['status_message']
-        # # impl.util.log_obj(minted_id, msg='minted_id')
-        #
-        # response = apitest_client.post(
-        #     "/id/{}".format(tests.util.util.encode(minted_id)),
-        #     # Content-Type other than HTML is dispatched to the API
-        #     content_type="text/plain; charset=utf-8",
-        #     data=b'{"a":"b"}',
-        # )
-        #
-        # result_dict = anvl.response_to_dict(response.content)
-        #
-        # log.debug(f'result_dict="{result_dict}"')
-        #
-        # result_dict['_url'] = str(ns)
-        #
-        # if '_created' in result_dict:
-        #     result_list.append(result_dict)
-        #
-        # impl.util.log_obj(result_list, msg='result_list')
-        # sample.assert_match(result_list, 'view')
 
-    # Mint an identifier:
-    #   POST /shoulder/{shoulder}   [authentication required]
-    #   request body: optional metadata
-    #   response body: status line
-    #
-    # Create an identifier:
-    #   PUT /id/{identifier}   [authentication required]
-    #     ?update_if_exists={yes|no}
-    #   request body: optional metadata
-    #   response body: status line
-    #
-    #
-    # Delete an identifier:
-    #   DELETE /id/{identifier}   [authentication required]
-    #     ?update_external_services={yes|no}
-    #   response body: status line
-    #
+
+        # r = impl.datacite.uploadMetadata(doi[4:], {}, metadata, True, datacenter)
+        # assert type(r) is not str, "unexpected return: " + r
+
+        pass

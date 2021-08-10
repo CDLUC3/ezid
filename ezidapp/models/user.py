@@ -27,12 +27,10 @@ import django.db.transaction
 
 import ezidapp.models.shoulder
 import ezidapp.models.validation
-# import ezidapp.models.shoulder
 # import ezidapp.models.group
 # import ezidapp.models.realm
 import ezidapp.models.validation
 import impl.nog.minter
-# import ezidapp.models.shoulder
 import impl.util
 
 logger = logging.getLogger(__name__)

@@ -5,11 +5,6 @@ import ezidapp.models.crossref_queue
 import ezidapp.models.download_queue
 import ezidapp.models.datacite_queue
 import ezidapp.models.binder_queue
-import ezidapp.models.update_queue
-
-
-def getUpdateQueueLength():
-    return ezidapp.models.update_queue.UpdateQueue.objects.count()
 
 
 def getBinderQueueLength():

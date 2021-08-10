@@ -6,7 +6,6 @@ import random
 
 import ezidapp.models.download_queue
 import ezidapp.models.identifier
-import ezidapp.models.update_queue
 import logging
 import pathlib
 
@@ -59,10 +58,7 @@ def dump_models():
 
 
 def create_fixtures():
-    fixture_dir_path = pathlib.Path(
-        impl.nog.filesystem.abs_path('../../../ezidapp/fixtures')
-    )
-    # ezidapp.UpdateQueue          ezidapp_updatequeue
+    fixture_dir_path = pathlib.Path(impl.nog.filesystem.abs_path('../../../ezidapp/fixtures'))
     # populate_update_queue()
     # ezidapp.DownloadQueue        ezidapp_downloadqueue
     # populate_download_queue()
@@ -147,17 +143,6 @@ def populate_binder_queue():
         )
 
 
-def populate_update_queue():
-    """Generate UpdateQueue rows"""
-    ezidapp.models.update_queue.UpdateQueue.objects.all().delete()
-    # rnd_integer_list = [i.id for i in get_rnd_identifier_list()]
-    for id_model in  get_rnd_identifier_list():
-    # for m in ezidapp.models.identifier.StoreIdentifier.objects.filter(id__in=rnd_integer_list):
-    ezidapp.models.update_queue.enqueue(refIdentifier=id_model,
-                                        operation=random.choice(['update', 'create', 'delete']),
-                                        updateExternalServices=True)
-
-
 def get_rnd_identifier_list(k=10):
     id_list = list(ezidapp.models.identifier.StoreIdentifier.objects.all())
     # print(id_list)
@@ -208,9 +193,7 @@ def populate_download_queue():
                 k=5,
             ),
             constraints=impl.download.encode({}),
-            options=impl.download.encode(
-                {"convertTimestamps": random.choice([True, False])}
-            ),
+            options=impl.download.encode({"convertTimestamps": random.choice([True, False])}),
             notify=impl.download.encode(
                 random.choice(
                     [
@@ -237,6 +220,7 @@ def populate_download_queue():
             fileSize=random.randint(1, 10000),
         )
         r.save()
+
 
 # def enqueueBinderIdentifier(identifier, operation, blob):
 #     """Adds an identifier to the binder asynchronous processing queue.

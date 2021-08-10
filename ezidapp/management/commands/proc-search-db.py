@@ -25,7 +25,6 @@ import django.db.transaction
 
 import ezidapp.management.commands.proc_base
 import ezidapp.models.identifier
-import ezidapp.models.update_queue
 import impl.daemon
 import impl.log
 import impl.nog.util
@@ -80,9 +79,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
         try:
             log.debug(
-                'Running background processing threads: count={}'.format(
-                    len(self._runningThreads)
-                )
+                'Running background processing threads: count={}'.format(len(self._runningThreads))
             )
             log.debug('New thread: {}'.format(threading.currentThread().getName()))
             self._runningThreads.add(threading.currentThread().getName())
@@ -106,13 +103,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 assert (
                     totalWaitTime <= 60
                 ), "new searchDbDaemon daemon started before previous daemon terminated"
-                totalWaitTime += int(
-                    django.conf.settings.DAEMONS_CROSSREF_PROCESSING_IDLE_SLEEP
-                )
+                totalWaitTime += int(django.conf.settings.DAEMONS_CROSSREF_PROCESSING_IDLE_SLEEP)
                 # noinspection PyTypeChecker
-                time.sleep(
-                    int(django.conf.settings.DAEMONS_CROSSREF_PROCESSING_IDLE_SLEEP)
-                )
+                time.sleep(int(django.conf.settings.DAEMONS_CROSSREF_PROCESSING_IDLE_SLEEP))
         except AssertionError as e:
             log.exception(' AssertionError as e')
             self.otherError("_searchDbDaemon", e)
@@ -121,9 +114,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         while self._checkContinue():
             try:
                 update_list = list(
-                    ezidapp.models.update_queue.UpdateQueue.objects.all().order_by(
-                        "seq"
-                    )[:1000]
+                    ezidapp.models.update_queue.UpdateQueue.objects.all().order_by("seq")[:1000]
                 )
                 if len(update_list) > 0:
                     for update_model in update_list:
@@ -175,9 +166,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     django.db.connections["default"].close()
                     django.db.connections["search"].close()
                     # noinspection PyTypeChecker
-                    time.sleep(
-                        int(django.conf.settings.DAEMONS_CROSSREF_PROCESSING_IDLE_SLEEP)
-                    )
+                    time.sleep(int(django.conf.settings.DAEMONS_CROSSREF_PROCESSING_IDLE_SLEEP))
             except Exception as e:
                 log.exception(' Exception as e')
                 logging.exception(f'Exception in searchDbDaemon thread: {str(e)}')
@@ -185,9 +174,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 django.db.connections["default"].close()
                 django.db.connections["search"].close()
                 # noinspection PyTypeChecker
-                time.sleep(
-                    int(django.conf.settings.DAEMONS_CROSSREF_PROCESSING_IDLE_SLEEP)
-                )
+                time.sleep(int(django.conf.settings.DAEMONS_CROSSREF_PROCESSING_IDLE_SLEEP))
         self._lock.acquire()
         try:
             self._runningThreads.remove(threading.currentThread().getName())

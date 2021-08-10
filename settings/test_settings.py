@@ -113,7 +113,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'HOST': 'localhost',
-        "NAME": "test3",
+        "NAME": "test3", # TODO: Revert to regular DB
         # "NAME": "ezid_test_db",
         'USER': 'ezid_test_user',
         "PASSWORD": '',
@@ -516,7 +516,6 @@ BLOB_FIELD_LIST = [
 
     # object = StoreIdentifier (Model)
     BlobField('DownloadQueue', 'object', True),
-    BlobField('UpdateQueue',   'object', True),
 
     # cm = CompressedJsonField (Field)
     BlobField('SearchIdentifier', 'cm', False),

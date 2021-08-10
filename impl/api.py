@@ -88,7 +88,6 @@ import time
 import django.conf
 import django.http
 
-import ezidapp.models.update_queue
 import impl.anvl
 import impl.datacite
 import impl.download
@@ -233,8 +232,7 @@ def mintIdentifier(request):
 
 
 def identifierDispatcher(request):
-    """Dispatches an identifier request depending on the HTTP method; interface
-    to ezid.getMetadata, ezid.setMetadata, and ezid.createIdentifier."""
+    """Dispatch an identifier request depending on the HTTP method."""
     if request.method == "GET":
         return _getMetadata(request)
     elif request.method == "POST":
@@ -471,7 +469,6 @@ def _statusLineGenerator(includeSuccessLine):
         na = sum(activeUsers.values())
         nw = sum(waitingUsers.values())
         ndo = impl.datacite.numActiveOperations()
-        ql = ezidapp.models.update_queue.UpdateQueue.objects.count()
         bql = impl.statistics.getBinderQueueLength()
         dql = impl.statistics.getDataCiteQueueLength()
         nas = impl.search_util.numActiveSearches()

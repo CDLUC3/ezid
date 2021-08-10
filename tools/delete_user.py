@@ -87,12 +87,6 @@ if args.step != 2:
     p.error("run with -h for usage")
 
 
-def hasIdentifiersInUpdateQueue():
-    for r in ezidapp.models.update_queue.UpdateQueue.objects.all().order_by("seq"):
-        if r.actualObject.owner == user:
-            return True
-    return False
-
 
 if args.deleteIdentifiers:
     # The loop below is designed to keep the length of the update queue
@@ -111,19 +105,14 @@ if args.deleteIdentifiers:
             )
             if not s.startswith("success"):
                 error("identifier deletion failed: " + s)
-        while hasIdentifiersInUpdateQueue():
-            print("delete-user: waiting for update queue to drain...")
-            sys.stdout.flush()
-            time.sleep(5)
-        # Placing the loop exit test here ensures the update queue is
-        # drained in all cases.
+
+
+
         if len(ids) == 0:
             break
 else:
     if ezidapp.models.identifier.StoreIdentifier.objects.filter(owner=user).count() > 0:
         error("user can't be deleted: has identifiers")
-    if hasIdentifiersInUpdateQueue():
-        error("user can't be deleted: has identifiers in the update queue")
 
 searchUser = ezidapp.models.user.SearchUser.objects.get(username=user.username)
 user.delete()

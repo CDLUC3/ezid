@@ -16,6 +16,8 @@ def add_basic_auth_header(request, username, password):
 
 
 def encode(s):
+    if isinstance(s, str):
+        s = s.encode('utf-8')
     return urllib.parse.quote(s, ":/")
 
 
@@ -56,7 +58,7 @@ def create_shoulder(
 ):
     is_doi = namespace_str[:4] == 'doi:'
     prefix_str, shoulder_str = namespace_str.split('/')[-2:]
-    ezidapp.models.shoulder.Shoulder.objects.create(
+    shoulder_model = ezidapp.models.shoulder.Shoulder.objects.create(
         prefix=namespace_str,
         type='DOI' if is_doi else 'ARK',
         name=organization_name,
@@ -71,6 +73,11 @@ def create_shoulder(
         manager='ezid',
     )
     impl.nog.minter.create_minter_database(namespace_str, root_path, mask_str)
+    return shoulder_model
+
+
+def add_shoulder_to_user(shoulder_model, user_model):
+    user_model.shoulders.add(shoulder_model)
 
 
 def check_response(resp):

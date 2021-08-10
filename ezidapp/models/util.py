@@ -11,15 +11,19 @@ logger = logging.getLogger(__name__)
 def _databaseQueryStoreUser():
     store_user_model = django.apps.apps.get_model('ezidapp', 'StoreUser')
     try:
-        return store_user_model.objects.select_related("group", "realm").prefetch_related("shoulders", "proxies")
+        return store_user_model.objects.select_related("group", "realm").prefetch_related(
+            "shoulders", "proxies"
+        )
     except store_user_model.DoesNotExist:
         return None
+
 
 def getUserById(id_str):
     # Returns the user identified by internal identifier 'id', or None
     # if there is no such user.
     # pidCache, usernameCache, idCache = _getCaches()
     # if id_str not in idCache:
+    logger.debug(f'getUserById: {id_str}')
     return _databaseQueryStoreUser().get(id=id_str)
 
 
@@ -27,6 +31,7 @@ def getUserByPid(pid):
     # Returns the user identified by persistent identifier 'pid', or
     # None if there is no such user.  AnonymousUser is returned in
     # response to "anonymous".
+    logger.error(f'getUserByPid: {pid}')  # TODO: lower level
     if pid == "anonymous":
         anon_user_model = django.apps.apps.get_model('ezidapp', 'AnonymousUser')
         return anon_user_model
@@ -56,7 +61,6 @@ def getProfileByLabel(label):
         p.full_clean(validate_unique=False)
         p.save()
     return p
-
 
 
 class AnonymousUser(object):
@@ -93,6 +97,7 @@ class AnonymousUser(object):
 
 # Group
 
+
 def _databaseQueryGroup():
     store_group_model = django.apps.apps.get_model('ezidapp', 'StoreGroup')
     try:
@@ -101,8 +106,10 @@ def _databaseQueryGroup():
     except store_group_model.DoesNotExist:
         return None
 
+
 # def _databaseQueryStoreGroup():
 #     return StoreGroup.objects.select_related("realm").prefetch_related("shoulders")
+
 
 def getGroupByPid(pid):
     # Returns the group identified by persistent identifier 'pid', or
@@ -124,8 +131,10 @@ def getGroupByGroupname(groupname):
 
 # Profile
 
+
 def _databaseQueryProfile():
     return StoreGroup.objects.select_related("realm").prefetch_related("shoulders")
+
 
 def getProfileById(id_str):
     # Returns the group identified by internal identifier 'id', or None
@@ -134,6 +143,7 @@ def getProfileById(id_str):
 
 
 # Datacenter
+
 
 def _databaseQueryDatacenter():
     datacenter_model = django.apps.apps.get_model('ezidapp', 'StoreDatacenter')
