@@ -15,7 +15,7 @@ import logging
 import django.conf
 
 import ezidapp.management.commands.proc_base
-import ezidapp.models.binder_queue
+import ezidapp.models.registration_queue
 import impl.log
 import impl.nog.util
 import impl.noid_egg
@@ -33,7 +33,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         super().__init__(
             __name__,
             registrar="binder",
-            queueModel=ezidapp.models.binder_queue.BinderQueue,
+            queueModel=ezidapp.models.registration_queue.BinderQueue,
             createFunction=self._create,
             updateFunction=self._update,
             deleteFunction=self._delete,

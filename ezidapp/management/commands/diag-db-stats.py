@@ -24,7 +24,7 @@ import django.db.models
 import django.db.transaction
 import pymysql.cursors
 
-import ezidapp.models.binder_queue
+import ezidapp.models.registration_queue
 import impl.daemon
 import impl.nog.counter
 import impl.nog.tb

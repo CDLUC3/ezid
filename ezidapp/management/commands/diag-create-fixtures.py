@@ -66,7 +66,7 @@ def create_fixtures():
     # ezidapp.CrossrefQueue        ezidapp_crossrefqueue
     # ezidapp.DataciteQueue        ezidapp_datacitequeue
 
-    populate_binder_queue()
+    populate_registration_queue()
 
     return
 
@@ -98,7 +98,7 @@ def create_fixtures():
             # skip_checks=True,
         )
 
-    # django_load_db_fixture('ezidapp/fixtures/binder_queue.json')
+    # django_load_db_fixture('ezidapp/fixtures/registration_queue.json')
 
 
 def create_model_fixture(path, model_name):
@@ -128,7 +128,7 @@ def create_model_fixture(path, model_name):
 #     bz2_file.write(buf.getvalue())
 
 
-def populate_binder_queue():
+def populate_registration_queue():
     for id_model in get_rnd_identifier_list():
         # 'identifier' should be the normalized, qualified identifier, e.g.,
         # "doi:10.5060/FOO".  'operation' is the identifier operation and
@@ -231,7 +231,7 @@ def populate_download_queue():
 #     is the identifier's metadata dictionary in blob form.
 #     """
 #     _enqueueIdentifier(
-#         ezidapp.models.binder_queue.BinderQueue, identifier, operation, blob
+#         ezidapp.models.registration_queue.BinderQueue, identifier, operation, blob
 #     )
 #
 #
@@ -243,11 +243,11 @@ def populate_download_queue():
 #     be one of the strings "create", "update", or "delete".  'metadata' is
 #     the identifier's metadata dictionary; 'blob' is the same in blob form.
 #     """
-#     e = ezidapp.models.crossref_queue.CrossrefQueue(
+#     e = ezidapp.models.registration_queue.CrossrefQueue(
 #         identifier=identifier,
 #         owner=metadata["_o"],
 #         metadata=blob,
-#         operation=ezidapp.models.crossref_queue.CrossrefQueue.operationLabelToCode(
+#         operation=ezidapp.models.registration_queue.CrossrefQueue.operationLabelToCode(
 #             operation
 #         ),
 #     )
@@ -263,7 +263,7 @@ def populate_download_queue():
 #     is the identifier's metadata dictionary in blob form.
 #     """
 #     _enqueueIdentifier(
-#         ezidapp.models.datacite_queue.DataciteQueue, identifier, operation, blob
+#         ezidapp.models.registration_queue.DataciteQueue, identifier, operation, blob
 #     )
 #
 #

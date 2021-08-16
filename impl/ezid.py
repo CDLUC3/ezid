@@ -292,12 +292,11 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
 
 
 
+        with django.db.transaction.atomic():
+            ri = getRefIdentifier(si)
+            si.save()
 
-        # with django.db.transaction.atomic():
-        #     ri = getRefIdentifier(si)
-        #     si.save()
-        #     ezidapp.models.update_queue.enqueue(ri, "create")
-
+            ezidapp.models.update_queue.enqueue(ri, "create")
 
 
 

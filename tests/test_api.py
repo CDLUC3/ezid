@@ -40,6 +40,7 @@ class TestAPI:
         )
         result_dict = tests.util.anvl.response_to_dict(response.content)
         # result_dict['_url'] = ns
+        log.debug(f'Minted on shoulder: {ns_str} -> {result_dict["status_message"].decode("utf-8")}')
         return result_dict
 
     def test_1000(
@@ -217,8 +218,12 @@ class TestAPI:
 
         log.debug(f'minted_id="{minted_id}"')
         log.debug('#'*100)
+
+        url = "/id/{}".format(tests.util.util.encode(minted_id))
+        log.debug(f'POST: {url}')
+
         r = apitest_client.post(
-            "/id/{}".format(tests.util.util.encode(minted_id)),
+            url,
             # Content-Type other than HTML is dispatched to the API endpoint instead of the UI.
             content_type="text/plain; charset=utf-8",
             data=data_bytes,
@@ -227,8 +232,6 @@ class TestAPI:
         assert (
             r.status_code == 200
         ), f'Error. r.status_code="{r.status_code}" r.content="{r.content}"'
-
-
 
         # r = impl.datacite.uploadMetadata(doi[4:], {}, metadata, True, datacenter)
         # assert type(r) is not str, "unexpected return: " + r

@@ -1,20 +1,20 @@
 import types
 
 import django.db.models
-import ezidapp.models.crossref_queue
+import ezidapp.models.registration_queue
 import ezidapp.models.download_queue
-import ezidapp.models.datacite_queue
-import ezidapp.models.binder_queue
+import ezidapp.models.registration_queue
+import ezidapp.models.registration_queue
 
 
 def getBinderQueueLength():
     """Returns the length of the binder queue."""
-    return ezidapp.models.binder_queue.BinderQueue.objects.count()
+    return ezidapp.models.registration_queue.BinderQueue.objects.count()
 
 
 def getDataCiteQueueLength():
     """Returns the length of the DataCite queue."""
-    return ezidapp.models.datacite_queue.DataciteQueue.objects.count()
+    return ezidapp.models.registration_queue.DataciteQueue.objects.count()
 
 
 def getDownloadQueueLength():
@@ -26,7 +26,7 @@ def getCrossrefQueueStatistics():
     """Returns a 4-tuple containing the numbers of identifiers in the Crossref
     queue by status: (awaiting submission, submitted, registered with warning,
     registration failed)."""
-    q = ezidapp.models.crossref_queue.CrossrefQueue.objects.values("status").annotate(
+    q = ezidapp.models.registration_queue.CrossrefQueue.objects.values("status").annotate(
         django.db.models.Count("status")
     )
     status_code_to_text = {

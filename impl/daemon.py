@@ -4,9 +4,9 @@ import time
 
 import django.conf
 
-import ezidapp.models.binder_queue
-import ezidapp.models.crossref_queue
-import ezidapp.models.datacite_queue
+import ezidapp.models.registration_queue
+import ezidapp.models.registration_queue
+import ezidapp.models.registration_queue
 import ezidapp.models.registration_queue
 
 log = logging.getLogger(__name__)
@@ -75,7 +75,7 @@ def enqueueBinderIdentifier(identifier, operation, blob):
     is the identifier's metadata dictionary in blob form.
     """
     _enqueueIdentifier(
-        ezidapp.models.binder_queue.BinderQueue, identifier, operation, blob
+        ezidapp.models.registration_queue.BinderQueue, identifier, operation, blob
     )
 
 
@@ -87,11 +87,11 @@ def enqueueCrossrefIdentifier(identifier, operation, metadata, blob):
     be one of the strings "create", "update", or "delete".  'metadata' is
     the identifier's metadata dictionary; 'blob' is the same in blob form.
     """
-    e = ezidapp.models.crossref_queue.CrossrefQueue(
+    e = ezidapp.models.registration_queue.CrossrefQueue(
         identifier=identifier,
         owner=metadata["_o"],
         metadata=blob,
-        operation=ezidapp.models.crossref_queue.CrossrefQueue.operationLabelToCode(
+        operation=ezidapp.models.registration_queue.CrossrefQueue.operationLabelToCode(
             operation
         ),
     )
@@ -107,7 +107,7 @@ def enqueueDataCiteIdentifier(identifier, operation, blob):
     is the identifier's metadata dictionary in blob form.
     """
     _enqueueIdentifier(
-        ezidapp.models.datacite_queue.DataciteQueue, identifier, operation, blob
+        ezidapp.models.registration_queue.DataciteQueue, identifier, operation, blob
     )
 
 

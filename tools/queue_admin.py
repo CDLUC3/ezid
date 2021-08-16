@@ -22,8 +22,8 @@ import django.db.models
 import django.db.transaction
 
 # import ezidapp.models
-import ezidapp.models.binder_queue
-import ezidapp.models.datacite_queue
+import ezidapp.models.registration_queue
+import ezidapp.models.registration_queue
 from impl import util
 
 queue = None  # set below; the queue model class object manager
@@ -122,7 +122,7 @@ spp.add_argument(
 
 args = p.parse_args(sys.argv[1:])
 if args.queue == "binder":
-    queue = ezidapp.models.binder_queue.BinderQueue.objects
+    queue = ezidapp.models.registration_queue.BinderQueue.objects
 else:
-    queue = ezidapp.models.datacite_queue.DataciteQueue.objects
+    queue = ezidapp.models.registration_queue.DataciteQueue.objects
 args.func(args)

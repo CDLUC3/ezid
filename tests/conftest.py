@@ -27,10 +27,10 @@ import pytest
 import ezidapp
 
 # Queues
-import ezidapp.models.binder_queue
-import ezidapp.models.crossref_queue
+import ezidapp.models.registration_queue
+import ezidapp.models.registration_queue
 import ezidapp.models.datacenter
-import ezidapp.models.datacite_queue
+import ezidapp.models.registration_queue
 import ezidapp.models.download_queue
 import ezidapp.models.link_checker
 
@@ -600,23 +600,23 @@ def block_outgoing(mocker):
 
 
 @pytest.fixture()
-def binder_queue(request):
+def registration_queue(request):
     """BinderQueue populated with tasks marked as not yet processed"""
-    django_load_db_fixture('ezidapp/fixtures/binder_queue.json')
+    django_load_db_fixture('ezidapp/fixtures/registration_queue.json')
 
 
 # Queues
 
 
 @pytest.fixture()
-def binder_queue(request):
+def registration_queue(request):
     """BinderQueue populated with tasks marked as not yet processed"""
-    django_load_db_fixture('ezidapp/fixtures/binder_queue.json')
+    django_load_db_fixture('ezidapp/fixtures/registration_queue.json')
 
 
-# ezidapp.models.binder_queue
-# ezidapp.models.crossref_queue
-# ezidapp.models.datacite_queue
+# ezidapp.models.registration_queue
+# ezidapp.models.registration_queue
+# ezidapp.models.registration_queue
 # ezidapp.models.download_queue
 # ezidapp.models.link_checker
 
@@ -675,7 +675,7 @@ def create_fixtures():
         # ) as bz2_file:
         #     bz2_file.write(buf.getvalue().encode("utf-8"))
 
-    django_load_db_fixture('ezidapp/fixtures/binder_queue.json')
+    django_load_db_fixture('ezidapp/fixtures/registration_queue.json')
 
 
 def dump_shoulder_table():

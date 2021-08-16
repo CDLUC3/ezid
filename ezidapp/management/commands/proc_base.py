@@ -195,7 +195,7 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
                 The registrar the thread is for, e.g., "datacite"
             queueModel:
                 Is the registrar's queue database model, e.g.,
-                ezidapp.models.datacite_queue.DataciteQueue.
+                ezidapp.models.registration_queue.DataciteQueue.
             createFunction:
             updateFunction:
             deleteFunction:

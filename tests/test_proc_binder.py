@@ -18,7 +18,7 @@ def test_create_fixtures():
 
 # @freezegun.freeze_time('2010-10-11')
 # class TestProcBinder:
-#     def test_1000(self, binder_queue, block_outgoing):
+#     def test_1000(self, registration_queue, block_outgoing):
 #         django.core.management.call_command(
 #             "proc-binder",
 #             # exclude=["auth.permission", "contenttypes"],

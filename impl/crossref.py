@@ -23,7 +23,7 @@ import django.db.models
 import lxml.etree
 
 import ezidapp.management.commands.proc_base
-import ezidapp.models.crossref_queue
+import ezidapp.models.registration_queue
 import ezidapp.models.identifier
 import ezidapp.models.user
 import ezidapp.models.util
@@ -33,7 +33,7 @@ import impl.nog.util
 import impl.util
 import impl.util2
 
-import ezidapp.models.crossref_queue
+import ezidapp.models.registration_queue
 
 ROOT_TAGS = [
     "journal",
