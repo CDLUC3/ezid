@@ -5,11 +5,6 @@ file='./queue_table_dump.sql'
 # Local access to production database by ssh tunnel
 # mysql --compress --password --host 127.0.0.1 --port ${local_port} --user ezidro --database ezid
 
-#user='eziddba'
-#pw='thx:)4ALLminnows'
-#host='rds-ias-ezid-search4-prd.cmcguhglinoa.us-west-2.rds.amazonaws.com'
-#db='ezid'
-
 user='dahl'
 pw=''
 host='r2'
