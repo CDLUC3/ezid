@@ -1,21 +1,11 @@
-# =============================================================================
-#
-# EZID :: linkcheck_update.py
-#
-# Daemon that periodically pulls link checker results into the main
-# EZID tables.
-#
-# This module should be imported at server startup so that its daemon
-# thread is started.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2016, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+
+"""Daemon that periodically pulls link checker results into the main
+EZID tables.
+"""
+
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import logging
 import threading
 import time
@@ -92,7 +82,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             try:
                 # noinspection PyTypeChecker
                 siGenerator = self._harvest(
-                    ezidapp.models.identifier.SearchIdentifier,
+                    ezidapp.models.identifier.Identifier,
                     ["identifier", "linkIsBroken"],
                 )
                 # noinspection PyTypeChecker
@@ -119,18 +109,18 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                             newValue = True
                         lc = next(lcGenerator)
                     if newValue is not None:
-                        # Before updating the SearchIdentifier, we carefully lock
+                        # Before updating the Identifier, we carefully lock
                         # the table and ensure that the object still exists.
                         try:
                             with django.db.transaction.atomic(using="search"):
-                                si2 = ezidapp.models.identifier.SearchIdentifier.objects.get(
+                                si2 = ezidapp.models.identifier.Identifier.objects.get(
                                     identifier=si.identifier
                                 )
                                 si2.linkIsBroken = newValue
                                 si2.computeHasIssues()
                                 si2.save(update_fields=["linkIsBroken", "hasIssues"])
-                        except ezidapp.models.identifier.SearchIdentifier.DoesNotExist:
-                            log.exception(' ezidapp.models.identifier.SearchIdentifier.DoesNotExist')
+                        except ezidapp.models.identifier.Identifier.DoesNotExist:
+                            log.exception(' ezidapp.models.identifier.Identifier.DoesNotExist')
                             pass
                     si = next(siGenerator)
             except Exception as e:

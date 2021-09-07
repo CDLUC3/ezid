@@ -1,3 +1,8 @@
+/*!
+ * Copyright©2021, Regents of the University of California
+ * http://creativecommons.org/licenses/BSD
+ */
+
 // ##### Text ##### //
 // All text based links
 a, a:visited, a:link {
@@ -36,8 +41,8 @@ a:hover {
 }
 
 //Used in alert div
-.alert-info a, 
-.alert-info a:visited, 
+.alert-info a,
+.alert-info a:visited,
 .alert-info a:link {
   @include text-link2(#8F8F8F);
 }
@@ -47,7 +52,7 @@ a:hover {
 }
 
 // All other links
-a.not-text, 
+a.not-text,
 a[data-toggle=popover] {
   border-bottom: none !important;
   padding-bottom: 0px;

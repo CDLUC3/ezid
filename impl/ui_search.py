@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import locale
 import math
 import operator
@@ -446,7 +449,7 @@ def _buildAuthorityConstraints(request, s_type="public", owner=None, ownergroup=
 
 
 def _buildConstraints(c, REQUEST, s_type="public"):
-    """Map form field values to values defined in DB model.
+    """Map form field values to values defined in DB model
 
     Manage Page includes additional elements. Convert unicode True/False
     to actual boolean.
@@ -496,7 +499,7 @@ def _buildTimeConstraints(c, REQUEST, s_type="public"):
 
 
 def _timeConstraintBuilder(c, P, cname, begin, end):
-    """Adds time range constraints to dictionary of constraints.
+    """Add time range constraints to dictionary of constraints
 
     cname = Name of constraint to be generated
     begin = key for begin date;   end = key for end date
@@ -525,7 +528,7 @@ def _handleDate(d, ceiling=None):
 
 
 def _buildQuerySyntax(c):
-    """Takes dictionary like this:
+    """Take dictionary like this:
 
      {'keywords': u'marine fish', 'resourceTitle': u'"Aral Sea"'}
     and returns string like this:

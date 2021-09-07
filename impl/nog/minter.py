@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 
-"""N2T EggNog compatible minter for EZID.
+"""N2T EggNog compatible minter for EZID
 
 Terminology:
 
@@ -44,6 +44,9 @@ BerkeleyDB keys (EZID names / N2T names):
 """
 
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import logging
 import re
 
@@ -70,7 +73,7 @@ log = logging.getLogger(__name__)
 
 
 def mint_id(shoulder_model, dry_run=False):
-    """Mint a single identifier on an existing ARK or DOI shoulder / namespace.
+    """Mint a single identifier on an existing ARK or DOI shoulder / namespace
 
     Args:
         shoulder_model (Django ORM model): Shoulder
@@ -140,7 +143,7 @@ def mint_by_bdb_path(bdb_path, mint_count=1, dry_run=False):
 
 
 def create_minter_database(shoulder_ns, root_path=None, mask_str='eedk'):
-    """Create a new BerkeleyDB file.
+    """Create a new BerkeleyDB file
 
     Args:
         shoulder_ns: DOI or ARK shoulder namespace
@@ -172,7 +175,7 @@ class Minter(impl.nog.bdb_wrapper.BdbWrapper):
         super(Minter, self).__exit__(exc_type, exc_val, exc_tb)
 
     def mint(self, id_count=1):
-        """Generate one or more identifiers.
+        """Generate one or more identifiers
 
         Args:
             id_count (int): Number of identifiers to yield.
@@ -353,7 +356,7 @@ class Minter(impl.nog.bdb_wrapper.BdbWrapper):
         self.inactive_counter_list = []
 
     def _assert_exhausted_minter(self):
-        """Check that we really have an exhausted minter.
+        """Check that we really have an exhausted minter
 
         An exhausted minter must have no remaining counters in the
         active list. All the counters should be in the inactive list.
@@ -368,7 +371,7 @@ class Minter(impl.nog.bdb_wrapper.BdbWrapper):
             )
 
     def _assert_ezid_compatible_minter(self):
-        """Ensure that we can handle this minter.
+        """Ensure that we can handle this minter
 
         EZID uses minters that require only a subset of the features
         available on N2T. This code handles more than the EZID subset

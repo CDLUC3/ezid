@@ -1,17 +1,8 @@
-# =============================================================================
-#
-# EZID :: ezidapp/models/statistics.py
-#
-# Identifier statistics.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2017, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
+"""Identifier statistics
+"""
 
 # import ezidapp.models.realm
 import django.core.validators
@@ -23,12 +14,17 @@ from . import validation
 
 
 class Statistics(django.db.models.Model):
-    # Stores identifier statistics.  Each row contains a descriptor of a
-    # unique class of identifiers (a combination of creation month,
-    # owner, identifier type, ...) and the count of identifiers in that
-    # class.  Note that test identifiers (and therefore
-    # anonymously-owned identifiers) are not included.  Reserved
-    # identifiers are included, however.
+    """Store identifier statistics
+
+    Each row contains a descriptor of a unique class of identifiers (a combination of creation
+    month, owner, identifier type, ...) and the count of identifiers in that class.
+
+    Test identifiers (and therefore anonymously-owned identifiers) are not included.  Reserved
+    identifiers are included, however.
+    """
+    class Meta:
+        unique_together = ("month", "owner", "type", "hasMetadata")
+
 
     # A creation month in the syntax YYYY-MM.
     month = django.db.models.CharField(max_length=7, db_index=True)
@@ -65,6 +61,3 @@ class Statistics(django.db.models.Model):
     count = django.db.models.IntegerField(
         validators=[django.core.validators.MinValueValidator(0)]
     )
-
-    class Meta:
-        unique_together = ("month", "owner", "type", "hasMetadata")

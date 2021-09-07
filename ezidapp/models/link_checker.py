@@ -1,17 +1,8 @@
-# =============================================================================
-#
-# EZID :: ezidapp/models/link_checker.py
-#
-# Database model for the link checker's table.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2016, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
+"""Database model for the link checker's table
+"""
 
 import hashlib
 import re
@@ -29,6 +20,44 @@ import impl.util
 
 
 class LinkChecker(django.db.models.Model):
+    class Meta:
+        index_together = [("owner_id", "isBad", "lastCheckTime")]
+
+    def clean(self):
+        self.isBad = self.numFailures > 0
+
+    def checkSucceeded(self, mimeType, content):
+        self.lastCheckTime = int(time.time())
+        self.numFailures = 0
+        self.returnCode = 200
+        self.error = ""
+        # Ensure the MIME type is small enough, both with respect to
+        # character set and length.
+        self.mimeType = re.sub("[^ -~]", "?", mimeType)[
+            : self._meta.get_field("mimeType").max_length
+        ]
+        self.size = len(content)
+        self.hash = hashlib.md5(content).hexdigest()
+
+    def checkFailed(self, code, error=None):
+        self.lastCheckTime = int(time.time())
+        self.numFailures += 1
+        self.returnCode = code
+        if self.returnCode < 0:
+            self.error = error
+        self.mimeType = ""
+        self.size = None
+        self.hash = ""
+
+    def clearHistory(self):
+        self.lastCheckTime = 0
+        self.numFailures = 0
+        self.returnCode = None
+        self.error = ""
+        self.mimeType = ""
+        self.size = None
+        self.hash = ""
+
     # Stores all public, real (non-test) identifiers that have
     # non-default target URLs; their target URLs; and link checker
     # results.  This table is updated from the primary EZID tables, but
@@ -41,14 +70,15 @@ class LinkChecker(django.db.models.Model):
     )
 
     # The identifier's owner.  As this table is populated from the
-    # SearchIdentifier table (not ideal, but currently necessary), this
-    # field is a foreign key into the SearchUser table.  But it is not
+    # Identifier table (not ideal, but currently necessary), this
+    # field is a foreign key into the User table.  But it is not
     # expressed as an actual foreign key in order to avoid a hard
     # database dependency.
     owner_id = django.db.models.IntegerField(db_index=True)
 
     # id_model = django.apps.apps.get_model('ezidapp', 'Identifier')
     # max_length=id_model.meta.get_field("target").max_length,
+    # noinspection PyProtectedMember
     target = django.db.models.URLField(
         max_length=ezidapp.models.identifier.Identifier._meta.get_field(
             "target"
@@ -108,41 +138,3 @@ class LinkChecker(django.db.models.Model):
     # If the last check was successful, the MD5 hash of the returned
     # resource; otherwise empty.
     hash = django.db.models.CharField(max_length=32, blank=True)
-
-    class Meta:
-        index_together = [("owner_id", "isBad", "lastCheckTime")]
-
-    def clean(self):
-        self.isBad = self.numFailures > 0
-
-    def checkSucceeded(self, mimeType, content):
-        self.lastCheckTime = int(time.time())
-        self.numFailures = 0
-        self.returnCode = 200
-        self.error = ""
-        # Ensure the MIME type is small enough, both with respect to
-        # character set and length.
-        self.mimeType = re.sub("[^ -~]", "?", mimeType)[
-            : self._meta.get_field("mimeType").max_length
-        ]
-        self.size = len(content)
-        self.hash = hashlib.md5(content).hexdigest()
-
-    def checkFailed(self, code, error=None):
-        self.lastCheckTime = int(time.time())
-        self.numFailures += 1
-        self.returnCode = code
-        if self.returnCode < 0:
-            self.error = error
-        self.mimeType = ""
-        self.size = None
-        self.hash = ""
-
-    def clearHistory(self):
-        self.lastCheckTime = 0
-        self.numFailures = 0
-        self.returnCode = None
-        self.error = ""
-        self.mimeType = ""
-        self.size = None
-        self.hash = ""

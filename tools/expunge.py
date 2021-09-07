@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # Expunges expired test identifiers.  Such identifiers are discovered
 # by querying the database directly, but expunged by requesting that
 # the (live) EZID server delete them.
@@ -15,7 +18,6 @@
 
 import sys
 import time
-import urllib.error
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -47,7 +49,7 @@ for prefix in [
     expungeList.extend(
         [
             si.identifier
-            for si in ezidapp.models.identifier.StoreIdentifier.objects.filter(
+            for si in ezidapp.models.identifier.Identifier.objects.filter(
                 identifier__startswith=prefix
             )
             .filter(createTime__lte=expireTime)

@@ -1,3 +1,8 @@
+/*!
+ * Copyright©2021, Regents of the University of California
+ * http://creativecommons.org/licenses/BSD
+ */
+
 // //= depend_on "bootstrap/glyphicons-halflings-regular.eot"
 // //= depend_on "bootstrap/glyphicons-halflings-regular.svg"
 // //= depend_on "bootstrap/glyphicons-halflings-regular.ttf"
@@ -151,87 +156,3 @@
 // .glyphicon-magnet                 { &:before { content: "\e112"; } }
 .glyphicon-chevron-up             { &:before { content: "\e113"; } }
 .glyphicon-chevron-down           { &:before { content: "\e114"; } }
-// .glyphicon-retweet                { &:before { content: "\e115"; } }
-// .glyphicon-shopping-cart          { &:before { content: "\e116"; } }
-// .glyphicon-folder-close           { &:before { content: "\e117"; } }
-// .glyphicon-folder-open            { &:before { content: "\e118"; } }
-// .glyphicon-resize-vertical        { &:before { content: "\e119"; } }
-// .glyphicon-resize-horizontal      { &:before { content: "\e120"; } }
-// .glyphicon-hdd                    { &:before { content: "\e121"; } }
-// .glyphicon-bullhorn               { &:before { content: "\e122"; } }
-// .glyphicon-bell                   { &:before { content: "\e123"; } }
-// .glyphicon-certificate            { &:before { content: "\e124"; } }
-// .glyphicon-thumbs-up              { &:before { content: "\e125"; } }
-// .glyphicon-thumbs-down            { &:before { content: "\e126"; } }
-// .glyphicon-hand-right             { &:before { content: "\e127"; } }
-// .glyphicon-hand-left              { &:before { content: "\e128"; } }
-// .glyphicon-hand-up                { &:before { content: "\e129"; } }
-// .glyphicon-hand-down              { &:before { content: "\e130"; } }
-// .glyphicon-circle-arrow-right     { &:before { content: "\e131"; } }
-// .glyphicon-circle-arrow-left      { &:before { content: "\e132"; } }
-// .glyphicon-circle-arrow-up        { &:before { content: "\e133"; } }
-// .glyphicon-circle-arrow-down      { &:before { content: "\e134"; } }
-// .glyphicon-globe                  { &:before { content: "\e135"; } }
-// .glyphicon-wrench                 { &:before { content: "\e136"; } }
-// .glyphicon-tasks                  { &:before { content: "\e137"; } }
-// .glyphicon-filter                 { &:before { content: "\e138"; } }
-// .glyphicon-briefcase              { &:before { content: "\e139"; } }
-// .glyphicon-fullscreen             { &:before { content: "\e140"; } }
-// .glyphicon-dashboard              { &:before { content: "\e141"; } }
-// .glyphicon-paperclip              { &:before { content: "\e142"; } }
-// .glyphicon-heart-empty            { &:before { content: "\e143"; } }
-// .glyphicon-link                   { &:before { content: "\e144"; } }
-// .glyphicon-phone                  { &:before { content: "\e145"; } }
-// .glyphicon-pushpin                { &:before { content: "\e146"; } }
-// .glyphicon-usd                    { &:before { content: "\e148"; } }
-// .glyphicon-gbp                    { &:before { content: "\e149"; } }
-// .glyphicon-sort                   { &:before { content: "\e150"; } }
-// .glyphicon-sort-by-alphabet       { &:before { content: "\e151"; } }
-// .glyphicon-sort-by-alphabet-alt   { &:before { content: "\e152"; } }
-// .glyphicon-sort-by-order          { &:before { content: "\e153"; } }
-// .glyphicon-sort-by-order-alt      { &:before { content: "\e154"; } }
-// .glyphicon-sort-by-attributes     { &:before { content: "\e155"; } }
-// .glyphicon-sort-by-attributes-alt { &:before { content: "\e156"; } }
-// .glyphicon-unchecked              { &:before { content: "\e157"; } }
-// .glyphicon-expand                 { &:before { content: "\e158"; } }
-// .glyphicon-collapse-down          { &:before { content: "\e159"; } }
-// .glyphicon-collapse-up            { &:before { content: "\e160"; } }
-// .glyphicon-log-in                 { &:before { content: "\e161"; } }
-// .glyphicon-flash                  { &:before { content: "\e162"; } }
-// .glyphicon-log-out                { &:before { content: "\e163"; } }
-// .glyphicon-new-window             { &:before { content: "\e164"; } }
-// .glyphicon-record                 { &:before { content: "\e165"; } }
-// .glyphicon-save                   { &:before { content: "\e166"; } }
-// .glyphicon-open                   { &:before { content: "\e167"; } }
-// .glyphicon-saved                  { &:before { content: "\e168"; } }
-// .glyphicon-import                 { &:before { content: "\e169"; } }
-// .glyphicon-export                 { &:before { content: "\e170"; } }
-// .glyphicon-send                   { &:before { content: "\e171"; } }
-// .glyphicon-floppy-disk            { &:before { content: "\e172"; } }
-// .glyphicon-floppy-saved           { &:before { content: "\e173"; } }
-// .glyphicon-floppy-remove          { &:before { content: "\e174"; } }
-// .glyphicon-floppy-save            { &:before { content: "\e175"; } }
-// .glyphicon-floppy-open            { &:before { content: "\e176"; } }
-// .glyphicon-credit-card            { &:before { content: "\e177"; } }
-// .glyphicon-transfer               { &:before { content: "\e178"; } }
-// .glyphicon-cutlery                { &:before { content: "\e179"; } }
-// .glyphicon-header                 { &:before { content: "\e180"; } }
-// .glyphicon-compressed             { &:before { content: "\e181"; } }
-// .glyphicon-earphone               { &:before { content: "\e182"; } }
-// .glyphicon-phone-alt              { &:before { content: "\e183"; } }
-// .glyphicon-tower                  { &:before { content: "\e184"; } }
-// .glyphicon-stats                  { &:before { content: "\e185"; } }
-// .glyphicon-sd-video               { &:before { content: "\e186"; } }
-// .glyphicon-hd-video               { &:before { content: "\e187"; } }
-// .glyphicon-subtitles              { &:before { content: "\e188"; } }
-// .glyphicon-sound-stereo           { &:before { content: "\e189"; } }
-// .glyphicon-sound-dolby            { &:before { content: "\e190"; } }
-// .glyphicon-sound-5-1              { &:before { content: "\e191"; } }
-// .glyphicon-sound-6-1              { &:before { content: "\e192"; } }
-// .glyphicon-sound-7-1              { &:before { content: "\e193"; } }
-// .glyphicon-copyright-mark         { &:before { content: "\e194"; } }
-// .glyphicon-registration-mark      { &:before { content: "\e195"; } }
-// .glyphicon-cloud-download         { &:before { content: "\e197"; } }
-// .glyphicon-cloud-upload           { &:before { content: "\e198"; } }
-// .glyphicon-tree-conifer           { &:before { content: "\e199"; } }
-// .glyphicon-tree-deciduous         { &:before { content: "\e200"; } }

@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import os
 import sys
 

@@ -1,5 +1,10 @@
 #!/bin/bash
 #
+# Copyright©2021, Regents of the University of California
+# http://creativecommons.org/licenses/BSD
+#
+
+#
 # emulates "hg identify -inb -R path"
 #
 

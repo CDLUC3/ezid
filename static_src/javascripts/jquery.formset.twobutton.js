@@ -1,14 +1,6 @@
-/**
- * jQuery "Two-Button" Formset
- * @author Andy Mardesich (Andy DOT Mardesich AT ucop DOT edu)
- * @requires jQuery 1.2.6 or later
- *
- * Copyright (c) 2016, Andy Mardesich
- * All rights reserved.
- *
- * Originally based on jQuery Formset 1.3-pre: https://github.com/elo80ka/django-dynamic-formset
- * But this script uses only one add button and one delete button.
- * Does not work with inline formsets.
+/*
+ * Copyright©2016-2021, Regents of the University of California
+ * http://creativecommons.org/licenses/BSD
  */
 ;(function($) {
     $.fn.formset = function (opts)
@@ -145,7 +137,7 @@
                 clearInvalidReqd($(this));
             });
             // Generate any links to help content from newly created elements
-            $.getScript("/static/javascripts/help_box_.js"); 
+            $.getScript("/static/javascripts/help_box_.js");
             totalForms.val(formCount + 1);
             console.log("id=%s, totalForms = %s", myid, totalForms.val());
             // Check if we've exceeded the maximum allowed number of forms:
@@ -200,4 +192,3 @@
         keepFieldValues: ''             // jQuery selector for fields whose values should be kept when the form is cloned
     };
 })(jQuery);
-

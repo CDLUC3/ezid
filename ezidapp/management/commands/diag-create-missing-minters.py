@@ -1,6 +1,9 @@
 """Create BerkeleyDB minter instances for any shoulders in the database that
 are referencing non-existing minters."""
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import argparse
 import logging
 import pathlib

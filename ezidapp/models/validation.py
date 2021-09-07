@@ -1,17 +1,8 @@
-# =============================================================================
-#
-# EZID :: ezidapp/models/validation.py
-#
-# Model validation functions.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2015, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
+"""Model validation functions
+"""
 
 import re
 import time

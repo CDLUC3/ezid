@@ -1,4 +1,7 @@
 """Test the shoulder-deactivate and shoulder-activate management commands."""
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import django.conf
 import django.core.management
 import freezegun

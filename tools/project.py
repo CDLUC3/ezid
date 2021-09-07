@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # The 'dump-store', 'dump-binder', 'select', and 'project' scripts
 # form a dump file query system.  The general usage is:
 #

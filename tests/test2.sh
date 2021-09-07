@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+#
+# Copyright©2021, Regents of the University of California
+# http://creativecommons.org/licenses/BSD
+#
+
 cnt=$1
 
 cp 77913_r7.bdb ~/.minders/77913/r7/nog.bdb && ./nog 77913/r7.mint "$cnt" > out.spings.nog

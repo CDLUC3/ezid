@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import datetime
 import pathlib
 import subprocess
@@ -47,8 +50,8 @@ def shoulder_to_dict(s):
         'prefix_shares_datacenter': s.prefix_shares_datacenter,
         'registration_agency': s.registration_agency,
         'shoulder_type': s.shoulder_type,
-        'storegroup_set': s.storegroup_set,
-        'storeuser_set': s.storeuser_set,
+        'group_set': s.group_set,
+        'user_set': s.user_set,
         'type': s.type,
     }
 

@@ -1,17 +1,9 @@
-# =============================================================================
-#
-# EZID :: ezid.py
-#
-# Main functionality.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2010, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
+"""Main functionality
+"""
+
 import logging
 import sys
 import threading
@@ -29,6 +21,7 @@ import ezidapp.models.model_util
 import ezidapp.models.shoulder
 import ezidapp.models.user
 import ezidapp.models.util
+import impl.enqueue
 import impl.log
 
 # import noid_nog
@@ -99,7 +92,7 @@ def _releaseIdentifierLock(identifier, user):
 
 
 def getStatus():
-    """Returns a tuple consisting of two dictionaries and a boolean flag.
+    """Return a tuple consisting of two dictionaries and a boolean flag
 
     The first dictionary maps local usernames to the number of
     operations currently being performed by that user; the sum of the
@@ -116,7 +109,7 @@ def getStatus():
 
 
 def pause(newValue):
-    """Sets or unsets the paused flag and returns the flag's previous value.
+    """Set or unsets the paused flag and returns the flag's previous value
 
     If the server is paused, no new identifier locks are granted and all
     requests are forced to wait.
@@ -145,9 +138,9 @@ def mintIdentifier(shoulder, user, metadata={}):
 
 # noinspection PyDefaultArgument
 def _mintIdentifier(shoulder, user, metadata={}):
-    """Mints an identifier under the given qualified shoulder, e.g.,
+    """Mint an identifier under the given qualified shoulder, e.g.,
     "doi:10.5060/".  'user' is the requestor and should be an authenticated
-    StoreUser object.  'metadata' should be a dictionary of element (name,
+    User object.  'metadata' should be a dictionary of element (name,
     value) pairs.  If an initial target URL is not supplied, the identifier is
     given a self-referential target URL. The successful return is a string that
     includes the canonical, qualified form of the new identifier, as in:
@@ -216,9 +209,9 @@ def _mintIdentifier(shoulder, user, metadata={}):
 
 
 def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
-    """Creates an identifier having the given qualified name, e.g.,
+    """Create an identifier having the given qualified name, e.g.,
     "doi:10.5060/FOO".  'user' is the requestor and should be an authenticated
-    StoreUser object.  'metadata' should be a dictionary of element (name,
+    User object.  'metadata' should be a dictionary of element (name,
     value) pairs.  If an initial target URL is not supplied, the identifier is
     given a self-referential target URL. The successful return is a string that
     includes the canonical, qualified form of the new identifier, as in:
@@ -263,7 +256,7 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
             impl.log.forbidden(tid)
             return "error: forbidden"
 
-        si = ezidapp.models.identifier.StoreIdentifier(
+        si = ezidapp.models.identifier.Identifier(
             identifier=normalizedIdentifier,
             owner=(None if user == ezidapp.models.util.AnonymousUser else user),
         )
@@ -278,9 +271,9 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
             elif s.isCrossref:
                 if not si.isCrossref:
                     if si.isReserved:
-                        si.crossrefStatus = ezidapp.models.identifier.StoreIdentifier.CR_RESERVED
+                        si.crossrefStatus = ezidapp.models.identifier.Identifier.CR_RESERVED
                     else:
-                        si.crossrefStatus = ezidapp.models.identifier.StoreIdentifier.CR_WORKING
+                        si.crossrefStatus = ezidapp.models.identifier.Identifier.CR_WORKING
             else:
                 assert False, "unhandled case"
         si.my_full_clean()
@@ -291,12 +284,12 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
 
 
 
-
         with django.db.transaction.atomic():
-            ri = getRefIdentifier(si)
             si.save()
+            ri = create_ref_identifier(si)
 
-            ezidapp.models.update_queue.enqueue(ri, "create")
+            impl.enqueue.enqueue(ri, "create")
+            ezidapp.models.async_queue.enqueue(ri, "create")
 
 
 
@@ -326,9 +319,9 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
 
 
 def getMetadata(identifier, user=ezidapp.models.util.AnonymousUser, prefixMatch=False):
-    """Returns all metadata for a given qualified identifier, e.g.,
+    """Return all metadata for a given qualified identifier, e.g.,
     "doi:10.5060/FOO".  'user' is the requestor and should be an authenticated
-    StoreUser object.  The successful return is a pair (status, dictionary)
+    User object.  The successful return is a pair (status, dictionary)
     where 'status' is a string that includes the canonical, qualified form of
     the identifier, as in:
 
@@ -379,7 +372,7 @@ def getMetadata(identifier, user=ezidapp.models.util.AnonymousUser, prefixMatch=
             return f"success: {si.identifier} in_lieu_of {nqidentifier}", d
         else:
             return "success: " + nqidentifier, d
-    except ezidapp.models.identifier.StoreIdentifier.DoesNotExist:
+    except ezidapp.models.identifier.Identifier.DoesNotExist:
         impl.log.badRequest(tid)
         return "error: bad request - no such identifier"
     except Exception as e:
@@ -392,9 +385,9 @@ def getMetadata(identifier, user=ezidapp.models.util.AnonymousUser, prefixMatch=
 
 
 def setMetadata(identifier, user, metadata, updateExternalServices=True, internalCall=False):
-    """Sets metadata elements of a given qualified identifier, e.g.,
+    """Set metadata elements of a given qualified identifier, e.g.,
     "doi:10.5060/FOO".  'user' is the requestor and should be an authenticated
-    StoreUser object.  'metadata' should be a dictionary of element (name,
+    User object.  'metadata' should be a dictionary of element (name,
     value) pairs.  If an element being set already exists, it is overwritten,
     if not, it is created; existing elements not set are left unchanged.  Of
     the reserved metadata elements, only "_owner", "_target", "_profile",
@@ -438,7 +431,7 @@ def setMetadata(identifier, user, metadata, updateExternalServices=True, interna
         previousOwner = si.owner
         si.updateFromUntrustedLegacy(metadata, allowRestrictedSettings=user.isSuperuser)
         if si.isCrossref and not si.isReserved and updateExternalServices:
-            si.crossrefStatus = ezidapp.models.identifier.StoreIdentifier.CR_WORKING
+            si.crossrefStatus = ezidapp.models.identifier.Identifier.CR_WORKING
             si.crossrefMessage = ""
         if "_updated" not in metadata:
             si.updateTime = ""
@@ -450,13 +443,13 @@ def setMetadata(identifier, user, metadata, updateExternalServices=True, interna
 
 
         with django.db.transaction.atomic():
-            ri = getRefIdentifier(si)
+            ri = create_ref_identifier(si)
             si.save()
-            ezidapp.models.update_queue.enqueue(ri, "update", updateExternalServices)
+            ezidapp.models.async_queue.enqueue(ri, "update", updateExternalServices)
 
 
 
-    except ezidapp.models.identifier.StoreIdentifier.DoesNotExist:
+    except ezidapp.models.identifier.Identifier.DoesNotExist:
         impl.log.badRequest(tid)
         return "error: bad request - no such identifier"
     except django.core.exceptions.ValidationError as e:
@@ -476,9 +469,9 @@ def setMetadata(identifier, user, metadata, updateExternalServices=True, interna
 
 
 def deleteIdentifier(identifier, user, updateExternalServices=True):
-    """Deletes an identifier having the given qualified name, e.g.,
+    """Delete an identifier having the given qualified name, e.g.,
     "doi:10.5060/FOO".  'user' is the requestor and should be an authenticated
-    StoreUser object.  The successful return is a string that includes the
+    User object.  The successful return is a string that includes the
     canonical, qualified form of the now-nonexistent identifier, as in:
 
       success: doi:/10.5060/FOO
@@ -517,13 +510,13 @@ def deleteIdentifier(identifier, user, updateExternalServices=True):
 
 
         with django.db.transaction.atomic():
-            ri = getRefIdentifier(si)
+            ri = create_ref_identifier(si)
             si.delete()
-            ezidapp.models.update_queue.enqueue(ri, "delete", updateExternalServices)
+            ezidapp.models.async_queue.enqueue(ri, "delete", updateExternalServices)
 
 
 
-    except ezidapp.models.identifier.StoreIdentifier.DoesNotExist:
+    except ezidapp.models.identifier.Identifier.DoesNotExist:
         impl.log.badRequest(tid)
         return "error: bad request - no such identifier"
     except Exception as e:
@@ -536,15 +529,3 @@ def deleteIdentifier(identifier, user, updateExternalServices=True):
         return "success: " + nqidentifier
     finally:
         _releaseIdentifierLock(nqidentifier, user.username)
-
-
-def getRefIdentifier(storeIdentifier):
-    """Create a RefIdentifier with values from a storeIdentifier"""
-    si: ezidapp.models.identifier.Identifier = storeIdentifier
-    ri = ezidapp.models.identifier.RefIdentifier()
-    # noinspection PyProtectedMember
-    for field in si._meta.fields:
-        field_value = getattr(si, field.name)
-        setattr(ri, field.name, field_value)
-    logger.debug(f'refIdentifier()="{ri}"')
-    return ri

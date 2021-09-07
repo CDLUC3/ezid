@@ -1,23 +1,14 @@
-# =============================================================================
-#
-# EZID :: django_util.py
-#
-# Django utilities.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2013, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
+"""Django utilities
+"""
 
 import django.contrib.sessions.models
 
 
 def deleteSessions(username):
-    """Deletes all sessions for a given user.
+    """Delete all sessions for a given user
 
     The number of sessions deleted is returned.
     """

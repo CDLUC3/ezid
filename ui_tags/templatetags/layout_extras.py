@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import operator
 import re
 import urllib.error
@@ -20,7 +23,7 @@ register = django.template.Library()
 # settings value
 @register.simple_tag
 def settings_value(name):
-    """Gets a value from the settings configuration."""
+    """Get a value from the settings configuration."""
     try:
         return django.conf.settings.__getattr__(name)
     except AttributeError:
@@ -29,7 +32,7 @@ def settings_value(name):
 
 @register.simple_tag
 def content_heading(heading):
-    """Outputs primary heading at top of page."""
+    """Output primary heading at top of page."""
     return (
         '<div class="heading__primary-container">'
         + '<h1 class="heading__primary-text">'
@@ -40,7 +43,7 @@ def content_heading(heading):
 
 @register.simple_tag
 def choices(name, value, choice_string):
-    """Creates radio buttons (for simple admin email form) based on string
+    """Create radio buttons (for simple admin email form) based on string
     choices separated by a pipe."""
     choices = choice_string.split("|")
     return "  ".join(
@@ -62,7 +65,7 @@ def choices(name, value, choice_string):
 @register.tag
 @ui_tags.templatetags.decorators.basictag(takes_context=True)
 def request_value(context, key_name):
-    """Outputs the value of context[key_name], required because normal django
+    """Output the value of context[key_name], required because normal django
     templating will not retrieve any variables starting with an underscore
     which all of the internal profile variables have."""
     request = context['request']
@@ -79,7 +82,7 @@ def request_value(context, key_name):
 @register.tag
 @ui_tags.templatetags.decorators.basictag(takes_context=True)
 def set_dict_value(context, dt, key_name):
-    """Sets value in the context object equal to the dictionary dt[key_name]"""
+    """Set value in the context object equal to the dictionary dt[key_name]"""
     context['value'] = dt[key_name]
     return ''
 
@@ -184,7 +187,7 @@ def host_based_include(context, template_path):
 @register.tag
 @ui_tags.templatetags.decorators.basictag(takes_context=True)
 def form_or_dict_value(context, dict, key_name):
-    """Outputs the value of the dict[key_name] unless request.POST contains the
+    """Output the value of the dict[key_name] unless request.POST contains the
     data for the item which then overrides the dictionary's value.
 
     This both fixes problems with normal django templating which will
@@ -206,7 +209,7 @@ def form_or_dict_value(context, dict, key_name):
 @register.tag
 @ui_tags.templatetags.decorators.basictag(takes_context=True)
 def form_or_default(context, key_name, default):
-    """Outputs the value of the reposted value unless it doesn't exist then
+    """Output the value of the reposted value unless it doesn't exist then
     outputs the default value passed in."""
     request = context['request']
     if request.method == "GET":
@@ -222,7 +225,7 @@ def form_or_default(context, key_name, default):
 @register.tag
 @ui_tags.templatetags.decorators.basictag(takes_context=True)
 def selected_radio(context, request_item, loop_index, item_value):
-    """returns checked="checked" if this should be the currently selected radio
+    """return checked="checked" if this should be the currently selected radio
     button based on matching request data or 1st item and nothing selected."""
     request = context['request']
     if request.method == "GET":

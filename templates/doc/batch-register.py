@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # Batch registers identifiers.  Reads an input CSV file containing
 # identifier metadata, one row per identifier; transforms the metadata
 # into EZID metadata as directed by a configuration file of mappings;

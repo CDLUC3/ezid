@@ -1,17 +1,19 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import re
 import time
 
 import ezidapp.models.user
 import random
 
-import ezidapp.models.download_queue
+import ezidapp.models.async_queue
 import ezidapp.models.identifier
 import logging
 import pathlib
 
 import django
 import django.apps
-import django.conf
 import django.conf
 import django.contrib.auth.models
 import django.contrib.sessions.models
@@ -20,7 +22,7 @@ import django.db
 import django.db.transaction
 import django.http.request
 
-import impl.daemon
+import impl.enqueue
 import impl.download
 import impl.log
 import impl.nog.filesystem
@@ -59,9 +61,9 @@ def dump_models():
 
 def create_fixtures():
     fixture_dir_path = pathlib.Path(impl.nog.filesystem.abs_path('../../../ezidapp/fixtures'))
-    # populate_update_queue()
+    # populate_async_queue()
     # ezidapp.DownloadQueue        ezidapp_downloadqueue
-    # populate_download_queue()
+    # populate_async_queue()
     # ezidapp.BinderQueue          ezidapp_binderqueue
     # ezidapp.CrossrefQueue        ezidapp_crossrefqueue
     # ezidapp.DataciteQueue        ezidapp_datacitequeue
@@ -130,13 +132,8 @@ def create_model_fixture(path, model_name):
 
 def populate_registration_queue():
     for id_model in get_rnd_identifier_list():
-        # 'identifier' should be the normalized, qualified identifier, e.g.,
-        # "doi:10.5060/FOO".  'operation' is the identifier operation and
-        # should be one of the strings "create", "update", or "delete". 'blob'
-        # is the identifier's metadata dictionary in blob form.
-        # print(id_model)
         print(id_model.identifier)
-        impl.daemon.enqueueBinderIdentifier(
+        impl.enqueue.enqueueBinderIdentifier(
             identifier=id_model.identifier,
             operation=random.choice(['update', 'create', 'delete']),
             blob=id_model.cm,
@@ -144,31 +141,31 @@ def populate_registration_queue():
 
 
 def get_rnd_identifier_list(k=10):
-    id_list = list(ezidapp.models.identifier.StoreIdentifier.objects.all())
+    id_list = list(ezidapp.models.identifier.Identifier.objects.all())
     # print(id_list)
     return random.sample(id_list, k)
 
 
-def populate_download_queue():
+def populate_async_queue():
     """Generate DownloadQueue rows"""
-    ezidapp.models.download_queue.DownloadQueue.objects.all().delete()
-    user_list = ezidapp.models.user.StoreUser.objects.all()
+    ezidapp.models.async_queue.DownloadQueue.objects.all().delete()
+    user_list = ezidapp.models.user.User.objects.all()
     for _ in range(10):
-        r = ezidapp.models.download_queue.DownloadQueue(
+        r = ezidapp.models.async_queue.DownloadQueue(
             requestTime=int(time.time()),
             rawRequest='',  # request.urlencode(),
             requestor=random.choice(user_list),
             format=random.choice(
                 [
-                    ezidapp.models.download_queue.DownloadQueue.ANVL,
-                    ezidapp.models.download_queue.DownloadQueue.CSV,
-                    ezidapp.models.download_queue.DownloadQueue.XML,
+                    ezidapp.models.async_queue.DownloadQueue.ANVL,
+                    ezidapp.models.async_queue.DownloadQueue.CSV,
+                    ezidapp.models.async_queue.DownloadQueue.XML,
                 ]
             ),
             compression=random.choice(
                 [
-                    ezidapp.models.download_queue.DownloadQueue.GZIP,
-                    ezidapp.models.download_queue.DownloadQueue.ZIP,
+                    ezidapp.models.async_queue.DownloadQueue.GZIP,
+                    ezidapp.models.async_queue.DownloadQueue.ZIP,
                 ]
             ),
             columns=random.sample(
@@ -223,7 +220,7 @@ def populate_download_queue():
 
 
 # def enqueueBinderIdentifier(identifier, operation, blob):
-#     """Adds an identifier to the binder asynchronous processing queue.
+#     """Add an identifier to the binder asynchronous processing queue
 #
 #     'identifier' should be the normalized, qualified identifier, e.g.,
 #     "doi:10.5060/FOO".  'operation' is the identifier operation and
@@ -236,7 +233,7 @@ def populate_download_queue():
 #
 #
 # def enqueueCrossrefIdentifier(identifier, operation, metadata, blob):
-#     """Adds an identifier to the Crossref queue.
+#     """Add an identifier to the Crossref queue
 #
 #     'identifier' should be the normalized, qualified identifier, e.g.,
 #     "doi:10.5060/FOO". 'operation' is the identifier operation and should
@@ -255,7 +252,7 @@ def populate_download_queue():
 #
 #
 # def enqueueDataCiteIdentifier(identifier, operation, blob):
-#     """Adds an identifier to the DataCite asynchronous processing queue.
+#     """Add an identifier to the DataCite asynchronous processing queue
 #
 #     'identifier' should be the normalized, qualified identifier, e.g.,
 #     "doi:10.5060/FOO".  'operation' is the identifier operation and
@@ -268,7 +265,7 @@ def populate_download_queue():
 #
 #
 # def _enqueueIdentifier(model, identifier, operation, blob):
-#     """Adds an identifier to the asynchronous registration queue named by
+#     """Add an identifier to the asynchronous registration queue named by
 #     'model'.
 #
 #     'identifier' should be the normalized, qualified identifier, e.g.,
@@ -280,7 +277,7 @@ def populate_download_queue():
 #         enqueueTime=int(time.time()),
 #         identifier=identifier,
 #         metadata=blob,
-#         operation=ezidapp.models.registration_queue.RegistrationQueue.operationLabelToCode(
+#         operation=ezidapp.models.registration_queue.AsyncQueue.operationLabelToCode(
 #             operation
 #         ),
 #     )

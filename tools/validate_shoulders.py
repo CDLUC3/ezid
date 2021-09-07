@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # Validates a shoulder file.  The file should be UTF-8 encoded.
 # Usage:
 #

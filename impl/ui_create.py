@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import re
 
 import django.contrib.messages
@@ -79,7 +82,7 @@ def advanced(request):
 
 
 def simple_form(request, d):
-    """Create simple identifier code shared by 'Create ID' and 'Demo' pages.
+    """Create simple identifier code shared by 'Create ID' and 'Demo' pages
 
     Takes request and context object, d['prefixes'] should be set before
     calling. Returns dictionary with d['id_gen_result'] of either

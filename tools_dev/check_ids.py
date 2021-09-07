@@ -4,6 +4,9 @@
 housekeeping information pulled from an EZID database.
 """
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import argparse
 import collections
 import fileinput
@@ -26,7 +29,7 @@ DEFAULT_CONCURRENT_CONNECTIONS = 20
 # CNF_PATH = "~/.my.cnf"
 
 TABLE_NAME_TO_ORM = {
-    "store": {"db": "ezidapp_storeidentifier", "orm": "StoreIdentifier"},
+    "store": {"db": "ezidapp_storeidentifier", "orm": "Identifier"},
     "search": {"db": "ezidapp_searchidentifier", "orm": "SearchIdentifier"},
 }
 

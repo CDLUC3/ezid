@@ -1,3 +1,8 @@
+/*!
+ * Copyright©2021, Regents of the University of California
+ * http://creativecommons.org/licenses/BSD
+ */
+
 // Contact Page
 
 
@@ -15,7 +20,7 @@
 #contact-gutter-left {
   @extend .contact-promotional-base;
   background: $design-secondary-color;
-  width: calc(50% - #{$container-md/2});  
+  width: calc(50% - #{$container-md/2});
   float:left;
 }
 #contact-content{

@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # Reads EZID transaction log files, consolidates transaction BEGIN and
 # END records, and filters transactions as specified by command line
 # options.  If no files are specified, records are read from standard

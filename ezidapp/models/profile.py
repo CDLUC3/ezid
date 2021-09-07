@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # =============================================================================
 #
 # EZID :: ezidapp/models/profile.py
@@ -15,8 +18,8 @@ import django.db.models
 class Profile(django.db.models.Model):
     # A metadata profile.
 
-    class Meta:
-        abstract = True
+    # class Meta:
+    #     abstract = True
 
     label = django.db.models.CharField(
         max_length=32,
@@ -36,14 +39,6 @@ class Profile(django.db.models.Model):
         return self.label
 
 
-class SearchProfile(Profile):
-    pass
-
-
-class StoreProfile(Profile):
-    pass
-
-
 #     if caches is None:
-#         labelCache = dict((p.label, p) for p in StoreProfile.objects.all())
+#         labelCache = dict((p.label, p) for p in Profile.objects.all())
 #         idCache = dict((p.id, p) for p in list(labelCache.values()))

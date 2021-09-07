@@ -17,6 +17,9 @@ information in a user account, the admin user is created both as a Django superu
 Django and as a user flagged with elevated access in EZID's custom authentication system
 """
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import datetime
 
 import django.conf
@@ -50,13 +53,13 @@ ADMIN_MODEL_DICT = {
         'model': 'logentry',
     },
     # EZID custom user authentication
-    'ezidapp.StoreRealm': {
+    'ezidapp.Realm': {
         "name": django.conf.settings.ADMIN_STORE_REALM,
     },
-    'ezidapp.SearchRealm': {
+    'ezidapp.Realm': {
         "name": django.conf.settings.ADMIN_SEARCH_REALM,
     },
-    'ezidapp.storeuser': {
+    'ezidapp.user': {
         'accountEmail': django.conf.settings.ADMIN_EMAIL,
         'crossrefEmail': django.conf.settings.ADMIN_CROSSREF_EMAIL,
         'crossrefEnabled': django.conf.settings.ADMIN_CROSSREF_ENABLED,
@@ -77,7 +80,7 @@ ADMIN_MODEL_DICT = {
         'secondaryContactPhone': django.conf.settings.ADMIN_SECONDARY_CONTACT_PHONE,
         'username': django.conf.settings.ADMIN_USERNAME,
     },
-    'ezidapp.storegroup': {
+    'ezidapp.group': {
         'accountType': '',
         'agreementOnFile': False,
         'crossrefEnabled': django.conf.settings.ADMIN_CROSSREF_ENABLED,
@@ -125,37 +128,37 @@ class Command(django.core.management.BaseCommand):
         # EZID custom auth
 
         # Store
-        store_realm = ezidapp.models.realm.StoreRealm.objects.update_or_create(
-            defaults=ADMIN_MODEL_DICT['ezidapp.StoreRealm'], name='CDL'
+        realm = ezidapp.models.realm.Realm.objects.update_or_create(
+            defaults=ADMIN_MODEL_DICT['ezidapp.Realm'], name='CDL'
         )[0]
-        store_group = ezidapp.models.group.StoreGroup.objects.update_or_create(
+        group = ezidapp.models.group.Group.objects.update_or_create(
             defaults={
-                **ADMIN_MODEL_DICT['ezidapp.storegroup'],
+                **ADMIN_MODEL_DICT['ezidapp.group'],
                 # **{
-                'realm': store_realm,
+                'realm': realm,
                 'groupname': django.conf.settings.ADMIN_GROUPNAME,
                 # },
             },
             groupname=django.conf.settings.ADMIN_GROUPNAME,
         )[0]
-        store_user = ezidapp.models.user.StoreUser.objects.update_or_create(
+        user = ezidapp.models.user.User.objects.update_or_create(
             defaults={
-                **ADMIN_MODEL_DICT['ezidapp.storeuser'],
-                'realm': store_realm,
-                'group': store_group,
+                **ADMIN_MODEL_DICT['ezidapp.user'],
+                'realm': realm,
+                'group': group,
                 'username': django.conf.settings.ADMIN_USERNAME,
             },
             username='admin',
         )[0]
-        store_user.setPassword(django.conf.settings.ADMIN_PASSWORD)
-        store_user.save()
+        user.setPassword(django.conf.settings.ADMIN_PASSWORD)
+        user.save()
 
         # Search
-        search_realm = ezidapp.models.realm.SearchRealm.objects.update_or_create(
-            defaults=ADMIN_MODEL_DICT['ezidapp.SearchRealm'],
+        search_realm = ezidapp.models.realm.Realm.objects.update_or_create(
+            defaults=ADMIN_MODEL_DICT['ezidapp.Realm'],
             name='CDL',
         )[0]
-        search_group = ezidapp.models.group.SearchGroup.objects.update_or_create(
+        search_group = ezidapp.models.group.Group.objects.update_or_create(
             defaults={
                 **ADMIN_MODEL_DICT['ezidapp.searchgroup'],
                 'realm': search_realm,
@@ -164,7 +167,7 @@ class Command(django.core.management.BaseCommand):
             },
             groupname='admin',
         )[0]
-        search_user = ezidapp.models.user.SearchUser.objects.update_or_create(
+        search_user = ezidapp.models.user.User.objects.update_or_create(
             defaults={
                 **ADMIN_MODEL_DICT['ezidapp.searchuser'],
                 'realm': search_realm,

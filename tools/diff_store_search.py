@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # Compares identifiers in the store and search databases.
 #
 # This script requires several EZID modules.  The PYTHONPATH
@@ -49,9 +52,9 @@ def harvest(model):
 
 
 # noinspection PyTypeChecker
-storeIdentifiers = harvest(ezidapp.models.identifier.StoreIdentifier)
+storeIdentifiers = harvest(ezidapp.models.identifier.Identifier)
 # noinspection PyTypeChecker
-searchIdentifiers = harvest(ezidapp.models.identifier.SearchIdentifier)
+searchIdentifiers = harvest(ezidapp.models.identifier.Identifier)
 
 stid = next(storeIdentifiers)
 seid = next(searchIdentifiers)

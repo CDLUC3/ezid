@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Generate Crossref, DataCite and DC metadata test objects.
+"""Generate Crossref, DataCite and DC metadata test objects
 
 The objects are based on samples from the EZID production database. The text nodes have
 been modified to indicate that they are generic test objects.
@@ -8,6 +8,9 @@ been modified to indicate that they are generic test objects.
 The XML data is modified for each metadata object in which they are used, then combined
 with key/value pairs require by the EZID API, then formatted to ANVL.
 """
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import logging
 
 import lxml
@@ -17,7 +20,7 @@ log = logging.getLogger(__name__)
 
 
 def get_metadata(id_ns, test_docs=None, meta_type=None):
-    """Return metadata in an interleaved list, ready to be passed to the ANVL formatter.
+    """Return metadata in an interleaved list, ready to be passed to the ANVL formatter
 
     Args:
         id_ns ():
@@ -58,7 +61,7 @@ def get_crossref_metadata(id_ns, test_docs):
 
 
 def _get_metadata_with_xml(id_ns, test_docs, meta_type):
-    """Return metadata in an interleaved list, ready to be passed to the ANVL formatter.
+    """Return metadata in an interleaved list, ready to be passed to the ANVL formatter
 
     If provided, meta_type must be 'datacite' or 'crossref'. If not provided, defaults to
     'dc (Dublin Core)'.
@@ -156,7 +159,7 @@ def _mk_crossref_metadata_list(meta_dict, meta_xml, id_ns):
 
 
 def _to_compact_string(root_el):
-    """Render an lxml etree to a string that does not have any whitespace between the elements.
+    """Render an lxml etree to a string that does not have any whitespace between the elements
     - Requires that the parser already has removed non-significant whitespace between
     elements.
     - Whitespace is deemed to be non-significant only when there is no text between the

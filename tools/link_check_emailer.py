@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # Emails link checker reports to all owners of identifiers whose check
 # failures have reached the notification threshold.
 #
@@ -52,7 +55,7 @@ def gatherFailures(owner_id, threshold):
         # metadata and to confirm that the identifier still exists and is
         # still subject to link checking.
         try:
-            si = ezidapp.models.identifier.SearchIdentifier.objects.get(
+            si = ezidapp.models.identifier.Identifier.objects.get(
                 identifier=lcList[i].identifier
             )
             if (
@@ -64,7 +67,7 @@ def gatherFailures(owner_id, threshold):
                 i += 1
             else:
                 del lcList[i]
-        except ezidapp.models.identifier.SearchIdentifier.DoesNotExist:
+        except ezidapp.models.identifier.Identifier.DoesNotExist:
             del lcList[i]
     return lcList
 
@@ -247,12 +250,12 @@ def main():
         for i in range(len(options.owners)):
             username = options.owners[i]
             try:
-                su = ezidapp.models.user.SearchUser.objects.get(username=username)
+                su = ezidapp.models.user.User.objects.get(username=username)
                 options.owners[i] = (
                     username,
                     su.id,
                     su.realm.name,
-                    ezidapp.models.user.StoreUser.StoreUser.objects.get(
+                    ezidapp.models.user.User.User.objects.get(
                         username=username
                     ).accountEmail,
                 )
@@ -261,15 +264,15 @@ def main():
     else:
         emailAddresses = {
             su.username: su.accountEmail
-            for su in ezidapp.models.user.StoreUser.objects.all()
+            for su in ezidapp.models.user.User.objects.all()
         }
         options.owners = [
             (su.username, su.id, su.realm.name, emailAddresses[su.username])
-            for su in ezidapp.models.user.SearchUser.objects.all()
+            for su in ezidapp.models.user.User.objects.all()
         ]
     realmAdmins = {}
     if options.bccRealmAdmins:
-        for su in ezidapp.models.user.StoreUser.objects.filter(
+        for su in ezidapp.models.user.User.objects.filter(
             isRealmAdministrator=True
         ):
             l = realmAdmins.get(su.realm.name, [])

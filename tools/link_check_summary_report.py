@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # Creates a link checker summary report in the form of a CSV file.
 # The report lists broken target URL counts broken down by identifier
 # owner and by when the target URL was first detected broken.  The
@@ -30,7 +33,6 @@ import django.db.models
 # import ezidapp.models
 import ezidapp.models.link_checker
 import ezidapp.models.realm
-import ezidapp.models.user
 import ezidapp.models.user
 import impl
 
@@ -80,7 +82,7 @@ def main():
     else:
         options.email = False
     if options.realm:
-        if not ezidapp.models.realm.SearchRealm.objects.filter(
+        if not ezidapp.models.realm.Realm.objects.filter(
             name=options.realm
         ).exists():
             p.error("no such realm")
@@ -91,7 +93,7 @@ def main():
     # We can't use a join in the query below because the tables aren't
     # related (at least as far as Django is concerned), so we manually
     # create a lookup table.
-    users = ezidapp.models.user.SearchUser.objects
+    users = ezidapp.models.user.User.objects
     if options.realm:
         users = users.filter(realm__name=options.realm)
     else:

@@ -1,3 +1,8 @@
+/*!
+ * Copyright©2021, Regents of the University of California
+ * http://creativecommons.org/licenses/BSD
+ */
+
 // Learn Page
 
 .breadcrumb {
@@ -14,7 +19,7 @@
   margin-bottom: 20px;
 }
 
-// libsass patch: https://github.com/twbs/bootstrap/issues/16576 
+// libsass patch: https://github.com/twbs/bootstrap/issues/16576
 .breadcrumb > li + li:before {
   content: $breadcrumb-separator + "\00a0";
 }

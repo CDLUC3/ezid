@@ -11,6 +11,9 @@ the sum of the values after all loops are completed by all processes, should mat
 the number of `processes * threads * loops`.
 """
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # named_thread_locks = impl.ipc.NamedThreadLocks()
 # impl.ipc.threading_lock = threading.RLock()
 

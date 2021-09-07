@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # Dumps the store database to standard output.
 #
 # Usage: dump-store [-erz]
@@ -54,7 +57,7 @@ else:
 lastIdentifier = ""
 while True:
     qs = (
-        ezidapp.models.identifier.StoreIdentifier.objects.filter(
+        ezidapp.models.identifier.Identifier.objects.filter(
             identifier__gt=lastIdentifier
         )
         .order_by("identifier")

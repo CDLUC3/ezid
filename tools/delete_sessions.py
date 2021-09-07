@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # Deletes all session cookies for a given user.  Usage:
 #
 # Usage: delete-sessions username

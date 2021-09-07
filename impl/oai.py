@@ -1,18 +1,9 @@
-# =============================================================================
-#
-# EZID :: oai.py
-#
-# Support for OAI-PMH 2.0
-# <http://www.openarchives.org/OAI/openarchivesprotocol.html>.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2014, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
+"""Support for OAI-PMH 2.0
+<http://www.openarchives.org/OAI/openarchivesprotocol.html>
+"""
 
 import hashlib
 import time
@@ -178,7 +169,7 @@ def _buildDublinCoreRecord(identifier):
         return "{http://purl.org/dc/elements/1.1/}" + elementName
 
     lxml.etree.SubElement(root, q("identifier")).text = identifier.identifier
-    km = identifier.kernelMetadata()
+    km = identifier.kernelMetadata
     for e in ["creator", "title", "publisher", "date", "type"]:
         if getattr(km, e) is not None:
             # Adding a try catch block to generate XML
@@ -199,10 +190,10 @@ def _doGetRecord(oaiRequest):
     if id_str is None:
         return _error(oaiRequest, "idDoesNotExist")
     try:
-        identifier = ezidapp.models.identifier.SearchIdentifier.objects.get(
+        identifier = ezidapp.models.identifier.Identifier.objects.get(
             identifier=id_str
         )
-    except ezidapp.models.identifier.SearchIdentifier.DoesNotExist:
+    except ezidapp.models.identifier.Identifier.DoesNotExist:
         return _error(oaiRequest, "idDoesNotExist")
     if not identifier.oaiVisible:
         return _error(oaiRequest, "idDoesNotExist")
@@ -238,7 +229,7 @@ def _doIdentify(oaiRequest):
     lxml.etree.SubElement(
         e, _q("adminEmail")
     ).text = django.conf.settings.OAI_ADMIN_EMAIL
-    t = ezidapp.models.identifier.SearchIdentifier.objects.filter(
+    t = ezidapp.models.identifier.Identifier.objects.filter(
         oaiVisible=True
     ).aggregate(django.db.models.Min("updateTime"))["updateTime__min"]
     if t is None:
@@ -288,7 +279,7 @@ def _doHarvest(oaiRequest, batchSize, includeMetadata):
             until = None
         cursor = 0
         total = None
-    q = ezidapp.models.identifier.SearchIdentifier.objects.filter(
+    q = ezidapp.models.identifier.Identifier.objects.filter(
         oaiVisible=True
     ).filter(updateTime__gt=from_)
     if until is not None:

@@ -8,13 +8,16 @@ as a batch.
 Usage:
     - Run inspections in PyCharm
     - In the Inspection Results, Export > Export to XML
-    - Note that only the output dir is selectable, not the the filename. That's because
+    - Only the output dir is selectable, not the the filename. That's because
     PyCharm uses the filename to recognize the type of XML file.
     - Add code in this script to filter the inspections
     - Import the file in PyCharm with 'View Offline Inspection Results'. (The title is
     misleading -- after import, the XML doc shows up as a regular inspection result with
     full functionality)
 """
+
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
 
 import logging
 import pathlib

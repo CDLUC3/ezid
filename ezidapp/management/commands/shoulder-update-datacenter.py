@@ -1,4 +1,7 @@
 """Update the Datacenter for an existing DOI shoulder."""
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import argparse
 import logging
 
@@ -75,7 +78,7 @@ class Command(django.core.management.BaseCommand):
                 'Shoulder is registered with Crossref: {}'.format(namespace_str)
             )
 
-        new_datacenter_model = ezidapp.models.datacenter.StoreDatacenter.objects.get(
+        new_datacenter_model = ezidapp.models.datacenter.Datacenter.objects.get(
             symbol=opt.new_datacenter_str
         )
 

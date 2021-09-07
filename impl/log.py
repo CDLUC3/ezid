@@ -1,36 +1,29 @@
-# =============================================================================
-#
-# EZID :: log.py
-#
-# Logging functions.  What gets logged, where it gets logged, and how
-# log records are formatted is all determined by the configuration
-# file.  There are eight record types:
-#
-#   level  message
-#   -----  -------
-#   INFO   transactionId BEGIN function args...
-#   INFO   transactionId PROGRESS function
-#   INFO   transactionId END SUCCESS [args...]
-#   INFO   transactionId END BADREQUEST
-#   INFO   transactionId END FORBIDDEN
-#   INFO   - STATUS ...
-#   ERROR  transactionId END ERROR exception...
-#   ERROR  - ERROR caller exception...
-#
-# Records are UTF-8 and percent-encoded so that the following
-# properties hold: log records contain only graphic ASCII characters
-# and spaces; there is a 1-1 correspondence between records and lines;
-# and record fields (except for exception strings) are separated by
-# spaces.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2010, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
+"""Logging functions
+
+What gets logged, where it gets logged, and how
+log records are formatted is all determined by the configuration
+file.  There are eight record types:
+
+  level  message
+  -----  -------
+  INFO   transactionId BEGIN function args...
+  INFO   transactionId PROGRESS function
+  INFO   transactionId END SUCCESS [args...]
+  INFO   transactionId END BADREQUEST
+  INFO   transactionId END FORBIDDEN
+  INFO   - STATUS ...
+  ERROR  transactionId END ERROR exception...
+  ERROR  - ERROR caller exception...
+
+Records are UTF-8 and percent-encoded so that the following
+properties hold: log records contain only graphic ASCII characters
+and spaces; there is a 1-1 correspondence between records and lines;
+and record fields (except for exception strings) are separated by
+spaces.
+"""
 
 import datetime
 import difflib
@@ -105,13 +98,13 @@ _sentErrors = {}
 
 
 def getOperationCount():
-    """Returns the number of operations (transactions) begun since the last
+    """Return the number of operations (transactions) begun since the last
     reset."""
     return _operationCount
 
 
 def resetOperationCount():
-    """Resets the operation (transaction) counter."""
+    """Reset the operation (transaction) counter."""
     global _operationCount
     _countLock.acquire()
     try:
@@ -136,7 +129,7 @@ _log = logging.getLogger()
 
 
 def begin(transactionId, *args):
-    """Logs the start of a transaction."""
+    """Log the start of a transaction."""
     global _operationCount
     # noinspection PyUnresolvedReferences
     _log.info(
@@ -151,12 +144,12 @@ def begin(transactionId, *args):
 
 
 def progress(transactionId, function):
-    """Logs progress made as part of a transaction."""
+    """Log progress made as part of a transaction."""
     _log.info(f"{transactionId.hex} PROGRESS {function}")
 
 
 def success(transactionId, *args):
-    """Logs the successful end of a transaction."""
+    """Log the successful end of a transaction."""
     # noinspection PyUnresolvedReferences
     _log.info(
         # "%s END SUCCESS%s"
@@ -166,7 +159,7 @@ def success(transactionId, *args):
 
 
 def badRequest(transactionId):
-    """Logs the end of a transaction that terminated due to the request being
+    """Log the end of a transaction that terminated due to the request being
     faulty."""
     # _log.info("%s END BADREQUEST" % transactionId.hex)
     msg_str = f'{transactionId.hex} END BADREQUEST'
@@ -175,7 +168,7 @@ def badRequest(transactionId):
 
 
 def forbidden(transactionId):
-    """Logs the end of a transaction that terminated due to an authorization
+    """Log the end of a transaction that terminated due to an authorization
     failure."""
     _log.info(f"{transactionId.hex} END FORBIDDEN")
 
@@ -315,7 +308,7 @@ def error(transactionId, exception):
 
 
 def otherError(caller, exception):
-    """Logs an internal error.
+    """Log an internal error.
 
     Also, if the Django DEBUG flag is false, mails a traceback to the
     Django administrator list.  Must be called from an exception
@@ -342,5 +335,5 @@ def otherError(caller, exception):
 
 
 # def status(*args):
-#     """Logs the server's status."""
+#     """Log the server's status."""
 #     _log.info("- STATUS " + " ".join(impl.util.encode1(a) for a in args))

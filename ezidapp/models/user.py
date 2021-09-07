@@ -1,17 +1,8 @@
-# =============================================================================
-#
-# EZID :: ezidapp/models/user.py
-#
-# Abstract database model for users.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2015, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
+"""Object Relational Mapper (ORM) models for users
+"""
 
 import logging
 import re
@@ -23,13 +14,12 @@ import django.contrib.auth.models
 import django.core.exceptions
 import django.core.validators
 import django.db.models
+import django.db.models
 import django.db.transaction
 
 import ezidapp.models.shoulder
 import ezidapp.models.validation
-# import ezidapp.models.group
-# import ezidapp.models.realm
-import ezidapp.models.validation
+import impl.log as log
 import impl.nog.minter
 import impl.util
 
@@ -37,46 +27,37 @@ logger = logging.getLogger(__name__)
 
 
 class User(django.db.models.Model):
-    # An EZID user, i.e., a login account.
-
+    """An EZID user (login account)
+    """
     class Meta:
-        abstract = True
+        # abstract = True
+        verbose_name = "user"
+        verbose_name_plural = "users"
 
-    pid = django.db.models.CharField(
-        max_length=impl.util.maxIdentifierLength,
-        unique=True,
-        validators=[ezidapp.models.validation.agentPid],
-    )
-    # The user's persistent identifier, e.g., "ark:/99166/bar".  Note
-    # that the uniqueness requirement is actually stronger than
-    # indicated here: it is expected that all agent (i.e., all user and
-    # group) persistent identifiers are unique.
-
-    username = django.db.models.CharField(
-        max_length=32,
-        unique=True,
-        validators=[
-            django.core.validators.RegexValidator(
-                "^[a-z0-9]+([-_.][a-z0-9]+)*$", "Invalid username.", flags=re.I
-            )
-        ],
-    )
-    # The user's username, e.g., "dryad".
-
-    # A note on foreign keys: since the store and search databases are
-    # completely separate, foreign keys must reference different target
-    # models, and so the declaration of all foreign keys is deferred to
-    # the concrete subclasses.  There appears to be no better way to
-    # model this in Django.
-
-    # group = django.db.models.ForeignKey(group.Group)
-    # The user's group.
-
-    # realm = django.db.models.ForeignKey(realm.Realm)
-    # The user's realm.
+    def __str__(self):
+        return f"{self.username} ({self.displayName})"
 
     def clean(self):
-        import impl.log as log
+        # Because the Django admin app performs many-to-many operations only after creating or
+        # updating objects, sadly, we can't perform any validations related to shoulders or proxies
+        # here.
+        #
+        # Moreover, because users are displayed inline in group change pages, they get validated
+        # along with groups, before GroupAdmin.save_model is called.  Therefore we can't check
+        # group-user Crossref-enabled consistency here.
+        if self.username == "anonymous":
+            raise django.core.validators.ValidationError(
+                {"username": "The name 'anonymous' is reserved."}
+            )
+        self.displayName = self.displayName.strip()
+        self.primaryContactName = self.primaryContactName.strip()
+        self.primaryContactPhone = self.primaryContactPhone.strip()
+        self.secondaryContactName = self.secondaryContactName.strip()
+        self.secondaryContactPhone = self.secondaryContactPhone.strip()
+        self.notes = self.notes.strip()
+        if self.password == "":
+            self.setPassword(None)
+
 
         # The following two statements are here just to support the Django
         # admin app, which has its own rules about how model objects are
@@ -102,162 +83,6 @@ class User(django.db.models.Model):
                 log.otherError("user.User.clean", e)
                 raise
 
-    def __str__(self):
-        return self.username
-
-
-class StoreUser(User):
-
-    # Inherited foreign key declarations...
-    group = django.db.models.ForeignKey(
-        'ezidapp.StoreGroup', on_delete=django.db.models.PROTECT
-    )
-    realm = django.db.models.ForeignKey(
-        'ezidapp.StoreRealm', on_delete=django.db.models.PROTECT
-    )
-
-    displayName = django.db.models.CharField(
-        "display name", max_length=255, validators=[ezidapp.models.validation.nonEmpty]
-    )
-    # The user's display name, e.g., "Brown University Library", which
-    # is displayed in the UI wherever the username is.  Editable by the
-    # user.
-
-    accountEmail = django.db.models.EmailField(
-        "account email",
-        max_length=255,
-        help_text="The email address to which account-related notifications "
-        + "are sent other than Crossref notifications.",
-    )
-    # Editable by the user.
-
-    primaryContactName = django.db.models.CharField(
-        "name", max_length=255, validators=[ezidapp.models.validation.nonEmpty]
-    )
-    primaryContactEmail = django.db.models.EmailField("email", max_length=255)
-    primaryContactPhone = django.db.models.CharField(
-        "phone", max_length=255, validators=[ezidapp.models.validation.nonEmpty]
-    )
-    # Primary contact info, which is required.  Editable by the user.
-
-    secondaryContactName = django.db.models.CharField(
-        "name", max_length=255, blank=True
-    )
-    secondaryContactEmail = django.db.models.EmailField(
-        "email", max_length=255, blank=True
-    )
-    secondaryContactPhone = django.db.models.CharField(
-        "phone", max_length=255, blank=True
-    )
-    # Secondary contact info, which is optional.  Editable by the user.
-
-    inheritGroupShoulders = django.db.models.BooleanField(
-        "inherit group shoulders",
-        default=False,
-        help_text="If checked, the user has access to all group "
-        + "shoulders; if not checked, the user has access only to the shoulders "
-        + "explicitly selected below.",
-    )
-    # If True, the user may use any of the group's shoulders; if False,
-    # shoulders visible to the user are limited to those explicitly
-    # listed in 'shoulders'.
-    shoulder_model = django.apps.apps.get_model('ezidapp', 'Shoulder')
-    shoulders = django.db.models.ManyToManyField(shoulder_model, blank=True)
-    # The shoulders to which the user has access.  If
-    # inheritGroupShoulders is True, the set matches the group's set; if
-    # inheritGroupShoulders if False, the user's set may be a proper
-    # subset of the group's set.  Test shoulders are not included in
-    # this relation.
-
-    crossrefEnabled = django.db.models.BooleanField("Crossref enabled", default=False)
-    # Deprecated and not used at present.  (Former usage:
-    # If the user's group is Crossref-enabled, determines if the user
-    # may register identifiers with Crossref; otherwise, False.  Note
-    # that Crossref registration requires the enablement of both the
-    # user and the shoulder.)
-
-    crossrefEmail = django.db.models.EmailField(
-        "Crossref email", max_length=255, blank=True
-    )
-    # If the user is Crossref-enabled, the optional email address to
-    # which Crossref notifications are sent; otherwise, empty.  If there
-    # is no email address, notifications are simply not sent.
-
-    proxies = django.db.models.ManyToManyField(
-        "self",
-        blank=True,
-        symmetrical=False,
-        help_text="A proxy is another user that may act on behalf of this user.",
-    )
-    # Other users that may act as a proxy for this user.  Editable by
-    # the user.  Self-referential proxies are disallowed.  Privileged
-    # users (group and realm administrators, superusers) are not allowed
-    # to have proxies.
-
-    @property
-    def proxy_for(self):
-        # Returns a Django related manager for the set of users this user
-        # is a proxy for.
-        return self.storeuser_set
-
-    isGroupAdministrator = django.db.models.BooleanField(
-        "group administrator", default=False
-    )
-    # True if the user is an administrator of its group.  A group
-    # administrator may act on behalf of any user in the group (i.e., is
-    # effectively a proxy for every group member); may perform
-    # group-level operations; and may change identifier ownership within
-    # the group.
-
-    isRealmAdministrator = django.db.models.BooleanField(
-        "realm administrator", default=False
-    )
-    # True if the user is an administrator of its realm.  A realm
-    # administrator is effectively an administrator of every group in
-    # the realm, and may change identifier ownership within the realm.
-    # A realm administrator has no special privileges regarding
-    # shoulders, however.
-
-    isSuperuser = django.db.models.BooleanField("superuser", default=False)
-
-    @property
-    def isPrivileged(self):
-        return (
-            self.isGroupAdministrator or self.isRealmAdministrator or self.isSuperuser
-        )
-
-    loginEnabled = django.db.models.BooleanField("login enabled", default=True)
-    # Determines if the user may login.
-
-    password = django.db.models.CharField("set password", max_length=128, blank=True)
-    # The user's password in salted/hashed/encoded form.  Despite the
-    # declaration, this field will never actually be empty.  It is
-    # initially given an unusable value.  Editable by the user.
-
-    notes = django.db.models.TextField(blank=True)
-    # Any additional notes.
-
-    def clean(self):
-        # Because the Django admin app performs many-to-many operations
-        # only after creating or updating objects, sadly, we can't perform
-        # any validations related to shoulders or proxies here.
-        # Addendum: moreover, because users are displayed inline in group
-        # change pages, they get validated along with groups, before
-        # StoreGroupAdmin.save_model is called.  Therefore we can't check
-        # group-user Crossref-enabled consistency here.
-        super(StoreUser, self).clean()
-        if self.username == "anonymous":
-            raise django.core.validators.ValidationError(
-                {"username": "The name 'anonymous' is reserved."}
-            )
-        self.displayName = self.displayName.strip()
-        self.primaryContactName = self.primaryContactName.strip()
-        self.primaryContactPhone = self.primaryContactPhone.strip()
-        self.secondaryContactName = self.secondaryContactName.strip()
-        self.secondaryContactPhone = self.secondaryContactPhone.strip()
-        self.notes = self.notes.strip()
-        if self.password == "":
-            self.setPassword(None)
 
     def setPassword(self, password):
         """Set the user's password
@@ -288,9 +113,9 @@ class StoreUser(User):
             pass
 
     def authenticate(self, password):
-        """Returns True if the supplied password matches the user's."""
+        """Return True if the supplied password matches the user's."""
         logger.debug(
-            'Authenticating StoreUser. displayName="{}"'.format(self.displayName)
+            'Authenticating User. displayName="{}"'.format(self.displayName)
         )
 
         if not self.loginEnabled:
@@ -342,15 +167,160 @@ class StoreUser(User):
 
         return True
 
-    class Meta:
-        verbose_name = "user"
-        verbose_name_plural = "users"
-
-    def __str__(self):
-        return f"{self.username} ({self.displayName})"
-
-    isAnonymous = False
     # See below.
+    isAnonymous = False
+
+    # The user's persistent identifier, e.g., "ark:/99166/bar".  Note
+    # that the uniqueness requirement is actually stronger than
+    # indicated here: it is expected that all agent (i.e., all user and
+    # group) persistent identifiers are unique.
+    pid = django.db.models.CharField(
+        max_length=impl.util.maxIdentifierLength,
+        unique=True,
+        validators=[ezidapp.models.validation.agentPid],
+    )
+
+    # The user's username, e.g., "dryad".
+    username = django.db.models.CharField(
+        max_length=32,
+        unique=True,
+        validators=[
+            django.core.validators.RegexValidator(
+                "^[a-z0-9]+([-_.][a-z0-9]+)*$", "Invalid username.", flags=re.I
+            )
+        ],
+    )
+
+    group = django.db.models.ForeignKey(
+        'ezidapp.Group', on_delete=django.db.models.PROTECT
+    )
+
+    realm = django.db.models.ForeignKey(
+        'ezidapp.Realm', on_delete=django.db.models.PROTECT
+    )
+
+    # The user's display name, e.g., "Brown University Library", which
+    # is displayed in the UI wherever the username is.  Editable by the
+    # user.
+    displayName = django.db.models.CharField(
+        "display name", max_length=255, validators=[ezidapp.models.validation.nonEmpty]
+    )
+
+    # Editable by the user.
+    accountEmail = django.db.models.EmailField(
+        "account email",
+        max_length=255,
+        help_text="The email address to which account-related notifications "
+        + "are sent other than Crossref notifications.",
+    )
+
+    # Primary contact info, which is required.  Editable by the user.
+    primaryContactName = django.db.models.CharField(
+        "name", max_length=255, validators=[ezidapp.models.validation.nonEmpty]
+    )
+    primaryContactEmail = django.db.models.EmailField("email", max_length=255)
+    primaryContactPhone = django.db.models.CharField(
+        "phone", max_length=255, validators=[ezidapp.models.validation.nonEmpty]
+    )
+
+    # Secondary contact info, which is optional.  Editable by the user.
+    secondaryContactName = django.db.models.CharField(
+        "name", max_length=255, blank=True
+    )
+    secondaryContactEmail = django.db.models.EmailField(
+        "email", max_length=255, blank=True
+    )
+    secondaryContactPhone = django.db.models.CharField(
+        "phone", max_length=255, blank=True
+    )
+
+    # If True, the user may use any of the group's shoulders; if False,
+    # shoulders visible to the user are limited to those explicitly
+    # listed in 'shoulders'.
+    inheritGroupShoulders = django.db.models.BooleanField(
+        "inherit group shoulders",
+        default=False,
+        help_text="If checked, the user has access to all group "
+        + "shoulders; if not checked, the user has access only to the shoulders "
+        + "explicitly selected below.",
+    )
+    shoulder_model = django.apps.apps.get_model('ezidapp', 'Shoulder')
+
+    # The shoulders to which the user has access.  If
+    # inheritGroupShoulders is True, the set matches the group's set; if
+    # inheritGroupShoulders if False, the user's set may be a proper
+    # subset of the group's set.  Test shoulders are not included in
+    # this relation.
+    shoulders = django.db.models.ManyToManyField(shoulder_model, blank=True)
+
+    # Deprecated and not used at present.  (Former usage:
+    # If the user's group is Crossref-enabled, determines if the user
+    # may register identifiers with Crossref; otherwise, False.  Note
+    # that Crossref registration requires the enablement of both the
+    # user and the shoulder.)
+    crossrefEnabled = django.db.models.BooleanField("Crossref enabled", default=False)
+
+    # If the user is Crossref-enabled, the optional email address to
+    # which Crossref notifications are sent; otherwise, empty.  If there
+    # is no email address, notifications are simply not sent.
+    crossrefEmail = django.db.models.EmailField(
+        "Crossref email", max_length=255, blank=True
+    )
+
+    # Other users that may act as a proxy for this user.  Editable by
+    # the user.  Self-referential proxies are disallowed.  Privileged
+    # users (group and realm administrators, superusers) are not allowed
+    # to have proxies.
+    proxies = django.db.models.ManyToManyField(
+        "self",
+        blank=True,
+        symmetrical=False,
+        help_text="A proxy is another user that may act on behalf of this user.",
+    )
+
+    @property
+    def proxy_for(self):
+        # Returns a Django related manager for the set of users this user
+        # is a proxy for.
+        return self.user_set
+
+    # True if the user is an administrator of its group.  A group
+    # administrator may act on behalf of any user in the group (i.e., is
+    # effectively a proxy for every group member); may perform
+    # group-level operations; and may change identifier ownership within
+    # the group.
+    isGroupAdministrator = django.db.models.BooleanField(
+        "group administrator", default=False
+    )
+
+    # True if the user is an administrator of its realm.  A realm
+    # administrator is effectively an administrator of every group in
+    # the realm, and may change identifier ownership within the realm.
+    # A realm administrator has no special privileges regarding
+    # shoulders, however.
+    isRealmAdministrator = django.db.models.BooleanField(
+        "realm administrator", default=False
+    )
+
+    isSuperuser = django.db.models.BooleanField("superuser", default=False)
+
+    @property
+    def isPrivileged(self):
+        return (
+            self.isGroupAdministrator or self.isRealmAdministrator or self.isSuperuser
+        )
+
+    # Determines if the user may login.
+    loginEnabled = django.db.models.BooleanField("login enabled", default=True)
+
+    # The user's password in salted/hashed/encoded form.  Despite the
+    # declaration, this field will never actually be empty.  It is
+    # initially given an unusable value.  Editable by the user.
+    password = django.db.models.CharField("set password", max_length=128, blank=True)
+
+    # Any additional notes.
+    notes = django.db.models.TextField(blank=True)
+
 
 
 # The following caches are only added to or replaced entirely;
@@ -375,33 +345,3 @@ class StoreUser(User):
 #         caches = (pidCache, usernameCache, idCache)
 #         _caches = caches
 #     return caches
-
-
-# =============================================================================
-#
-# EZID :: ezidapp/models/user.py
-#
-# Database model for users in the search database.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2015, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
-
-import django.db.models
-
-# import ezidapp.models.group
-# import ezidapp.models.realm
-
-
-class SearchUser(User):
-    group = django.db.models.ForeignKey(
-        'ezidapp.SearchGroup', on_delete=django.db.models.PROTECT
-    )
-    realm = django.db.models.ForeignKey(
-        'ezidapp.SearchRealm', on_delete=django.db.models.PROTECT
-    )

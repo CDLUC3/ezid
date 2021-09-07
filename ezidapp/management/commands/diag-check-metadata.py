@@ -1,4 +1,4 @@
-"""Check that metadata stored in compressed blobs is valid.
+"""Check that metadata stored in compressed blobs is valid
 
 This performs basic integrity checks and calculates some statistics on the values of all compressed blobs stored in the database.
 
@@ -18,16 +18,19 @@ EZID stores compressed blobs in the following locations:
     BinderQueue       metadata    ezidapp_binderqueue
     CrossrefQueue     metadata    ezidapp_crossrefqueue
     DataciteQueue     metadata    ezidapp_datacitequeue
-    SearchIdentifier  cm          ezidapp_searchidentifier
-    StoreIdentifier   cm          ezidapp_storeidentifier
+    Identifier  cm          ezidapp_searchidentifier
+    Identifier   cm          ezidapp_storeidentifier
 
 There are three basic types of blobs:
 
 metadata: Compressed JSON that deserializes into a Python dict
 cm:       Compressed Python code that serializes into a Python dict
-object:   Compressed JSON that deserializes into a StoreIdentifier Model
+object:   Compressed JSON that deserializes into a Identifier Model
 
 """
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import contextlib
 import json
 import logging

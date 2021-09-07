@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import contextlib
 import os
 import pathlib
@@ -58,8 +61,7 @@ def create_missing_directories_for_file(file_path):
     """Create any missing directories leading up to the file specified by
     {file_path}.
 
-    Note that {file_path} is assumed to be a file path, so the last element in the path
-    is ignored.
+    {file_path} is assumed to be a file path, so the last element in the path is ignored.
 
     Args:
         file_path (str): Relative or absolute path to a file that may or may not exist.
@@ -74,7 +76,7 @@ def create_missing_directories_for_file(file_path):
 
 
 def create_missing_directories_for_dir(dir_path):
-    """Create any directories in ``dir_path`` that do not yet exist.
+    """Create any directories in ``dir_path`` that do not yet exist
 
     Args:
         dir_path (str): Relative or absolute path to a directory that may or may not
@@ -188,7 +190,7 @@ def temp_file_for_obj(o, ext_str=None, to_utf_8=False, keep_file=False, lf=False
 
 
 def safe_path_exists(o):
-    """Check if `o` is a path to an existing file.
+    """Check if `o` is a path to an existing file
 
     ``pathlib.Path(o).is_file()`` and ``os.path.exists()`` raise various types of
     exceptions if unable to convert `o` to a value suitable for use as a path. This

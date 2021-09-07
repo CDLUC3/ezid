@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import logging
 import pathlib
 
@@ -129,7 +132,7 @@ class BdbWrapper(object):
         return hjson.dumps(d, indent=2)  # , sort_keys=True, item_sort_key=_sort_key,)
 
     def as_dict(self, compact=True):
-        """Get the state of a minter BerkeleyDB as a dict.
+        """Get the state of a minter BerkeleyDB as a dict
 
         Only the fields used by EZID are included.
         """
@@ -154,7 +157,7 @@ class BdbWrapper(object):
 
 class Bdb:
     def __init__(self, bdb_path, is_new=False, dry_run=False, debug=False):
-        """Context manager for a BerkeleyDB.
+        """Context manager for a BerkeleyDB
 
         Wrap a BerkeleyDB in a context manager that provides:
 

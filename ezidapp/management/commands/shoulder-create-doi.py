@@ -1,5 +1,8 @@
 """Create a new DOI shoulder."""
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import argparse
 import logging
 
@@ -96,7 +99,7 @@ class Command(django.core.management.BaseCommand):
             datacenter_model = None
         else:
             impl.nog.shoulder.assert_valid_datacenter(opt.datacenter_str)
-            datacenter_model = ezidapp.models.datacenter.StoreDatacenter.objects.get(
+            datacenter_model = ezidapp.models.datacenter.Datacenter.objects.get(
                 symbol=opt.datacenter_str
             )
 

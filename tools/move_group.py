@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # Moves a group to a different realm.
 #
 # This script modifies the database external to the running server.
@@ -64,8 +67,8 @@ if group is None or args.group == "anonymous":
     error("no such group: " + args.group)
 
 try:
-    newRealm = ezidapp.models.realm.StoreRealm.objects.get(name=args.new_realm)
-except ezidapp.models.realm.StoreRealm.DoesNotExist:
+    newRealm = ezidapp.models.realm.Realm.objects.get(name=args.new_realm)
+except ezidapp.models.realm.Realm.DoesNotExist:
     error("no such realm: " + args.new_realm)
 
 if any(u.isRealmAdministrator for u in group.users.all()):
@@ -84,15 +87,15 @@ if args.step == 1:
         for u in group.users.all():
             u.realm = newRealm
             u.save()
-    newSearchRealm = ezidapp.models.realm.SearchRealm.objects.get(name=newRealm.name)
-    searchGroup = ezidapp.models.group.SearchGroup.objects.get(
+    newRealm = ezidapp.models.realm.Realm.objects.get(name=newRealm.name)
+    searchGroup = ezidapp.models.group.Group.objects.get(
         groupname=group.groupname
     )
     with django.db.transaction.atomic():
-        searchGroup.realm = newSearchRealm
+        searchGroup.realm = newRealm
         searchGroup.save()
         for u in searchGroup.searchuser_set.all():
-            u.realm = newSearchRealm
+            u.realm = newRealm
             u.save()
     print(
         (

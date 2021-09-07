@@ -1,20 +1,12 @@
-# =============================================================================
-#
-# EZID :: ezidapp/models/realm.py
-#
-# Abstract database model for realms.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2015, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
+"""Object Relational Mapper (ORM) models for realms
+"""
 
 import django.core.validators
 import django.db.models
+import django.http
 
 import ezidapp.models.validation
 
@@ -23,7 +15,9 @@ class Realm(django.db.models.Model):
     # An EZID realm, which corresponds to a broad administrative area.
 
     class Meta:
-        abstract = True
+    #     abstract = True
+        verbose_name = "realm"
+        verbose_name_plural = "realms"
 
     name = django.db.models.CharField(
         max_length=32, unique=True, validators=[ezidapp.models.validation.nonEmpty]
@@ -32,43 +26,30 @@ class Realm(django.db.models.Model):
 
     def clean(self):
         self.name = self.name.strip()
-
-    def __str__(self):
-        return self.name
-
-
-class StoreRealm(Realm):
-    @property
-    def groups(self):
-        # Returns a Django related manager for the set of groups in this
-        # realm.
-        return self.storegroup_set
-
-    def clean(self):
-        super(StoreRealm, self).clean()
         if self.name == "anonymous":
             raise django.core.validators.ValidationError(
                 {"name": "The name 'anonymous' is reserved."}
             )
 
-    class Meta:
-        verbose_name = "realm"
-        verbose_name_plural = "realms"
+    def __str__(self):
+        return self.name
+
+    @property
+    def groups(self):
+        # Returns a Django related manager for the set of groups in this
+        # realm.
+        return self.group_set
 
     isAnonymous = False
     # See below.
 
 
 class AnonymousRealm(object):
-    # A class to represent the realm in which the anonymous user
-    # resides.  Note that this class can be used directly--- an object
-    # need not be instantiated.
+    # The realm in which the anonymous user resides.
+    #
+    # This class can be used directly. An object need not be instantiated.
     name = "anonymous"
     isAnonymous = True
 
 
 realmredirect = django.http.HttpResponseRedirect
-
-
-class SearchRealm(Realm):
-    pass

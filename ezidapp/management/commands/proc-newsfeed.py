@@ -1,20 +1,9 @@
-# =============================================================================
-#
-# EZID :: newsfeed.py
-#
-# Interface to the EZID RSS news feed.
-#
-# This module should be imported at server startup so that its daemon
-# thread is started in advance of any UI page requests.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2012, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+"""Interface to the EZID RSS news feed
+"""
+
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import logging
 import threading
 import time

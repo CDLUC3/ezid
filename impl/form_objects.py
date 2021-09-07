@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import re
 
 import django.core.exceptions
@@ -12,7 +15,7 @@ import impl.ui_common
 import impl.userauth
 import impl.util
 
-""" Django form framework added in 2016 release of EZID UI.
+""" Django form framework added in 2016 release of EZID UI
     Bulk of form validation occurs here. Avoiding JavaScript form validation
     in most cases in the UI.
 
@@ -99,7 +102,7 @@ NAME_ID_SCHEME_URI = ["nameIdentifier_{0}-schemeURI", _("Scheme URI")]
 
 
 class BaseForm(django.forms.Form):
-    """Base Form object: all forms have a target field.
+    """Base Form object: all forms have a target field
 
     If 'placeholder' is True set attribute to include specified
     placeholder text in text fields
@@ -117,7 +120,7 @@ class BaseForm(django.forms.Form):
 
 
 class ErcForm(BaseForm):
-    """Form object for ID with ERC profile (Used for simple or advanced ARK).
+    """Form object for ID with ERC profile (Used for simple or advanced ARK)
 
     BaseForm parent brings in target field. If 'placeholder' is True set
     attribute to include specified placeholder text in text fields
@@ -139,7 +142,7 @@ class ErcForm(BaseForm):
 
 
 class DcForm(BaseForm):
-    """Form object for ID with Dublin Core profile (Advanced ARK or DOI).
+    """Form object for ID with Dublin Core profile (Advanced ARK or DOI)
 
     BaseForm parent brings in target field. If 'placeholder' is True set
     attribute to include specified placeholder text in text fields
@@ -164,7 +167,7 @@ class DcForm(BaseForm):
 
 
 class DataciteForm(BaseForm):
-    """Form object for ID with (simple DOI) DataCite profile.
+    """Form object for ID with (simple DOI) DataCite profile
 
     BaseForm parent brings in target field. If 'placeholder' is True set
     attribute to include specified placeholder text in text fields
@@ -212,7 +215,7 @@ class DataciteForm(BaseForm):
 
 
 def getIdForm(profile, placeholder, elements=None):
-    """Returns a simple ID Django form.
+    """Return a simple ID Django form
 
     If 'placeholder' is True set attribute to include specified
     placeholder text in text fields
@@ -253,7 +256,7 @@ class RemainderForm(django.forms.Form):
 
 
 def getAdvancedIdForm(profile, request=None):
-    """For advanced ID (but not datacite_xml).
+    """For advanced ID (but not datacite_xml)
 
     Returns two forms: One w/a single remainder field and one with
     profile-specific fields
@@ -358,7 +361,7 @@ def _validate_geolat(n):
 #  should be declared as indiv. form fields named 'awardNumber' and 'awardNumber-awardURI'
 # See datacite_xml.formElementsToDataciteXml
 #
-# Note that fields with hyphens cannot be called directly from the template, and so have
+# Fields with hyphens cannot be called directly from the template, and so have
 #   been relegated to their own form object (defined in __init__)
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -405,7 +408,7 @@ class ResourceTypeForm(django.forms.Form):
 # Django faulty design: First formset allows blank form fields.
 # http://stackoverflow.com/questions/2406537/django-formsets-make-first-required
 class RequiredFormSet(django.forms.BaseFormSet):
-    """Sets first form in a formset required.
+    """Set first form in a formset required
 
     Used for TitleSet.
     """
@@ -416,7 +419,7 @@ class RequiredFormSet(django.forms.BaseFormSet):
 
 
 class NameIdMultBaseFormSet(django.forms.BaseFormSet):
-    """Generates aribitrary number of NameID fields.
+    """Generate aribitrary number of NameID fields
 
     Used by Creator and Contributor formsets. UI only offers 2 nameIds
     during initial ID creation, whereas unlimited # can be generated
@@ -457,7 +460,7 @@ class NameIdMultBaseFormSet(django.forms.BaseFormSet):
 
 # Remaining Datacite Forms listed below are intended to be wrapped into FormSets (repeatable)
 class CreatorForm(django.forms.Form):
-    """Form object for Creator Element in DataCite Advanced (XML) profile.
+    """Form object for Creator Element in DataCite Advanced (XML) profile
 
     This gets wrapped into a NameIdMultBaseFormSet (when passed into
     formset_factory).
@@ -1255,7 +1258,7 @@ def _getNameIdCt(fields, prefix):
 
 
 def isValidDataciteXmlForm(form):
-    """Validate all forms and formsets included.
+    """Validate all forms and formsets included
 
     Just pass empty or unbound form objects. Returns false if one or
     more items don't validate
@@ -1507,7 +1510,7 @@ class BaseSearchIdForm(django.forms.Form):
 
 
 class ManageSearchIdForm(BaseSearchIdForm):
-    """Used for Searching on Manage ID page.
+    """Used for Searching on Manage ID page
 
     Inherits from BaseSearchIdForm
     """

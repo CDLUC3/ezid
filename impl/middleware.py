@@ -1,19 +1,11 @@
-# =============================================================================
-#
-# EZID :: middleware.py
-#
-# Request/response middleware.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2010, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
 
+"""Request/response middleware
+"""
 
+# TODO: We no longer import config here (as it no longer exists). Is the behavior described in this old comment still an issue?
+#
 # Some things in life are just destined to remain a mystery.  If the
 # EZID administrator is logged in and viewing a Django admin page, and
 # if the server is restarted and the page refreshed, Django asks the

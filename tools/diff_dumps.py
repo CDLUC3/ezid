@@ -1,11 +1,17 @@
 #! /usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # Compares two dump files.  The dump files must be comparable: they
 # must both be raw dumps or both be normal dumps, must have the same
 # scope, etc.  In both files the records must be ordered by
 # identifier, as they are when produced by 'dump-store'.  (Dump files
-# produced by 'dump-binder' must be sorted first.  Also, note that
-# reserved identifiers are not stored in the binder.)  Usage:
+# produced by 'dump-binder' must be sorted first.
+#
+# Reserved identifiers are not stored in the binder.
+#
+# Usage:
 #
 #    diff-dumps dump1 dump2
 #

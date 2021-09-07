@@ -1,5 +1,8 @@
 """EZID settings
 """
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import collections
 import logging.config
 import os
@@ -84,7 +87,6 @@ DAEMONS_CROSSREF_ENABLED = True
 DAEMONS_DOWNLOAD_ENABLED = True
 DAEMONS_LINKCHECKER_ENABLED = True
 DAEMONS_LINKCHECK_UPDATE_ENABLED = True
-DAEMONS_STATISTICS_ENABLED = True
 
 DAEMONS_BACKGROUND_PROCESSING_IDLE_SLEEP = 5
 DAEMONS_STATUS_LOGGING_INTERVAL = 60
@@ -130,11 +132,6 @@ DATABASES['search'] = DATABASES['default'].copy()
 DATABASES['search']['fulltextSearchSupported'] = True
 
 DATABASES_RECONNECT_DELAY = 60
-DATABASE_ROUTERS = ['settings.routers.Router']
-
-SEARCH_MYSQL = True
-STORE_MYSQL = True
-SEARCH_STORE_SAME_DATABASE = True
 
 # The options in this section are used only if fulltext search is supported by the
 # search database.  The following two options could be obtained from MySQL directly, but
@@ -511,9 +508,9 @@ BLOB_FIELD_LIST = [
     BlobField('BinderQueue', 'metadata', True),
     BlobField('CrossrefQueue', 'metadata', True),
     BlobField('DataciteQueue', 'metadata', True),
-    # object = StoreIdentifier (Model)
+    # object = Identifier (Model)
     BlobField('DownloadQueue', 'object', True),
     # cm = CompressedJsonField (Field)
-    BlobField('SearchIdentifier', 'cm', False),
-    BlobField('StoreIdentifier', 'cm', False),
+    BlobField('Identifier', 'cm', False),
+    BlobField('Identifier', 'cm', False),
 ]

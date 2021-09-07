@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import base64
 import bz2
 import collections
@@ -27,15 +30,12 @@ import pytest
 import ezidapp
 
 # Queues
-import ezidapp.models.registration_queue
-import ezidapp.models.registration_queue
+import ezidapp.models.async_queue
 import ezidapp.models.datacenter
-import ezidapp.models.registration_queue
-import ezidapp.models.download_queue
+import ezidapp.models.async_queue
 import ezidapp.models.link_checker
 
 import ezidapp.models.shoulder
-import ezidapp.models.user
 import ezidapp.models.user
 import ezidapp.models.util
 import impl.nog.filesystem
@@ -43,7 +43,6 @@ import impl.nog.minter
 import impl.nog.shoulder
 import tests.util.metadata_generator
 import tests.util.sample
-import tests.util.util
 import tests.util.util
 
 APP_LABEL = 'ezidapp'
@@ -107,10 +106,10 @@ ADMIN_MODEL_DICT = {
         'model': 'logentry',
     },
     # EZID custom user authentication
-    'ezidapp.StoreRealm': {
+    'ezidapp.Realm': {
         "name": django.conf.settings.ADMIN_STORE_REALM,
     },
-    'ezidapp.SearchRealm': {
+    'ezidapp.Realm': {
         "name": django.conf.settings.ADMIN_SEARCH_REALM,
     },
     'ezidapp.storeuser': {
@@ -160,9 +159,8 @@ ADMIN_MODEL_DICT = {
 # Lists generated from CSV files
 # - These are used for parametrizing fixtures, meaning that the test is run for each row in the CSV,
 # and each run counts as a separate test.
-# - Note that using multiple parametrizing fixtures causes the test to be run for each possible
+# - Using multiple parametrizing fixtures causes the test to be run for each possible
 # combination of the parameters.
-
 
 def _csv_gen(csv_path, delimiter=','):
     """Generator that yields the rows from a CSV file"""
@@ -229,7 +227,7 @@ def pytest_addoption(parser):
 
 
 def pytest_configure(config):
-    """Allow plugins and conftest files to perform initial configuration.
+    """Allow plugins and conftest files to perform initial configuration
 
     This hook is called for every plugin and initial conftest file after command line
     options have been parsed.
@@ -253,7 +251,7 @@ def pytest_configure(config):
 
 @pytest.fixture(autouse=True)
 def enable_db_access_for_all_tests(db):
-    """Make the Django DB available to all tests.
+    """Make the Django DB available to all tests
 
     This will use Django's default DB, which is the "store" DB in EZID.
     The DB connection is set up according to the DJANGO_SETTINGS_MODULE
@@ -327,7 +325,7 @@ def disable_log_setup(mocker):
 
 @pytest.fixture(scope='function')
 def admin_admin():
-    """Set the admin password to "admin".
+    """Set the admin password to "admin"
 
     This is intended for testing authentication. To instead skip authentication entirely,
     see skip_auth.
@@ -346,7 +344,7 @@ def admin_admin():
 
 @pytest.fixture()
 def apitest_minter(tmp_bdb_root):
-    """Create a minter and corresponding shoulder for the apitest user.
+    """Create a minter and corresponding shoulder for the apitest user
 
     The minter us stored below the temporary root created by tmp_bdb_root. The shoulders are
     registered to the admin user in the DB, and are ready for use.
@@ -366,7 +364,7 @@ def apitest_minter(tmp_bdb_root):
         # is_debug=True,
     )
 
-    user_model = ezidapp.models.user.StoreUser.objects.get(username='apitest')
+    user_model = ezidapp.models.user.User.objects.get(username='apitest')
 
     tests.util.util.add_shoulder_to_user(shoulder_model, user_model)
 
@@ -390,7 +388,7 @@ def apitest_client(client, django_user_model):
     The password is salted, so the PBKDF hash that is stored in ezidapp_storeuser.password is
     different every time, even when using the same password:
 
-        print(ezidapp.models.user.StoreUser.objects.get(username='apitest').password)
+        print(ezidapp.models.user.User.objects.get(username='apitest').password)
 
     TODO: This sort of procedure probably means that we no longer need 'skip_auth'.
     """
@@ -466,7 +464,7 @@ def ez_user(client, django_user_model):
 
 @pytest.fixture()
 def tmp_bdb_root(mocker, tmp_path):
-    """Set a temporary root directory for the BerkeleyDB minter hierarchy.
+    """Set a temporary root directory for the BerkeleyDB minter hierarchy
 
     By default, a BDB path resolved by the minter will reference a location in EZID's
     minter hierarchy, as configured in the EZID settings. Currently, `ezid/db/minters`.
@@ -477,7 +475,6 @@ def tmp_bdb_root(mocker, tmp_path):
     used for creating paths below the root. E.g., `tmp_bdb_root / 'b2345' / 'x1'`.
     """
     for dot_path in (
-        'impl.nog.bdb.get_bdb_root',
         'impl.nog.bdb.get_bdb_root',
     ):
         mocker.patch(
@@ -504,7 +501,7 @@ def minters(tmp_bdb_root, namespace, meta_type):
         ns,
         'test org for shoulder {}'.format(str(ns)),
         datacenter_model=(
-            ezidapp.models.datacenter.StoreDatacenter.objects.filter(symbol='CDL.CDL').get()
+            ezidapp.models.datacenter.Datacenter.objects.filter(symbol='CDL.CDL').get()
             if meta_type == 'datacite'
             else None
         ),
@@ -553,7 +550,7 @@ def metadata(request):
         - Lower bound of length of JSON encoded metadata (inclusive)
             - The upper bound for each JSON string is the next lower bound of the following row
             (exclusive).
-        - Id sequence number from the StoreIdentifier table row holding the metadata that was
+        - Id sequence number from the Identifier table row holding the metadata that was
             selected for the sample
         - Length, in Unicode code points, of the JSON metadata (TODO: Or is it the number of UTF-8
             bytes, the implicit encoding for JSON?)
@@ -615,9 +612,7 @@ def registration_queue(request):
 
 
 # ezidapp.models.registration_queue
-# ezidapp.models.registration_queue
-# ezidapp.models.registration_queue
-# ezidapp.models.download_queue
+# ezidapp.models.async_queue
 # ezidapp.models.link_checker
 
 # Util
@@ -745,7 +740,7 @@ def django_close_all_connections():
 
 
 # def ensure_minter(tmp_bdb_root, ns):
-#     """Create a minter BerkeleyDB for a shoulder if one does not already exist.
+#     """Create a minter BerkeleyDB for a shoulder if one does not already exist
 #     """
 #     # Create the minter BerkeleyDB.
 #     bdb_path = impl.nog.minter.create_minter_database(ns)
@@ -755,7 +750,7 @@ def django_close_all_connections():
 #         ns,
 #         'test org for shoulder {}'.format(str(ns)),
 #         datacenter_model=(
-#             ezidapp.models.datacenter.StoreDatacenter.objects.filter(symbol='CDL.CDL').get()
+#             ezidapp.models.datacenter.Datacenter.objects.filter(symbol='CDL.CDL').get()
 #             if meta_type == 'datacite'
 #             else None
 #         ),
@@ -769,22 +764,22 @@ def django_close_all_connections():
 #     yield namespace
 
 # def get_or_create_user(group_name):
-#     store_realm = ezidapp.models.realm.StoreRealm.objects.update_or_create(name='CDL')[0]
-#     store_group = ezidapp.models.group.StoreGroup.objects.update_or_create(
-#             'realm': store_realm,
+#     realm = ezidapp.models.realm.Realm.objects.update_or_create(name='CDL')[0]
+#     group = ezidapp.models.group.Group.objects.update_or_create(
+#             'realm': realm,
 #             'groupname': group_name,
 #             # },
 #         },
 #         groupname=django.conf.settings.ADMIN_GROUPNAME,
 #     )[0]
-#     store_user = ezidapp.models.user.StoreUser.objects.update_or_create(
+#     user = ezidapp.models.user.User.objects.update_or_create(
 #         defaults={
-#             **ADMIN_MODEL_DICT['ezidapp.storeuser'],
-#             'realm': store_realm,
-#             'group': store_group,
+#             **ADMIN_MODEL_DICT['ezidapp.user'],
+#             'realm': realm,
+#             'group': group,
 #             'username': django.conf.settings.ADMIN_USERNAME,
 #         },
 #         username='admin',
 #     )[0]
-#     store_user.setPassword(django.conf.settings.ADMIN_PASSWORD)
-#     store_user.save()
+#     user.setPassword(django.conf.settings.ADMIN_PASSWORD)
+#     user.save()

@@ -1,3 +1,8 @@
+/*!
+ * Copyright©2021, Regents of the University of California
+ * http://creativecommons.org/licenses/BSD
+ */
+
 // ##### Main Sass ##### //
 
 // Test with red borders
@@ -19,7 +24,7 @@
 
 // ***** Custom Elements ***** //
 @import "icons";
-@import "links_new"; 
+@import "links_new";
 @import "text";
 
 @import "footer";  // Just carousel stuff left in here
@@ -90,7 +95,7 @@ img.center {
   @extend padding-left-base;
 }
 
-hr { 
+hr {
   border-color: $design-secondary-color !important; // works in Chrome and Safari
   background-color: $design-secondary-color; // works in Firefox and Opera
   color: $design-secondary-color;  // works in IE7+
@@ -127,4 +132,3 @@ hr {
 .trapper_keeper {
   display:none;
 }
-

@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import csv
 import datetime
 import io
@@ -175,8 +178,8 @@ def _computeTotals(table):
 
 
 def csvStats(request):
-    """Returns all statistics to which a user is entitled as a CSV file.
-    'requestor' is the user, and should be a StoreUser object.  The statistics
+    """Return all statistics to which a user is entitled as a CSV file
+    'requestor' is the user, and should be a User object.  The statistics
     include those for the requestor; and all users (if the requestor is a
     superuser) or all users in the requestor's realm (if the requestor is a
     realm administrator) or all users in the requestor's group (if the
@@ -201,7 +204,7 @@ def csvStats(request):
     requestor = impl.userauth.getUser(request)
     users = {requestor}
     if requestor.isSuperuser:
-        for u in ezidapp.models.user.StoreUser.objects.all():
+        for u in ezidapp.models.user.User.objects.all():
             users.add(u)
     elif requestor.isRealmAdministrator:
         for g in requestor.realm.groups.all():

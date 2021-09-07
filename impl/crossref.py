@@ -1,39 +1,15 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import re
 import time
-import uuid
-
-import impl.util
-import lxml.etree
-import lxml
-import impl.datacite
-
-import logging
-import re
-import time
-import urllib.error
-import urllib.parse
-import urllib.request
 import uuid
 
 import django.conf
-import django.core.mail
-import django.core.management
-import django.db
-import django.db.models
+import lxml
 import lxml.etree
 
-import ezidapp.management.commands.proc_base
-import ezidapp.models.registration_queue
-import ezidapp.models.identifier
-import ezidapp.models.user
-import ezidapp.models.util
-import impl.ezid
-import impl.log
-import impl.nog.util
 import impl.util
-import impl.util2
-
-import ezidapp.models.registration_queue
 
 ROOT_TAGS = [
     "journal",
@@ -48,7 +24,6 @@ ROOT_TAGS = [
     "posted_content",
 ]
 
-
 TITLE_PATH_LIST = [
     "../N:titles/N:title",
     "../N:titles/N:original_language_title",
@@ -57,18 +32,25 @@ TITLE_PATH_LIST = [
     "../N:abbrev_title",
 ]
 
-_prologRE = re.compile("<\\?xml\\s+version\\s*=\\s*['\"]([-\\w.:]+)[\"']" +\
-  "(\\s+encoding\\s*=\\s*['\"]([-\\w.]+)[\"'])?" +\
-  "(\\s+standalone\\s*=\\s*['\"](yes|no)[\"'])?\\s*\\?>\\s*")
+_prologRE = re.compile(
+    "<\\?xml\\s+version\\s*=\\s*['\"]([-\\w.:]+)[\"']"
+    + "(\\s+encoding\\s*=\\s*['\"]([-\\w.]+)[\"'])?"
+    + "(\\s+standalone\\s*=\\s*['\"](yes|no)[\"'])?\\s*\\?>\\s*"
+)
 _utf8RE = re.compile("UTF-?8$", re.I)
 _schemaLocation = "{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"
-_schemaLocationTemplate =\
-  "http://www.crossref.org/schema/deposit/crossref%s.xsd"
-_tagRE =\
-  re.compile("\\{(http://www\\.crossref\\.org/schema/(4\\.[34]\\.\\d))\\}([-\\w.]+)$")
-_rootTags = ["journal", "book", "conference", "sa_component", "dissertation",
-  "report-paper", "standard", "database"]
-
+_schemaLocationTemplate = "http://www.crossref.org/schema/deposit/crossref%s.xsd"
+_tagRE = re.compile("{(http://www\\.crossref\\.org/schema/(4\\.[34]\\.\\d))}([-\\w.]+)$")
+_rootTags = [
+    "journal",
+    "book",
+    "conference",
+    "sa_component",
+    "dissertation",
+    "report-paper",
+    "standard",
+    "database",
+]
 
 # noinspection HttpUrlsUsage
 TAG_REGEX = re.compile("{(http://www\\.crossref\\.org/schema/(4\\.[34]\\.\\d))}([-\\w.]+)$")
@@ -76,8 +58,8 @@ TAG_REGEX = re.compile("{(http://www\\.crossref\\.org/schema/(4\\.[34]\\.\\d))}(
 
 # noinspection PyUnresolvedReferences
 def validateBody(body):
-    """Validates and normalizes an immediate child element of a <body> element of
-    a Crossref metadata submission document.
+    """Validate and normalize an immediate child element of a <body> element of
+    a Crossref metadata submission document
 
     'body' should be a Unicode string.  Either a normalized XML document
     is returned or an assertion error is raised.  Validation is limited to
@@ -145,9 +127,7 @@ def validateBody(body):
         doiData.find("N:timestamp", namespaces=ns) is None
     ), "<doi_data> element contains more than one <timestamp> subelement"
     # Normalize schema declarations.
-    root.attrib[_schemaLocation] = (
-        namespace + " " + (_schemaLocationTemplate.format(version))
-    )
+    root.attrib[_schemaLocation] = namespace + " " + (_schemaLocationTemplate.format(version))
     try:
         # We re-sanitize the document because unacceptable characters can
         # be (and have been) introduced via XML character entities.
@@ -166,8 +146,8 @@ def validateBody(body):
 
 
 def replaceTbas(body, doi, targetUrl):
-    """Fills in the (:tba) portions of Crossref deposit metadata with the given
-    arguments.
+    """Fill in the (:tba) portions of Crossref deposit metadata with the given
+    arguments
 
     'body' should be a Crossref <body> child element as a Unicode string,
     and is assumed to have been validated and normalized per validateBody
@@ -177,10 +157,8 @@ def replaceTbas(body, doi, targetUrl):
     return _buildDeposit(body, None, doi, targetUrl, bodyOnly=True)
 
 
-def _buildDeposit(
-    body, registrant, doi, targetUrl, withdrawTitles=False, bodyOnly=False
-):
-    """Builds a Crossref metadata submission document.
+def _buildDeposit(body, registrant, doi, targetUrl, withdrawTitles=False, bodyOnly=False):
+    """Build a Crossref metadata submission document
 
     'body' should be a
     Crossref <body> child element as a Unicode string, and is assumed to
@@ -213,6 +191,9 @@ def _buildDeposit(
 
     root = lxml.etree.Element(q("doi_batch"), version=version)
     root.attrib[_schemaLocation] = body.attrib[_schemaLocation]
+
+    # TODO: This section is also in proc-crossref.py
+    # START
     head = lxml.etree.SubElement(root, q("head"))
     batchId = str(uuid.uuid1())
     lxml.etree.SubElement(head, q("doi_batch_id")).text = batchId
@@ -223,14 +204,14 @@ def _buildDeposit(
             e, q("depositor_name")
         ).text = django.conf.settings.CROSSREF_DEPOSITOR_NAME
     else:
-        lxml.etree.SubElement(
-            e, q("name")
-        ).text = django.conf.settings.CROSSREF_DEPOSITOR_NAME
+        lxml.etree.SubElement(e, q("name")).text = django.conf.settings.CROSSREF_DEPOSITOR_NAME
     lxml.etree.SubElement(
         e, q("email_address")
     ).text = django.conf.settings.CROSSREF_DEPOSITOR_EMAIL
     lxml.etree.SubElement(head, q("registrant")).text = registrant
     e = lxml.etree.SubElement(root, q("body"))
+    # END
+
     del body.attrib[_schemaLocation]
     if withdrawTitles:
         for p in TITLE_PATH_LIST:
@@ -247,37 +228,3 @@ def _addDeclaration(document):
     # allow us to add a basic declaration without also adding an
     # encoding declaration, which we don't want.
     return '<?xml version="1.0"?>\n' + document
-
-
-def _multipartBody(*parts):
-    """Builds a multipart/form-data (RFC 2388) document out of a list of
-    constituent parts.
-
-    Each part is either a 2-tuple (name, value) or a 4-tuple (name,
-    filename, contentType, value).  Returns a tuple (document, boundary).
-    """
-    while True:
-        boundary = f"BOUNDARY_{uuid.uuid1().hex}"
-        collision = False
-        for p in parts:
-            for e in p:
-                if boundary in e:
-                    collision = True
-        if not collision:
-            break
-    body = []
-    for p in parts:
-        body.append("--" + boundary)
-        if len(p) == 2:
-            body.append(f'Content-Disposition: form-data; name="{p[0]}"')
-            body.append("")
-            body.append(p[1])
-        else:
-            body.append(
-                f'Content-Disposition: form-data; name="{p[0]}"; filename="{p[1]}"'
-            )
-            body.append("Content-Type: " + p[2])
-            body.append("")
-            body.append(p[3])
-    body.append(f"--{boundary}--")
-    return "\r\n".join(body), boundary

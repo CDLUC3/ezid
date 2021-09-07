@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import hashlib
 import re
 import sys
@@ -6,7 +9,7 @@ import time
 
 import django.conf
 
-import ezidapp.models.download_queue
+import ezidapp.models.async_queue
 import ezidapp.models.group
 import ezidapp.models.user
 import ezidapp.models.util
@@ -17,9 +20,9 @@ import impl.util
 _usedFilenames = []
 
 SUFFIX_FORMAT_DICT = {
-    ezidapp.models.download_queue.DownloadQueue.ANVL: "txt",
-    ezidapp.models.download_queue.DownloadQueue.CSV: "csv",
-    ezidapp.models.download_queue.DownloadQueue.XML: "xml",
+    ezidapp.models.async_queue.DownloadQueue.ANVL: "txt",
+    ezidapp.models.async_queue.DownloadQueue.CSV: "csv",
+    ezidapp.models.async_queue.DownloadQueue.XML: "xml",
 }
 
 _lock = threading.Lock()
@@ -30,15 +33,15 @@ log = logging.getLogger(__name__)
 
 
 def enqueueRequest(state, user, request):
-    """Enqueues a batch download request.  The request must be authenticated;
-    'user' should be a StoreUser object.  'request' should be a
-    django.http.QueryDict object (from a POST request or manually created)
-    containing the parameters of the request.  The available parameters are
-    described in the API documentation.  One feature not mentioned in the
-    documentation: for the 'notify' parameter, an email address may be a
-    straight address ("fred@slate.com") or may include an addressee name ("Fred
-    Flintstone <fred@slate.com>"); in the latter case a salutation line will be
-    added to the email message.
+    """Enqueue a batch download request
+
+    The request must be authenticated; 'user' should be a User object.
+
+    'request' should be a django.http.QueryDict object (from a POST request or manually created) containing the parameters
+    of the request.  The available parameters are described in the API documentation.  One feature
+    not mentioned in the documentation: for the 'notify' parameter, an email address may be a
+    straight address ("fred@slate.com") or may include an addressee name ("Fred Flintstone
+    <fred@slate.com>"); in the latter case a salutation line will be added to the email message.
 
     The successful return is a string that includes the download URL, as
     in:
@@ -89,20 +92,20 @@ def enqueueRequest(state, user, request):
         "updatedBefore": (False, _validateTimestamp),
     }
     _formatCode = {
-        "anvl": ezidapp.models.download_queue.DownloadQueue.ANVL,
-        "csv": ezidapp.models.download_queue.DownloadQueue.CSV,
-        "xml": ezidapp.models.download_queue.DownloadQueue.XML,
+        "anvl": ezidapp.models.async_queue.DownloadQueue.ANVL,
+        "csv": ezidapp.models.async_queue.DownloadQueue.CSV,
+        "xml": ezidapp.models.async_queue.DownloadQueue.XML,
     }
 
     SUFFIX_FORMAT_DICT = {
-        ezidapp.models.download_queue.DownloadQueue.ANVL: "txt",
-        ezidapp.models.download_queue.DownloadQueue.CSV: "csv",
-        ezidapp.models.download_queue.DownloadQueue.XML: "xml",
+        ezidapp.models.async_queue.DownloadQueue.ANVL: "txt",
+        ezidapp.models.async_queue.DownloadQueue.CSV: "csv",
+        ezidapp.models.async_queue.DownloadQueue.XML: "xml",
     }
 
     _compressionCode = {
-        "gzip": ezidapp.models.download_queue.DownloadQueue.GZIP,
-        "zip": ezidapp.models.download_queue.DownloadQueue.ZIP,
+        "gzip": ezidapp.models.async_queue.DownloadQueue.GZIP,
+        "zip": ezidapp.models.async_queue.DownloadQueue.ZIP,
     }
     _usedFilenames = []
 
@@ -171,7 +174,7 @@ def enqueueRequest(state, user, request):
             options = {"convertTimestamps": False}
         requestor = user.pid
         filename = _generateFilename(requestor)
-        r = ezidapp.models.download_queue.DownloadQueue(
+        r = ezidapp.models.async_queue.DownloadQueue(
             requestTime=int(time.time()),
             rawRequest=request.urlencode(),
             requestor=requestor,
@@ -315,7 +318,7 @@ def _decode(s):
 
 
 def _fileSuffix(r):
-    if r.compression == ezidapp.models.download_queue.DownloadQueue.GZIP:
+    if r.compression == ezidapp.models.async_queue.DownloadQueue.GZIP:
         return SUFFIX_FORMAT_DICT[r.format] + ".gz"
     else:
         return "zip"

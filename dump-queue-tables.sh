@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+#
+# Copyright©2021, Regents of the University of California
+# http://creativecommons.org/licenses/BSD
+#
 file='./queue_table_dump.sql'
 
 # Local access to production database by ssh tunnel
@@ -34,5 +38,5 @@ load() {
   mysql < "$file" "$db" --user="$user" --password="$pw" --host="$host"
 }
 
-#dump
-#load
+# dump
+# load

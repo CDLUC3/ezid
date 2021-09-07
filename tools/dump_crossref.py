@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # Dumps all DOIs under one or more Crossref prefixes to standard
 # output.  10.20354 is an example of a prefix.
 #
@@ -8,7 +11,7 @@
 # The output format is CSV with two columns: identifier (in qualified,
 # normalized form) and Base64-encoded Crossref deposit XML metadata.
 #
-# Note that reserved identifiers are not registered with Crossref, and
+# Reserved identifiers are not registered with Crossref, and
 # hence will not be returned.
 #
 # This script requires an EZID module.  The PYTHONPATH environment

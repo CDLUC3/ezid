@@ -18,6 +18,9 @@ Create a wheel install file:
     python install --upgrade pip wheel
     python setup.py bdist_wheel
 """
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import os
 import pathlib
 
@@ -81,7 +84,7 @@ def gen_console_scripts():
 
 
 def gen_install_requires():
-    """Generate the list of setup dependencies based on the ./requirements.txt file.
+    """Generate the list of setup dependencies based on the ./requirements.txt file
 
     We generate install_requires by using the dependencies declared in requirements.txt
     and modifying the versions to "pinned" instead of "compatible with".

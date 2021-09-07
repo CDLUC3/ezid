@@ -1,3 +1,8 @@
+/*
+ * Copyright©2021, Regents of the University of California
+ * http://creativecommons.org/licenses/BSD
+ */
+
 /* JavaScript actions for advanced ID creation form */
 $(document).ready(function() {
 
@@ -31,8 +36,8 @@ $(document).ready(function() {
 
   /* Determine value of 'current_profile' based on shoulder that is selected  */
   var orig_scheme = $('input[name=shoulder]:checked', '#create_form').val();
-	
-  // submit form when shoulder changes 
+
+  // submit form when shoulder changes
   $("input[name=shoulder]").change(function(e) {
       var new_scheme = e.target.value.split(':')[0];
       if(orig_scheme.split(':')[0] != new_scheme){
@@ -74,15 +79,15 @@ $(document).ready(function() {
       do_get(includeAnchor);
   });
 
-  // When user submits: 
+  // When user submits:
   // If ID is submitted as reserved (publish=="False")
   // populate any empty required form fields with '(:tba)'
   $('#create__button').click(function() {
       if ($("input:radio[name=publish]:checked").val() == "False") {
           $('.create__form-element-group').find('input').each(function() {
               reqd_label = $(this).parents('.create__form-element-group').find('.fcontrol__label-required');
-              if ((reqd_label.length > 0) && ($.trim( $(this).val() ) == '')) { 
-                  if ((reqd_label.attr('for') == 'dc.date') || 
+              if ((reqd_label.length > 0) && ($.trim( $(this).val() ) == '')) {
+                  if ((reqd_label.attr('for') == 'dc.date') ||
                     (reqd_label.attr('for') == 'publicationYear')) {
                       $(this).val('0000');
                   } else {
@@ -97,7 +102,7 @@ $(document).ready(function() {
 
 // ***** Submit form when profile or shoulder changes ******* //
 
-  // If triggered by profile, then, after submission, scroll page down to specified anchor 
+  // If triggered by profile, then, after submission, scroll page down to specified anchor
   function do_get(includeAnchor){
       var frm = $('#create_form');
       frm.attr('action', location.pathname + '?publish=' +

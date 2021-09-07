@@ -1,6 +1,9 @@
 """Check that the BerkeleyDB minters are in the expected locations, can be
 opened, and contains an EZID or N2T minter."""
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import argparse
 import logging
 import pathlib
@@ -167,7 +170,7 @@ class Command(django.core.management.BaseCommand):
                 'Bad prefix: "{}"'.format(shoulder_model.prefix),
             )
 
-        is_in_store = ezidapp.models.identifier.StoreIdentifier.objects.filter(
+        is_in_store = ezidapp.models.identifier.Identifier.objects.filter(
             identifier=id_ns
         ).exists()
         is_in_search = ezidapp.models.identifier.SearchIdentifier.objects.filter(

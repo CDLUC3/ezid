@@ -1,6 +1,11 @@
+/*
+ * Copyright©2021, Regents of the University of California
+ * http://creativecommons.org/licenses/BSD
+ */
+
 // Google Analytics (GA) does NOT capture all search parameters in URL
 // https://www.en.advertisercommunity.com/t5/Reports/Multiple-search-category-parameters-on-the-same-URL/m-p/567891/highlight/true#M5801
-// This script concatenates all values that have been assigned to an expected set of allQueryKeys. 
+// This script concatenates all values that have been assigned to an expected set of allQueryKeys.
 // This search query
 //    keywords=&creator=Dejaco&title=NewHybrids&object_type=Image
 // will look like this in GA:
@@ -12,13 +17,13 @@ var GA_SEARCHPARMS_LIB = GA_SEARCHPARMS_LIB || (function(){
   var _uri = '', _mainKey = '', _categoryKey = '', _allQueryKeys = []
   return {
     init : function(uri, mainKey, categoryKey, allQueryKeys) {
-      _uri = uri                    // expecting url parameters 
+      _uri = uri                    // expecting url parameters
                                     // eg: "keywords=&creator=Dejaco&title=NewHybrids"
       _mainKey = mainKey            // GA single query parameter
       _categoryKey = categoryKey    // GA single category parameter
       _allQueryKeys = allQueryKeys  // Array of all query parameters you want tracked in GA
     },
-    concat_parms : function() { 
+    concat_parms : function() {
       var mainFieldUsed = false,
         params = [],
         mainKeyValue = '',
@@ -39,7 +44,7 @@ var GA_SEARCHPARMS_LIB = GA_SEARCHPARMS_LIB || (function(){
             }
             if (k == _mainKey && !mainFieldUsed) {
               mainFieldUsed = true
-              mainKeyValue = pair[1] 
+              mainKeyValue = pair[1]
             } else {
               params.push(pair[0] + ':' + pair[1])
             }
@@ -49,12 +54,12 @@ var GA_SEARCHPARMS_LIB = GA_SEARCHPARMS_LIB || (function(){
         if (params.length > 0) {
           out += "," + params.join(',')
         }
-        out += categoryOut 
+        out += categoryOut
       } else {
         console.log("Undefined argument passed to google_analytics_searchconcat.js:concat_parms()")
         out = ''
       }
       return out
-    }  
+    }
   };
 }());

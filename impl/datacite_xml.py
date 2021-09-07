@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # =============================================================================
 #
 # EZID :: datacite_xml.py
@@ -7,9 +10,6 @@
 # 1) Generates form fields for use with Django form model.
 # 2) Creates an XML document for attaching Datacite XML metadata.
 #
-# License:
-#   Copyright (c) 2016, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
 
@@ -47,7 +47,7 @@ _maxNumberedElements = 2
 
 
 def dataciteXmlToFormElements(document):
-    """Converts a DataCite XML record to a dictionary of form elements. All
+    """Convert a DataCite XML record to a dictionary of form elements. All
     non-content (comments, etc.) is discarded.  Whitespace is processed and
     empty element and attribute values are discarded. Dictionary keys follow
     the pattern of element and attribute XPaths, e.g., the schemeURI attribute
@@ -156,7 +156,7 @@ def dataciteXmlToFormElements(document):
 
 def _separateByFormType(d):
     """Organize form elements into a manageable collection Turn empty dicts
-    into None so that forms render properly.
+    into None so that forms render properly
 
     Nonrepeating fields (fields that can't be repeated into multiple
     forms) are:    identifier, identifier-identifierType, language,
@@ -280,7 +280,7 @@ _elements = dict((e, i) for i, e in enumerate(_elementList))
 
 
 def formElementsToDataciteXml(d, shoulder=None, identifier=None):
-    """The inverse of dataciteXmlToFormElements.
+    """The inverse of dataciteXmlToFormElements
 
     Dictionary entries not related to the DataCite metadata schema
     (Django formset *_FORMS entries, etc.) are removed.

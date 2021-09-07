@@ -1,5 +1,8 @@
 """Test the shoulder-list management command."""
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import pytest
 
 import impl.nog.bdb as bdb

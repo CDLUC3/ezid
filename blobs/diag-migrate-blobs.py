@@ -1,5 +1,8 @@
-"""Migrate EZID's various legacy blob formats to JSON.
+"""Migrate EZID's various legacy blob formats to JSON
 """
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import ast
 import base64
 import contextlib
@@ -17,7 +20,7 @@ import django.db.models as models
 import django.db.models.functions as model_fn
 import django.db.transaction
 
-import impl.daemon
+import impl.enqueue
 import impl.nog.counter
 import impl.nog.tb
 import impl.nog.util

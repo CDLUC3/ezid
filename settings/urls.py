@@ -1,11 +1,21 @@
-# import ezidapp.management.commands.daemon_base
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import django.conf.urls
 import django.conf.urls.static
 import django.urls
-# import django.urls
 import django.views.defaults
 
 import ezidapp.admin
+
+# These imports are only used by management commands. As the management commands are not imported
+# during initialization of the main server component, we import them here to let the main Django
+# service know that these models exist, so that it doesn't try to delete the associated tables when
+# generating migrations.
+# noinspection PyUnresolvedReferences
+import ezidapp.models.link_checker
+import ezidapp.models.statistics
+
 import impl.api
 import impl.dispatch
 import impl.oai
@@ -17,21 +27,6 @@ import impl.ui_demo
 import impl.ui_home
 import impl.ui_manage
 import impl.ui_search
-
-# import django.conf
-# import django.conf.urls.i18n
-# import django.views.i18n
-# import django.views.static
-
-# import ezidapp.management.commands.crossref
-
-# These imports are only used by management commands. As the management commands are not imported
-# during initialization of the main server component, we import them here to let the main Django
-# service know that these models exist, so that it doesn't try to delete the associated tables when
-# generating migrations.
-# noinspection PyUnresolvedReferences
-import ezidapp.models.link_checker
-import ezidapp.models.statistics
 
 # fmt:off
 urlpatterns = [

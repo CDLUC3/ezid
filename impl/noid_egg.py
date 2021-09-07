@@ -1,32 +1,23 @@
-# =============================================================================
-#
-# EZID :: noid_egg.py
-#
-# Interface to the "egg" (binder) portion of noid.
-#
-# A note on encodings.  Identifiers and metadata elements (both names
-# and values) are sent to noid in encoded form; see util.encode{3,4}.
-# Metadata elements received from void are UTF-8-encoded and utilize
-# percent-encoding.  Though this received encoding does not exactly
-# match the transmitted encoding, the decoding performed by
-# util.decode is nevertheless compatible and so we use it.  (Consider
-# a Python Unicode value u"Greg%Jan\xe9e".  This is sent as
-# "Greg%25Jan%C3%A9e" but received back as "Greg%25Jan\xc3\xa9e",
-# which, when percent- and UTF-8-decoded, yields the original value.)
-#
-# This module performs whitespace processing.  Leading and trailing
-# whitespace is stripped from both element names and values.  Empty
-# names are not allowed.  Setting an empty value causes the element to
-# be deleted; as a consequence, empty values are never returned.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2014, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
+"""Interface to the "egg" (binder) portion of noid
+
+A note on encodings.  Identifiers and metadata elements (both names
+and values) are sent to noid in encoded form; see util.encode{3,4}.
+Metadata elements received from void are UTF-8-encoded and utilize
+percent-encoding.  Though this received encoding does not exactly
+match the transmitted encoding, the decoding performed by
+util.decode is nevertheless compatible and so we use it.  (Consider
+a Python Unicode value u"Greg%Jan\xe9e".  This is sent as
+"Greg%25Jan%C3%A9e" but received back as "Greg%25Jan\xc3\xa9e",
+which, when percent- and UTF-8-decoded, yields the original value.)
+
+This module performs whitespace processing.  Leading and trailing
+whitespace is stripped from both element names and values.  Empty
+names are not allowed.  Setting an empty value causes the element to
+be deleted; as a consequence, empty values are never returned.
+"""
 
 import logging
 import re
@@ -98,21 +89,20 @@ def _error(operation, s):
 
 
 def identifierExists(id_str):
-    """Returns true if an identifier (given in normalized, qualified form,
+    """Return true if an identifier (given in normalized, qualified form,
     e.g., "doi:10.1234/FOO") exists.
 
     Raises an exception on error.
     """
-    # The question of whether an identifier exists or not is
-    # surprisingly elusive.  Noid will return information for any
-    # identifier string, so we can't use that as a test.  Instead, we
-    # test for the presence of metadata.  EZID populates a newly-created
-    # identifier with multiple metadata fields.  (Noid adds its own
-    # internal metadata fields, but only in response to EZID adding
-    # fields.)  Note that the 'getElements' and 'deleteIdentifier'
-    # functions below work to maintain the invariant property that
-    # either an identifier has EZID metadata (along with noid-internal
-    # metadata) or it has no metadata at all.
+    # The question of whether an identifier exists or not is surprisingly elusive.  Noid will return
+    # information for any identifier string, so we can't use that as a test.  Instead, we test for
+    # the presence of metadata.  EZID populates a newly-created identifier with multiple metadata
+    # fields.  (Noid adds its own internal metadata fields, but only in response to EZID adding
+    # fields.)
+    #
+    # The 'getElements' and 'deleteIdentifier' functions below work to maintain the invariant
+    # property that either an identifier has EZID metadata (along with noid-internal metadata) or it
+    # has no metadata at all.
     s = _issue("GET", [(id_str, "fetch")])
     assert (
         len(s) >= 4
@@ -126,7 +116,7 @@ def identifierExists(id_str):
 
 
 def setElements(id_str, d):
-    """Binds metadata elements to an id_str (given in normalized, qualified
+    """Bind metadata elements to an id_str (given in normalized, qualified
     form, e.g., "doi:10.1234/FOO").
 
     The elements should be given in a dictionary that maps names to
@@ -157,7 +147,7 @@ def batchSetElements(batch):
 
 
 def getElements(identifier):
-    """Returns all metadata elements (in the form of a dictionary) that are
+    """Return all metadata elements (in the form of a dictionary) that are
     bound to an identifier (given in normalized, qualified form, e.g.,
     "doi:10.1234/FOO"), or None if the identifier doesn't exist.
 
@@ -191,7 +181,7 @@ def getElements(identifier):
 
 
 def deleteIdentifier(identifier):
-    """Deletes all metadata elements (including noid-internal elements) bound
+    """Delete all metadata elements (including noid-internal elements) bound
     to an identifier (given in normalized, qualified form, e.g.,
     "doi:10.1234/FOO").
 
@@ -222,7 +212,7 @@ def batchDeleteIdentifier(batch):
 
 
 def ping():
-    """Tests the server, returning "up" or "down"."""
+    """Test the server, returning "up" or "down"."""
     try:
         s = _issue("GET", [])
         assert len(s) >= 2 and s[-2] == "egg-status: 0\n"
@@ -240,7 +230,7 @@ def _decodeRewriter(m):
 
 
 def decodeRaw(s):
-    """Decodes an identifier or metadata element name as stored internally in
+    """Decode an identifier or metadata element name as stored internally in
     noid.
 
     Raises AssertionError and UnicodeDecodeError.

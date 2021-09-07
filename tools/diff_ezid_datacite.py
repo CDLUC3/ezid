@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # Compares EZID DOI metadata (as obtained from an EZID raw dump) with
 # DataCite <https://datacite.org/> DOI metadata (as obtained from a
 # DataCite search system query) and Handle System

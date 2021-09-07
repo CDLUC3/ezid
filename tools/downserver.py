@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # Standalone server that mimics EZID, but only indicates that the
 # system is down.  Specifically, all UI requests, regardless of HTTP
 # method, return a 200 OK status and an HTML page containing the

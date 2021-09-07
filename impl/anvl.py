@@ -1,18 +1,10 @@
-# =============================================================================
-#
-# EZID :: anvl.py
-#
-# Support for A Name-Value Language (ANVL) text formatting
-# <http://wiki.ucop.edu/display/Curation/Anvl>.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2010, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
+"""Support for A Name-Value Language (ANVL) text formatting
+
+<http://wiki.ucop.edu/display/Curation/Anvl>.
+"""
 
 import re
 
@@ -50,12 +42,13 @@ def _decode(s):
 
 
 def formatPair(label, value):
-    """Formats a label and value into an ANVL element."""
+    """Format a label and value into an ANVL element
+    """
     return f"{_encodeLabel(label)}: {_encodeValue(value)}\n"
 
 
 def format(d):
-    """Formats a dictionary into an ANVL string.
+    """Format a dictionary into an ANVL string
 
     Labels and values are suitably percent-encoded.
     """
@@ -63,7 +56,7 @@ def format(d):
 
 
 def parse(s):
-    """Parses an ANVL string and returns a dictionary.
+    """Parse an ANVL string and returns a dictionary
 
     Labels and values are percent-decoded.  Raises AnvlParseException
     (defined in this module).

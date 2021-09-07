@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import django.conf
 
 
@@ -13,13 +16,4 @@ class Router(object):
     db_for_write = db_for_read
 
     def allow_migrate(self, db, app_label, model_name=None, **_hints):
-        if django.conf.settings.SEARCH_STORE_SAME_DATABASE:
-            return True
-        else:
-            return not (
-                (db == "search")
-                ^ (
-                    app_label == "ezidapp"
-                    and (model_name.startswith("search") or model_name == "linkchecker")
-                )
-            )
+        return True

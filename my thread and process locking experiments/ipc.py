@@ -7,6 +7,9 @@ IDs and values will most likely be counters.
 for the standard Python multiprocessing library.
 - Names can be selected to support an optimal locking granularity.
 """
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import contextlib
 import itertools
 import logging
@@ -110,7 +113,6 @@ class CombinedLock:
 #     # >>>
 #     # >>> assert not f.exists()
 #     # >>> assert not new_f.exists()
-#     # >>>
 #     # >>>
 #     """
 #

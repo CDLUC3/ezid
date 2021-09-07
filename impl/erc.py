@@ -1,50 +1,41 @@
-# =============================================================================
-#
-# EZID :: erc.py
-#
-# Support for Electronic Resource Citation (ERC) or "kernel" metadata.
-# See <http://dublincore.org/groups/kernel/spec/>.
-#
-# The focus of this module is on basic structural parsing of ERC
-# records, not parsing or processing of metadata values.  Thus, of the
-# features listed in the ERC specification, only the following are
-# supported:
-#
-#   basic ANVL/ERC syntax
-#   repeated values (they're concatenated or listed)
-#   percent encoding
-#   expansion blocks
-#   case insensitivity of labels (they're lowercased)
-#   spaces in labels
-#
-# Not supported:
-#
-#   multiple records in an input string (only the first record is processed)
-#   abbreviated (one-line) syntax
-#   character repertoire restrictions
-#   standardized value codes
-#   standardized values substituted in place of missing values
-#   label synonym codes
-#   marker characters
-#   initial marker character conventions
-#   word reordering
-#
-# Extensions:
-#
-#   The "erc:" header may be omitted.
-#
-# Ideally this module would use anvl.py for basic parsing, but there
-# are too many differences between ANVL as EZID uses it and ANVL/ERC
-# (e.g., in the percent encodings supported) for that to be possible.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2012, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
+"""Support for Electronic Resource Citation (ERC) or "kernel" metadata
+See <http://dublincore.org/groups/kernel/spec/>.
+
+The focus of this module is on basic structural parsing of ERC
+records, not parsing or processing of metadata values.  Thus, of the
+features listed in the ERC specification, only the following are
+supported:
+
+  basic ANVL/ERC syntax
+  repeated values (they're concatenated or listed)
+  percent encoding
+  expansion blocks
+  case insensitivity of labels (they're lowercased)
+  spaces in labels
+
+Not supported:
+
+  multiple records in an input string (only the first record is processed)
+  abbreviated (one-line) syntax
+  character repertoire restrictions
+  standardized value codes
+  standardized values substituted in place of missing values
+  label synonym codes
+  marker characters
+  initial marker character conventions
+  word reordering
+
+Extensions:
+
+  The "erc:" header may be omitted.
+
+Ideally this module would use anvl.py for basic parsing, but there
+are too many differences between ANVL as EZID uses it and ANVL/ERC
+(e.g., in the percent encodings supported) for that to be possible.
+"""
 
 import re
 
@@ -123,7 +114,7 @@ def _decodeLabel(s):
 
 
 def parse(s, concatenateValues=True):
-    """Parses an ANVL/ERC record (represented as a single string) and returns a
+    """Parse an ANVL/ERC record (represented as a single string) and returns a
     dictionary of metadata element name/value pairs.
 
     If 'concatenateValues' is true, repeated values for a given element

@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # Moves a user to a different group (and possibly realm as well).
 #
 # This script modifies the database external to the running server and
@@ -7,7 +10,9 @@
 # locking mechanism.  While this script goes to some pains to ensure
 # that the move can be performed safely and that there will be no
 # conflicts with the server, it does not guarantee that, and hence
-# should be run with caution.  Note that identifier updates are logged
+# should be run with caution.
+#
+# Identifier updates are logged
 # to standard error and not to the server's log.
 #
 # This script requires several EZID modules.  The PYTHONPATH
@@ -27,7 +32,7 @@ import ezidapp.models.user
 import ezidapp.models.group
 import ezidapp.models.identifier
 import ezidapp.models.user
-import ezidapp.models.update_queue
+import ezidapp.models.async_queue
 import ezidapp.models.util
 from impl import ezid
 
@@ -95,12 +100,12 @@ if args.step == 2:
     user.group = newGroup
     user.realm = newGroup.realm
     user.save()
-    newSearchGroup = ezidapp.models.group.SearchGroup.objects.get(
+    newGroup = ezidapp.models.group.Group.objects.get(
         groupname=newGroup.groupname
     )
-    searchUser = ezidapp.models.user.SearchUser.objects.get(username=user.username)
-    searchUser.group = newSearchGroup
-    searchUser.realm = newSearchGroup.realm
+    searchUser = ezidapp.models.user.User.objects.get(username=user.username)
+    searchUser.group = newGroup
+    searchUser.realm = newGroup.realm
     searchUser.save()
     print(
         (
@@ -114,7 +119,7 @@ if args.step == 4:
     lastId = ""
     while True:
         ids = list(
-            ezidapp.models.identifier.StoreIdentifier.objects.filter(owner=user)
+            ezidapp.models.identifier.Identifier.objects.filter(owner=user)
             .filter(identifier__gt=lastId)
             .only("identifier")
             .order_by("identifier")[:1000]

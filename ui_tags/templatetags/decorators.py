@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # I got this from http://svn.navi.cx/misc/trunk/djblets/djblets/util/decorators.py     (sbf)
 # It should make useful template tag creation much less tedious and annoying when
 # needing any complex functionality such as access to the context or a block
@@ -7,8 +10,6 @@
 # decorators.py -- Miscellaneous, useful decorators.  This might end up moving
 #                  to something with a different name.
 #
-# Copyright (c) 2007  David Trowbridge
-# Copyright (c) 2007  Christian Hammond
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -18,16 +19,7 @@
 # permit persons to whom the Software is furnished to do so, subject to
 # the following conditions:
 #
-# The above copyright notice and this permission notice shall be included
-# in all copies or substantial portions of the Software.
 #
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
 import inspect
@@ -38,7 +30,7 @@ import django.template
 # The decorator decorator.  This is copyright unknown, verbatim from
 # http://wiki.python.org/moin/PythonDecoratorLibrary
 def simple_decorator(decorator):
-    """This decorator can be used to turn simple functions into well-behaved
+    """Thi decorator can be used to turn simple functions into well-behaved
     decorators, so long as the decorators are fairly simple.
 
     If a decorator expects a function and returns a function (no

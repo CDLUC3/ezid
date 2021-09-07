@@ -66,6 +66,9 @@
     confirm that it has been reloaded successfuly.
 """
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # noinspection PyUnresolvedReferences
 
 import http.client
@@ -249,15 +252,15 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     assert False, "syntax error on line %d" % n
                 assert flag in ["permanent", "temporary"], "syntax error on line %d" % n
 
-                # search_user_model = django.apps.apps.get_model('ezidapp', 'SearchUser')
+                # search_user_model = django.apps.apps.get_model('ezidapp', 'User')
                 import ezidapp.models.user
 
                 try:
                     (pe if flag == "permanent" else te).append(
-                        ezidapp.models.user.SearchUser.objects.get(username=user).id
+                        ezidapp.models.user.User.objects.get(username=user).id
                     )
-                except ezidapp.models.user.SearchUser.DoesNotExist:
-                    log.exception(' ezidapp.models.user.SearchUser.DoesNotExist')
+                except ezidapp.models.user.User.DoesNotExist:
+                    log.exception(' ezidapp.models.user.User.DoesNotExist')
                     assert False, "no such user: " + user
             _permanentExcludes = pe
             _temporaryExcludes = te
@@ -308,10 +311,10 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         import ezidapp.models.identifier
 
         # search_identifier_model = django.apps.apps.get_model(
-        #     'ezidapp', 'SearchIdentifier'
+        #     'ezidapp', 'Identifier'
         # )
         siGenerator = self.harvest(
-            ezidapp.models.identifier.SearchIdentifier,
+            ezidapp.models.identifier.Identifier,
             ["identifier", "owner", "status", "target", "isTest"],
             lambda si: si.isPublic
                        and not si.isTest
@@ -420,7 +423,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         good = [0, self.nowi()]  # [total, oldest timestamp]
         bad = [0, self.nowi()]
 
-        search_user_model = django.apps.apps.get_model('ezidapp', 'SearchUser')
+        search_user_model = django.apps.apps.get_model('ezidapp', 'User')
 
         for user in search_user_model.objects.all().only("id"):
             if user.id in self._permanentExcludes or user.id in self._temporaryExcludes:

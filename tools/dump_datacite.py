@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # Dumps DOIs belonging to one or more DataCite datacenters to standard
 # output.
 #
@@ -9,7 +12,7 @@
 # qualified, normalized form), datacenter symbol (e.g., "CDL.CDL"),
 # and Base64-encoded DataCite XML metadata.
 #
-# Note that DataCite currently returns public, exported DOIs only.
+# DataCite currently returns public, exported DOIs only.
 # Unavailable and unexported identifiers are marked as inactive in
 # DataCite, and as a result are not returned (and reserved identifiers
 # are not registered with DataCite at all).

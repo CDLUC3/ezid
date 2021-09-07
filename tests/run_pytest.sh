@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+#
+# Copyright©2021, Regents of the University of California
+# http://creativecommons.org/licenses/BSD
+#
+
 open_stack() {
   path="$1"
 

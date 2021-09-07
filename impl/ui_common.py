@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import random
 import re
 import string
@@ -51,7 +54,7 @@ def render(request, template, context={}):
 
 
 def renderIdPage(request, path, d):
-    """Used by Create and Demo ID pages.
+    """Used by Create and Demo ID pages
 
     path is string of one of the following '[create|demo]/[simple|advanced]'.
     d['id_gen_result'] will be either 'method_not_allowed', 'bad_request', 'edit_page' or
@@ -247,7 +250,7 @@ def owner_names(user, page):
     me = _userList([user], 0, "  (" + _("me") + ")")
     if user.isSuperuser:
         r += me if page == "manage" else [("all", "ALL EZID")]
-        for realm in ezidapp.models.realm.StoreRealm.objects.all().order_by("name"):
+        for realm in ezidapp.models.realm.Realm.objects.all().order_by("name"):
             n = realm.name
             r += [("realm_" + n, "Realm: " + n)]
             r += _getGroupsUsers(user, 1, realm.groups.all().order_by("groupname"))

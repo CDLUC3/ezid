@@ -1,9 +1,12 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 _NO_NEWS = [("No news available", None)]
 _ITEMS = _NO_NEWS
 
 
 def getLatestItems(self):
-    """Returns the latest news items (up to 3 items) as a list of tuples.
+    """Returns the latest news items (up to 3 items) as a list of tuples
 
     [(title, URL), ...].  At least one item is always returned.  The URL
     may be None in a tuple.

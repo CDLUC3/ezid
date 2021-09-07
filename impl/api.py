@@ -1,86 +1,79 @@
-# =============================================================================
-#
-# EZID :: api.py
-#
-# RESTful API to EZID services.  In the methods listed below, both
-# request bodies and response bodies have content type text/plain and
-# are formatted as ANVL.  Response character encoding is always UTF-8;
-# request character encoding must be UTF-8, and if not stated, is
-# assumed to be UTF-8.  See anvl.parse and anvl.format for additional
-# percent-encoding.  In responses, the first line is always a status
-# line.  For those methods requiring authentication, credentials may
-# be supplied using HTTP Basic authentication; thereafter, session
-# cookies may be used.  Methods provided:
-#
-# Mint an identifier:
-#   POST /shoulder/{shoulder}   [authentication required]
-#   request body: optional metadata
-#   response body: status line
-#
-# Create an identifier:
-#   PUT /id/{identifier}   [authentication required]
-#     ?update_if_exists={yes|no}
-#   request body: optional metadata
-#   response body: status line
-#
-# View an identifier:
-#   GET /id/{identifier}   [authentication optional]
-#     ?prefix_match={yes|no}
-#   response body: status line, metadata
-#
-# Update an identifier:
-#   POST /id/{identifier}   [authentication required]
-#     ?update_external_services={yes|no}
-#   request body: optional metadata
-#   response body: status line
-#
-# Delete an identifier:
-#   DELETE /id/{identifier}   [authentication required]
-#     ?update_external_services={yes|no}
-#   response body: status line
-#
-# Login to obtain session cookie, nothing else:
-#   GET /login   [authentication required]
-#   response body: status line
-#
-# Logout:
-#   GET /logout
-#   response body: status line
-#
-# Get EZID's status:
-#   GET /status
-#     ?detailed={yes|no}
-#     ?subsystems={*|subsystemlist}
-#   response body: status line, optional additional status information
-#
-# Get EZID's version:
-#   GET /version
-#   response body: status line, version information
-#
-# Pause the server:
-#   GET /admin/pause?op={on|off|idlewait|monitor}   [admin auth required]
-#   request body: empty
-#   response body: status line followed by, for op=on and op=monitor,
-#     server status records streamed back indefinitely
-#
-# Reload configuration file and clear caches:
-#   POST /admin/reload   [admin authentication required]
-#   request body: empty
-#   response body: status line
-#
-# Request a batch download:
-#   POST /download_request   [authentication required]
-#   request body: application/x-www-form-urlencoded
-#   response body: status line
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2010, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
+"""RESTful API to EZID services
+
+In the methods listed below, both
+request bodies and response bodies have content type text/plain and
+are formatted as ANVL.  Response character encoding is always UTF-8;
+request character encoding must be UTF-8, and if not stated, is
+assumed to be UTF-8.  See anvl.parse and anvl.format for additional
+percent-encoding.  In responses, the first line is always a status
+line.  For those methods requiring authentication, credentials may
+be supplied using HTTP Basic authentication; thereafter, session
+cookies may be used.  Methods provided:
+
+Mint an identifier:
+  POST /shoulder/{shoulder}   [authentication required]
+  request body: optional metadata
+  response body: status line
+
+Create an identifier:
+  PUT /id/{identifier}   [authentication required]
+    ?update_if_exists={yes|no}
+  request body: optional metadata
+  response body: status line
+
+View an identifier:
+  GET /id/{identifier}   [authentication optional]
+    ?prefix_match={yes|no}
+  response body: status line, metadata
+
+Update an identifier:
+  POST /id/{identifier}   [authentication required]
+    ?update_external_services={yes|no}
+  request body: optional metadata
+  response body: status line
+
+Delete an identifier:
+  DELETE /id/{identifier}   [authentication required]
+    ?update_external_services={yes|no}
+  response body: status line
+
+Login to obtain session cookie, nothing else:
+  GET /login   [authentication required]
+  response body: status line
+
+Logout:
+  GET /logout
+  response body: status line
+
+Get EZID's status:
+  GET /status
+    ?detailed={yes|no}
+    ?subsystems={*|subsystemlist}
+  response body: status line, optional additional status information
+
+Get EZID's version:
+  GET /version
+  response body: status line, version information
+
+Pause the server:
+  GET /admin/pause?op={on|off|idlewait|monitor}   [admin auth required]
+  request body: empty
+  response body: status line followed by, for op=on and op=monitor,
+    server status records streamed back indefinitely
+
+Reload configuration file and clear caches:
+  POST /admin/reload   [admin authentication required]
+  request body: empty
+  response body: status line
+
+Request a batch download:
+  POST /download_request   [authentication required]
+  request body: application/x-www-form-urlencoded
+  response body: status line
+"""
 
 import logging
 import time
@@ -112,14 +105,13 @@ def _readInput(request):
         return 'error: bad request - if specified, Content-Type subtype must be "utf-8"'
 
     try:
-        # We'd like to call sanitizeXmlSafeCharset just once, before the
-        # ANVL parsing, but the problem is that hex-percent-encoded
-        # characters, when decoded, can result in additional disallowed
-        # characters appearing.  So we sanitize after ANVL parsing.
-        # Note that it is possible here that two different labels, that
-        # differ in only disallowed characters, will be silently
-        # collapsed into one instead of resulting in an error.  But
-        # that's a real edge case, so we don't worry about it.
+        # We'd like to call sanitizeXmlSafeCharset just once, before the ANVL parsing, but the
+        # problem is that hex-percent-encoded characters, when decoded, can result in additional
+        # disallowed characters appearing.  So we sanitize after ANVL parsing.
+        #
+        # It is possible here that two different labels, that differ in only disallowed characters,
+        # will be silently collapsed into one instead of resulting in an error.  But that's a real
+        # edge case, so we don't worry about it.
         return {
             impl.util.sanitizeXmlSafeCharset(k): impl.util.sanitizeXmlSafeCharset(v)
             for k, v in list(impl.anvl.parse(request.body.decode("utf-8")).items())
@@ -210,7 +202,8 @@ def _methodNotAllowed():
 
 
 def mintIdentifier(request):
-    """Mints an identifier; interface to ezid.mintIdentifier."""
+    """Mint an identifier; interface to ezid.mintIdentifier
+    """
     if request.method != "POST":
         return _methodNotAllowed()
     user = impl.userauth.authenticateRequest(request)
@@ -232,7 +225,8 @@ def mintIdentifier(request):
 
 
 def identifierDispatcher(request):
-    """Dispatch an identifier request depending on the HTTP method."""
+    """Dispatch an identifier request depending on the HTTP method
+    """
     if request.method == "GET":
         return _getMetadata(request)
     elif request.method == "POST":
@@ -359,7 +353,8 @@ def _deleteIdentifier(request):
 
 
 def login(request):
-    """Logs in a user."""
+    """Log in a user
+    """
     if request.method != "GET":
         return _methodNotAllowed()
     options = _validateOptions(request, {})
@@ -375,7 +370,8 @@ def login(request):
 
 
 def logout(request):
-    """Logs a user out."""
+    """Log a user out
+    """
     if request.method != "GET":
         return _methodNotAllowed()
     options = _validateOptions(request, {})
@@ -386,7 +382,8 @@ def logout(request):
 
 
 def getStatus(request):
-    """Returns EZID's status."""
+    """Return EZID's status
+    """
     if request.method != "GET":
         return _methodNotAllowed()
     options = _validateOptions(
@@ -416,7 +413,8 @@ def getStatus(request):
 
 
 def getVersion(request):
-    """Returns EZID's version."""
+    """Return EZID's version
+    """
     if request.method != "GET":
         return _methodNotAllowed()
 
@@ -438,7 +436,8 @@ def getVersion(request):
 
 
 def batchDownloadRequest(request):
-    """Enqueues a batch download request."""
+    """Enqueue a batch download request
+    """
     if request.method != "POST":
         return _methodNotAllowed()
     options = _validateOptions(request, {})
@@ -494,7 +493,7 @@ def _statusLineGenerator(includeSuccessLine):
 
 
 def pause(request):
-    """Pauses or unpauses the server.
+    """Pause or unpause the server
 
     If the server is paused, server status records are streamed back to
     the client indefinitely.

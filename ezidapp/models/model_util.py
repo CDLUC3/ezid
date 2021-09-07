@@ -1,4 +1,6 @@
-# import ezidapp.models
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import ezidapp.models.group
 import ezidapp.models.util
 
@@ -18,7 +20,7 @@ _labelMapping = {
 
 
 def convertLegacyToExternal(d, convertAgents=True):
-    """Converts a legacy metadata dictionary from internal form (i.e., as
+    """Convert a legacy metadata dictionary from internal form (i.e., as
     stored in the Noid "egg" binder) to external form (i.e., as returned to
     clients).
 

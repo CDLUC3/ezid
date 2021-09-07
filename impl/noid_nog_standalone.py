@@ -1,17 +1,9 @@
-# =============================================================================
-#
-# EZID :: noid_nog_standalone.py
-#
-# Standalone version of noid_nog.py for use by offline tools.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2014, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
+"""Standalone version of noid_nog.py for use by offline tools
+"""
+
 import base64
 import urllib.error
 import urllib.parse
@@ -23,7 +15,7 @@ class Minter(object):
     """A minter for a specific shoulder."""
 
     def __init__(self, url, username, password):
-        """Creates an interface to the noid nog minter at the supplied URL
+        """Create an interface to the noid nog minter at the supplied URL
         using the supplied credentials."""
         self.url = url
         self.username = username
@@ -36,7 +28,7 @@ class Minter(object):
         )
 
     def mintIdentifier(self):
-        """Mints and returns a scheme-less ARK identifier, e.g.,
+        """Mint and returns a scheme-less ARK identifier, e.g.,
         "13030/fk35717n0h".
 
         Raises an exception on error.

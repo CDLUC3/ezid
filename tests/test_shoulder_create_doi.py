@@ -1,4 +1,7 @@
 """Test the shoulder-create-doi management command."""
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import logging
 
 import django.core.management

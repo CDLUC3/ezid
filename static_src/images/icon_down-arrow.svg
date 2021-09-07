@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  - Copyright©2021, Regents of the University of California
+  - http://creativecommons.org/licenses/BSD
+  -->
+
 <!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -11,7 +16,7 @@
 	<clipPath id="SVGID_2_">
 		<use xlink:href="#SVGID_1_"  overflow="visible"/>
 	</clipPath>
-	
+
 		<linearGradient id="SVGID_3_" gradientUnits="userSpaceOnUse" x1="-389.002" y1="550.7485" x2="-388.0015" y2="550.7485" gradientTransform="matrix(0 -38.4039 -38.4039 0 21180.7207 -14888.7715)">
 		<stop  offset="0" style="stop-color:#FAFAF8"/>
 		<stop  offset="1" style="stop-color:#EDEAE6"/>
@@ -27,7 +32,7 @@
 	</clipPath>
 	<path clip-path="url(#SVGID_5_)" fill="none" stroke="#BEB6AF" d="M12.108,48.878c0,0-2,0-2-2v-33.76c0,0,0-2,2-2h35.5c0,0,2,0,2,2
 		v33.76c0,0,0,2-2,2H12.108z"/>
-	<polygon clip-path="url(#SVGID_5_)" fill="#05788C" points="36.778,25.558 30.258,35.478 29.458,35.478 22.938,25.558 
+	<polygon clip-path="url(#SVGID_5_)" fill="#05788C" points="36.778,25.558 30.258,35.478 29.458,35.478 22.938,25.558
 		24.498,24.518 29.858,32.678 35.218,24.518 	"/>
 </g>
 <g>

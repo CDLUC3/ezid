@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # Computes cumulative EZID statistics and uploads them to the CDL
 # dashboard service.
 #
@@ -106,7 +109,7 @@ if doCompute:
     lastIdentifier = ""
     while True:
         qs = (
-            ezidapp.models.identifier.SearchIdentifier.objects.filter(
+            ezidapp.models.identifier.Identifier.objects.filter(
                 identifier__gt=lastIdentifier
             )
             .only("identifier", "createTime", "isTest")

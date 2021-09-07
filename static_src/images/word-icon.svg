@@ -1,3 +1,8 @@
+<!--
+  - Copyright©2021, Regents of the University of California
+  - http://creativecommons.org/licenses/BSD
+  -->
+
 <svg xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:xlink="http://www.w3.org/1999/xlink" height="15" width="15" viewBox="0 0 128 128" xmlns:dc="http://purl.org/dc/elements/1.1/">
 <defs>
 <radialGradient id="d" gradientUnits="userSpaceOnUse" cy="382" cx="612" gradientTransform="matrix(-.0119 .514 -.556 -.0128 556 201)" r="120">

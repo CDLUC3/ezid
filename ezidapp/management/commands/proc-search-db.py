@@ -1,20 +1,9 @@
-# =============================================================================
-#
-# EZID :: SearchDbDaemon.py
-#
-# Background identifier processing.
-#
-# This module should be imported at server startup so that its daemon
-# thread is started.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2014, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+"""Background identifier processing
+"""
+
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import logging
 import threading
 import time
@@ -25,7 +14,7 @@ import django.db.transaction
 
 import ezidapp.management.commands.proc_base
 import ezidapp.models.identifier
-import impl.daemon
+import impl.enqueue
 import impl.log
 import impl.nog.util
 import impl.search_util
@@ -48,15 +37,6 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
     def handle_daemon(self, *_, **opt):
         pass
-
-        # if django.conf.settings.CROSSREF_ENABLED:
-        #     int(django.conf.settings.DAEMONS_CROSSREF_PROCESSING_IDLE_SLEEP) = int(django.conf.settings.DAEMONS_BACKGROUND_PROCESSING_IDLE_SLEEP)
-        #     _threadName = uuid.uuid1().hex
-        #
-        #     t = threading.Thread(target=_searchDbDaemon, name=_threadName)
-
-        # _threadName = None
-        # int(django.conf.settings.DAEMONS_CROSSREF_PROCESSING_IDLE_SLEEP) = None
 
     def _updateSearchDatabase(self, identifier, operation, metadata, _blob):
         if operation in ["create", "update"]:
@@ -114,7 +94,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         while self._checkContinue():
             try:
                 update_list = list(
-                    ezidapp.models.update_queue.UpdateQueue.objects.all().order_by("seq")[:1000]
+                    ezidapp.models.async_queue.AsyncQueue.objects.all().order_by("seq")[:1000]
                 )
                 if len(update_list) > 0:
                     for update_model in update_list:
@@ -141,7 +121,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
                         with django.db.transaction.atomic():
                             if not update_model.actualObject.isReserved:
-                                impl.daemon.enqueueBinderIdentifier(
+                                impl.enqueue.enqueueBinderIdentifier(
                                     update_model.identifier,
                                     update_model.get_operation_display(),
                                     blob,
@@ -149,13 +129,13 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                                 if update_model.updateExternalServices:
                                     if update_model.actualObject.isDatacite:
                                         if not update_model.actualObject.isTest:
-                                            impl.queue.enqueueDataCiteIdentifier(
+                                            impl.enqueue.enqueueDataCiteIdentifier(
                                                 update_model.identifier,
                                                 update_model.get_operation_display(),
                                                 blob,
                                             )
                                     elif update_model.actualObject.isCrossref:
-                                        impl.daemon.enqueueCrossrefIdentifier(
+                                        impl.enqueue.enqueueCrossrefIdentifier(
                                             update_model.identifier,
                                             update_model.get_operation_display(),
                                             metadata,

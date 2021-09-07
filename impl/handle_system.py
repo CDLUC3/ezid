@@ -1,17 +1,9 @@
-# =============================================================================
-#
-# EZID :: handle_system.py
-#
-# Handle System utilities.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2017, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
+"""Handle System utilities
+"""
+
 import io
 import urllib.error
 import urllib.parse

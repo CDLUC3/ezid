@@ -1,17 +1,8 @@
-# =============================================================================
-#
-# EZID :: search_util.py
-#
-# Search-related utilities.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2015, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
+"""Search-related utilities
+"""
 
 import functools
 import operator
@@ -36,11 +27,6 @@ import impl.util
 _lock = threading.Lock()
 
 
-# noinspection PyProtectedMember
-_maxTargetLength = ezidapp.models.identifier.SearchIdentifier._meta.get_field(
-    "searchableTarget"
-).max_length
-
 _stopwords = None
 _minimumWordLength = None
 django.conf.settings.DATABASES["search"][
@@ -62,7 +48,7 @@ class AbortException(Exception):
 
 
 def withAutoReconnect(functionName, function, continuationCheck=None):
-    """Calls 'function' and returns the result.
+    """Call 'function' and returns the result
 
     If an operational database error is encountered (e.g., a lost
     connection), the call is repeated until it succeeds.
@@ -85,19 +71,19 @@ def withAutoReconnect(functionName, function, continuationCheck=None):
                 time.sleep(int(django.conf.settings.DATABASES_RECONNECT_DELAY))
             if continuationCheck is not None and not continuationCheck():
                 raise AbortException()
-            # In some cases a lost connection causes the thread's database
-            # connection object to be permanently screwed up.  The following
-            # call solves the problem.  (Note that Django's database
-            # connection objects are indexed generically, but are stored
-            # thread-local.)
+            # In some cases a lost connection causes the thread's database connection object to be
+            # permanently screwed up.  The following call solves the problem.
+            #
+            # Django's database connection objects are indexed generically, but are stored
+            # thread-local.
             django.db.connections["search"].close()
             firstError = False
 
 
 def ping():
-    """Tests the search database, returning "up" or "down"."""
+    """Test the search database, returning "up" or "down"."""
     try:
-        _n = ezidapp.models.realm.SearchRealm.objects.count()
+        _n = ezidapp.models.realm.Realm.objects.count()
     except Exception:
         return "down"
     else:
@@ -206,7 +192,7 @@ def formulateQuery(
     QuerySet that can then be evaluated, indexed, etc.  'constraints'
     should be a dictionary mapping search columns to constraint values.
     The accepted search columns (most of which correspond to fields in
-    the Identifier and SearchIdentifier models) and associated
+    the Identifier and Identifier models) and associated
     constraint Python types and descriptions are listed in the table
     below.  The 'R' flag indicates if multiple constraints may be placed
     against the column; if yes, multiple constraint values should be
@@ -379,9 +365,9 @@ def formulateQuery(
                     values.append(value + "/")
             qlist = []
             for v in values:
-                q = django.db.models.Q(searchableTarget=v[::-1][:_maxTargetLength])
+                q = django.db.models.Q(searchableTarget=v[::-1][:ezidapp.models.identifier.MAX_TARGET_LENGTH])
                 # noinspection PyTypeChecker
-                if len(v) > _maxTargetLength:
+                if len(v) > ezidapp.models.identifier.MAX_TARGET_LENGTH:
                     q &= django.db.models.Q(target=v)
                 qlist.append(q)
             filters.append(functools.reduce(operator.or_, qlist))
@@ -451,7 +437,7 @@ def formulateQuery(
         else:
             assert False, "unrecognized column"
     assert scopeRequirementMet, "query scope requirement not met"
-    qs = ezidapp.models.identifier.SearchIdentifier.objects.filter(*filters)
+    qs = ezidapp.models.identifier.Identifier.objects.filter(*filters)
     if len(selectRelated) > 0:
         qs = qs.select_related(*selectRelated)
     if len(defer) > 0:
@@ -508,7 +494,7 @@ def _modifyActiveCount(delta):
 
 
 def numActiveSearches():
-    """Returns the number of active searches."""
+    """Return the number of active searches."""
     _lock.acquire()
     try:
         return _numActiveSearches
@@ -527,9 +513,9 @@ def _isMysqlFulltextError(exception):
 def executeSearchCountOnly(
     user, constraints, selectRelated=defaultSelectRelated, defer=defaultDefer
 ):
-    """Executes a search database query, returning just the number of results.
+    """Execute a search database query, returning just the number of results
 
-    'user' is the requestor, and should be an authenticated StoreUser
+    'user' is the requestor, and should be an authenticated User
     object or AnonymousUser.  'constraints', 'selectRelated', and
     'defer' are as in formulateQuery above.
     """
@@ -589,9 +575,9 @@ def executeSearch(
     selectRelated=defaultSelectRelated,
     defer=defaultDefer,
 ):
-    """Executes a search database query, returning an evaluated QuerySet.
+    """Execute a search database query, returning an evaluated QuerySet
 
-    'user' is the requestor, and should be an authenticated StoreUser
+    'user' is the requestor, and should be an authenticated User
     object or AnonymousUser.  'from_' and 'to' are range bounds, and
     must be supplied.  'constraints', 'orderBy', 'selectRelated', and
     'defer' are as in formulateQuery above.

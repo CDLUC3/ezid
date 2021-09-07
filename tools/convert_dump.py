@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # Reads from standard input and writes to standard output, converting
 # a raw dump to a normal dump.  Usage:
 #

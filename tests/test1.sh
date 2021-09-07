@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+#
+# Copyright©2021, Regents of the University of California
+# http://creativecommons.org/licenses/BSD
+#
+
 naan=77913
 shoulder=r7
 mint_count=6000

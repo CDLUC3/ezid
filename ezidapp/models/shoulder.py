@@ -1,22 +1,15 @@
-# =============================================================================
-#
-# EZID :: ezidapp/models/shoulder.py
-#
-# Database model for shoulders in the store database.
-#
-# Upon first request this module syncs shoulders and datacenters in
-# the store database against counterparts defined in an external
-# shoulder file, adding, modifying, and deleting as necessary.
-# Shoulders and datacenters are also loaded into in-memory caches.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2016, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
+"""Database model for shoulders in the store database
+
+Upon first request this module syncs shoulders and datacenters in
+the store database against counterparts defined in an external
+shoulder file, adding, modifying, and deleting as necessary.
+Shoulders and datacenters are also loaded into in-memory caches.
+"""
+
+
 import logging
 
 import django.apps
@@ -44,7 +37,7 @@ logger = logging.getLogger(__name__)
 # )
 
 # dc = dict(
-#     (d.symbol, d) for d in ezidapp.models.datacenter.StoreDatacenter.objects.all()
+#     (d.symbol, d) for d in ezidapp.models.datacenter.Datacenter.objects.all()
 # )
 # _datacenters = (dc, dict((d.id, d) for d in list(dc.values())))
 
@@ -65,12 +58,40 @@ class Shoulder(django.db.models.Model):
     # one shoulder may be a subset of (or contained within) another; in
     # contexts where multiple shoulders apply, the longest (i.e., most
     # precise) match is used.  In practice shoulders have owners (which
-    # can be inferenced from their names), but there is no formal notion
+    # can be inferred from their names), but there is no formal notion
     # of ownership.  Shoulders play a limited role within EZID: they're
     # used only as an access mechanism (governing who can create which
     # identifiers) and to provide creation-time configuration defaults.
     # But once created, an identifier stands alone; it has no
     # relationship to any shoulder.
+
+    class Meta:
+        unique_together = ("name", "type")
+
+    def clean(self):
+        self.type = self.prefix.split(":")[0].upper()
+        self.name = self.name.strip()
+        if self.isDoi:
+            if self.crossrefEnabled:
+                if self.datacenter is not None:
+                    raise django.core.exceptions.ValidationError(
+                        {"datacenter": "Non-DataCite DOI shoulder has datacenter."}
+                    )
+            else:
+                if self.datacenter is None:
+                    raise django.core.exceptions.ValidationError(
+                        {"datacenter": "Missing datacenter."}
+                    )
+        else:
+            if self.datacenter is not None:
+                raise django.core.exceptions.ValidationError(
+                    {"datacenter": "Non-DOI shoulder has datacenter."}
+                )
+            if self.crossrefEnabled:
+                raise django.core.exceptions.ValidationError(
+                    {"crossrefEnabled": "Only DOI shoulders may be Crossref enabled."}
+                )
+        self.isTest = impl.util2.isTestIdentifier(self.prefix)
 
     prefix = django.db.models.CharField(
         max_length=impl.util.maxIdentifierLength,
@@ -106,7 +127,7 @@ class Shoulder(django.db.models.Model):
     # The absolute URL of the associated minter, or empty if none.
 
     datacenter = django.db.models.ForeignKey(
-        'ezidapp.StoreDatacenter',
+        'ezidapp.Datacenter',
         blank=True,
         null=True,
         default=None,
@@ -148,33 +169,6 @@ class Shoulder(django.db.models.Model):
     date = django.db.models.DateField(null=True, blank=True, editable=False)
     isSupershoulder = django.db.models.BooleanField(default=False, editable=False)
 
-    class Meta:
-        unique_together = ("name", "type")
-
-    def clean(self):
-        self.type = self.prefix.split(":")[0].upper()
-        self.name = self.name.strip()
-        if self.isDoi:
-            if self.crossrefEnabled:
-                if self.datacenter is not None:
-                    raise django.core.exceptions.ValidationError(
-                        {"datacenter": "Non-DataCite DOI shoulder has datacenter."}
-                    )
-            else:
-                if self.datacenter is None:
-                    raise django.core.exceptions.ValidationError(
-                        {"datacenter": "Missing datacenter."}
-                    )
-        else:
-            if self.datacenter is not None:
-                raise django.core.exceptions.ValidationError(
-                    {"datacenter": "Non-DOI shoulder has datacenter."}
-                )
-            if self.crossrefEnabled:
-                raise django.core.exceptions.ValidationError(
-                    {"crossrefEnabled": "Only DOI shoulders may be Crossref enabled."}
-                )
-        self.isTest = impl.util2.isTestIdentifier(self.prefix)
 
 
 def getAllShoulders():

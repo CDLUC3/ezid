@@ -1,3 +1,8 @@
+/*!
+ * Copyright©2021, Regents of the University of California
+ * http://creativecommons.org/licenses/BSD
+ */
+
 // ##### Headers ##### //
 
 %heading__1 {
@@ -87,10 +92,10 @@ h2.id-creation {
   height:auto;
   font-size: 1em;
   padding: 7px;
-  margin-bottom: 0; 
+  margin-bottom: 0;
 }
-.alert a:visited, 
-.alert a:hover, 
+.alert a:visited,
+.alert a:hover,
 .alert a:focus,
 .alert a {
   color:#000;
@@ -109,7 +114,7 @@ h2.id-creation {
 }
 .alert-error {
   // For some reason I need to specify colors here, even though they're already defined in variables.scss
-  background-color: $design-red-color; 
+  background-color: $design-red-color;
   border-color: $design-red-color;
   font-weight: bold;
 }

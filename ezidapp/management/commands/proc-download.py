@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # =============================================================================
 #
 # EZID :: download.py
@@ -12,9 +15,6 @@
 # conditions exist between the old and new threads while the old
 # thread still exists, but actual conflicts should be very unlikely.
 #
-# License:
-#   Copyright (c) 2015, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
 import argparse
@@ -32,7 +32,7 @@ import django.core.management
 import django.db
 
 import ezidapp.management.commands.proc_base
-import ezidapp.models.download_queue
+import ezidapp.models.async_queue
 import ezidapp.models.group
 import ezidapp.models.identifier
 import ezidapp.models.model_util
@@ -67,9 +67,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         m = str(exception)
         if len(m) > 0:
             m = ": " + m
-        return Exception(
-            f"batch download error: {context}: {type(exception).__name__}{m}"
-        )
+        return Exception(f"batch download error: {context}: {type(exception).__name__}{m}")
 
     def _path(self, r, i):
         # i=1: uncompressed work file
@@ -99,11 +97,11 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         f = None
         try:
             f = open(self._path(r, 1), "wb")
-            if r.format == ezidapp.models.download_queue.DownloadQueue.CSV:
+            if r.format == ezidapp.models.async_queue.DownloadQueue.CSV:
                 w = csv.writer(f)
                 w.writerow([self._csvEncode(c) for c in self._decode(r.columns)])
                 self._flushFile(f)
-            elif r.format == ezidapp.models.download_queue.DownloadQueue.XML:
+            elif r.format == ezidapp.models.async_queue.DownloadQueue.XML:
                 f.write(b'<?xml version="1.0" encoding="utf-8"?>\n<records>')
                 self._flushFile(f)
             # We don't know exactly what the CSV writer wrote, so we must
@@ -113,7 +111,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             log.exception(' Exception as e')
             raise self._wrapException("error creating file", e)
         else:
-            r.stage = ezidapp.models.download_queue.DownloadQueue.HARVEST
+            r.stage = ezidapp.models.async_queue.DownloadQueue.HARVEST
             r.fileSize = n
             r.save()
         finally:
@@ -159,7 +157,11 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 assert False, "unhandled case"
         return True
 
-    def _prepareMetadata(self, id_model, convertTimestamps):
+    def _prepareMetadata(
+        self,
+        id_model: ezidapp.models.identifier.Identifier,
+        convertTimestamps: object,
+    ) -> object:
         d = id_model.toLegacy()
         ezidapp.models.model_util.convertLegacyToExternal(d)
         if id_model.isDoi:
@@ -202,11 +204,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 v = impl.util.removeXmlDeclaration(v)
             else:
                 v = impl.util.xmlEscape(v)
-            f.write(
-                f'<element name="{impl.util.xmlEscape(k)}">{v}</element>'.encode(
-                    "utf-8"
-                )
-            )
+            f.write(f'<element name="{impl.util.xmlEscape(k)}">{v}</element>'.encode("utf-8"))
         f.write("</record>")
 
     def _harvest1(self, r, f):
@@ -215,9 +213,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         options = self._decode(r.options)
         while True:
             qs = (
-                ezidapp.models.identifier.SearchIdentifier.objects.filter(
-                    identifier__gt=r.lastId
-                )
+                ezidapp.models.identifier.Identifier.objects.filter(identifier__gt=r.lastId)
                 .filter(owner__pid=r.toHarvest.split(",")[r.currentIndex])
                 .select_related("owner", "ownergroup", "datacenter", "profile")
                 .order_by("identifier")
@@ -229,15 +225,11 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 for id in ids:
                     if self._satisfiesConstraints(id, constraints):
                         m = self._prepareMetadata(id, options["convertTimestamps"])
-                        if r.format == ezidapp.models.download_queue.DownloadQueue.ANVL:
+                        if r.format == ezidapp.models.async_queue.DownloadQueue.ANVL:
                             self._writeAnvl(f, id, m)
-                        elif (
-                            r.format == ezidapp.models.download_queue.DownloadQueue.CSV
-                        ):
+                        elif r.format == ezidapp.models.async_queue.DownloadQueue.CSV:
                             self._writeCsv(f, columns, id, m)
-                        elif (
-                            r.format == ezidapp.models.download_queue.DownloadQueue.XML
-                        ):
+                        elif r.format == ezidapp.models.async_queue.DownloadQueue.XML:
                             self._writeXml(f, id, m)
                         else:
                             assert False, "unhandled case"
@@ -267,14 +259,14 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     r.lastId = ""
                     r.save()
                 self._harvest1(r, f)
-            if r.format == ezidapp.models.download_queue.DownloadQueue.XML:
+            if r.format == ezidapp.models.async_queue.DownloadQueue.XML:
                 try:
                     f.write(b"</records>")
                     self._flushFile(f)
                 except Exception as e:
                     log.exception(' Exception as e')
                     raise self._wrapException("error writing file footer", e)
-            r.stage = ezidapp.models.download_queue.DownloadQueue.COMPRESS
+            r.stage = ezidapp.models.async_queue.DownloadQueue.COMPRESS
             r.save()
         finally:
             if f:
@@ -291,7 +283,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             # natural death.
             if os.path.exists(self._path(r, 2)):
                 os.unlink(self._path(r, 2))
-            if r.compression == ezidapp.models.download_queue.DownloadQueue.GZIP:
+            if r.compression == ezidapp.models.async_queue.DownloadQueue.GZIP:
                 infile = open(self._path(r, 1))
                 outfile = open(self._path(r, 2), "w")
                 # noinspection PyTypeChecker
@@ -326,7 +318,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             log.exception(' Exception as e')
             raise self._wrapException("error compressing file", e)
         else:
-            r.stage = ezidapp.models.download_queue.DownloadQueue.DELETE
+            r.stage = ezidapp.models.async_queue.DownloadQueue.DELETE
             r.save()
         finally:
             if infile:
@@ -342,7 +334,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             log.exception(' Exception as e')
             raise self._wrapException("error deleting uncompressed file", e)
         else:
-            r.stage = ezidapp.models.download_queue.DownloadQueue.MOVE
+            r.stage = ezidapp.models.async_queue.DownloadQueue.MOVE
             r.save()
 
     def _moveCompressedFile(self, r):
@@ -355,7 +347,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             log.exception(' Exception as e')
             raise self._wrapException("error moving compressed file", e)
         else:
-            r.stage = ezidapp.models.download_queue.DownloadQueue.NOTIFY
+            r.stage = ezidapp.models.async_queue.DownloadQueue.NOTIFY
             r.save()
 
     def _notifyRequestor(self, r):
@@ -417,24 +409,22 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 # noinspection PyTypeChecker
                 time.sleep(django.conf.settings.DAEMONS_DOWNLOAD_PROCESSING_IDLE_SLEEP)
             try:
-                r = ezidapp.models.download_queue.DownloadQueue.objects.all().order_by(
-                    "seq"
-                )[:1]
+                r = ezidapp.models.async_queue.DownloadQueue.objects.all().order_by("seq")[:1]
                 if len(r) == 0:
                     doSleep = True
                     continue
                 r = r[0]
-                if r.stage == ezidapp.models.download_queue.DownloadQueue.CREATE:
+                if r.stage == ezidapp.models.async_queue.DownloadQueue.CREATE:
                     self._createFile(r)
-                elif r.stage == ezidapp.models.download_queue.DownloadQueue.HARVEST:
+                elif r.stage == ezidapp.models.async_queue.DownloadQueue.HARVEST:
                     self._harvest(r)
-                elif r.stage == ezidapp.models.download_queue.DownloadQueue.COMPRESS:
+                elif r.stage == ezidapp.models.async_queue.DownloadQueue.COMPRESS:
                     self._compressFile(r)
-                elif r.stage == ezidapp.models.download_queue.DownloadQueue.DELETE:
+                elif r.stage == ezidapp.models.async_queue.DownloadQueue.DELETE:
                     self._deleteUncompressedFile(r)
-                elif r.stage == ezidapp.models.download_queue.DownloadQueue.MOVE:
+                elif r.stage == ezidapp.models.async_queue.DownloadQueue.MOVE:
                     self._moveCompressedFile(r)
-                elif r.stage == ezidapp.models.download_queue.DownloadQueue.NOTIFY:
+                elif r.stage == ezidapp.models.async_queue.DownloadQueue.NOTIFY:
                     self._notifyRequestor(r)
                 else:
                     assert False, "unhandled case"

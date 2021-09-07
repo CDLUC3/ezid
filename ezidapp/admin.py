@@ -1,21 +1,15 @@
-# =============================================================================
-#
-# EZID :: ezidapp/admin.py
-#
-# Django admin configuration/customization.  Beware: there's some
-# seriously occult stuff in here, and there are dependencies on the
-# specific version of Django used in development (1.8.1).  Intimately
-# related to this file are the PROJECT_ROOT/templates/admin and
-# PROJECT_ROOT/static/admin directories.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2016, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+"""Django admin configuration/customization
+
+Beware: there's some
+seriously occult stuff in here, and there are dependencies on the
+specific version of Django used in development (1.8.1).  Intimately
+related to this file are the PROJECT_ROOT/templates/admin and
+PROJECT_ROOT/static/admin directories.
+"""
+
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import copy
 
 import django
@@ -38,15 +32,15 @@ import django.utils.html
 
 import ezidapp.models.util
 import impl.util
-from ezidapp.models.datacenter import StoreDatacenter
-from ezidapp.models.group import SearchGroup
-from ezidapp.models.group import StoreGroup
+from ezidapp.models.datacenter import Datacenter
+from ezidapp.models.group import Group
+from ezidapp.models.group import Group
 from ezidapp.models.new_account_worksheet import NewAccountWorksheet
-from ezidapp.models.realm import SearchRealm
-from ezidapp.models.realm import StoreRealm
+from ezidapp.models.realm import Realm
+from ezidapp.models.realm import Realm
 from ezidapp.models.shoulder import Shoulder
-from ezidapp.models.user import SearchUser
-from ezidapp.models.user import StoreUser
+from ezidapp.models.user import User
+from ezidapp.models.user import User
 
 
 class SuperuserSite(django.contrib.admin.sites.AdminSite):
@@ -57,7 +51,7 @@ class SuperuserSite(django.contrib.admin.sites.AdminSite):
 
     def each_context(self, request):
         context = super(SuperuserSite, self).each_context(request)
-        context["readonly_models"] = ["Shoulder", "StoreDatacenter"]
+        context["readonly_models"] = ["Shoulder", "Datacenter"]
         return context
 
 
@@ -125,37 +119,37 @@ class ShoulderUnusedFilter(django.contrib.admin.SimpleListFilter):
     def queryset(self, request, queryset):
         if self.value() is not None:
             if self.value() == "Yes":
-                queryset = queryset.filter(storegroup__isnull=True)
+                queryset = queryset.filter(group__isnull=True)
             else:
-                queryset = queryset.filter(storegroup__isnull=False).distinct()
+                queryset = queryset.filter(group__isnull=False).distinct()
         return queryset
 
 
-class StoreGroupInline(django.contrib.admin.TabularInline):
-    store_group_model = django.apps.apps.get_model('ezidapp', 'StoreGroup')
-    model = store_group_model.shoulders.through
+class GroupInline(django.contrib.admin.TabularInline):
+    group_model = django.apps.apps.get_model('ezidapp', 'Group')
+    model = group_model.shoulders.through
     verbose_name_plural = "Groups using this shoulder"
 
     def groupLink(self, obj):
         link = django.urls.reverse(
-            "admin:ezidapp_storegroup_change", args=[obj.storegroup.id]
+            "admin:ezidapp_storegroup_change", args=[obj.group.id]
         )
-        return f'<a href="{link}">{obj.storegroup.groupname}</a>'
+        return f'<a href="{link}">{obj.group.groupname}</a>'
 
     groupLink.allow_tags = True
     groupLink.short_description = "groupname"
 
     def organizationName(self, obj):
-        return obj.storegroup.organizationName
+        return obj.group.organizationName
 
     organizationName.short_description = "organization name"
 
     def realm(self, obj):
-        return obj.storegroup.realm.name
+        return obj.group.realm.name
 
     fields = ["groupLink", "organizationName", "realm"]
     readonly_fields = ["groupLink", "organizationName", "realm"]
-    ordering = ["storegroup__groupname"]
+    ordering = ["group__groupname"]
     extra = 0
 
     def has_add_permission(self, request, obj=None):
@@ -165,31 +159,31 @@ class StoreGroupInline(django.contrib.admin.TabularInline):
         return False
 
 
-class StoreUserInlineForShoulder(django.contrib.admin.TabularInline):
-    store_user_model = django.apps.apps.get_model('ezidapp', 'StoreUser')
-    model = store_user_model.shoulders.through
+class UserInlineForShoulder(django.contrib.admin.TabularInline):
+    user_model = django.apps.apps.get_model('ezidapp', 'User')
+    model = user_model.shoulders.through
     verbose_name_plural = "Users using this shoulder"
 
     def userLink(self, obj):
         link = django.urls.reverse(
-            "admin:ezidapp_storeuser_change", args=[obj.storeuser.id]
+            "admin:ezidapp_storeuser_change", args=[obj.user.id]
         )
-        return f'<a href="{link}">{obj.storeuser.username}</a>'
+        return f'<a href="{link}">{obj.user.username}</a>'
 
     userLink.allow_tags = True
     userLink.short_description = "username"
 
     def displayName(self, obj):
-        return obj.storeuser.displayName
+        return obj.user.displayName
 
     displayName.short_description = "display name"
 
     def group(self, obj):
-        return obj.storeuser.group.groupname
+        return obj.user.group.groupname
 
     fields = ["userLink", "displayName", "group"]
     readonly_fields = ["userLink", "displayName", "group"]
-    ordering = ["storeuser__username"]
+    ordering = ["user__username"]
     extra = 0
 
     def has_add_permission(self, request, obj=None):
@@ -240,7 +234,7 @@ class ShoulderAdmin(django.contrib.admin.ModelAdmin):
         "registrationAgency",
         "datacenterLink",
     ]
-    inlines = [StoreGroupInline, StoreUserInlineForShoulder]
+    inlines = [GroupInline, UserInlineForShoulder]
     form = ShoulderForm
 
     def has_add_permission(self, request, obj=None):
@@ -275,20 +269,20 @@ class ShoulderInline(django.contrib.admin.TabularInline):
         return False
 
 
-class StoreDatacenterForm(django.forms.ModelForm):
+class DatacenterForm(django.forms.ModelForm):
     def clean(self):
         raise django.core.validators.ValidationError(
             "Object cannot be updated using this interface."
         )
 
 
-class StoreDatacenterAllocatorFilter(django.contrib.admin.SimpleListFilter):
+class DatacenterAllocatorFilter(django.contrib.admin.SimpleListFilter):
     title = "allocator"
     parameter_name = "allocator"
 
     def lookups(self, request, model_admin):
         allocators = set()
-        for dc in StoreDatacenter.objects.all():
+        for dc in Datacenter.objects.all():
             allocators.add(dc.allocator)
         return [(a, a) for a in sorted(list(allocators))]
 
@@ -314,15 +308,15 @@ class DatacenterUnusedFilter(django.contrib.admin.SimpleListFilter):
         return queryset
 
 
-class StoreDatacenterAdmin(django.contrib.admin.ModelAdmin):
+class DatacenterAdmin(django.contrib.admin.ModelAdmin):
     search_fields = ["symbol", "name"]
     actions = None
-    list_filter = [StoreDatacenterAllocatorFilter, DatacenterUnusedFilter]
+    list_filter = [DatacenterAllocatorFilter, DatacenterUnusedFilter]
     ordering = ["symbol"]
     list_display = ["symbol", "name"]
     readonly_fields = ["symbol", "name"]
     inlines = [ShoulderInline]
-    form = StoreDatacenterForm
+    form = DatacenterForm
 
     def has_add_permission(self, request, obj=None):
         return False
@@ -331,7 +325,7 @@ class StoreDatacenterAdmin(django.contrib.admin.ModelAdmin):
         return False
 
 
-superuser.register(StoreDatacenter, StoreDatacenterAdmin)
+superuser.register(Datacenter, DatacenterAdmin)
 
 
 class NewAccountWorksheetForm(django.forms.ModelForm):
@@ -527,37 +521,37 @@ class NewAccountWorksheetAdmin(django.contrib.admin.ModelAdmin):
 superuser.register(NewAccountWorksheet, NewAccountWorksheetAdmin)
 
 
-class StoreRealmAdmin(django.contrib.admin.ModelAdmin):
+class RealmAdmin(django.contrib.admin.ModelAdmin):
     actions = None
     ordering = ["name"]
 
     def save_model(self, request, obj, form, change):
         if change:
-            oldName = StoreRealm.objects.get(pk=obj.pk).name
+            oldName = Realm.objects.get(pk=obj.pk).name
             obj.save()
-            SearchRealm.objects.filter(name=oldName).update(name=obj.name)
+            Realm.objects.filter(name=oldName).update(name=obj.name)
         else:
-            sr = SearchRealm(name=obj.name)
+            sr = Realm(name=obj.name)
             sr.full_clean()
             obj.save()
             sr.save()
 
     def delete_model(self, request, obj):
         obj.delete()
-        SearchRealm.objects.filter(name=obj.name).delete()
+        Realm.objects.filter(name=obj.name).delete()
 
 
-superuser.register(StoreRealm, StoreRealmAdmin)
+superuser.register(Realm, RealmAdmin)
 
 
-class StoreGroupRealmFilter(django.contrib.admin.RelatedFieldListFilter):
+class GroupRealmFilter(django.contrib.admin.RelatedFieldListFilter):
     def __new__(cls, *args, **kwargs):
         i = django.contrib.admin.RelatedFieldListFilter.create(*args, **kwargs)
         i.title = "realm"
         return i
 
 
-class StoreGroupShoulderlessFilter(django.contrib.admin.SimpleListFilter):
+class GroupShoulderlessFilter(django.contrib.admin.SimpleListFilter):
     title = "shoulderless"
     parameter_name = "shoulderless"
 
@@ -573,8 +567,8 @@ class StoreGroupShoulderlessFilter(django.contrib.admin.SimpleListFilter):
         return queryset
 
 
-class StoreUserInlineForGroup(django.contrib.admin.TabularInline):
-    model = StoreUser
+class UserInlineForGroup(django.contrib.admin.TabularInline):
+    model = User
     verbose_name_plural = "Users in this group"
 
     def userLink(self, obj):
@@ -595,9 +589,9 @@ class StoreUserInlineForGroup(django.contrib.admin.TabularInline):
         return False
 
 
-class StoreGroupForm(django.forms.ModelForm):
+class GroupForm(django.forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super(StoreGroupForm, self).__init__(*args, **kwargs)
+        super(GroupForm, self).__init__(*args, **kwargs)
         self.fields[
             "organizationStreetAddress"
         ].widget = django.contrib.admin.widgets.AdminTextareaWidget()
@@ -697,7 +691,7 @@ def onCommitWithSqliteHack(onCommitFunction):
         django.db.connection.on_commit(onCommitFunction)
 
 
-class StoreGroupAdmin(django.contrib.admin.ModelAdmin):
+class GroupAdmin(django.contrib.admin.ModelAdmin):
     def organizationNameSpelledOut(self, obj):
         return obj.organizationName
 
@@ -724,9 +718,9 @@ class StoreGroupAdmin(django.contrib.admin.ModelAdmin):
     ]
     actions = None
     list_filter = [
-        ("realm__name", StoreGroupRealmFilter),
+        ("realm__name", GroupRealmFilter),
         "accountType",
-        StoreGroupShoulderlessFilter,
+        GroupShoulderlessFilter,
     ]
     ordering = ["groupname"]
     list_display = ["groupname", "organizationNameSpelledOut", "realm"]
@@ -765,18 +759,18 @@ class StoreGroupAdmin(django.contrib.admin.ModelAdmin):
             return self.readonly_fields
 
     filter_vertical = ["shoulders"]
-    inlines = [StoreUserInlineForGroup]
-    form = StoreGroupForm
+    inlines = [UserInlineForGroup]
+    form = GroupForm
 
     def save_model(self, request, obj, form, change):
         if change:
             obj.save()
-            SearchGroup.objects.filter(pid=obj.pid).update(groupname=obj.groupname)
+            Group.objects.filter(pid=obj.pid).update(groupname=obj.groupname)
         else:
-            sg = SearchGroup(
+            sg = Group(
                 pid=obj.pid,
                 groupname=obj.groupname,
-                realm=SearchRealm.objects.get(name=obj.realm.name),
+                realm=Realm.objects.get(name=obj.realm.name),
             )
             sg.full_clean()
             obj.save()
@@ -816,7 +810,7 @@ class StoreGroupAdmin(django.contrib.admin.ModelAdmin):
 
     def delete_model(self, request, obj):
         obj.delete()
-        SearchGroup.objects.filter(pid=obj.pid).delete()
+        Group.objects.filter(pid=obj.pid).delete()
         django.contrib.messages.warning(
             request,
             f"Now-defunct group PID {obj.pid} not deleted; you may consider doing so.",
@@ -826,17 +820,17 @@ class StoreGroupAdmin(django.contrib.admin.ModelAdmin):
         css = {"all": ["admin/css/base-group.css"]}
 
 
-superuser.register(StoreGroup, StoreGroupAdmin)
+superuser.register(Group, GroupAdmin)
 
 
-class StoreUserRealmFilter(django.contrib.admin.RelatedFieldListFilter):
+class UserRealmFilter(django.contrib.admin.RelatedFieldListFilter):
     def __new__(cls, *args, **kwargs):
         i = django.contrib.admin.RelatedFieldListFilter.create(*args, **kwargs)
         i.title = "realm"
         return i
 
 
-class StoreUserHasProxiesFilter(django.contrib.admin.SimpleListFilter):
+class UserHasProxiesFilter(django.contrib.admin.SimpleListFilter):
     title = "has proxies"
     parameter_name = "hasProxies"
 
@@ -852,7 +846,7 @@ class StoreUserHasProxiesFilter(django.contrib.admin.SimpleListFilter):
         return queryset
 
 
-class StoreUserIsProxyFilter(django.contrib.admin.SimpleListFilter):
+class UserIsProxyFilter(django.contrib.admin.SimpleListFilter):
     title = "is proxy"
     parameter_name = "isProxy"
 
@@ -862,13 +856,13 @@ class StoreUserIsProxyFilter(django.contrib.admin.SimpleListFilter):
     def queryset(self, request, queryset):
         if self.value() is not None:
             if self.value() == "Yes":
-                queryset = queryset.filter(storeuser__isnull=False).distinct()
+                queryset = queryset.filter(user__isnull=False).distinct()
             else:
-                queryset = queryset.filter(storeuser__isnull=True)
+                queryset = queryset.filter(user__isnull=True)
         return queryset
 
 
-class StoreUserAdministratorFilter(django.contrib.admin.SimpleListFilter):
+class UserAdministratorFilter(django.contrib.admin.SimpleListFilter):
     title = "is administrator"
     parameter_name = "administrator"
 
@@ -896,9 +890,9 @@ class SetPasswordWidget(django.forms.widgets.TextInput):
         return super(SetPasswordWidget, self).render(name, "", attrs=attrs)
 
 
-class StoreUserForm(django.forms.ModelForm):
+class UserForm(django.forms.ModelForm):
     def clean(self):
-        cd = super(StoreUserForm, self).clean()
+        cd = super(UserForm, self).clean()
         if cd["inheritGroupShoulders"]:
             if self.instance.pk is not None:
                 cd["shoulders"] = self.instance.group.shoulders.all()
@@ -1006,7 +1000,7 @@ def createOrUpdateUserPid(request, obj, change):
             )
 
 
-class StoreUserAdmin(django.contrib.admin.ModelAdmin):
+class UserAdmin(django.contrib.admin.ModelAdmin):
     def groupLink(self, obj):
         link = django.urls.reverse(
             "admin:ezidapp_storegroup_change", args=[obj.group.id]
@@ -1068,11 +1062,11 @@ class StoreUserAdmin(django.contrib.admin.ModelAdmin):
     ]
     actions = None
     list_filter = [
-        ("realm__name", StoreUserRealmFilter),
-        StoreUserHasProxiesFilter,
-        StoreUserIsProxyFilter,
+        ("realm__name", UserRealmFilter),
+        UserHasProxiesFilter,
+        UserIsProxyFilter,
         "loginEnabled",
-        StoreUserAdministratorFilter,
+        UserAdministratorFilter,
     ]
     ordering = ["username"]
     list_display = ["username", "displayName", "groupGroupname", "realm"]
@@ -1166,10 +1160,10 @@ class StoreUserAdmin(django.contrib.admin.ModelAdmin):
             return self.readonly_fields
 
     filter_vertical = ["proxies"]
-    form = StoreUserForm
+    form = UserForm
 
     def get_form(self, request, obj=None, **kwargs):
-        form = super(StoreUserAdmin, self).get_form(request, obj, **kwargs)
+        form = super(UserAdmin, self).get_form(request, obj, **kwargs)
         if obj is not None:
             form.base_fields["shoulders"].queryset = obj.group.shoulders.all().order_by(
                 "name", "type"
@@ -1190,23 +1184,23 @@ class StoreUserAdmin(django.contrib.admin.ModelAdmin):
             obj.setPassword(form.cleaned_data["password"])
         if change:
             obj.save()
-            SearchUser.objects.filter(pid=obj.pid).update(username=obj.username)
+            User.objects.filter(pid=obj.pid).update(username=obj.username)
         else:
-            su = SearchUser(
+            su = User(
                 pid=obj.pid,
                 username=obj.username,
-                group=SearchGroup.objects.get(pid=obj.group.pid),
-                realm=SearchRealm.objects.get(name=obj.realm.name),
+                group=Group.objects.get(pid=obj.group.pid),
+                realm=Realm.objects.get(name=obj.realm.name),
             )
             su.full_clean()
             obj.save()
             su.save()
-        # See discussion in StoreGroupAdmin above.
+        # See discussion in GroupAdmin above.
         onCommitWithSqliteHack(lambda: createOrUpdateUserPid(request, obj, change))
 
     def delete_model(self, request, obj):
         obj.delete()
-        SearchUser.objects.filter(pid=obj.pid).delete()
+        User.objects.filter(pid=obj.pid).delete()
         django.contrib.messages.warning(
             request,
             f"Now-defunct user PID {obj.pid} not deleted; you may consider doing so.",
@@ -1216,11 +1210,11 @@ class StoreUserAdmin(django.contrib.admin.ModelAdmin):
         css = {"all": ["admin/css/base-user.css"]}
 
 
-superuser.register(StoreUser, StoreUserAdmin)
+superuser.register(User, UserAdmin)
 
 
 def scheduleUserChangePostCommitActions(user):
-    # This function should be called when a StoreUser object is updated
+    # This function should be called when a User object is updated
     # and saved outside this module; it should be called within the
     # transaction making the updates.
     onCommitWithSqliteHack(lambda: createOrUpdateUserPid(None, user, True))

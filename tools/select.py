@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # The 'dump-store', 'dump-binder', 'select', and 'project' scripts
 # form a dump file query system.  The general usage is:
 #
@@ -44,7 +47,7 @@
 #
 #    _id =~ /doi:10\.5072\/FK2/i
 #
-# Note that there's no fancy parser here, so operators and other
+# There's no fancy parser here, so operators and other
 # syntactic tokens must appear as separate command line arguments.
 # Furthermore, operators such as < must be quoted to avoid
 # interpretation by the shell.  To prevent interpretation of a field
@@ -57,7 +60,7 @@
 # A basic constraint can be negated by placing "not" before it, and
 # constraints can be combined using "and" and "or".  Boolean
 # expressions can be grouped using both parentheses and curly braces
-# (note that curly braces don't require shell quoting).  Example of a
+# (curly braces don't require shell quoting).  Example of a
 # boolean expression:
 #
 #    _owner = gjanee or { _ownergroup = cdl and not _owner = jak }

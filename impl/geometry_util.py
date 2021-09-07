@@ -1,17 +1,8 @@
-# =============================================================================
-#
-# EZID :: geometry_util.py
-#
-# Geometry-related utility functions.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2017, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
+"""Geometry-related utility functions
+"""
 
 import json
 import re
@@ -34,7 +25,7 @@ def _isDecimalFloat(s):
 
 
 def kmlPolygonToDatacite(kml):
-    """Converts a polygon defined in a KML.
+    """Convert a polygon defined in a KML
 
     <http://www.opengeospatial.org/standards/kml> version 2.2 or 2.3
     document to a DataCite 4.0 <geoLocationPolygon> element.  The return
@@ -136,7 +127,7 @@ def _isNestedList(o, n):
 
 
 def geojsonPolygonToDatacite(geojson):
-    """Converts a polygon defined in a GeoJSON <RFC 7946,
+    """Convert a polygon defined in a GeoJSON <RFC 7946,
     https://tools.ietf.org/html/rfc7946> document to a DataCite 4.0.
 
     <geoLocationPolygon> element.  The return is a pair
@@ -213,7 +204,7 @@ def geojsonPolygonToDatacite(geojson):
 
 
 def internalPolygonToDatacite(s):
-    """Converts an internal polygon description to a DataCite 4.0.
+    """Convert an internal polygon description to a DataCite 4.0
 
     <geoLocationPolygon> element.  An internal description is a string
     of the form
@@ -262,7 +253,7 @@ def internalPolygonToDatacite(s):
 
 
 def polygonToDatacite(s):
-    """Converts a polygon defined in any supported format to a DataCite 4.0.
+    """Convert a polygon defined in any supported format to a DataCite 4.0
 
     <geoLocationPolygon> element.  The return is a pair
     (lxml.etree.Element, [warning, ...]) if successful or a string error
@@ -313,7 +304,7 @@ _transformSource = """<?xml version="1.0"?>
 
 
 def datacitePolygonToInternal(element):
-    """Converts a DataCite polygon, passed in as a <geoLocationPolygon> element
+    """Convert a DataCite polygon, passed in as a <geoLocationPolygon> element
     node, to a string internal representation."""
     global _transform
     if _transform is None:

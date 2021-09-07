@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import django.db.models
 
 import ast
@@ -23,7 +26,7 @@ import django.core.serializers.json
 
 
 class NonValidatingForeignKey(django.db.models.ForeignKey):
-    """A ForeignKey that doesn't perform any validation."""
+    """ForeignKey that does not perform any validation"""
 
     def validate(self, obj, model_instance):
         pass
@@ -47,7 +50,7 @@ class CompressedJsonField(django.db.models.BinaryField):
         # return f'{self.__class__.__name__}({self.pk}, {self.identifier})'
 
     def get_db_prep_save(self, obj, connection):
-        """Serialize a Django model (ORM) instance for storage in the database.
+        """Serialize a Django model (ORM) instance for storage in the database
 
         Args:
             obj: Django model instance
@@ -68,7 +71,7 @@ class CompressedJsonField(django.db.models.BinaryField):
         """Python object to query value."""
         # if obj is None or _is_orm(obj):
         #     return obj
-        impl.util.log_obj(obj, msg='StoreIdentifierObjectField.get_prep_value()')
+        impl.util.log_obj(obj, msg='IdentifierObjectField.get_prep_value()')
         return _field_to_compressed_json(obj)
         # return self.serialize_field(obj)
 
@@ -95,15 +98,15 @@ class CompressedJsonField(django.db.models.BinaryField):
 
 
 
-class StoreIdentifierObjectField(django.db.models.BinaryField):
-    """Field containing a StoreIdentifier model instance as gzipped JSON.
+class IdentifierObjectField(django.db.models.BinaryField):
+    """Field containing a Identifier model instance as gzipped JSON
 
-    - The StoreIdentifier model instance primary key (pk) attribute may be set or unset. If `pk` is
+    - The Identifier model instance primary key (pk) attribute may be set or unset. If `pk` is
     unset, the object is designated as newly created and unsaved (existing only in memory). The
-    object does not reference any existing rows in the the StoreIdentifier table, and the identifier
-    in the model instance may or may not exist in the StoreIdentifier, or other tables.
+    object does not reference any existing rows in the the Identifier table, and the identifier
+    in the model instance may or may not exist in the Identifier, or other tables.
 
-    - If set, `pk` must reference an existing row in the StoreIdentifier table. The identifier in
+    - If set, `pk` must reference an existing row in the Identifier table. The identifier in
     the referenced row should be an exact match for identifier in the model instance. Other values
     may differ, representing the identifier in a different state.
 
@@ -125,8 +128,8 @@ class StoreIdentifierObjectField(django.db.models.BinaryField):
     - `pk` can be manipulated programmatically before calling `.save()` in order to change an update
     to an insert and vice versa, or to change which row is updated.
 
-    - Sample StoreIdentifier model instance, after serialization to JSON. Note that .cm is a nested
-    serialized instance of a metadata object.
+    - Sample Identifier model instance, after serialization to JSON. .cm is a nested serialized
+    instance of a metadata object.
 
     {
         "model": "ezidapp.storeidentifier",
@@ -154,7 +157,7 @@ class StoreIdentifierObjectField(django.db.models.BinaryField):
     """
 
     # def value_to_string(self, obj):
-    #     impl.util.log_obj(obj, msg='StoreIdentifierObjectField.value_to_string()')
+    #     impl.util.log_obj(obj, msg='IdentifierObjectField.value_to_string()')
     #
     #     if _is_orm(obj):
     #         return None
@@ -164,11 +167,11 @@ class StoreIdentifierObjectField(django.db.models.BinaryField):
     #     obj = self.value_from_object(obj)
     #     obj = self.get_prep_value(obj)
     #     impl.util.log_obj(
-    #         obj, msg='StoreIdentifierObjectField.value_to_string()'
+    #         obj, msg='IdentifierObjectField.value_to_string()'
     #     )
     #     return obj
 
-    description = 'Field containing a StoreIdentifier model instance as gzipped JSON'
+    description = 'Field containing a Identifier model instance as gzipped JSON'
 
     # def db_type(self, connection):
     #     def db_type(self, connection):
@@ -178,7 +181,7 @@ class StoreIdentifierObjectField(django.db.models.BinaryField):
         return f'{self.__class__.__name__}: {len(super().__str__())} bytes (compressed)'
 
     def get_db_prep_save(self, obj, connection):
-        """Serialize a Django model (ORM) instance for storage in the database.
+        """Serialize a Django model (ORM) instance for storage in the database
 
         Args:
             obj: Django model instance
@@ -201,12 +204,12 @@ class StoreIdentifierObjectField(django.db.models.BinaryField):
         """Python object to query value."""
         # if obj is None or _is_orm(obj):
         #     return obj
-        impl.util.log_obj(obj, msg='StoreIdentifierObjectField.get_prep_value()')
+        impl.util.log_obj(obj, msg='IdentifierObjectField.get_prep_value()')
         # return _field_to_compressed_json(obj)
         return self.serialize_field(obj)
 
     # def get_db_prep_save(self, obj, connection):
-    #     """StoreIdentifier model instance -> gzipped JSON
+    #     """Identifier model instance -> gzipped JSON
     #
     #     Returns:
     #         Union[None, bytes]:
@@ -215,24 +218,24 @@ class StoreIdentifierObjectField(django.db.models.BinaryField):
     #         obj (object):
     #         connection ():
     #
-    #     - Convert a StoreIdentifier model instance with data to bytes. The bytes are later stored in
+    #     - Convert a Identifier model instance with data to bytes. The bytes are later stored in
     #     the object field of UpdateQueue. The reverse operation is performed in `from_db_value()`.
     #
     #     - This method is used when the custom field needs a conversion when saved that is different
     #     from the one used when the field is accessed in queries.
     #     """
-    #     impl.util.log_obj(obj, msg='StoreIdentifierObjectField.get_db_prep_save()')
-    #     log.debug('StoreIdentifierObjectField.get_db_prep_save()')
+    #     impl.util.log_obj(obj, msg='IdentifierObjectField.get_db_prep_save()')
+    #     log.debug('IdentifierObjectField.get_db_prep_save()')
     #     # if isinstance(obj.cm, str):
     #     obj.cm = self.serialize_field(obj.cm)
     #     obj = self.serialize_field(obj)
     #     return self.serialize_field(obj)
 
     def from_db_value(self, obj, expression, connection):
-        """gzipped JSON -> StoreIdentifier model instance with data.
+        """gzipped JSON -> Identifier model instance with data
 
         - Convert the bytes which are stored in the `object` field of UpdateQueue to a
-        StoreIdentifier model instance with data. The reverse operation is performed in
+        Identifier model instance with data. The reverse operation is performed in
         `get_db_prep_save()`.
 
         - Must be able to handle the value as it arrives from the database, and None.
@@ -246,7 +249,7 @@ class StoreIdentifierObjectField(django.db.models.BinaryField):
         # obj.cm = None#_compressed_bytes_to_py(obj.cm)
         # obj.cm = _compressed_bytes_to_py(obj.cm)
 
-        impl.util.log_obj(obj, msg='StoreIdentifierObjectField.from_db_value()')
+        impl.util.log_obj(obj, msg='IdentifierObjectField.from_db_value()')
         # obj = _compressed_json_to_field(obj)
         # obj.cm = _base64_to_py(obj.cm)
         obj = _decode(obj)
@@ -261,7 +264,7 @@ class StoreIdentifierObjectField(django.db.models.BinaryField):
         - An instance of the correct model type
         - A string
         """
-        # impl.util.log_obj(obj, msg='StoreIdentifierObjectField.to_python()')
+        # impl.util.log_obj(obj, msg='IdentifierObjectField.to_python()')
         if obj is None or _is_orm(obj):
             return obj
         return _base64_to_py(obj)

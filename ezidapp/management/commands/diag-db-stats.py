@@ -9,6 +9,9 @@ model search that Django performs at startup. If any models are missing, it indi
 the model search.
 """
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import ezidapp.models.identifier
 import contextlib
 import json
@@ -24,8 +27,8 @@ import django.db.models
 import django.db.transaction
 import pymysql.cursors
 
-import ezidapp.models.registration_queue
-import impl.daemon
+import ezidapp.models.async_queue
+import impl.enqueue
 import impl.nog.counter
 import impl.nog.tb
 import impl.nog.util
@@ -62,14 +65,14 @@ class ORMStats:
         self.page_size = django.conf.settings.QUERY_PAGE_SIZE
 
     def print_identifier(self, identifier):
-        id_model = ezidapp.models.identifier.StoreIdentifier.objects.filter(
+        id_model = ezidapp.models.identifier.Identifier.objects.filter(
             identifier=identifier).get()
         # print(id_model)
         # pprint.pp(id_model.cm)
 
         print('-' * 100)
 
-        impl.daemon.enqueueBinderIdentifier(
+        impl.enqueue.enqueueBinderIdentifier(
             identifier=id_model.identifier,
             operation='update',
             blob={'x': 'y'},

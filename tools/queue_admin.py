@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # Queue administration tool.  Currently works with the binder and
 # DataCite queues only.  Run with the '-h' option for usage.
 #
@@ -22,8 +25,7 @@ import django.db.models
 import django.db.transaction
 
 # import ezidapp.models
-import ezidapp.models.registration_queue
-import ezidapp.models.registration_queue
+import ezidapp.models.async_queue
 from impl import util
 
 queue = None  # set below; the queue model class object manager
@@ -122,7 +124,7 @@ spp.add_argument(
 
 args = p.parse_args(sys.argv[1:])
 if args.queue == "binder":
-    queue = ezidapp.models.registration_queue.BinderQueue.objects
+    queue = ezidapp.models.async_queue.BinderQueue.objects
 else:
-    queue = ezidapp.models.registration_queue.DataciteQueue.objects
+    queue = ezidapp.models.async_queue.DataciteQueue.objects
 args.func(args)

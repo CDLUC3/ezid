@@ -72,6 +72,11 @@ ALTER TABLE ezidapp_storeuser MODIFY secondaryContactEmail VARCHAR(255)
 ALTER TABLE ezidapp_storeuser MODIFY secondaryContactPhone VARCHAR(255)
   NOT NULL COLLATE 'utf8mb4_general_ci';
 
+/*
+ * Copyright©2021, Regents of the University of California
+ * http://creativecommons.org/licenses/BSD
+ */
+
 -- Fixups.  Columns which are not required within Django, but for
 -- which EZID always supplies defaults, can be declared NOT NULL in
 -- the database.  Note the unfortunate necessity of referring to

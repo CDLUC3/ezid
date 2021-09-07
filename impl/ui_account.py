@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import hashlib
 import json
 import operator
@@ -40,7 +43,7 @@ proxies_default = _("None chosen")
 
 
 def login(request):
-    """Renders the login page (GET) or processes a login form submission
+    """Render the login page (GET) or processes a login form submission
     (POST).  A successful login redirects to the URL specified by.
 
     ?next=... or, failing that, the home page.
@@ -100,7 +103,7 @@ def login(request):
 
 
 def logout(request):
-    """Logs the user out and redirects to the home page."""
+    """Log the user out and redirects to the home page."""
     _d = {'menu_item': 'ui_null.null'}
     if request.method != "GET":
         return impl.ui_common.methodNotAllowed(request)
@@ -200,7 +203,7 @@ def allUsersInRealm(user):
 
 
 def _getNewProxies(_user, orig, picked):
-    """Compares two lists of usernames.
+    """Compare two lists of usernames
 
     Returns list of newly picked users, as User objects. Not removing
     any users at the moment.
@@ -346,7 +349,7 @@ def _sendUserEmail(request, user, new_proxies):
 
 
 def pwreset(request, pwrr):
-    """Handles all GET and POST interactions related to password resets."""
+    """Handle all GET and POST interactions related to password resets."""
     if pwrr:  # Change password here after receiving email
         d = {'menu_item': 'ui_null.null'}
         r = decodePasswordResetRequest(pwrr)
@@ -424,7 +427,7 @@ def pwreset(request, pwrr):
 
 
 def sendPasswordResetEmail(username, emailAddress):
-    """Sends an email containing a password reset request link.
+    """Send an email containing a password reset request link
 
     Returns None on success or a string message on error.
     """
@@ -462,7 +465,7 @@ def sendPasswordResetEmail(username, emailAddress):
 
 
 def decodePasswordResetRequest(request):
-    """Decodes a password reset request, returning a tuple (username,
+    """Decode a password reset request, returning a tuple (username,
     timestamp) on success or None on error."""
     m = re.match("/([^ ,]+),(\\d+),([\\da-f]+)$", request)
     if not m:

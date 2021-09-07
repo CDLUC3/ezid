@@ -1,20 +1,9 @@
-# =============================================================================
-#
-# EZID :: ezidapp/models/identifier.py
-#
-# Abstract database model for identifiers.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2015, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
 
-import django.core.serializers.json
-import ezidapp.models.custom_fields
+"""Object Relational Mapper (ORM) models for identifiers
+"""
+
 import pprint
 import re
 import time
@@ -25,6 +14,7 @@ import urllib.request
 import django.apps
 import django.conf
 import django.core.exceptions
+import django.core.serializers.json
 import django.core.validators
 import django.db
 import django.db.models
@@ -32,24 +22,26 @@ import django.db.utils
 
 import ezidapp.models.custom_fields
 import ezidapp.models.group
+import ezidapp.models.profile
 import ezidapp.models.util
 import ezidapp.models.validation
 import impl.crossref
+import impl.mapping
 import impl.util
 import impl.util2
 
+MAX_TARGET_LENGTH = 255
 
 def emptyDict():
     return {}
 
 
 class Identifier(django.db.models.Model):
-    # Describes an identifier.  This class is abstract; there are
-    # separate instantiated subclasses of this class for the store and
-    # search databases.
+    """Minted identifiers and related data
 
-    class Meta:
-        abstract = True
+    Almost everything in EZID revolves around this table, in which most data related to minted
+    identifiers is stored either directly or is referenced in foreign keys.
+    """
 
     identifier = django.db.models.CharField(
         max_length=impl.util.maxIdentifierLength,
@@ -83,23 +75,182 @@ class Identifier(django.db.models.Model):
         else:
             return None
 
-    # A note on foreign keys: since the store and search databases are
-    # completely separate, foreign keys must reference different target
-    # models, and so the declaration of all foreign keys is deferred to
-    # the concrete subclasses.  There appears to be no better way to
-    # model this in Django.
+    datacenter = django.db.models.ForeignKey(
+        'ezidapp.Datacenter',
+        blank=True,
+        null=True,
+        default=None,
+        on_delete=django.db.models.PROTECT,
+    )
 
-    # TODO: The owner and ownergroup fields have been commented out since before 2020-3, and the
-    # comments can probably be removed.
+    profile = django.db.models.ForeignKey(
+        'ezidapp.Profile',
+        blank=True,
+        null=True,
+        default=None,
+        on_delete=django.db.models.PROTECT,
+    )
 
-    # owner = django.db.models.ForeignKey(user.User, blank=True, null=True)
-    # The identifier's owner, or None if the owner is anonymous.
+    @property
+    def defaultProfile(self):
+        return ezidapp.models.util.getProfileByLabel(self.identifier)
+        # return ezidapp.models.util.getProfileByLabel(defaultProfile(self.identifier))
 
-    # ownergroup = django.db.models.ForeignKey(group.Group, blank=True,
-    #   null=True, default=None)
-    # The identifier's owner's group, or None if the owner is anonymous.
-    # If an owner is specified but not an ownergroup, the ownergroup is
-    # computed.
+    def updateFromUntrustedLegacy(self, d, allowRestrictedSettings=False):
+        # Fills out a new identifier or (partially) updates an existing
+        # identifier from client-supplied (i.e., untrusted) legacy
+        # metadata.  When filling out a new identifier the identifier
+        # string and owner must already be set as in, for example,
+        # Identifier(identifier=..., owner=...) (but note that the
+        # owner may be None to signify an anonymously-owned identifier).
+        # If 'allowRestrictedSettings' is True, fields and values that are
+        # not ordinarily settable by clients may be set.  Throws
+        # django.core.exceptions.ValidationError on all errors.
+        # my_full_clean should be called after this method to fully fill
+        # out and validate the object.  This method checks for state
+        # transition violations and DOI registration agency changes, but
+        # does no permissions checking, and in particular, does not check
+        # if ownership changes are allowed.
+        for k in d:
+            if k == "_owner":
+                o = ezidapp.models.util.getUserByUsername(d[k])
+                anon_user_model = django.apps.apps.get_model('ezidapp', 'AnonymousUser')
+                if o is None or o == anon_user_model:
+                    raise django.core.exceptions.ValidationError({"owner": "No such user."})
+                self.owner = o
+                self.ownergroup = None
+            elif k == "_ownergroup":
+                if not allowRestrictedSettings:
+                    raise django.core.exceptions.ValidationError(
+                        {"ownergroup": "Field is not settable."}
+                    )
+                g = ezidapp.models.util.getGroupByGroupname(d[k])
+                if g is None or g == ezidapp.models.group.AnonymousGroup:
+                    raise django.core.exceptions.ValidationError({"ownergroup": "No such group."})
+                self.ownergroup = g
+            elif k == "_created":
+                if not allowRestrictedSettings:
+                    raise django.core.exceptions.ValidationError(
+                        {"createTime": "Field is not settable."}
+                    )
+                self.createTime = d[k]
+            elif k == "_updated":
+                if not allowRestrictedSettings:
+                    raise django.core.exceptions.ValidationError(
+                        {"updateTime": "Field is not settable."}
+                    )
+                self.updateTime = d[k]
+            elif k == "_status":
+                if d[k] == "reserved":
+                    if self.pk is None or self.isReserved or allowRestrictedSettings:
+                        self.status = Identifier.RESERVED
+                        self.unavailableReason = ""
+                    else:
+                        raise django.core.exceptions.ValidationError(
+                            {"status": "Invalid identifier status change."}
+                        )
+                elif d[k] == "public":
+                    self.status = Identifier.PUBLIC
+                    self.unavailableReason = ""
+                else:
+                    m = re.match("unavailable(?:$| *\\|(.*))", d[k])
+                    if m:
+                        if (self.pk is not None and not self.isReserved) or allowRestrictedSettings:
+                            self.status = Identifier.UNAVAILABLE
+                            if m.group(1) is not None:
+                                self.unavailableReason = m.group(1)
+                            else:
+                                self.unavailableReason = ""
+                        else:
+                            raise django.core.exceptions.ValidationError(
+                                {"status": "Invalid identifier status change."}
+                            )
+                    else:
+                        raise django.core.exceptions.ValidationError(
+                            {"status": "Invalid identifier status."}
+                        )
+            elif k == "_export":
+                if d[k].lower() == "yes":
+                    self.exported = True
+                elif d[k].lower() == "no":
+                    self.exported = False
+                else:
+                    raise django.core.exceptions.ValidationError(
+                        {"exported": "Value must be 'yes' or 'no'."}
+                    )
+            elif k == "_datacenter":
+                if not allowRestrictedSettings:
+                    raise django.core.exceptions.ValidationError(
+                        {"_datacenter": "Field is not settable."}
+                    )
+                if d[k] != "":
+                    datacenter_model = django.apps.apps.get_model('ezidapp', 'Datacenter')
+                    try:
+                        self.datacenter = ezidapp.models.util.getDatacenterBySymbol(d[k])
+                    except datacenter_model.DoesNotExist:
+                        raise django.core.exceptions.ValidationError(
+                            {"datacenter": "No such datacenter."}
+                        )
+                else:
+                    self.datacenter = None
+            elif k == "_crossref":
+                if d[k].lower() == "yes":
+                    if self.pk is not None and self.isDatacite and not allowRestrictedSettings:
+                        raise django.core.exceptions.ValidationError(
+                            {"crossrefStatus": "DataCite DOI cannot be registered with Crossref."}
+                        )
+                    if self.isReserved:
+                        self.crossrefStatus = Identifier.CR_RESERVED
+                    else:
+                        self.crossrefStatus = Identifier.CR_WORKING
+                    self.crossrefMessage = ""
+                elif allowRestrictedSettings:
+                    if d[k] == "":
+                        self.crossrefStatus = ""
+                        self.crossrefMessage = ""
+                    else:
+                        # OK, this is a hack used by the Crossref queue.
+                        self.crossrefStatus, self.crossrefMessage = d[k].split("/", 1)
+                else:
+                    raise django.core.exceptions.ValidationError(
+                        {"crossrefStatus": "Value must be 'yes'."}
+                    )
+            elif k == "_target":
+                self.target = d[k]
+            elif k == "_profile":
+                if d[k] == "":
+                    self.profile = None
+                else:
+                    try:
+                        self.profile = ezidapp.models.util.getProfileByLabel(d[k])
+                    except django.core.exceptions.ValidationError as e:
+                        raise django.core.exceptions.ValidationError({"profile": [e]})
+            elif k == "_ezid_role":
+                if not allowRestrictedSettings:
+                    raise django.core.exceptions.ValidationError(
+                        {"_ezid_role": "Field is not settable."}
+                    )
+                self.agentRole = self.agentRoleDisplayToCode.get(d[k], d[k])
+            elif k.startswith("_"):
+                raise django.core.exceptions.ValidationError({k: "Field is not settable."})
+            else:
+                self.metadata[k] = d[k]
+
+    owner = django.db.models.ForeignKey(
+        'ezidapp.User',
+        blank=True,
+        null=True,
+        # default=None, # TODO: Required?
+        on_delete=django.db.models.PROTECT,
+    )
+
+    ownergroup = django.db.models.ForeignKey(
+        'ezidapp.Group',
+        blank=True,
+        null=True,
+        default=None,
+        on_delete=django.db.models.PROTECT,
+    )
 
     # The time the identifier was created as a Unix timestamp.  If not
     # specified, the current time is used.
@@ -212,13 +363,12 @@ class Identifier(django.db.models.Model):
     # message received from Crossref; otherwise, empty.
     crossrefMessage = django.db.models.TextField(blank=True, default="")
 
-    # The identifier's nominal target URL, e.g., "http://foo.com/bar".
-    # (The target URL actually registered with resolvers depends on the
-    # identifier's status.)  Note that EZID supplies a default target
-    # URL that incorporates the identifier in it, so this field will in
-    # practice never be empty.  The length limit of 2000 characters is
-    # not arbitrary, but is the de facto limit accepted by most web
-    # browsers.
+    # The identifier's nominal target URL, e.g., "http://foo.com/bar". (The target URL actually
+    # registered with resolvers depends on the identifier's status.)
+    #
+    # EZID supplies a default target URL that incorporates the identifier in it, so this field will
+    # in practice never be empty.  The length limit of 2000 characters is not arbitrary, but is the
+    # de facto limit accepted by most web browsers.
     target = django.db.models.URLField(
         max_length=2000,
         blank=True,
@@ -246,18 +396,12 @@ class Identifier(django.db.models.Model):
 
     # profile = django.db.models.ForeignKey(profile.Profile, blank=True,
     #   null=True, default=None)
-    # The identifier's preferred metadata profile.  Note that there is
-    # currently no constraint on profile labels, or on use of metadata
-    # fields correponding to profiles.  Note that EZID supplies a
-    # default profile that depends on the identifier type, so this field
-    # will in practice never be None.
 
-    # noinspection PyPropertyDefinition
-    @property
-    def defaultProfile(self):
-        # Should return the default profile for the identifier's type;
-        # must be implemented by the concrete subclass.
-        assert False, "missing implementation"
+    # The identifier's preferred metadata profile.
+    #
+    # There is currently no constraint on profile labels, or on use of metadata fields corresponding
+    # to profiles.  Note that EZID supplies a default profile that depends on the identifier type,
+    # so this field will in practice never be None.
 
     @property
     def usesCrossrefProfile(self):
@@ -276,7 +420,7 @@ class Identifier(django.db.models.Model):
         return self.profile.label == "erc"
 
     # cm = custom_fields.CompressedJsonField(default=_emptyDict)
-    cm = django.db.models.BinaryField(default=dict)
+    # cm = django.db.models.BinaryField(default=dict)
 
     # All of the identifier's citation metadata as a dictionary of
     # name/value pairs, e.g., { "erc.who": "Proust, Marcel", ... }.
@@ -287,13 +431,12 @@ class Identifier(django.db.models.Model):
         default=dict,
     )
 
+    @property
     def kernelMetadata(self):
         # Returns citation metadata as a mapping.KernelMetadata object.
         # The mapping is based on the identifier's preferred metadata
         # profile.  Missing attributes will be None.
-        import impl.mapping as mapping
-
-        return mapping.map(self.metadata, profile=self.profile.label)
+        return impl.mapping.map(self.metadata, profile=self.profile.label)
 
     def dataciteMetadata(self):
         # Returns citation metadata as a DataCite XML record.  (The record
@@ -359,9 +502,7 @@ class Identifier(django.db.models.Model):
         else:
             if (self.owner is not None) ^ (self.ownergroup is not None):
                 e = "Owner/ownergroup inconsistency."
-                raise django.core.exceptions.ValidationError(
-                    {"owner": e, "ownergroup": e}
-                )
+                raise django.core.exceptions.ValidationError({"owner": e, "ownergroup": e})
             if self.ownergroup is not None:
                 # noinspection PyUnresolvedReferences
                 if self.ownergroup != self.owner.group:
@@ -398,18 +539,14 @@ class Identifier(django.db.models.Model):
                     )
                 if self.crossrefMessage != "":
                     raise django.core.exceptions.ValidationError(
-                        {
-                            "crossrefMessage": "DataCite DOI has nonempty Crossref message."
-                        }
+                        {"crossrefMessage": "DataCite DOI has nonempty Crossref message."}
                     )
             elif self.isCrossref:
                 # noinspection PyUnresolvedReferences
                 if self.datacenter is not None:
                     # This is the correct error message in most cases.
                     raise django.core.exceptions.ValidationError(
-                        {
-                            "_crossref": "Crossref registration is incompatible with shoulder."
-                        }
+                        {"_crossref": "Crossref registration is incompatible with shoulder."}
                     )
                 try:
                     ezidapp.models.validation.crossrefDoi(self.identifier)
@@ -421,9 +558,7 @@ class Identifier(django.db.models.Model):
                     )
                 if self.isReserved ^ (self.crossrefStatus == self.CR_RESERVED):
                     e = "Identifier status/Crossref status inconsistency."
-                    raise django.core.exceptions.ValidationError(
-                        {"status": e, "crossrefStatus": e}
-                    )
+                    raise django.core.exceptions.ValidationError({"status": e, "crossrefStatus": e})
                 if self.isCrossrefGood and self.crossrefMessage != "":
                     raise django.core.exceptions.ValidationError(
                         {
@@ -441,16 +576,11 @@ class Identifier(django.db.models.Model):
                 )
             if self.crossrefStatus != "":
                 raise django.core.exceptions.ValidationError(
-                    {
-                        "crossrefStatus": "Only DOI identifiers may be registered with Crossref."
-                    }
+                    {"crossrefStatus": "Only DOI identifiers may be registered with Crossref."}
                 )
             if self.crossrefMessage != "":
                 raise django.core.exceptions.ValidationError(
-                    {
-                        "crossrefMessage": "Non-DOI identifier has nonempty "
-                        + "Crossref message."
-                    }
+                    {"crossrefMessage": "Non-DOI identifier has nonempty " + "Crossref message."}
                 )
         if self.target == "":
             self.target = self.defaultTarget
@@ -483,24 +613,15 @@ class Identifier(django.db.models.Model):
         import impl.util2 as util2
 
         if not self.isArk:
-            raise django.core.exceptions.ValidationError(
-                {"identifier": "Agent PID is not an ARK."}
-            )
-        if (
-            self.owner is None
-            or self.owner.username != django.conf.settings.ADMIN_USERNAME
-        ):
+            raise django.core.exceptions.ValidationError({"identifier": "Agent PID is not an ARK."})
+        if self.owner is None or self.owner.username != django.conf.settings.ADMIN_USERNAME:
             raise django.core.exceptions.ValidationError(
                 {"owner": "Agent PID is not owned by the EZID administrator."}
             )
         if not self.isPublic:
-            raise django.core.exceptions.ValidationError(
-                {"status": "Agent PID is not public."}
-            )
+            raise django.core.exceptions.ValidationError({"status": "Agent PID is not public."})
         if self.exported:
-            raise django.core.exceptions.ValidationError(
-                {"exported": "Agent PID is exported."}
-            )
+            raise django.core.exceptions.ValidationError({"exported": "Agent PID is exported."})
         if self.target != self.defaultTarget:
             raise django.core.exceptions.ValidationError(
                 {"target": "Agent PID has non-default target URL."}
@@ -519,25 +640,20 @@ class Identifier(django.db.models.Model):
 
         if "datacite.resourcetype" in self.metadata:
             try:
-                self.metadata[
-                    "datacite.resourcetype"
-                ] = ezidapp.models.validation.resourceType(
+                self.metadata["datacite.resourcetype"] = ezidapp.models.validation.resourceType(
                     self.metadata["datacite.resourcetype"]
                 )
             except django.core.exceptions.ValidationError as e:
-                raise django.core.exceptions.ValidationError(
-                    {"datacite.resourcetype": e}
-                )
+                raise django.core.exceptions.ValidationError({"datacite.resourcetype": e})
         if "datacite" in self.metadata:
             try:
-                # In validating DataCite XML records, we always require that
-                # records be well-formed and that they look sufficiently like
-                # DataCite records that we can process them.  For reserved
-                # identifiers we stop there to allow incomplete records to be
-                # submitted; otherwise, we fully validate records against the
-                # appropriate XML schema to ensure they will be accepted by
-                # DataCite.  (Note that this check is performed for all types
-                # of identifiers, not just DOIs.)
+                # In validating DataCite XML records, we always require that records be well-formed
+                # and that they look sufficiently like DataCite records that we can process them.
+                # For reserved identifiers we stop there to allow incomplete records to be
+                # submitted; otherwise, we fully validate records against the appropriate XML schema
+                # to ensure they will be accepted by DataCite.
+                #
+                # This check is performed for all types of identifiers, not just DOIs.
                 self.metadata["datacite"] = datacite.validateDcmsRecord(
                     self.identifier,
                     self.metadata["datacite"],
@@ -565,10 +681,7 @@ class Identifier(django.db.models.Model):
                     )
             except AssertionError as e:
                 raise django.core.exceptions.ValidationError(
-                    {
-                        "crossref": f"Metadata validation error: "
-                        f"{impl.util.oneLine(str(e))}."
-                    }
+                    {"crossref": f"Metadata validation error: " f"{impl.util.oneLine(str(e))}."}
                 )
 
     def checkMetadataRequirements(self):
@@ -584,9 +697,7 @@ class Identifier(django.db.models.Model):
                 not self.usesCrossrefProfile or "crossref" not in self.metadata
             ):
                 try:
-                    datacite.formRecord(
-                        self.identifier, self.metadata, profile=self.profile.label
-                    )
+                    datacite.formRecord(self.identifier, self.metadata, profile=self.profile.label)
                 except AssertionError as e:
                     raise django.core.exceptions.ValidationError(
                         f"Public DOI metadata requirements not satisfied: {str(e)}."
@@ -606,8 +717,13 @@ class Identifier(django.db.models.Model):
         return f'{self.__class__.__name__}({self.pk}, {self.identifier})'
 
     def toLegacy(self):
-        # Returns a legacy representation of the identifier.  See the inverse of this method,
-        # 'fromLegacy' below.
+        """Return a legacy representation of the identifier
+
+        See the inverse of this method 'fromLegacy' below.
+
+        This function is currently used as the first step in preparing metadata for return to API
+        client.
+        """
         d = self.metadata.copy()
         d["_o"] = self.owner.pid if self.owner is not None else "anonymous"
         d["_g"] = self.ownergroup.pid if self.ownergroup is not None else "anonymous"
@@ -641,15 +757,30 @@ class Identifier(django.db.models.Model):
     _legacyUnavailableStatusRE = re.compile("unavailable \\| (.*)")
 
     def fromLegacy(self, d):
-        # Creates an identifier from a legacy representation (or more
-        # accurately, fills out an identifier from a legacy
-        # representation).  This method should be called after the
-        # concrete subclass instance has been created with the identifier
-        # set as in, for example, SearchIdentifier(identifier=...).  All
-        # foreign key values (owner, ownergroup, datacenter, profile) must
-        # be set externally to this method.  Finally,
-        # computeComputedValues should be called after this method to fill
-        # out the rest of the object.
+        """Create an identifier from a legacy representation (or more
+        accurately, fills out an identifier from a legacy
+        representation).
+
+        This method should be called after the
+        concrete subclass instance has been created with the identifier
+        set as in, for example, Identifier(identifier=...).  All
+        foreign key values (owner, ownergroup, datacenter, profile) must
+        be set externally to this method.  Finally,
+        computeComputedValues should be called after this method to fill
+        out the rest of the object.
+        """
+
+        if d["_o"] != "anonymous":
+            self.owner = ezidapp.models.util.getUserByPid(d["_o"])
+
+        if d["_g"] != "anonymous":
+            self.ownergroup = ezidapp.models.util.getGroupByPid(d["_g"])
+
+        self.profile = ezidapp.models.util.getProfileByLabel(d["_p"])
+
+        if self.isDatacite:
+            self.datacenter = ezidapp.models.util.getDatacenterBySymbol(d["_d"])
+
         self.createTime = int(d["_c"])
         self.updateTime = int(d["_u"])
         if "_is" in d:
@@ -665,19 +796,20 @@ class Identifier(django.db.models.Model):
             self.status = self.PUBLIC
             self.target = d["_t"]
         self.exported = "_x" not in d
+
         for k, v in list(d.items()):
             if not k.startswith("_"):
-                self.cm[k] = v
+                # TODO: Previous .cm. Can the new JSON field be used directly as a dict?
+                self.metadata[k] = v
+
         if "_cr" in d:
-            statuses = dict(
-                (v, k) for k, v in self._meta.get_field("crossrefStatus").get_choices()
-            )
+            statuses = dict((v, k) for k, v in self._meta.get_field("crossrefStatus").get_choices())
             assert d["_cr"].startswith("yes | "), "malformed legacy Crossref status"
             l = [s for s in list(statuses.keys()) if d["_cr"][6:].startswith(s)]
             assert len(l) == 1, "unrecognized legacy Crossref status"
             self.crossrefStatus = statuses[l[0]]
             if len(d["_cr"]) > 6 + len(l[0]):
-                m = d["_cr"][6 + len(l[0]):]
+                m = d["_cr"][6 + len(l[0]) :]
                 assert m.startswith(" | "), "malformed legacy Crossref status"
                 self.crossrefMessage = m[3:]
         if "_ezid_role" in d:
@@ -687,7 +819,7 @@ class Identifier(django.db.models.Model):
 class Search(django.db.models.Lookup):
     lookup_name = 'search'
 
-    def as_mysql(self, compiler, connection):
+    def as_sql(self, compiler, connection):
         lhs, lhs_params = self.process_lhs(compiler, connection)
         rhs, rhs_params = self.process_rhs(compiler, connection)
         params = lhs_params + rhs_params
@@ -699,53 +831,159 @@ django.db.models.TextField.register_lookup(Search)
 
 
 class SearchIdentifier(Identifier):
-    # An identifier as stored in the search database.
+    """An identifier as stored in the search table.
 
-    # Foreign key declarations.  Note that in the search database every
-    # identifier has an owner; anonymous identifiers are not stored.
-    # For performance we do not validate foreign key references (but of
-    # course they're still checked in the database).
+    The SearchIdentifier table expands the regular Identifier table with various indexes to enable
+    searches.
 
-    # non_validating_key = django.apps.apps.get_model('ezidapp', '')
-    owner = ezidapp.models.custom_fields.NonValidatingForeignKey(
-        'ezidapp.SearchUser',
-        on_delete=django.db.models.PROTECT,
-    )
-    ownergroup = ezidapp.models.custom_fields.NonValidatingForeignKey(
-        'ezidapp.SearchGroup',
-        blank=True,
-        null=True,
-        default=None,
-        on_delete=django.db.models.PROTECT,
-    )
-    datacenter = ezidapp.models.custom_fields.NonValidatingForeignKey(
-        'ezidapp.SearchDatacenter',
-        blank=True,
-        null=True,
-        default=None,
-        on_delete=django.db.models.PROTECT,
-    )
+    In this table, every identifier has an owner; anonymous identifiers are not stored.
 
-    import ezidapp.models.profile
+    For performance we do not validate foreign key references (but of course they're still checked
+    in the database).
+    """
 
-    profile = ezidapp.models.custom_fields.NonValidatingForeignKey(
-        ezidapp.models.profile.SearchProfile,
-        # 'ezidapp.SearchProfile',
-        blank=True,
-        null=True,
-        default=None,
-        on_delete=django.db.models.PROTECT,
-    )
+    # Note that MySQL FULLTEXT indexes must be created outside Django;
+    # see .../etc/search-mysql-addendum.sql.
 
-    @property
-    def defaultProfile(self):
-        # return ezidapp.models.profile.SearchProfile, "label", label
-        return defaultProfile(self.identifier)
+    class Meta:
+        index_together = [
+            # Batch download and management search
+            # ("owner", "identifier"),
+            # ("ownergroup", "identifier"),
+            # Management search
+            # ("owner", "createTime"),
+            # ("owner", "updateTime"),
+            # ("owner", "status"),
+            # ("owner", "exported"),
+            # ("owner", "crossrefStatus"),
+            # ("owner", "profile"),
+            # ("owner", "isTest"),
+            # ("owner", "searchablePublicationYear"),
+            # ("owner", "searchableResourceType"),
+            # ("owner", "hasMetadata"),
+            # ("owner", "hasIssues"),
+            # ("owner", "resourceCreatorPrefix"),
+            # ("owner", "resourceTitlePrefix"),
+            # ("owner", "resourcePublisherPrefix"),
+            # ("ownergroup", "createTime"),
+            # ("ownergroup", "updateTime"),
+            # ("ownergroup", "status"),
+            # ("ownergroup", "exported"),
+            # ("ownergroup", "crossrefStatus"),
+            # ("ownergroup", "profile"),
+            # ("ownergroup", "isTest"),
+            # ("ownergroup", "searchablePublicationYear"),
+            # ("ownergroup", "searchableResourceType"),
+            # ("ownergroup", "hasMetadata"),
+            # ("ownergroup", "hasIssues"),
+            # ("ownergroup", "resourceCreatorPrefix"),
+            # ("ownergroup", "resourceTitlePrefix"),
+            # ("ownergroup", "resourcePublisherPrefix"),
+            # Public search
+            # ("publicSearchVisible", "identifier"),
+            # ("publicSearchVisible", "createTime"),
+            # ("publicSearchVisible", "updateTime"),
+            ("publicSearchVisible", "searchablePublicationYear"),
+            ("publicSearchVisible", "searchableResourceType"),
+            ("publicSearchVisible", "resourceCreatorPrefix"),
+            ("publicSearchVisible", "resourceTitlePrefix"),
+            ("publicSearchVisible", "resourcePublisherPrefix"),
+            # General search
+            ("searchableTarget",),
+            # OAI
+            # ("oaiVisible", "updateTime"),
+        ]
+
+    def issueReasons(self):
+        # Returns a list of the identifier's issues.
+        reasons = []
+        if not self.hasMetadata:
+            reasons.append("missing metadata")
+        if self.linkIsBroken:
+            reasons.append("broken link")
+        if self.isCrossrefBad:
+            reasons.append(
+                "Crossref registration "
+                + ("warning" if self.crossrefStatus == self.CR_WARNING else "failure")
+            )
+        return reasons
+
+    def computeHasIssues(self):
+        self.hasIssues = not self.hasMetadata or self.linkIsBroken or self.isCrossrefBad
+
+    def computeComputedValues(self):
+
+        self.searchableTarget = self.target[::-1][
+            : self._meta.get_field("searchableTarget").max_length
+        ]
+        self.resourceCreator = ""
+        self.resourceTitle = ""
+        self.resourcePublisher = ""
+        self.resourcePublicationDate = ""
+        self.resourceType = ""
+        km = self.kernelMetadata
+        if km.creator is not None:
+            self.resourceCreator = km.creator
+        if km.title is not None:
+            self.resourceTitle = km.title
+        if km.publisher is not None:
+            self.resourcePublisher = km.publisher
+        if km.date is not None:
+            self.resourcePublicationDate = km.date
+        d = km.validatedDate
+        if d is not None:
+            self.searchablePublicationYear = int(d[:4])
+        else:
+            self.searchablePublicationYear = None
+        if km.type is not None:
+            self.resourceType = km.type
+        t = km.validatedType
+        if t is not None:
+            self.searchableResourceType = ezidapp.models.validation.resourceTypes[t.split("/")[0]]
+        else:
+            self.searchableResourceType = ""
+        kw = [self.identifier, self.owner.username, self.ownergroup.groupname]
+        if self.isDatacite:
+            kw.append(self.datacenter.symbol)
+        if self.target != self.defaultTarget:
+            kw.append(self.target)
+        for k, v in list(self.metadata.items()):
+            if k in ["datacite", "crossref"]:
+                try:
+                    kw.append(impl.util.extractXmlContent(v))
+                except Exception:
+                    kw.append(v)
+            else:
+                kw.append(v)
+        self.keywords = " ; ".join(kw)
+        self.resourceCreatorPrefix = self.resourceCreator[: self.indexedPrefixLength]
+        self.resourceTitlePrefix = self.resourceTitle[: self.indexedPrefixLength]
+        self.resourcePublisherPrefix = self.resourcePublisher[: self.indexedPrefixLength]
+        self.hasMetadata = (
+            self.resourceTitle != ""
+            and self.resourcePublicationDate != ""
+            and (self.resourceCreator != "" or self.resourcePublisher != "")
+        )
+        self.publicSearchVisible = self.isPublic and self.exported and not self.isTest
+        self.oaiVisible = (
+            self.publicSearchVisible and self.hasMetadata and self.target != self.defaultTarget
+        )
+        self.computeHasIssues()
+
+    # def fromLegacy(self, d):
+    #     # See Identifier.fromLegacy.  N.B.: computeComputedValues should
+    #     # be called after this method to fill out the rest of the object.
+    #     super(Identifier, self).fromLegacy(d)
+    #     self.owner = _getUser(d["_o"])
+    #     self.ownergroup = _getGroup(d["_g"])
+    #     self.profile = _getProfile(d["_p"])
+    #     if self.isDatacite:
+    #         self.datacenter = _getDatacenter(d["_d"])
 
     # Computed value.  To support searching over target URLs (which are
     # too long to be fully indexed), this field is the last 255
     # characters of the target URL in reverse order.
-    searchableTarget = django.db.models.CharField(max_length=255, editable=False)
+    searchableTarget = django.db.models.CharField(max_length=MAX_TARGET_LENGTH, editable=False)
 
     # Citation metadata follows.  Which is to say, the following
     # metadata refers to the resource identified by the identifier, not
@@ -772,9 +1010,7 @@ class SearchIdentifier(Identifier):
 
     # The year portion of resourcePublicationDate, as a numeric, if one
     # could be extracted; otherwise, None.
-    searchablePublicationYear = django.db.models.IntegerField(
-        blank=True, null=True, editable=False
-    )
+    searchablePublicationYear = django.db.models.IntegerField(blank=True, null=True, editable=False)
 
     # Computed value: the resource's type, if available, as mapped from
     # the identifier's preferred metadata profile; otherwise, empty.
@@ -796,18 +1032,15 @@ class SearchIdentifier(Identifier):
     # Computed value: a compendium of all searchable text.
     keywords = django.db.models.TextField(editable=False)
 
-    # To support (partial) ordering by resource creator/title/publisher,
-    # which have unbounded length and are therefore unindexable, we add
-    # the following fields that hold prefixes of the corresponding
-    # fields above.
+    # To support (partial) ordering by resource creator/title/publisher, which have unbounded length
+    # and are therefore cannot be indexed, we add the following fields that hold prefixes of the
+    # corresponding fields above.
 
     indexedPrefixLength = 50
     resourceCreatorPrefix = django.db.models.CharField(
         max_length=indexedPrefixLength, editable=False
     )
-    resourceTitlePrefix = django.db.models.CharField(
-        max_length=indexedPrefixLength, editable=False
-    )
+    resourceTitlePrefix = django.db.models.CharField(max_length=indexedPrefixLength, editable=False)
     resourcePublisherPrefix = django.db.models.CharField(
         max_length=indexedPrefixLength, editable=False
     )
@@ -839,150 +1072,6 @@ class SearchIdentifier(Identifier):
     # problems of some kind.
     hasIssues = django.db.models.BooleanField(editable=False)
 
-    def issueReasons(self):
-        # Returns a list of the identifier's issues.
-        reasons = []
-        if not self.hasMetadata:
-            reasons.append("missing metadata")
-        if self.linkIsBroken:
-            reasons.append("broken link")
-        if self.isCrossrefBad:
-            reasons.append(
-                "Crossref registration "
-                + ("warning" if self.crossrefStatus == self.CR_WARNING else "failure")
-            )
-        return reasons
-
-    def computeHasIssues(self):
-        self.hasIssues = not self.hasMetadata or self.linkIsBroken or self.isCrossrefBad
-
-    def computeComputedValues(self):
-        super(SearchIdentifier, self).computeComputedValues()
-        self.searchableTarget = self.target[::-1][
-            : self._meta.get_field("searchableTarget").max_length
-        ]
-        self.resourceCreator = ""
-        self.resourceTitle = ""
-        self.resourcePublisher = ""
-        self.resourcePublicationDate = ""
-        self.resourceType = ""
-        km = self.kernelMetadata()
-        if km.creator is not None:
-            self.resourceCreator = km.creator
-        if km.title is not None:
-            self.resourceTitle = km.title
-        if km.publisher is not None:
-            self.resourcePublisher = km.publisher
-        if km.date is not None:
-            self.resourcePublicationDate = km.date
-        d = km.validatedDate
-        if d is not None:
-            self.searchablePublicationYear = int(d[:4])
-        else:
-            self.searchablePublicationYear = None
-        if km.type is not None:
-            self.resourceType = km.type
-        t = km.validatedType
-        if t is not None:
-            self.searchableResourceType = ezidapp.models.validation.resourceTypes[
-                t.split("/")[0]
-            ]
-        else:
-            self.searchableResourceType = ""
-        kw = [self.identifier, self.owner.username, self.ownergroup.groupname]
-        if self.isDatacite:
-            kw.append(self.datacenter.symbol)
-        if self.target != self.defaultTarget:
-            kw.append(self.target)
-        for k, v in list(self.metadata.items()):
-            if k in ["datacite", "crossref"]:
-                try:
-                    kw.append(impl.util.extractXmlContent(v))
-                except Exception:
-                    kw.append(v)
-            else:
-                kw.append(v)
-        self.keywords = " ; ".join(kw)
-        self.resourceCreatorPrefix = self.resourceCreator[: self.indexedPrefixLength]
-        self.resourceTitlePrefix = self.resourceTitle[: self.indexedPrefixLength]
-        self.resourcePublisherPrefix = self.resourcePublisher[
-            : self.indexedPrefixLength
-        ]
-        self.hasMetadata = (
-            self.resourceTitle != ""
-            and self.resourcePublicationDate != ""
-            and (self.resourceCreator != "" or self.resourcePublisher != "")
-        )
-        self.publicSearchVisible = self.isPublic and self.exported and not self.isTest
-        self.oaiVisible = (
-            self.publicSearchVisible
-            and self.hasMetadata
-            and self.target != self.defaultTarget
-        )
-        self.computeHasIssues()
-
-    # def fromLegacy(self, d):
-    #     # See Identifier.fromLegacy.  N.B.: computeComputedValues should
-    #     # be called after this method to fill out the rest of the object.
-    #     super(SearchIdentifier, self).fromLegacy(d)
-    #     self.owner = _getUser(d["_o"])
-    #     self.ownergroup = _getGroup(d["_g"])
-    #     self.profile = _getProfile(d["_p"])
-    #     if self.isDatacite:
-    #         self.datacenter = _getDatacenter(d["_d"])
-
-    # Note that MySQL FULLTEXT indexes must be created outside Django;
-    # see .../etc/search-mysql-addendum.sql.
-
-    class Meta(Identifier.Meta):
-        index_together = [
-            # batch download and management search
-            ("owner", "identifier"),
-            ("ownergroup", "identifier"),
-            # management search
-            ("owner", "createTime"),
-            ("owner", "updateTime"),
-            ("owner", "status"),
-            ("owner", "exported"),
-            ("owner", "crossrefStatus"),
-            ("owner", "profile"),
-            ("owner", "isTest"),
-            ("owner", "searchablePublicationYear"),
-            ("owner", "searchableResourceType"),
-            ("owner", "hasMetadata"),
-            ("owner", "hasIssues"),
-            ("owner", "resourceCreatorPrefix"),
-            ("owner", "resourceTitlePrefix"),
-            ("owner", "resourcePublisherPrefix"),
-            ("ownergroup", "createTime"),
-            ("ownergroup", "updateTime"),
-            ("ownergroup", "status"),
-            ("ownergroup", "exported"),
-            ("ownergroup", "crossrefStatus"),
-            ("ownergroup", "profile"),
-            ("ownergroup", "isTest"),
-            ("ownergroup", "searchablePublicationYear"),
-            ("ownergroup", "searchableResourceType"),
-            ("ownergroup", "hasMetadata"),
-            ("ownergroup", "hasIssues"),
-            ("ownergroup", "resourceCreatorPrefix"),
-            ("ownergroup", "resourceTitlePrefix"),
-            ("ownergroup", "resourcePublisherPrefix"),
-            # public search
-            ("publicSearchVisible", "identifier"),
-            ("publicSearchVisible", "createTime"),
-            ("publicSearchVisible", "updateTime"),
-            ("publicSearchVisible", "searchablePublicationYear"),
-            ("publicSearchVisible", "searchableResourceType"),
-            ("publicSearchVisible", "resourceCreatorPrefix"),
-            ("publicSearchVisible", "resourceTitlePrefix"),
-            ("publicSearchVisible", "resourcePublisherPrefix"),
-            # general search
-            ("searchableTarget",),
-            # OAI
-            ("oaiVisible", "updateTime"),
-        ]
-
 
 # def _getFromCache(cache, model, attribute, key, insertOnMissing=True):
 #     # Generic caching function supporting the caches in this module.
@@ -1013,59 +1102,37 @@ class SearchIdentifier(Identifier):
 #     return i, cache
 
 
-def updateFromLegacy(identifier, metadata, forceInsert=False, forceUpdate=False):
-    # Inserts or updates an identifier in the search database.  The
-    # identifier is constructed from a legacy representation.
-    i = SearchIdentifier(identifier=identifier)
-    # i.fromLegacy(metadata)
-    i.my_full_clean()
-    # Because SearchDbDaemon's call to this function is really the only
-    # place identifiers get inserted and updated in the search database,
-    # we're not concerned with race conditions.
-    if not forceInsert:
-        j = SearchIdentifier.objects.filter(identifier=identifier).only("id")
-        if len(j) > 0:
-            i.id = j[0].id
-    # Ideally we would like to specify that all fields be updated
-    # *except* linkIsBroken, but Django does not provide a way to do
-    # this.  As a consequence, linkIsBroken's default value will
-    # override the previous value in the table.  The next time the link
-    # checker update daemon runs it will correct the value, which is
-    # some consolation.
-    i.save(force_insert=forceInsert, force_update=forceUpdate)
-
-
 def getIdentifier(identifier, prefixMatch=False):
     if prefixMatch:
         l = list(
-            StoreIdentifier.objects.select_related(
+            Identifier.objects.select_related(
                 "owner", "owner__group", "ownergroup", "datacenter", "profile"
             ).filter(identifier__in=impl.util.explodePrefixes(identifier))
         )
         if len(l) > 0:
             return max(l, key=lambda si: len(si.identifier))
         else:
-            raise StoreIdentifier.DoesNotExist()
+            raise Identifier.DoesNotExist()
     else:
-        return StoreIdentifier.objects.select_related(
+        return Identifier.objects.select_related(
             "owner", "owner__group", "ownergroup", "datacenter", "profile"
         ).get(identifier=identifier)
 
 
 class RefIdentifier(Identifier):
-    """Identifier referenced in task queues.
+    """Identifier referenced in task queues
 
     The queues hold create, update and/or delete operations that have been scheduled but not yet
     completed.
 
-    TODO: Factor in docstring from StoreIdentifierObjectField:
+    TODO: Factor in docstring from IdentifierObjectField:
 
-    - The StoreIdentifier model instance primary key (pk) attribute may be set or unset. If `pk` is
+    - The Identifier model instance primary key (pk) attribute may be set or unset. If `pk` is
     unset, the object is designated as newly created and unsaved (existing only in memory). The
-    object does not reference any existing rows in the the StoreIdentifier table, and the identifier
-    in the model instance may or may not exist in the StoreIdentifier, or other tables.
+    object does not reference any existing rows in the the Identifier table, and the identifier
+    in the model instance may or may not exist in the Identifier, or other tables.
 
-    - If set, `pk` must reference an existing row in the StoreIdentifier table. The identifier in
+    - If set, `pk` must reference an existing row in the Identifier table. The identifier in
     the referenced row should be an exact match for identifier in the model instance. Other values
     may differ, representing the identifier in a different state.
 
@@ -1087,224 +1154,13 @@ class RefIdentifier(Identifier):
     - `pk` can be manipulated programmatically before calling `.save()` in order to change an update
     to an insert and vice versa, or to change which row is updated.
 
-    - Sample StoreIdentifier model instance, after serialization to JSON. Note that .cm is a nested
-    serialized instance of a metadata object.
+    - Sample Identifier model instance, after serialization to JSON. .cm is a nested serialized
+    instance of a metadata object.
     """
-
-class StoreIdentifier(Identifier):
-    # An identifier as stored in the store database.
-
-    # Foreign key declarations.  For performance we do not validate
-    # foreign key references (but of course they're still checked in the
-    # database).
-
-    import ezidapp.models.custom_fields
-
-    owner = ezidapp.models.custom_fields.NonValidatingForeignKey(
-        'ezidapp.StoreUser',
-        blank=True,
-        null=True,
-        on_delete=django.db.models.PROTECT,
-    )
-    ownergroup = ezidapp.models.custom_fields.NonValidatingForeignKey(
-        'ezidapp.StoreGroup',
-        blank=True,
-        null=True,
-        default=None,
-        on_delete=django.db.models.PROTECT,
-    )
-    datacenter = ezidapp.models.custom_fields.NonValidatingForeignKey(
-        'ezidapp.StoreDatacenter',
-        blank=True,
-        null=True,
-        default=None,
-        on_delete=django.db.models.PROTECT,
-    )
-    profile = ezidapp.models.custom_fields.NonValidatingForeignKey(
-        'ezidapp.StoreProfile',
-        blank=True,
-        null=True,
-        default=None,
-        on_delete=django.db.models.PROTECT,
-    )
-
-    @property
-    def defaultProfile(self):
-        return ezidapp.models.util.getProfileByLabel(defaultProfile(self.identifier))
-
-    def fromLegacy(self, d):
-        # See Identifier.fromLegacy.  N.B.: computeComputedValues should
-        # be called after this method to fill out the rest of the object.
-        super(StoreIdentifier, self).fromLegacy(d)
-        if d["_o"] != "anonymous":
-            self.owner = ezidapp.models.util.getUserByPid(d["_o"])
-        if d["_g"] != "anonymous":
-            self.ownergroup = ezidapp.models.util.getGroupByPid(d["_g"])
-        self.profile = ezidapp.models.util.getProfileByLabel(d["_p"])
-        if self.isDatacite:
-            self.datacenter = ezidapp.models.util.getDatacenterBySymbol(d["_d"])
-
-    def updateFromUntrustedLegacy(self, d, allowRestrictedSettings=False):
-        # Fills out a new identifier or (partially) updates an existing
-        # identifier from client-supplied (i.e., untrusted) legacy
-        # metadata.  When filling out a new identifier the identifier
-        # string and owner must already be set as in, for example,
-        # StoreIdentifier(identifier=..., owner=...) (but note that the
-        # owner may be None to signify an anonymously-owned identifier).
-        # If 'allowRestrictedSettings' is True, fields and values that are
-        # not ordinarily settable by clients may be set.  Throws
-        # django.core.exceptions.ValidationError on all errors.
-        # my_full_clean should be called after this method to fully fill
-        # out and validate the object.  This method checks for state
-        # transition violations and DOI registration agency changes, but
-        # does no permissions checking, and in particular, does not check
-        # the allowability of ownership changes.
-        for k in d:
-            if k == "_owner":
-                o = ezidapp.models.util.getUserByUsername(d[k])
-                anon_user_model = django.apps.apps.get_model('ezidapp', 'AnonymousUser')
-                if o is None or o == anon_user_model:
-                    raise django.core.exceptions.ValidationError(
-                        {"owner": "No such user."}
-                    )
-                self.owner = o
-                self.ownergroup = None
-            elif k == "_ownergroup":
-                if not allowRestrictedSettings:
-                    raise django.core.exceptions.ValidationError(
-                        {"ownergroup": "Field is not settable."}
-                    )
-                g = ezidapp.models.util.getGroupByGroupname(d[k])
-                if g is None or g == ezidapp.models.group.AnonymousGroup:
-                    raise django.core.exceptions.ValidationError(
-                        {"ownergoup": "No such group."}
-                    )
-                self.ownergroup = g
-            elif k == "_created":
-                if not allowRestrictedSettings:
-                    raise django.core.exceptions.ValidationError(
-                        {"createTime": "Field is not settable."}
-                    )
-                self.createTime = d[k]
-            elif k == "_updated":
-                if not allowRestrictedSettings:
-                    raise django.core.exceptions.ValidationError(
-                        {"updateTime": "Field is not settable."}
-                    )
-                self.updateTime = d[k]
-            elif k == "_status":
-                if d[k] == "reserved":
-                    if self.pk is None or self.isReserved or allowRestrictedSettings:
-                        self.status = StoreIdentifier.RESERVED
-                        self.unavailableReason = ""
-                    else:
-                        raise django.core.exceptions.ValidationError(
-                            {"status": "Invalid identifier status change."}
-                        )
-                elif d[k] == "public":
-                    self.status = StoreIdentifier.PUBLIC
-                    self.unavailableReason = ""
-                else:
-                    m = re.match("unavailable(?:$| *\\|(.*))", d[k])
-                    if m:
-                        if (
-                            self.pk is not None and not self.isReserved
-                        ) or allowRestrictedSettings:
-                            self.status = StoreIdentifier.UNAVAILABLE
-                            if m.group(1) is not None:
-                                self.unavailableReason = m.group(1)
-                            else:
-                                self.unavailableReason = ""
-                        else:
-                            raise django.core.exceptions.ValidationError(
-                                {"status": "Invalid identifier status change."}
-                            )
-                    else:
-                        raise django.core.exceptions.ValidationError(
-                            {"status": "Invalid identifier status."}
-                        )
-            elif k == "_export":
-                if d[k].lower() == "yes":
-                    self.exported = True
-                elif d[k].lower() == "no":
-                    self.exported = False
-                else:
-                    raise django.core.exceptions.ValidationError(
-                        {"exported": "Value must be 'yes' or 'no'."}
-                    )
-            elif k == "_datacenter":
-                if not allowRestrictedSettings:
-                    raise django.core.exceptions.ValidationError(
-                        {"_datacenter": "Field is not settable."}
-                    )
-                if d[k] != "":
-                    datacenter_model = django.apps.apps.get_model(
-                        'ezidapp', 'StoreDatacenter'
-                    )
-                    try:
-                        self.datacenter = ezidapp.models.util.getDatacenterBySymbol(
-                            d[k]
-                        )
-                    except datacenter_model.DoesNotExist:
-                        raise django.core.exceptions.ValidationError(
-                            {"datacenter": "No such datacenter."}
-                        )
-                else:
-                    self.datacenter = None
-            elif k == "_crossref":
-                if d[k].lower() == "yes":
-                    if (
-                        self.pk is not None
-                        and self.isDatacite
-                        and not allowRestrictedSettings
-                    ):
-                        raise django.core.exceptions.ValidationError(
-                            {
-                                "crossrefStatus": "DataCite DOI cannot be registered with Crossref."
-                            }
-                        )
-                    if self.isReserved:
-                        self.crossrefStatus = StoreIdentifier.CR_RESERVED
-                    else:
-                        self.crossrefStatus = StoreIdentifier.CR_WORKING
-                    self.crossrefMessage = ""
-                elif allowRestrictedSettings:
-                    if d[k] == "":
-                        self.crossrefStatus = ""
-                        self.crossrefMessage = ""
-                    else:
-                        # OK, this is a hack used by the Crossref queue.
-                        self.crossrefStatus, self.crossrefMessage = d[k].split("/", 1)
-                else:
-                    raise django.core.exceptions.ValidationError(
-                        {"crossrefStatus": "Value must be 'yes'."}
-                    )
-            elif k == "_target":
-                self.target = d[k]
-            elif k == "_profile":
-                if d[k] == "":
-                    self.profile = None
-                else:
-                    try:
-                        self.profile = ezidapp.models.util.getProfileByLabel(d[k])
-                    except django.core.exceptions.ValidationError as e:
-                        raise django.core.exceptions.ValidationError({"profile": [e]})
-            elif k == "_ezid_role":
-                if not allowRestrictedSettings:
-                    raise django.core.exceptions.ValidationError(
-                        {"_ezid_role": "Field is not settable."}
-                    )
-                self.agentRole = self.agentRoleDisplayToCode.get(d[k], d[k])
-            elif k.startswith("_"):
-                raise django.core.exceptions.ValidationError(
-                    {k: "Field is not settable."}
-                )
-            else:
-                self.metadata[k] = d[k]
 
 
 def defaultProfile(identifier):
-    """Returns the label of the default metadata profile (e.g., "erc") for a
+    """Return the label of the default metadata profile (e.g., "erc") for a
     given qualified identifier."""
     if identifier.startswith("ark:/"):
         return django.conf.settings.ARK_PROFILE

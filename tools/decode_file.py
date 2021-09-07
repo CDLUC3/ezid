@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # Decodes a hex-encoded file.  The file is overwritten.
 #
 # This script requires an EZID module.  The PYTHONPATH environment

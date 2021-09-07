@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import datetime
 import logging
 
@@ -67,7 +70,7 @@ def assert_super_shoulder_slash(ns, is_super_shoulder, is_force):
 
 def assert_valid_datacenter(datacenter_str):
     datacenter_set = {
-        x.symbol for x in ezidapp.models.datacenter.StoreDatacenter.objects.all()
+        x.symbol for x in ezidapp.models.datacenter.Datacenter.objects.all()
     }
     if datacenter_str not in datacenter_set:
         log.error(
@@ -87,9 +90,9 @@ def dump_shoulders():
 
 
 def dump_datacenters():
-    # for x in ezidapp.models.datacenter.SearchDatacenter.objects.all():
+    # for x in ezidapp.models.datacenter.Datacenter.objects.all():
     #     log.info(x)
-    for x in ezidapp.models.datacenter.StoreDatacenter.objects.all():
+    for x in ezidapp.models.datacenter.Datacenter.objects.all():
         log.info(x)
 
 

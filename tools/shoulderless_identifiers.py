@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # Finds and counts all shoulderless identifiers, i.e., identifiers
 # that are not extensions of current shoulders.  The identifiers are
 # grouped by owner and shoulder (well, since the identifiers are
@@ -33,7 +36,7 @@ orphans = {}  # username: { shoulder: count }
 lastIdentifier = ""
 while True:
     qs = (
-        ezidapp.models.identifier.StoreIdentifier.objects.filter(
+        ezidapp.models.identifier.Identifier.objects.filter(
             identifier__gt=lastIdentifier
         )
         .order_by("identifier")

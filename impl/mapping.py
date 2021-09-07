@@ -1,33 +1,26 @@
-# =============================================================================
-#
-# EZID :: mapping.py
-#
-# Metadata mapping.  This module effectively defines a citation
-# metadata standard, which we refer to as "kernel" metadata.
-#
-# Subtle point: there are two slightly different mappings.  The
-# default mapping (used to support everything except DataCite
-# requirements) treats the identifier's preferred metadata profile as
-# gospel: no field not in the profile is examined.  The intention of
-# this mapping is to support a unified view of identifier native
-# metadata.
-#
-# The other mapping (triggered by datacitePriority=True) is used to
-# satisfy DataCite metadata requirements, and it examines and gives
-# preference to the DataCite fields (primarily the 'datacite' XML
-# field and secondarily the datacite.* itemized fields) regardless of
-# the profile.  The intention of this mapping is to allow an
-# identifier to retain its native metadata, and to augment or override
-# that metadata just for the purposes of satisfying requirements.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2012, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
+"""Metadata mapping
+
+This module effectively defines a citation
+metadata standard, which we refer to as "kernel" metadata.
+
+Subtle point: there are two slightly different mappings.  The
+default mapping (used to support everything except DataCite
+requirements) treats the identifier's preferred metadata profile as
+gospel: no field not in the profile is examined.  The intention of
+this mapping is to support a unified view of identifier native
+metadata.
+
+The other mapping (triggered by datacitePriority=True) is used to
+satisfy DataCite metadata requirements, and it examines and gives
+preference to the DataCite fields (primarily the 'datacite' XML
+field and secondarily the datacite.* itemized fields) regardless of
+the profile.  The intention of this mapping is to allow an
+identifier to retain its native metadata, and to augment or override
+that metadata just for the purposes of satisfying requirements.
+"""
 
 import re
 
@@ -246,8 +239,9 @@ def map(metadata, profile=None, datacitePriority=False):
     any _profile or _p field in the metadata dictionary; the profile
     defaults to "erc".  If datacitePriority is True, the DataCite fields
     (the 'datacite' XML field and the datacite.* itemized fields) are
-    examined and take precedence regardless of the profile.  Note that
-    this function is forgiving in nature, and does not raise exceptions.
+    examined and take precedence regardless of the profile.
+
+    This function is forgiving in nature, and does not raise exceptions.
     """
     if profile is None:
         profile = _get(metadata, "_profile", "_p")

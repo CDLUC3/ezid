@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import contextlib
 import http.client
 import logging
@@ -17,7 +20,7 @@ import django.conf
 import django.db
 import django.db.transaction
 
-import impl.daemon
+import impl.enqueue
 import impl.log
 import impl.nog.util
 import impl.util
@@ -92,7 +95,7 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         print('Testing stdout')
         print('Testing stderr', file=sys.stderr)
 
-        if not impl.daemon.is_daemon_enabled(self.setting):
+        if not impl.enqueue.is_daemon_enabled(self.setting):
             raise django.core.management.CommandError(
                 f'The {self.display, } daemon is not currently enabled and cannot be started. '
                 f'To start this daemon, ensure that both '
@@ -187,7 +190,7 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         reattemptDelay,
         # threadNameHolder,
     ):
-        """Launches a registration thread (and subservient Worker threads).
+        """Launche a registration thread (and subservient Worker threads)
 
         Args:
             self:

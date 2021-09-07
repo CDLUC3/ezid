@@ -1,5 +1,8 @@
 """A class that holds the component strings of an ARK or DOI and provides
 related functions."""
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import collections
 import logging
 import re
@@ -25,7 +28,7 @@ class IdNamespace(
     __slots__ = ()
 
     def __new__(cls, scheme=None, naan_prefix=None, slash=None, shoulder=None):
-        """Create an IdNamespace from elements of an identifier.
+        """Create an IdNamespace from elements of an identifier
 
         Args:
             With scheme=1, naan_prefix=2, slash=3 and shoulder=4, the contents

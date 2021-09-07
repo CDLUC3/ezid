@@ -1,12 +1,12 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # =============================================================================
 #
 # EZID :: datacite.py
 #
 # Asynchronous DataCite processing.
 #
-# License:
-#   Copyright (c) 2015, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
 import logging
@@ -15,7 +15,7 @@ import django.conf
 import django.core.management
 
 import ezidapp.management.commands.proc_base
-import ezidapp.models.registration_queue
+import ezidapp.models.async_queue
 import impl.datacite
 import impl.nog.util
 
@@ -32,7 +32,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         super(Command, self).__init__(__name__)
         self.state = dict(
             registrar="datacite",
-            queueModel=ezidapp.models.registration_queue.DataciteQueue,
+            queueModel=ezidapp.models.async_queue.DataciteQueue,
             createFunction=self._overwrite,
             updateFunction=self._overwrite,
             deleteFunction=self._delete,

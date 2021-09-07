@@ -1,21 +1,11 @@
-# =============================================================================
-#
-# EZID :: util.py
-#
-# Utility functions.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#   Rushiraj Nenuji <rnenuji@ucop.edu>
-#
-# License:
-#   Copyright (c) 2010, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
+"""Utility functions
+"""
+
 import types
 
-import impl.nog.tb
 import impl.nog.tb
 import base64
 import calendar
@@ -202,7 +192,7 @@ def validateIdentifier(identifier):
 
 
 def validateShoulder(shoulder):
-    """Returns True if the supplied string is a valid shoulder, which is to
+    """Return True if the supplied string is a valid shoulder, which is to
     say, if the string is a certain allowable prefix of a qualified,
     syntactically valid identifier."""
     # Strategy: a shoulder is valid if adding a single character yields
@@ -454,7 +444,7 @@ _hexMapping = dict((a + b, chr(int(a + b, 16))) for a in _hexDigits for b in _he
 
 
 def decode(s):
-    """Decodes a string that was encoded by encode{1,2,3,4}.
+    """Decode a string that was encoded by encode{1,2,3,4}.
 
     Raises PercentDecodeError (defined in this module) and
     UnicodeDecodeError.
@@ -471,7 +461,7 @@ def decode(s):
 
 
 def toExchange(metadata, identifier=None):
-    """Returns an exchange representation of a metadata dictionary, which is a
+    """Return an exchange representation of a metadata dictionary, which is a
     string of the format "label value label value ..." in which labels and
     values are percent-encoded via encode{3,4} above, and are separated by
     single spaces.
@@ -497,7 +487,7 @@ def toExchange(metadata, identifier=None):
 
 
 def fromExchange(line, identifierEmbedded=False):
-    """Reconstitutes a metadata dictionary from an exchange representation.
+    """Reconstitute a metadata dictionary from an exchange representation.
 
     If 'identifierEmbedded' is True, the first token is assumed to be an
     identifier, and the return is a tuple (identifier, dictionary).
@@ -530,13 +520,13 @@ def fromExchange(line, identifierEmbedded=False):
 
 
 def oneLine(s):
-    """Replaces newlines in a string with spaces."""
+    """Replace newlines in a string with spaces."""
     assert isinstance(s, str)
     return re.sub("\\s", " ", s)
 
 
 def formatException(exception):
-    """Formats an exception into a single-line string."""
+    """Format an exception into a single-line string."""
     s = oneLine(str(exception)).strip()
     if len(s) > 0:
         s = ": " + s
@@ -544,7 +534,7 @@ def formatException(exception):
 
 
 def desentencify(s):
-    """Turns a string that looks like a sentence (initial capital letter,
+    """Turn a string that looks like a sentence (initial capital letter,
     period at the end) into a phrase.
 
     Fallible, but tries to be careful.
@@ -579,7 +569,7 @@ _modelAnvlLabelMapping = {
 
 
 def formatValidationError(exception, convertToAnvlLabels=True):
-    """Formats a Django validation error into a single-line string.
+    """Format a Django validation error into a single-line string.
 
     If 'convertToAnvlLabels' is true, an attempt is made to convert any
     model field names referenced in the error to their ANVL
@@ -605,7 +595,7 @@ _illegalAsciiCharsRE = re.compile("[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\xFF]")
 
 
 def validateAsciiSafeCharset(s):
-    """Returns true if the given ASCII string contains only non-control 7-bit
+    """Return true if the given ASCII string contains only non-control 7-bit
     characters."""
     assert isinstance(s, str)
     return _illegalAsciiCharsRE.search(s) is None
@@ -662,14 +652,14 @@ _illegalUnichrsRE = re.compile(
 
 
 def validateXmlSafeCharset(s):
-    """Returns true if the given Unicode string contains only characters that
+    """Return true if the given Unicode string contains only characters that
     are accepted by XML 1.1."""
     assert isinstance(s, str)
     return _illegalUnichrsRE.search(s) is None
 
 
 def sanitizeXmlSafeCharset(s):
-    """Returns a copy of the given Unicode string in which characters not
+    """Return a copy of the given Unicode string in which characters not
     accepted by XML 1.1 have been replaced with spaces."""
     assert isinstance(s, str)
     return _illegalUnichrsRE.sub(" ", s)
@@ -688,7 +678,7 @@ _illegalUnichrsPlusSuppPlanesRE = re.compile(
 
 
 def validateXmlSafeCharsetBmpOnly(s):
-    """Returns true if the given Unicode string contains only characters that
+    """Return true if the given Unicode string contains only characters that
     are accepted by XML 1.1 and that are in the Basic Multilingual Plane."""
     assert isinstance(s, str)
     return _illegalUnichrsPlusSuppPlanesRE.search(s) is None
@@ -702,7 +692,7 @@ xmlDeclarationRE = re.compile(
 
 
 def removeXmlEncodingDeclaration(document):
-    """Removes the encoding declaration from an XML document if present."""
+    """Remove the encoding declaration from an XML document if present."""
     assert isinstance(document, str)
     m = xmlDeclarationRE.match(document)
     if m and m.group(3) is not None:
@@ -712,7 +702,7 @@ def removeXmlEncodingDeclaration(document):
 
 
 def removeXmlDeclaration(document):
-    """Removes the entire XML declaration from an XML document if present."""
+    """Remove the entire XML declaration from an XML document if present."""
     assert isinstance(document, str)
     m = xmlDeclarationRE.match(document)
     if m:
@@ -722,13 +712,12 @@ def removeXmlDeclaration(document):
 
 
 def insertXmlEncodingDeclaration(document):
-    """Inserts a UTF-8 encoding declaration in an XML document if it lacks one.
+    """Insert a UTF-8 encoding declaration in an XML document if it lacks one.
 
-    'document' should be an unencoded string and the return is likewise
-    an unencoded string.  (Note that, due to the discrepancy between the
-    encoding declaration and the encoding of the returned string, to be
-    parsed again by lxml, the encoding declaration will need to be
-    removed.)
+    'document' should be an unencoded string and the return is likewise an unencoded string.
+
+    Due to the discrepancy between the encoding declaration and the encoding of the returned string,
+    to be parsed again by lxml, the encoding declaration will need to be removed.
     """
     assert isinstance(document, str)
     m = xmlDeclarationRE.match(document)
@@ -742,7 +731,7 @@ def insertXmlEncodingDeclaration(document):
 
 
 def parseXmlString(document):
-    """Parses an XML document from a string, returning a root element node.
+    """Parse an XML document from a string, returning a root element node.
 
     If a Unicode string is supplied, any encoding declaration in the
     document is discarded and ignored; otherwise, if an encoding
@@ -787,7 +776,7 @@ _extractTransformSource = """<?xml version="1.0"?>
 
 
 def extractXmlContent(document):
-    """Extracts all content from an XML document (all attribute values, all
+    """Extract all content from an XML document (all attribute values, all
     textual element content) and returns it as a single Unicode string in which
     individual fragments are separated by " ; ".
 
@@ -816,12 +805,12 @@ def xmlEscape(s):
 
 
 def dateToLowerTimestamp(date):
-    """Converts a string date of the form YYYY, YYYY-MM, or YYYY-MM-DD to a
+    """Convert a string date of the form YYYY, YYYY-MM, or YYYY-MM-DD to a
     Unix timestamp, or returns None if the date is invalid.
 
-    The returned timestamp is the first (earliest) second within the
-    specified time period.  Note that the timestamp may be negative or
-    otherwise out of the normal range for Unix timestamps.
+    The returned timestamp is the first (earliest) second within the specified time period.
+
+    The timestamp may be negative or otherwise out of the normal range for Unix timestamps.
     """
     assert isinstance(date, str)
 
@@ -838,12 +827,12 @@ def dateToLowerTimestamp(date):
 
 
 def dateToUpperTimestamp(date):
-    """Converts a string date of the form YYYY, YYYY-MM, or YYYY-MM-DD to a
-    Unix timestamp, or returns None if the date is invalid.
+    """Convert a string date of the form YYYY, YYYY-MM, or YYYY-MM-DD to a Unix timestamp, or
+    returns None if the date is invalid.
 
-    The returned timestamp is the last (latest) second within the
-    specified time period.  Note that the timestamp may be negative or
-    otherwise out of the normal range for Unix timestamps.
+    The returned timestamp is the last (latest) second within the specified time period.
+
+    The timestamp may be negative or otherwise out of the normal range for Unix timestamps.
     """
     # Overflow and edge cases.
     assert isinstance(date, str)
@@ -871,12 +860,12 @@ def dateToUpperTimestamp(date):
 
 
 def formatTimestampZulu(t):
-    """Returns a Unix timestamp in ISO 8601 UTC format."""
+    """Return a Unix timestamp in ISO 8601 UTC format."""
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t))
 
 
 def parseTimestampZulu(s, allowDateOnly=False):
-    """Parses a time (or just a date, if 'allowDateOnly' is true) in ISO 8601
+    """Parse a time (or just a date, if 'allowDateOnly' is true) in ISO 8601
     UTC format and returns a Unix timestamp.
 
     Raises an exception on parse error.

@@ -1,17 +1,9 @@
-# =============================================================================
-#
-# EZID :: userauth.py
-#
-# User authentication.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2010, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
+"""User authentication
+"""
+
 import base64
 import hashlib
 import logging
@@ -34,9 +26,9 @@ logger = logging.getLogger(__name__)
 
 
 def authenticate(username, password, request=None, coAuthenticate=True):
-    """Authenticates a username and password.
+    """Authenticate a username and password
 
-    Returns a StoreUser object if the authentication is successful, None if
+    Returns a User object if the authentication is successful, None if
     unsuccessful, or a string error message if an error occurs.
 
     This implements EZID's custom authentication, and in this context, the 'admin'
@@ -49,7 +41,7 @@ def authenticate(username, password, request=None, coAuthenticate=True):
     administrative user, the user is authenticated with the Django admin app as well.
 
     Easter egg: if the username has the form "@user" and the EZID administrator password
-    is given, and if username "user" exists, then a StoreUser object for "user" is
+    is given, and if username "user" exists, then a User object for "user" is
     returned (even if logins are not enabled for the user).
     """
     logger.debug('Authenticating user. username="{}"'.format(username))
@@ -128,7 +120,7 @@ def authenticate(username, password, request=None, coAuthenticate=True):
 
 
 def getUser(request, returnAnonymous=False):
-    """If the session is authenticated, returns a StoreUser object for the
+    """If the session is authenticated, returns a User object for the
     authenticated user; otherwise, returns None.
 
     If returnAnonymous is True, AnonymousUser is returned instead of
@@ -145,9 +137,9 @@ def getUser(request, returnAnonymous=False):
 
 
 def authenticateRequest(request, storeSessionCookie=False):
-    """Authenticates an API request.
+    """Authenticate an API request
 
-    Returns a StoreUser object if the authentication is successful, None
+    Returns a User object if the authentication is successful, None
     if unsuccessful, or a string error message if an error occurs.
     """
     if SESSION_KEY in request.session:
@@ -172,13 +164,16 @@ def authenticateRequest(request, storeSessionCookie=False):
 
 
 class LdapSha1PasswordHasher(django.contrib.auth.hashers.SHA1PasswordHasher):
-    # Password hasher for legacy LDAP-encoded passwords.  File this
-    # under So Close, Yet So Far.  LDAP uses salted SHA-1 hashing, and
-    # Django supports exactly that scheme.  With some syntactic
-    # shuffling it would be possible for Django to work with
-    # LDAP-encoded passwords directly, except: LDAP uses binary salts,
-    # whereas Django requires salts to be text.  Ergo, this custom
-    # hasher.
+    """Password hasher for legacy LDAP-encoded passwords
+
+    File this
+    under So Close, Yet So Far.  LDAP uses salted SHA-1 hashing, and
+    Django supports exactly that scheme.  With some syntactic
+    shuffling it would be possible for Django to work with
+    LDAP-encoded passwords directly, except: LDAP uses binary salts,
+    whereas Django requires salts to be text.  Ergo, this custom
+    hasher.
+    """
     algorithm = "ldap_sha1"
 
     def encode(self, password, salt):
@@ -190,18 +185,19 @@ class LdapSha1PasswordHasher(django.contrib.auth.hashers.SHA1PasswordHasher):
         ).hexdigest()
         return f"{self.algorithm}${salt}${hash}"
 
-    def convertLegacyRepresentation(self, legacy):
-        # Converts a legacy LDAP-encoded password to Django syntax.  In
-        # LDAP encoding, a 20-byte binary SHA-1 hash and an 8-byte binary
-        # salt are concatenated, Base64-encoded, and prepended with
-        # "{SSHA}".
-        assert legacy.startswith("{SSHA}")
-        d = base64.b64decode(legacy[6:])
-        assert len(d) == 28
-        hash = d[:20]
-        salt = d[20:]
-
-        def hexify(s):
-            return "".join(f"{ord(c):02x}" for c in s)
-
-        return f"{self.algorithm}${hexify(salt)}${hexify(hash)}"
+    # TODO: Commented out for now, but as far as I can tell, this is unused.
+    # def convertLegacyRepresentation(self, legacy):
+    #     # Converts a legacy LDAP-encoded password to Django syntax.  In
+    #     # LDAP encoding, a 20-byte binary SHA-1 hash and an 8-byte binary
+    #     # salt are concatenated, Base64-encoded, and prepended with
+    #     # "{SSHA}".
+    #     assert legacy.startswith("{SSHA}")
+    #     d = base64.b64decode(legacy[6:])
+    #     assert len(d) == 28
+    #     hash = d[:20]
+    #     salt = d[20:]
+    #
+    #     def hexify(s):
+    #         return "".join(f"{ord(c):02x}" for c in s)
+    #
+    #     return f"{self.algorithm}${hexify(salt)}${hexify(hash)}"

@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import json
 import time
 import urllib.error
@@ -97,7 +100,7 @@ def _getLatestMetadata(identifier, request, prefixMatch=False):
 
 
 def _updateEzid(request, d, stts, m_to_upgrade=None):
-    """Takes data from form fields in /manage/edit and applies them to IDs
+    """Take data from form fields in /manage/edit and applies them to IDs
     metadata If m_to_upgrade is specified, converts record to advanced datacite
     Returns ezid.setMetadata (successful return is the identifier string) Also
     removes tags related to old profile if converting to advanced datacite."""
@@ -507,7 +510,7 @@ def download(request):
 
     # In case you only want to download IDs based on owner selection:
     # username = impl.ui_common.getOwnerOrGroup(request.GET['owner_selected'])
-    # q['owner'] = ezidapp.models.user.StoreUser.objects.get(name=username)
+    # q['owner'] = ezidapp.models.user.User.objects.get(name=username)
     user = impl.userauth.getUser(request)
     q['notify'] = d['mail'] = user.accountEmail
     # ToDo make changes to download.enqueueRequest() to accept multiple groups

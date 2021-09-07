@@ -1,12 +1,12 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # =============================================================================
 #
 # EZID :: crossref.py
 #
 # Interface to Crossref <http://www.crossref.org/>.
 #
-# License:
-#   Copyright (c) 2014, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
 import logging
@@ -25,7 +25,7 @@ import django.db.models
 import lxml.etree
 
 import ezidapp.management.commands.proc_base
-import ezidapp.models.registration_queue
+import ezidapp.models.async_queue
 import ezidapp.models.identifier
 import ezidapp.models.user
 import ezidapp.models.util
@@ -35,7 +35,7 @@ import impl.nog.util
 import impl.util
 import impl.util2
 
-import ezidapp.models.registration_queue
+import ezidapp.models.async_queue
 
 log = logging.getLogger(__name__)
 
@@ -48,7 +48,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
     def __init__(self):
         super(Command, self).__init__(__name__)
-        self._queue = ezidapp.models.registration_queue.CrossrefQueue
+        self._queue = ezidapp.models.async_queue.CrossrefQueue
 
     def add_arguments(self, parser):
         super().add_arguments(parser)
@@ -64,10 +64,11 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             time.sleep(int(django.conf.settings.DAEMONS_CROSSREF_PROCESSING_IDLE_SLEEP))
 
             try:
-                # First, a quick test to avoid retrieving the entire table if
-                # nothing needs to be done.  Note that in the loop below, if any
-                # entry is deleted or if any identifier is processed, maxSeq is
-                # set to None, thus forcing another round of processing.
+                # First, a quick test to avoid retrieving the entire table if nothing needs to be
+                # done.
+                #
+                # In the loop below, if any entry is deleted or if any identifier is processed,
+                # maxSeq is set to None, thus forcing another round of processing.
                 if maxSeq is not None:
                     if (
                         self._queue().objects.aggregate(django.db.models.Max("seq"))["seq__max"]
@@ -90,10 +91,10 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                         r.delete()
                         maxSeq = None
                     else:
-                        if r.status == ezidapp.models.registration_queue.CrossrefQueue.UNSUBMITTED:
+                        if r.status == ezidapp.models.async_queue.CrossrefQueue.UNSUBMITTED:
                             self._doDeposit(r)
                             maxSeq = None
-                        elif r.status == ezidapp.models.registration_queue.CrossrefQueue.SUBMITTED:
+                        elif r.status == ezidapp.models.async_queue.CrossrefQueue.SUBMITTED:
                             self._doPoll(r)
                             maxSeq = None
                         else:
@@ -116,7 +117,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         return '<?xml version="1.0"?>\n' + document
 
     def _buildDeposit(self, body, registrant, doi, targetUrl, withdrawTitles=False, bodyOnly=False):
-        """Builds a Crossref metadata submission document.
+        """Build a Crossref metadata submission document
 
         'body' should be a
         Crossref <body> child element as a Unicode string, and is assumed to
@@ -176,7 +177,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         return d2, d1, batchId
 
     def _multipartBody(self, *parts):
-        """Builds a multipart/form-data (RFC 2388) document out of a list of
+        """Build a multipart/form-data (RFC 2388) document out of a list of
         constituent parts.
 
         Each part is either a 2-tuple (name, value) or a 4-tuple (name,
@@ -213,7 +214,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         return Exception(f"Crossref error: {context}: {type(exception).__name__}{m}")
 
     def _submitDeposit(self, deposit, batchId, doi):
-        """Submits a Crossref metadata submission document as built by _buildDeposit
+        """Submit a Crossref metadata submission document as built by _buildDeposit
         above.
 
         Returns True on success, False on (internal) error.  'doi' is the
@@ -277,7 +278,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
     def _pollDepositStatus(self, batchId, doi):
         """
-        Polls the status of the metadata submission identified by 'batchId'.
+        Poll the status of the metadata submission identified by 'batchId'.
         'doi' is the identifier in question.  The return is one of the
         tuples:
 
@@ -387,7 +388,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
     def _doDeposit(self, r):
         m = impl.util.deblobify(r.metadata)
-        if r.operation == ezidapp.models.registration_queue.CrossrefQueue.DELETE:
+        if r.operation == ezidapp.models.async_queue.CrossrefQueue.DELETE:
             url = "http://datacite.org/invalidDOI"
         else:
             url = m["_t"]
@@ -397,25 +398,25 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             r.identifier[4:],
             url,
             withdrawTitles=(
-                r.operation == ezidapp.models.registration_queue.CrossrefQueue.DELETE
+                r.operation == ezidapp.models.async_queue.CrossrefQueue.DELETE
                 or m.get("_is", "public").startswith("unavailable")
             ),
         )
         if self._submitDeposit(submission, batchId, r.identifier[4:]):
-            if r.operation == ezidapp.models.registration_queue.CrossrefQueue.DELETE:
+            if r.operation == ezidapp.models.async_queue.CrossrefQueue.DELETE:
                 # Well this is awkard.  If the identifier was deleted, there's
                 # no point in polling for the status... if anything goes wrong,
                 # there's no correction that could possibly be made, as the
                 # identifier no longer exists as far as EZID is concerned.
                 r.delete()
             else:
-                r.status = ezidapp.models.registration_queue.CrossrefQueue.SUBMITTED
+                r.status = ezidapp.models.async_queue.CrossrefQueue.SUBMITTED
                 r.batchId = batchId
                 r.submitTime = int(time.time())
                 r.save()
 
     def _sendEmail(self, emailAddress, r):
-        if r.status == ezidapp.models.registration_queue.CrossrefQueue.WARNING:
+        if r.status == ezidapp.models.async_queue.CrossrefQueue.WARNING:
             s = "warning"
         else:
             s = "error"
@@ -462,15 +463,15 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         elif t[0].startswith("completed"):
             # Deleted identifiers aren't retained in the queue, but just to
             # make it clear...
-            if r.operation != ezidapp.models.registration_queue.CrossrefQueue.DELETE:
+            if r.operation != ezidapp.models.async_queue.CrossrefQueue.DELETE:
                 if t[0] == "completed successfully":
-                    crs = ezidapp.models.identifier.StoreIdentifier.CR_SUCCESS
+                    crs = ezidapp.models.identifier.Identifier.CR_SUCCESS
                     crm = ""
                 else:
                     if t[0] == "completed with warning":
-                        crs = ezidapp.models.identifier.StoreIdentifier.CR_WARNING
+                        crs = ezidapp.models.identifier.Identifier.CR_WARNING
                     else:
-                        crs = ezidapp.models.identifier.StoreIdentifier.CR_FAILURE
+                        crs = ezidapp.models.identifier.Identifier.CR_FAILURE
                     crm = self._oneline(t[1]).strip()
                 # We update the identifier's Crossref status in the store and
                 # search databases, but do so in such a way as to avoid
@@ -487,9 +488,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 r.delete()
             else:
                 if t[0] == "completed with warning":
-                    r.status = ezidapp.models.registration_queue.CrossrefQueue.WARNING
+                    r.status = ezidapp.models.async_queue.CrossrefQueue.WARNING
                 else:
-                    r.status = ezidapp.models.registration_queue.CrossrefQueue.FAILURE
+                    r.status = ezidapp.models.async_queue.CrossrefQueue.FAILURE
                 r.message = t[1]
                 u = ezidapp.models.util.getUserByPid(r.owner)
                 if u.crossrefEmail != "":

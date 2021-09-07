@@ -1,3 +1,8 @@
+/*
+ * Copyright©2021, Regents of the University of California
+ * http://creativecommons.org/licenses/BSD
+ */
+
 //#status messages
 $(document).ready(function() { showMessage(); });
 
@@ -10,7 +15,7 @@ function showMessage(top_window){
     $('#ustatus').hide();
     $.post('/ajax_hide_alert');
   });
-  	
+
   $(document).keyup(function(e) {
     if(e.keyCode == 27) { // escape key
     $('#ustatus').hide();

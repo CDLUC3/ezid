@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  - Copyright©2021, Regents of the University of California
+  - http://creativecommons.org/licenses/BSD
+  -->
+
 <svg xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="26.747pt" width="30.021pt" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" viewBox="0 0 30.021363 26.746569">
  <g fill="#287d8f">
   <path d="m15.298 9.1455c-1.0781 0-1.9453 0.875-1.9453 1.9453s0.86719 1.9531 1.9453 1.9531 1.9453-0.88281 1.9453-1.9531-0.86719-1.9453-1.9453-1.9453"/>

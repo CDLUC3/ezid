@@ -1,25 +1,17 @@
-# =============================================================================
-#
-# EZID :: stats.py
-#
-# Identifier statistics.
-#
-# To avoid burdening online identifier processing, statistics are
-# computed periodically by a daemon thread.  We eschew a synchronous,
-# inline approach to maintaining statistics because identifier changes
-# can be complex (creation times can change, ownership can change,
-# even users and groups can change) and tracking the effects of those
-# changes on statistics would require knowledge of an identifier's
-# pre-change state, which is not recorded.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2017, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+"""Identifier statistics.
+
+To avoid burdening online identifier processing, statistics are
+computed periodically by a daemon thread.  We eschew a synchronous,
+inline approach to maintaining statistics because identifier changes
+can be complex (creation times can change, ownership can change,
+even users and groups can change) and tracking the effects of those
+changes on statistics would require knowledge of an identifier's
+pre-change state, which is not recorded.
+"""
+
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import threading
 import time
 
@@ -68,14 +60,14 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         return id_str.split(":")[0].upper()
 
     def recomputeStatistics(self):
-        """Recomputes and stores identifier statistics.
+        """Recompute and stores identifier statistics
 
         The old statistics are completely replaced.
         """
         try:
             users = {
                 u.id: (u.pid, u.group.pid, u.realm.name)
-                for u in ezidapp.models.user.SearchUser.objects.all().select_related(
+                for u in ezidapp.models.user.User.objects.all().select_related(
                     "group", "realm"
                 )
             }
@@ -83,7 +75,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             lastIdentifier = ""
             while True:
                 qs = (
-                    ezidapp.models.identifier.SearchIdentifier.objects.filter(
+                    ezidapp.models.identifier.Identifier.objects.filter(
                         identifier__gt=lastIdentifier
                     )
                     .only(
@@ -154,7 +146,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         type=None,
         hasMetadata=None,
     ):
-        """Returns the number of identifiers matching a constraint as defined by
+        """Return the number of identifiers matching a constraint as defined by
         the non-None argument values.
 
         The arguments correspond to the fields in the Statistics model.
@@ -175,7 +167,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         return qs.aggregate(django.db.models.Sum("count"))["count__sum"] or 0
 
     def getTable(self, owner=None, ownergroup=None, realm=None):
-        """Returns a table (a list) of identifier counts ordered by month. Each
+        """Return a table (a list) of identifier counts ordered by month. Each
         element of the list is a pair.
 
           (month, { (type, hasMetadata): count, ... })
@@ -239,10 +231,10 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     _computeCycle = None
     _computeSameTimeOfDay = None
     _threadName = None
-    #
+
     # django.conf.settings.CROSSREF_ENABLED = (
     #     django.conf.settings.DAEMONS_ENABLED
-    #     and django.conf.settings.DAEMONS_STATISTICS_ENABLED
+    #     and django.conf.settings.DAEMONS_STATISTICS_ENABLED ! flag removed
     # )
     # if django.conf.settings.CROSSREF_ENABLED:
     #     _computeCycle = int(django.conf.settings.DAEMONS_STATISTICS_COMPUTE_CYCLE)

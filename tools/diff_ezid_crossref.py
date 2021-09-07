@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # Compares EZID DOI metadata (as obtained from an EZID raw dump) with
 # Crossref <https://crossref.org/> DOI metadata (as obtained from a
 # Crossref system query) and Handle System <https://dx.doi.org/>

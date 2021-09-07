@@ -1,20 +1,13 @@
-# =============================================================================
-#
-# EZID :: datacite.py
-#
-# Interface to DataCite <http://www.datacite.org/>; specifically,
-# interface to the DataCite Metadata Store <https://mds.datacite.org/>
-# operated by the Technische Informationsbibliothek (TIB)
-# <http://www.tib.uni-hannover.de/>.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2010, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
+"""Interface to DataCite <http://www.datacite.org/>
+
+Interface to the DataCite Metadata Store <https://mds.datacite.org/>
+operated by the Technische Informationsbibliothek (TIB)
+<http://www.tib.uni-hannover.de/>.
+"""
+
 import http.client
 import os
 import os.path
@@ -71,7 +64,8 @@ def _modifyActiveCount(delta):
 
 
 def numActiveOperations():
-    """Returns the number of active operations."""
+    """Return the number of active operations
+    """
     _lock.acquire()
     try:
         return _numActiveOperations
@@ -112,8 +106,8 @@ def _authorization(doi, datacenter=None):
 
 # noinspection PyTypeChecker
 def registerIdentifier(doi, targetUrl, datacenter=None):
-    """Registers a scheme-less DOI identifier (e.g., "10.5060/FOO") and target
-    URL (e.g., "http://whatever...") with DataCite.
+    """Register a scheme-less DOI identifier (e.g., "10.5060/FOO") and target
+    URL (e.g., "http://whatever...") with DataCite
 
     'datacenter', if specified, should be the identifier's datacenter,
     e.g., "CDL.BUL".  There are three possible returns: None on success;
@@ -174,8 +168,8 @@ def registerIdentifier(doi, targetUrl, datacenter=None):
 
 
 def setTargetUrl(doi, targetUrl, datacenter=None):
-    """Sets the target URL of an existing scheme-less DOI identifier (e.g.,
-    "10.5060/FOO").
+    """Set the target URL of an existing scheme-less DOI identifier (e.g.,
+    "10.5060/FOO")
 
     'datacenter', if specified, should be the
     identifier's datacenter, e.g., "CDL.BUL".  There are three possible
@@ -186,9 +180,9 @@ def setTargetUrl(doi, targetUrl, datacenter=None):
 
 
 def getTargetUrl(doi, datacenter=None):
-    """Returns the target URL of a scheme-less DOI identifier (e.g.,
+    """Return the target URL of a scheme-less DOI identifier (e.g.,
     "10.5060/FOO") as registered with DataCite, or None if the identifier is
-    not registered.
+    not registered
 
     'datacenter', if specified, should be the identifier's datacenter,
     e.g., "CDL.BUL".
@@ -246,7 +240,7 @@ _rootTagRE = re.compile("{(http://datacite\\.org/schema/kernel-([^}]*))}resource
 
 
 def validateDcmsRecord(identifier, record, schemaValidate=True):
-    """Validates and normalizes a DataCite Metadata Scheme.
+    """Validate and normalize a DataCite Metadata Scheme
 
     <http://schema.datacite.org/> record for a qualified identifier
     (e.g., "doi:10.5060/FOO").  The record should be unencoded.  Either
@@ -382,8 +376,8 @@ _resourceTypeTemplate2 = """  <resourceType resourceTypeGeneral="%s">%s</resourc
 
 
 def formRecord(identifier, metadata, supplyMissing=False, profile=None):
-    """Forms an XML record for upload to DataCite, employing metadata mapping
-    if necessary.
+    """Form an XML record for upload to DataCite, employing metadata mapping
+    if necessary
 
     'identifier' should be a qualified identifier (e.g.,
     "doi:10.5060/FOO").  'metadata' should be the identifier's metadata
@@ -470,8 +464,8 @@ def formRecord(identifier, metadata, supplyMissing=False, profile=None):
 
 
 def uploadMetadata(doi, current, delta, forceUpload=False, datacenter=None):
-    """Uploads citation metadata for the resource identified by an existing
-    scheme-less DOI identifier (e.g., "10.5060/FOO") to DataCite.
+    """Upload citation metadata for the resource identified by an existing
+    scheme-less DOI identifier (e.g., "10.5060/FOO") to DataCite
 
     This same function can be used to overwrite previously-uploaded
     metadata. 'current' and 'delta' should be dictionaries mapping
@@ -598,8 +592,8 @@ def _deactivate(doi, datacenter):
 
 
 def deactivate(doi, datacenter=None):
-    """Deactivates an existing, scheme-less DOI identifier (e.g.,
-    "10.5060/FOO") in DataCite.
+    """Deactivate an existing, scheme-less DOI identifier (e.g.,
+    "10.5060/FOO") in DataCite
 
     This removes the identifier from dataCite's search index, but has no
     effect on the identifier's existence in the Handle system or on the
@@ -639,7 +633,7 @@ def deactivate(doi, datacenter=None):
 
 
 def ping():
-    """Tests the DataCite API (as well as the underlying Handle System),
+    """Test the DataCite API (as well as the underlying Handle System),
     returning "up" or "down"."""
     if not django.conf.settings.DATACITE_ENABLED:
         return "up"
@@ -658,7 +652,8 @@ def ping():
 
 
 def pingDataciteOnly():
-    """Tests the DataCite API (only), returning "up" or "down"."""
+    """Test the DataCite API (only), returning "up" or "down"
+    """
     if not django.conf.settings.DATACITE_ENABLED:
         return "up"
     # To hide transient network errors, we make multiple attempts.
@@ -704,8 +699,8 @@ def pingDataciteOnly():
 
 
 def dcmsRecordToHtml(record):
-    """Converts a DataCite Metadata Scheme <http://schema.datacite.org/> record
-    to an XHTML table.
+    """Convert a DataCite Metadata Scheme <http://schema.datacite.org/> record
+    to an XHTML table
 
     The record should be unencoded.  Returns None on error.
     """
@@ -729,7 +724,7 @@ def dcmsRecordToHtml(record):
 
 # noinspection PyDefaultArgument
 def crossrefToDatacite(record, overrides={}):
-    """Converts a Crossref Deposit Schema.
+    """Convert a Crossref Deposit Schema
 
     <http://help.crossref.org/deposit_schema> document to a DataCite
     Metadata Scheme <http://schema.datacite.org/> record.  'overrides'
@@ -761,16 +756,15 @@ _schemaVersionRE = re.compile("{http://datacite\\.org/schema/kernel-([^}]*)}reso
 
 
 def upgradeDcmsRecord(record, parseString=True, returnString=True):
-    """Converts a DataCite Metadata Scheme <http://schema.datacite.org/> record
-    (supplied as an unencoded Unicode string if 'parseString' is true, or a
-    root lxml.etree.Element object if not) to the latest version of the schema
-    (currently, version 4).
+    """Convert a DataCite Metadata Scheme <http://schema.datacite.org/> record to the latest version
+    of the schema (currently, version 4).
 
-    If 'returnString' is true, the record is returned as an unencoded
-    Unicode string, in which case the record has no XML declaration.
-    Otherwise, an lxml.etree.Element object is returned.  In both cases,
-    the root element's xsi:schemaLocation attribute is set or added as
-    necessary.
+    The record must be supplied as an unencoded Unicode string if 'parseString' is true, or a root
+    lxml.etree.Element object if not.
+
+    If 'returnString' is true, the record is returned as an unencoded Unicode string, in which case
+    the record has no XML declaration. Otherwise, an lxml.etree.Element object is returned.  In both
+    cases, the root element's xsi:schemaLocation attribute is set or added as necessary.
     """
     if parseString:
         root = impl.util.parseXmlString(record)

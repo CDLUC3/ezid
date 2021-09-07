@@ -61,6 +61,11 @@ ALTER TABLE ezidapp_searchidentifier ADD CONSTRAINT
   ezidapp__profile_id_112e6b8634f63b63_fk_ezidapp_searchprofile_id
   FOREIGN KEY (profile_id) REFERENCES ezidapp_searchprofile (id);
 
+/*
+ * Copyright©2021, Regents of the University of California
+ * http://creativecommons.org/licenses/BSD
+ */
+
 -- Create the FULLTEXT indexes...
 
 CREATE FULLTEXT INDEX ezidapp_searchidentifier_resourceTitle

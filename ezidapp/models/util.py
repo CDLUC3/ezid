@@ -1,20 +1,23 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import logging
 
 import django.apps
 import django.conf
 
-from ezidapp.models.group import AnonymousGroup, StoreGroup
+from ezidapp.models.group import AnonymousGroup, Group
 
 logger = logging.getLogger(__name__)
 
 
-def _databaseQueryStoreUser():
-    store_user_model = django.apps.apps.get_model('ezidapp', 'StoreUser')
+def _databaseQueryUser():
+    user_model = django.apps.apps.get_model('ezidapp', 'User')
     try:
-        return store_user_model.objects.select_related("group", "realm").prefetch_related(
+        return user_model.objects.select_related("group", "realm").prefetch_related(
             "shoulders", "proxies"
         )
-    except store_user_model.DoesNotExist:
+    except user_model.DoesNotExist:
         return None
 
 
@@ -24,7 +27,7 @@ def getUserById(id_str):
     # pidCache, usernameCache, idCache = _getCaches()
     # if id_str not in idCache:
     logger.debug(f'getUserById: {id_str}')
-    return _databaseQueryStoreUser().get(id=id_str)
+    return _databaseQueryUser().get(id=id_str)
 
 
 def getUserByPid(pid):
@@ -35,7 +38,7 @@ def getUserByPid(pid):
     if pid == "anonymous":
         anon_user_model = django.apps.apps.get_model('ezidapp', 'AnonymousUser')
         return anon_user_model
-    return _databaseQueryStoreUser().get(pid=pid)
+    return _databaseQueryUser().get(pid=pid)
 
 
 def getUserByUsername(username):
@@ -44,7 +47,7 @@ def getUserByUsername(username):
     # "anonymous".
     if username == "anonymous":
         return AnonymousUser
-    return _databaseQueryStoreUser().get(username=username)
+    return _databaseQueryUser().get(username=username)
 
 
 def getAdminUser():
@@ -55,8 +58,8 @@ def getAdminUser():
 def getProfileByLabel(label):
     # Returns the profile having the given label.  If there's no such
     # profile, a new profile is created and inserted in the database.
-    store_profile_model = django.apps.apps.get_model('ezidapp', 'StoreProfile')
-    p, is_created = store_profile_model.objects.get_or_create(label=label)
+    profile_model = django.apps.apps.get_model('ezidapp', 'Profile')
+    p, is_created = profile_model.objects.get_or_create(label=label)
     if is_created:
         p.full_clean(validate_unique=False)
         p.save()
@@ -64,8 +67,10 @@ def getProfileByLabel(label):
 
 
 class AnonymousUser(object):
-    # A class to represent an anonymous user.  Note that this class can
-    # be used directly--- an object need not be instantiated.
+    """An anonymous user
+
+    This class can be used directly. An object need not be instantiated.
+    """
     pid = "anonymous"
     username = "anonymous"
 
@@ -99,16 +104,16 @@ class AnonymousUser(object):
 
 
 def _databaseQueryGroup():
-    store_group_model = django.apps.apps.get_model('ezidapp', 'StoreGroup')
+    group_model = django.apps.apps.get_model('ezidapp', 'Group')
     try:
-        return store_group_model.objects.select_related("realm").prefetch_related("shoulders")
+        return group_model.objects.select_related("realm").prefetch_related("shoulders")
         # return store_group_model.objects.select_related("group", "realm").prefetch_related("shoulders", "proxies")
-    except store_group_model.DoesNotExist:
+    except group_model.DoesNotExist:
         return None
 
 
-# def _databaseQueryStoreGroup():
-#     return StoreGroup.objects.select_related("realm").prefetch_related("shoulders")
+# def _databaseQueryGroup():
+#     return Group.objects.select_related("realm").prefetch_related("shoulders")
 
 
 def getGroupByPid(pid):
@@ -133,7 +138,7 @@ def getGroupByGroupname(groupname):
 
 
 def _databaseQueryProfile():
-    return StoreGroup.objects.select_related("realm").prefetch_related("shoulders")
+    return Group.objects.select_related("realm").prefetch_related("shoulders")
 
 
 def getProfileById(id_str):
@@ -146,7 +151,7 @@ def getProfileById(id_str):
 
 
 def _databaseQueryDatacenter():
-    datacenter_model = django.apps.apps.get_model('ezidapp', 'StoreDatacenter')
+    datacenter_model = django.apps.apps.get_model('ezidapp', 'Datacenter')
     try:
         return datacenter_model.objects
     except datacenter_model.DoesNotExist:
@@ -155,9 +160,9 @@ def _databaseQueryDatacenter():
 
 def getDatacenterById(id_str):
     # Returns the datacenter identified by internal identifier 'id'.
-    return django.apps.apps.get_model('ezidapp', 'StoreDatacenter').get(id=id_str)
+    return django.apps.apps.get_model('ezidapp', 'Datacenter').get(id=id_str)
 
 
 def getDatacenterBySymbol(symbol):
     # Returns the datacenter having the given symbol.
-    return django.apps.apps.get_model('ezidapp', 'StoreDatacenter').get(symbol=symbol)
+    return django.apps.apps.get_model('ezidapp', 'Datacenter').get(symbol=symbol)

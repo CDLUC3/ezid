@@ -1,3 +1,8 @@
+/*
+ * Copyright©2021, Regents of the University of California
+ * http://creativecommons.org/licenses/BSD
+ */
+
 // Read More Hide/Show Toggle
 
 // Hide the extra content initially, using JS so that if JS is disabled, no problemo:

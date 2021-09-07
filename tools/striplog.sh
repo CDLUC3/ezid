@@ -1,5 +1,10 @@
 #! /bin/bash
 
+#
+# Copyright©2021, Regents of the University of California
+# http://creativecommons.org/licenses/BSD
+#
+
 # Strips dated (i.e., already rolled over) EZID transaction log files,
 # retaining just BEGIN records for those transactions that
 # successfully created, updated, or deleted a non-test identifier.

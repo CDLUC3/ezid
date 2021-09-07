@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 from settings.settings_generated import *
 
 for db_name in ('default', 'search'):

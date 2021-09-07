@@ -1,3 +1,8 @@
+/*!
+ * Copyright©2021, Regents of the University of California
+ * http://creativecommons.org/licenses/BSD
+ */
+
 // ##### Icons  (and Links with Icons)  ##### //
 
 //Icon for indicating link points externally
@@ -24,8 +29,8 @@
   height: 15px;
 }
 
-// This doesn't wrap properly. This has been re-implemented in dev/sass/_links.scss 
-//    although the underline border styling still extends too far in this 
+// This doesn't wrap properly. This has been re-implemented in dev/sass/_links.scss
+//    although the underline border styling still extends too far in this
 //    latest implementation (2016-03-04)
 // .pdf-link {
 //   @extend %link__primary;
@@ -70,4 +75,3 @@
   width: 15px;
   height: 15px;
 }
-

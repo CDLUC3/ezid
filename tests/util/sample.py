@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import base64
 import bz2
 import contextlib
@@ -39,7 +42,7 @@ sample_path_lock = filelock.FileLock("/tmp/sample_path_lock")
 
 
 def start_tidy():
-    """Call at start of test run to tidy the samples directory.
+    """Call at start of test run to tidy the samples directory
 
     Pytest will run regular session scope fixtures in parallel with test
     collection, while this function must complete before collection
@@ -198,7 +201,7 @@ def save(current_str, filename):
 
 # noinspection PyIncorrectDocstring,PyIncorrectDocstring,PyIncorrectDocstring
 def obj_to_pretty_str(o, no_clobber=False, no_wrap=False, column_width=None):
-    """Serialize object to str.
+    """Serialize object to str
 
     - Create a normalized string representation of the object that is suitable
       for using in a diff.

@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+#
+# Copyright©2021, Regents of the University of California
+# http://creativecommons.org/licenses/BSD
+#
 # ./manage diffsettings formatted for readability.
 #
 # '###', which is added to diffsettings to denote settings that are custom or modified from the Django defaults, is not

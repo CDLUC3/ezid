@@ -1,12 +1,12 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # =============================================================================
 #
 # EZID :: binder.py
 #
 # Asynchronous N2T binder processing.
 #
-# License:
-#   Copyright (c) 2017, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ import logging
 import django.conf
 
 import ezidapp.management.commands.proc_base
-import ezidapp.models.registration_queue
+import ezidapp.models.async_queue
 import impl.log
 import impl.nog.util
 import impl.noid_egg
@@ -33,7 +33,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         super().__init__(
             __name__,
             registrar="binder",
-            queueModel=ezidapp.models.registration_queue.BinderQueue,
+            queueModel=ezidapp.models.async_queue.BinderQueue,
             createFunction=self._create,
             updateFunction=self._update,
             deleteFunction=self._delete,

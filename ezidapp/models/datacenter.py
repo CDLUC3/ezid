@@ -1,17 +1,8 @@
-# =============================================================================
-#
-# EZID :: ezidapp/models/datacenter.py
-#
-# Abstract database model for DataCite datacenters.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2015, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
+"""Object Relational Mapper (ORM) models for DataCite datacenters
+"""
 
 import django.db.models
 
@@ -19,19 +10,11 @@ import ezidapp.models.validation
 import impl.util
 
 
+# A DataCite datacenter.
 class Datacenter(django.db.models.Model):
-    # import ezidapp.models.validation
-    # A DataCite datacenter.
-
     class Meta:
-        abstract = True
-
-    symbol = django.db.models.CharField(
-        max_length=impl.util.maxDatacenterSymbolLength,
-        unique=True,
-        validators=[ezidapp.models.validation.datacenterSymbol],
-    )
-    # The datacenter's so-called symbol, e.g., "CDL.BUL".
+        verbose_name = "datacenter"
+        verbose_name_plural = "datacenters"
 
     @property
     def allocator(self):
@@ -43,29 +26,19 @@ class Datacenter(django.db.models.Model):
 
     def clean(self):
         self.symbol = self.symbol.upper()
+        self.name = self.name.strip()
 
     def __str__(self):
         return self.symbol
 
+    # The datacenter's so-called symbol, e.g., "CDL.BUL".
+    symbol = django.db.models.CharField(
+        max_length=impl.util.maxDatacenterSymbolLength,
+        unique=True,
+        validators=[ezidapp.models.validation.datacenterSymbol],
+    )
 
-class SearchDatacenter(Datacenter):
-    pass
-
-
-
-
-class StoreDatacenter(Datacenter):
-    # A DataCite datacenter as stored in the store database.
-
+    # The datacenter's full name, e.g., "Brown University Library".
     name = django.db.models.CharField(
         max_length=255, unique=True, validators=[ezidapp.models.validation.nonEmpty]
     )
-    # The datacenter's full name, e.g., "Brown University Library".
-
-    def clean(self):
-        super(StoreDatacenter, self).clean()
-        self.name = self.name.strip()
-
-    class Meta:
-        verbose_name = "datacenter"
-        verbose_name_plural = "datacenters"

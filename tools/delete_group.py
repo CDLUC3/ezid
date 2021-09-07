@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # Deletes a group.
 #
 # This script modifies the database external to the running server and
@@ -7,7 +10,9 @@
 # locking mechanism.  While this script goes to some pains to ensure
 # that the deletion can be performed safely and that there will be no
 # conflicts with the server, it does not guarantee that, and hence
-# should be run with caution.  Note that identifier deletions are
+# should be run with caution.
+#
+# Identifier deletions are
 # logged to standard error and not to the server's log.
 #
 # This script requires several EZID modules.  The PYTHONPATH
@@ -63,7 +68,7 @@ if group.users.count() > 0 or group.shoulders.count() > 0:
 if args.step != 2:
     p.error("run with -h for usage")
 
-searchGroup = ezidapp.models.group.SearchGroup.objects.get(groupname=group.groupname)
+searchGroup = ezidapp.models.group.Group.objects.get(groupname=group.groupname)
 group.delete()
 searchGroup.delete()
 

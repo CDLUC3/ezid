@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 
-"""Create test_settings.py from settings_template.py.
+"""Create test_settings.py from settings_template.py
 
 Run with CWD in root of a EZID worktree.
 """
+
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
 
 import pathlib
 import sys

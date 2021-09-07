@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 # EZID command line client.  Input metadata (from command line
 # parameters and files) is assumed to be UTF-8 encoded, and output
 # metadata is UTF-8 encoded, unless overriden by the -e option.  By

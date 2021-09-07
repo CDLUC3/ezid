@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 import argparse
 import sys
 import time
@@ -15,7 +18,9 @@ import ezidapp.models.user
 # locking mechanism.  While this script goes to some pains to ensure
 # that the deletion can be performed safely and that there will be no
 # conflicts with the server, it does not guarantee that, and hence
-# should be run with caution.  Note that identifier deletions are
+# should be run with caution.
+#
+# Identifier deletions are
 # logged to standard error and not to the server's log.
 #
 # This script requires several EZID modules.  The PYTHONPATH
@@ -26,7 +31,7 @@ import ezidapp.models.user
 #
 # Greg Janee <gjanee@ucop.edu>
 # June 2018
-import ezidapp.models.update_queue
+import ezidapp.models.async_queue
 import ezidapp.models.util
 from impl import ezid
 
@@ -93,7 +98,7 @@ if args.deleteIdentifiers:
     # reasonable when deleting large numbers of identifiers.
     while True:
         ids = list(
-            ezidapp.models.identifier.StoreIdentifier.objects.filter(owner=user)
+            ezidapp.models.identifier.Identifier.objects.filter(owner=user)
             .only("identifier")
             .order_by("identifier")[:1000]
         )
@@ -111,10 +116,10 @@ if args.deleteIdentifiers:
         if len(ids) == 0:
             break
 else:
-    if ezidapp.models.identifier.StoreIdentifier.objects.filter(owner=user).count() > 0:
+    if ezidapp.models.identifier.Identifier.objects.filter(owner=user).count() > 0:
         error("user can't be deleted: has identifiers")
 
-searchUser = ezidapp.models.user.SearchUser.objects.get(username=user.username)
+searchUser = ezidapp.models.user.User.objects.get(username=user.username)
 user.delete()
 searchUser.delete()
 
