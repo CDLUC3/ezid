@@ -94,7 +94,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         while self._checkContinue():
             try:
                 update_list = list(
-                    ezidapp.models.async_queue.AsyncQueue.objects.all().order_by("seq")[:1000]
+                    ezidapp.models.async_queue.AsyncQueueBase.objects.all().order_by("seq")[:1000]
                 )
                 if len(update_list) > 0:
                     for update_model in update_list:

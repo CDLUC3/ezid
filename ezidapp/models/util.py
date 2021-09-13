@@ -6,6 +6,8 @@ import logging
 import django.apps
 import django.conf
 
+import ezidapp.models.user
+
 from ezidapp.models.group import AnonymousGroup, Group
 
 logger = logging.getLogger(__name__)
@@ -36,8 +38,9 @@ def getUserByPid(pid):
     # response to "anonymous".
     logger.error(f'getUserByPid: {pid}')  # TODO: lower level
     if pid == "anonymous":
-        anon_user_model = django.apps.apps.get_model('ezidapp', 'AnonymousUser')
-        return anon_user_model
+        return ezidapp.models.user.AnonymousUser
+        # anon_user_model = django.apps.apps.get_model('ezidapp', 'AnonymousUser')
+        # return anon_user_model
     return _databaseQueryUser().get(pid=pid)
 
 
@@ -46,7 +49,7 @@ def getUserByUsername(username):
     # there is no such user.  AnonymousUser is returned in response to
     # "anonymous".
     if username == "anonymous":
-        return AnonymousUser
+        return ezidapp.models.user.AnonymousUser
     return _databaseQueryUser().get(username=username)
 
 
@@ -65,39 +68,6 @@ def getProfileByLabel(label):
         p.save()
     return p
 
-
-class AnonymousUser(object):
-    """An anonymous user
-
-    This class can be used directly. An object need not be instantiated.
-    """
-    pid = "anonymous"
-    username = "anonymous"
-
-    # group = ezidapp.models.group.AnonymousGroup
-    # anonymous_group_model = django.apps.apps.get_model('ezidapp', 'AnonymousGroup')
-    # realm = django.apps.apps.get_model('ezidapp', 'AnonymousRealm')
-
-    class inner(object):
-        def all(self):
-            return []
-
-    shoulders = inner()
-    crossrefEnabled = False
-    crossrefEmail = ""
-    proxies = inner()
-    proxy_for = inner()
-    isGroupAdministrator = False
-    isRealmAdministrator = False
-    isSuperuser = False
-    isPrivileged = False
-    loginEnabled = False
-    isAnonymous = True
-
-    @staticmethod
-    def authenticate(password):
-        logger.debug('User is anonymous. Auth denied')
-        return False
 
 
 # Group

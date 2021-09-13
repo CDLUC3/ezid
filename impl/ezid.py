@@ -258,7 +258,7 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
 
         si = ezidapp.models.identifier.Identifier(
             identifier=normalizedIdentifier,
-            owner=(None if user == ezidapp.models.util.AnonymousUser else user),
+            owner=(None if user == ezidapp.models.user.AnonymousUser else user),
         )
         si.updateFromUntrustedLegacy(metadata, allowRestrictedSettings=user.isSuperuser)
         if si.isDoi:
@@ -286,10 +286,9 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
 
         with django.db.transaction.atomic():
             si.save()
-            ri = create_ref_identifier(si)
-
-            impl.enqueue.enqueue(ri, "create")
-            ezidapp.models.async_queue.enqueue(ri, "create")
+            # ri = impl.enqueue.create_ref_identifier(si)
+            impl.enqueue.enqueue(si, "create")
+            # ezidapp.models.async_queue.enqueue(ri, "create")
 
 
 
@@ -318,7 +317,7 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
         _releaseIdentifierLock(normalizedIdentifier, user.username)
 
 
-def getMetadata(identifier, user=ezidapp.models.util.AnonymousUser, prefixMatch=False):
+def getMetadata(identifier, user=ezidapp.models.user.AnonymousUser, prefixMatch=False):
     """Return all metadata for a given qualified identifier, e.g.,
     "doi:10.5060/FOO".  'user' is the requestor and should be an authenticated
     User object.  The successful return is a pair (status, dictionary)
@@ -443,9 +442,10 @@ def setMetadata(identifier, user, metadata, updateExternalServices=True, interna
 
 
         with django.db.transaction.atomic():
-            ri = create_ref_identifier(si)
             si.save()
-            ezidapp.models.async_queue.enqueue(ri, "update", updateExternalServices)
+            impl.enqueue.enqueue(si, "update")
+            # ri = impl.enqueue.create_ref_identifier(si)
+            # ezidapp.enq.enqueue(si, "update", updateExternalServices)
 
 
 
@@ -510,9 +510,9 @@ def deleteIdentifier(identifier, user, updateExternalServices=True):
 
 
         with django.db.transaction.atomic():
-            ri = create_ref_identifier(si)
+            # ri = impl.enqueue.create_ref_identifier(si)
+            impl.enqueue.enqueue(si, "delete", updateExternalServices)
             si.delete()
-            ezidapp.models.async_queue.enqueue(ri, "delete", updateExternalServices)
 
 
 

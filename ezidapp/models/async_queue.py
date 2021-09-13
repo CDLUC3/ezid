@@ -8,7 +8,7 @@ import django.db.models
 import impl.util
 
 
-class AsyncQueue(django.db.models.Model):
+class AsyncQueueBase(django.db.models.Model):
     """ORM models for queues of identifier operations awaiting asynchronous registration with an
     external registrar
 
@@ -26,7 +26,7 @@ class AsyncQueue(django.db.models.Model):
 
     @staticmethod
     def operationLabelToCode(label):
-        return AsyncQueue._operation_dict[label]
+        return AsyncQueueBase._operation_dict[label]
 
     # Order of insertion into this table; also, the order in which
     # identifier operations must be performed.
@@ -125,15 +125,15 @@ class AsyncQueue(django.db.models.Model):
 # Subclasses that create tables from the abstract base model.
 
 
-class DataciteQueue(AsyncQueue):
+class DataciteQueue(AsyncQueueBase):
     pass
 
 
-class BinderQueue(AsyncQueue):
+class BinderQueue(AsyncQueueBase):
     pass
 
 
-class CrossrefQueue(AsyncQueue):
+class CrossrefQueue(AsyncQueueBase):
     pass
 
 

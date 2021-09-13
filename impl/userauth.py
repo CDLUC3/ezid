@@ -131,9 +131,9 @@ def getUser(request, returnAnonymous=False):
         if user is not None and user.loginEnabled:
             return user
         else:
-            return ezidapp.models.util.AnonymousUser if returnAnonymous else None
+            return ezidapp.models.user.AnonymousUser if returnAnonymous else None
     else:
-        return ezidapp.models.util.AnonymousUser if returnAnonymous else None
+        return ezidapp.models.user.AnonymousUser if returnAnonymous else None
 
 
 def authenticateRequest(request, storeSessionCookie=False):

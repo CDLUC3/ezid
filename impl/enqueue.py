@@ -11,6 +11,7 @@ import ezidapp.models.identifier
 import impl.util
 import logging
 import time
+import  datetime
 
 import django.conf
 
@@ -34,7 +35,7 @@ def enqueue(
     REF: update_queue.enqueue()
     """
     si_cls = django.apps.apps.get_model('ezidapp', 'Identifier')
-    assert isinstance(si_model, si_cls)
+    assert isinstance(si_model, si_cls), f'Unexpected object: {si_model}'
     assert si_model.identifier
     assert operation in ("create", "update", "delete")
 
@@ -44,12 +45,12 @@ def enqueue(
 
     ri_model = create_ref_identifier(si_model)
 
-    r = ezidapp.models.async_queue.AsyncQueue(
+    r = ezidapp.models.async_queue.BinderQueue(
         # seq = '',
         refIdentifier = ri_model,
-        # enqueueTime = '',
+        enqueueTime = datetime.datetime.now().timestamp(),
         # submitTime = '',
-        operation = ezidapp.models.async_queue.AsyncQueue.operationLabelToCode(operation),
+        operation = ezidapp.models.async_queue.AsyncQueueBase.operationLabelToCode(operation),
         # status = '',
         # message = '',
         # batchId = '',
@@ -63,24 +64,39 @@ def enqueue(
 
 
 def create_ref_identifier(
-    si_model: ezidapp.models.identifier.Identifier,
+    id_model: ezidapp.models.identifier.Identifier,
 ) -> ezidapp.models.identifier.RefIdentifier:
-    """Create a RefIdentifier with values from a Identifier
+    """Create a RefIdentifier with values from an Identifier
 
-    This captures the current state of a Identifier for later async processing.
+    This captures the current state of an Identifier for later async processing.
 
     A call to this method always creates and saves a new RefIdentifier. RefIdentifiers may occur any
-    number of times for the same identifier, representing different states of the identifier.
+    number of times for the same identifier, representing different the state of the identifier at
+    different points in time.
+
+    A RefIdentifier is intended to be immutable until deleted. This is not enforced.
 
     A RefIdentifier that is not referenced in any queues has been fully processed and can be
     removed.
     """
     ri_model = ezidapp.models.identifier.RefIdentifier()
+    # for field in si_model._meta.fields:
+    #     field_value = getattr(si_model, field.name)
+    #     setattr(ri_model, field.name, field_value)
+    log.debug('Creating new RefIdentifier:')
     # noinspection PyProtectedMember
-    for field in si_model._meta.fields:
-        field_value = getattr(si_model, field.name)
+    field_tup = ri_model._meta.fields
+    # log.debug(f'  fields: {field_tup}')
+    for field in field_tup:
+        log.debug(f'  {field}')
+    for field in field_tup:
+        field_value = getattr(id_model, field.name, None)
         setattr(ri_model, field.name, field_value)
-    log.debug(f'Created new RefIdentifier: "{ri_model}"')
+        log.debug(f'  {field.name} = {field_value}')
+
+
+    # ri_model.datacenter = id_model.datacenter.all()
+
     ri_model.save()
     return ri_model
 
@@ -183,7 +199,7 @@ def _enqueueIdentifier(model, identifier, operation, blob):
         enqueueTime=int(time.time()),
         identifier=identifier,
         metadata=blob,
-        operation=ezidapp.models.async_queue.AsyncQueue.operationLabelToCode(
+        operation=ezidapp.models.async_queue.AsyncQueueBase.operationLabelToCode(
             operation
         ),
     )

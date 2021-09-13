@@ -7,9 +7,12 @@ import io
 
 from django.utils.translation import ugettext as _
 
+import ezidapp.management.commands
+
 import ezidapp.models.group
 import ezidapp.models.user
 import ezidapp.models.util
+import ezidapp.stats
 import impl.statistics
 import impl.ui_common
 import impl.ui_search
@@ -93,16 +96,16 @@ def _getUsage(REQUEST, _user, d):
     _table = []
     user_id, group_id, realm_id = impl.ui_common.getOwnerOrGroupOrRealm(d['owner_selected'])
     if realm_id is not None:
-        table = ezidapp.management.commands.stats.getTable(realm=realm_id)
+        table = ezidapp.stats.getTable(realm=realm_id)
     elif group_id is not None:
-        table = ezidapp.management.commands.stats.getTable(
+        table = ezidapp.stats.getTable(
             ownergroup=ezidapp.models.util.getGroupByGroupname(group_id).pid
         )
     else:
         if user_id == 'all':
-            table = ezidapp.management.commands.stats.getTable()
+            table = ezidapp.stats.getTable()
         else:
-            table = ezidapp.management.commands.stats.getTable(
+            table = ezidapp.stats.getTable(
                 owner=ezidapp.models.util.getUserByUsername(user_id).pid
             )
     all_months = _computeMonths(table)
@@ -231,7 +234,7 @@ def csvStats(request):
         ]
     )
     for u in users:
-        for r in ezidapp.management.commands.stats.getTable(owner=u.pid):
+        for r in ezidapp.stats.getTable(owner=u.pid):
             outputRow = [u.username, u.group.groupname, r[0]]
             for type in ["ARK", "DOI"]:
                 t = 0

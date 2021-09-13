@@ -135,7 +135,7 @@ DATABASES = {
 }
 
 DATABASES['search'] = DATABASES['default'].copy()
-DATABASES['search']['fulltextSearchSupported'] = True
+DATABASES['search']['fulltextSearchSupported'] = False ############### TODO
 
 DATABASES_RECONNECT_DELAY = 60
 
@@ -316,10 +316,6 @@ ADMIN_SEARCH_GROUP_PID = 'ark:/99166/p9g44hq02'
 
 # Credentials
 
-ARK_PROFILE = 'erc'
-DOI_PROFILE = 'datacite'
-UUID_PROFILE = 'erc'
-
 GOOGLE_ANALYTICS_ID = None
 
 GZIP_COMMAND = '/usr/bin/gzip'
@@ -382,8 +378,13 @@ CROSSREF_PASSWORD = ''
 
 # Profiles
 
-# Note: the INTERNAL profile is special and must be listed first.
-PROFILES_KEYS = 'INTERNAL,DATACITE,DC,ERC,CROSSREF'
+DEFAULT_ARK_PROFILE = 'erc'
+DEFAULT_DOI_PROFILE = 'datacite'
+DEFAULT_UUID_PROFILE = 'erc'
+
+PROFILES_KEYS = ['INTERNAL','DATACITE','DC','ERC','CROSSREF']
+
+# The INTERNAL profile is special and must be listed first.
 PROFILE_INTERNAL_NAME = 'internal'
 PROFILE_INTERNAL_DISPLAY_NAME = 'internal'
 PROFILE_INTERNAL_EDITABLE = False
@@ -455,6 +456,24 @@ LINKCHECKER_MAX_READ = 104857600
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 INSTALLED_APPS = [
+    # "django.contrib.auth",
+    # 'django_extensions',
+    # # "django.contrib.sessions",
+    # 'ezidapp',
+    # "django.contrib.messages",
+    # "django.contrib.contenttypes",
+    # 'django.contrib.staticfiles',
+    # "django.contrib.admin",
+    # 'ui_tags',
+    # py2
+    # "django.contrib.sessions",
+    # "django.contrib.messages",
+    # "django.contrib.admin",
+    # "django.contrib.auth",
+    # "django.contrib.contenttypes",
+    # 'ezidapp',
+    # 'ui_tags',
+    # cur
     'django_extensions',
     'django.contrib.admin',
     'django.contrib.auth',

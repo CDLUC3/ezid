@@ -23,6 +23,7 @@ import django.db.utils
 import ezidapp.models.custom_fields
 import ezidapp.models.group
 import ezidapp.models.profile
+import ezidapp.models.user
 import ezidapp.models.util
 import ezidapp.models.validation
 import impl.crossref
@@ -32,24 +33,59 @@ import impl.util2
 
 MAX_TARGET_LENGTH = 255
 
-def emptyDict():
-    return {}
+
+def getIdentifier(identifier, prefixMatch=False):
+    if prefixMatch:
+        l = list(
+            Identifier.objects.select_related(
+                "owner", "owner__group", "ownergroup", "datacenter", "profile"
+            ).filter(identifier__in=impl.util.explodePrefixes(identifier))
+        )
+        if len(l) > 0:
+            return max(l, key=lambda si: len(si.identifier))
+        else:
+            raise Identifier.DoesNotExist()
+    else:
+        # TODO: Combine with the select_related above and apply filter in separate step
+        # if prefixmatch.
+        return Identifier.objects.select_related(
+            "owner", "owner__group", "ownergroup", "datacenter", "profile"
+        ).get(identifier=identifier)
 
 
-class Identifier(django.db.models.Model):
+def getDefaultProfileLabel(identifier):
+    """Return the label of the default metadata profile for a given qualified identifier."""
+    if identifier.startswith("ark:/"):
+        return django.conf.settings.DEFAULT_ARK_PROFILE
+    if identifier.startswith("doi:"):
+        return django.conf.settings.DEFAULT_DOI_PROFILE
+    if identifier.startswith("uuid:"):
+        return django.conf.settings.DEFAULT_UUID_PROFILE
+    raise AssertionError(f'Not a valid qualified identifier: {identifier}')
+    # return ezidapp.models.util.getProfileByLabel(self.identifier)
+    # return ezidapp.models.util.getProfileByLabel(defaultProfile(self.identifier))
+
+
+class IdentifierBase(django.db.models.Model):
     """Minted identifiers and related data
 
     Almost everything in EZID revolves around this table, in which most data related to minted
     identifiers is stored either directly or is referenced in foreign keys.
     """
 
+    class Meta:
+        """This model does not itself cause a table to be created. Tables are created by
+        subclasses below.
+        """
+        abstract = True
+
+    # The identifier in qualified, normalized form, e.g.,
+    # "ark:/12345/abc" or "doi:10.1234/ABC".
     identifier = django.db.models.CharField(
         max_length=impl.util.maxIdentifierLength,
         unique=True,
         validators=[ezidapp.models.validation.anyIdentifier],
     )
-    # The identifier in qualified, normalized form, e.g.,
-    # "ark:/12345/abc" or "doi:10.1234/ABC".
 
     @property
     def type(self):
@@ -91,31 +127,30 @@ class Identifier(django.db.models.Model):
         on_delete=django.db.models.PROTECT,
     )
 
-    @property
-    def defaultProfile(self):
-        return ezidapp.models.util.getProfileByLabel(self.identifier)
-        # return ezidapp.models.util.getProfileByLabel(defaultProfile(self.identifier))
-
     def updateFromUntrustedLegacy(self, d, allowRestrictedSettings=False):
-        # Fills out a new identifier or (partially) updates an existing
-        # identifier from client-supplied (i.e., untrusted) legacy
-        # metadata.  When filling out a new identifier the identifier
-        # string and owner must already be set as in, for example,
-        # Identifier(identifier=..., owner=...) (but note that the
-        # owner may be None to signify an anonymously-owned identifier).
-        # If 'allowRestrictedSettings' is True, fields and values that are
-        # not ordinarily settable by clients may be set.  Throws
-        # django.core.exceptions.ValidationError on all errors.
-        # my_full_clean should be called after this method to fully fill
-        # out and validate the object.  This method checks for state
-        # transition violations and DOI registration agency changes, but
-        # does no permissions checking, and in particular, does not check
-        # if ownership changes are allowed.
+        """Fill out a new identifier or (partially) updates an existing
+        identifier from client-supplied (i.e., untrusted) legacy
+        metadata
+
+        When filling out a new identifier the identifier
+        string and owner must already be set as in, for example,
+        Identifier(identifier=..., owner=...) (but note that the
+        owner may be None to signify an anonymously-owned identifier).
+        If 'allowRestrictedSettings' is True, fields and values that are
+        not ordinarily settable by clients may be set.  Throws
+        django.core.exceptions.ValidationError on all errors.
+        my_full_clean should be called after this method to fully fill
+        out and validate the object.  This method checks for state
+        transition violations and DOI registration agency changes, but
+        does no permissions checking, and in particular, does not check
+        if ownership changes are allowed.
+        """
         for k in d:
             if k == "_owner":
                 o = ezidapp.models.util.getUserByUsername(d[k])
-                anon_user_model = django.apps.apps.get_model('ezidapp', 'AnonymousUser')
-                if o is None or o == anon_user_model:
+                # anon_user_model = django.apps.apps.get_model('ezidapp', 'AnonymousUser')
+                # if o is None or o == anon_user_model:
+                if o is None or o == ezidapp.models.user.AnonymousUser:
                     raise django.core.exceptions.ValidationError({"owner": "No such user."})
                 self.owner = o
                 self.ownergroup = None
@@ -384,7 +419,7 @@ class Identifier(django.db.models.Model):
 
     @property
     def resolverTarget(self):
-        # The URL the identifier actually resolves to.
+        """The URL the identifier actually resolves to."""
         import impl.util2 as util2
 
         if self.isReserved:
@@ -394,14 +429,16 @@ class Identifier(django.db.models.Model):
         else:
             return self.target
 
-    # profile = django.db.models.ForeignKey(profile.Profile, blank=True,
-    #   null=True, default=None)
+    @property
+    def defaultProfile(self):
+        """The identifier's preferred metadata profile.
 
-    # The identifier's preferred metadata profile.
-    #
-    # There is currently no constraint on profile labels, or on use of metadata fields corresponding
-    # to profiles.  Note that EZID supplies a default profile that depends on the identifier type,
-    # so this field will in practice never be None.
+        There is currently no constraint on profile labels, or on use of metadata fields corresponding
+        to profiles.  Note that EZID supplies a default profile that depends on the identifier type,
+        so this field will in practice never be None.
+        """
+        profile_label = getDefaultProfileLabel(self.identifier)
+        return ezidapp.models.util.getProfileByLabel(profile_label)
 
     @property
     def usesCrossrefProfile(self):
@@ -419,11 +456,9 @@ class Identifier(django.db.models.Model):
     def usesErcProfile(self):
         return self.profile.label == "erc"
 
-    # cm = custom_fields.CompressedJsonField(default=_emptyDict)
-    # cm = django.db.models.BinaryField(default=dict)
-
     # All of the identifier's citation metadata as a dictionary of
     # name/value pairs, e.g., { "erc.who": "Proust, Marcel", ... }.
+    cm = django.db.models.BinaryField(default=dict)
 
     metadata = django.db.models.JSONField(
         encoder=django.core.serializers.json.DjangoJSONEncoder,
@@ -830,7 +865,7 @@ django.db.models.CharField.register_lookup(Search)
 django.db.models.TextField.register_lookup(Search)
 
 
-class SearchIdentifier(Identifier):
+class SearchIdentifier(IdentifierBase):
     """An identifier as stored in the search table.
 
     The SearchIdentifier table expands the regular Identifier table with various indexes to enable
@@ -1101,25 +1136,10 @@ class SearchIdentifier(Identifier):
 #         cache[key] = i
 #     return i, cache
 
+class Identifier(IdentifierBase):
+    pass
 
-def getIdentifier(identifier, prefixMatch=False):
-    if prefixMatch:
-        l = list(
-            Identifier.objects.select_related(
-                "owner", "owner__group", "ownergroup", "datacenter", "profile"
-            ).filter(identifier__in=impl.util.explodePrefixes(identifier))
-        )
-        if len(l) > 0:
-            return max(l, key=lambda si: len(si.identifier))
-        else:
-            raise Identifier.DoesNotExist()
-    else:
-        return Identifier.objects.select_related(
-            "owner", "owner__group", "ownergroup", "datacenter", "profile"
-        ).get(identifier=identifier)
-
-
-class RefIdentifier(Identifier):
+class RefIdentifier(IdentifierBase):
     """Identifier referenced in task queues
 
     The queues hold create, update and/or delete operations that have been scheduled but not yet
@@ -1158,15 +1178,13 @@ class RefIdentifier(Identifier):
     instance of a metadata object.
     """
 
+    # The identifier in qualified, normalized form, e.g.,
+    # "ark:/12345/abc" or "doi:10.1234/ABC".
 
-def defaultProfile(identifier):
-    """Return the label of the default metadata profile (e.g., "erc") for a
-    given qualified identifier."""
-    if identifier.startswith("ark:/"):
-        return django.conf.settings.ARK_PROFILE
-    elif identifier.startswith("doi:"):
-        return django.conf.settings.DOI_PROFILE
-    elif identifier.startswith("uuid:"):
-        return django.conf.settings.UUID_PROFILE
-    else:
-        assert False, "unhandled case"
+    # In RefIdentifier, the identifier is not a unique field.
+    identifier = django.db.models.CharField(
+        max_length=impl.util.maxIdentifierLength,
+        validators=[ezidapp.models.validation.anyIdentifier],
+        # default='',
+        # null=True,
+    )

@@ -437,7 +437,9 @@ def formulateQuery(
         else:
             assert False, "unrecognized column"
     assert scopeRequirementMet, "query scope requirement not met"
-    qs = ezidapp.models.identifier.Identifier.objects.filter(*filters)
+
+    qs = ezidapp.models.identifier.SearchIdentifier.objects.filter(*filters)
+
     if len(selectRelated) > 0:
         qs = qs.select_related(*selectRelated)
     if len(defer) > 0:

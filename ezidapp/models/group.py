@@ -9,6 +9,7 @@ import django.apps
 import django.core.validators
 import django.db.models
 
+import ezidapp.models.realm
 import ezidapp.models.validation
 import impl.log
 import impl.nog.minter
@@ -139,8 +140,8 @@ class AnonymousGroup(object):
     """
     pid = "anonymous"
     groupname = "anonymous"
-    # realm = ezidapp.models.realm.AnonymousRealm
-    realm = 'ezidapp.AnonymousRealm'
+    realm = ezidapp.models.realm.AnonymousRealm
+    # realm = 'ezidapp.AnonymousRealm'
     crossrefEnabled = False
 
     class inner(object):

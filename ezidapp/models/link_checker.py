@@ -80,9 +80,7 @@ class LinkChecker(django.db.models.Model):
     # max_length=id_model.meta.get_field("target").max_length,
     # noinspection PyProtectedMember
     target = django.db.models.URLField(
-        max_length=ezidapp.models.identifier.Identifier._meta.get_field(
-            "target"
-        ).max_length,
+        max_length=ezidapp.models.identifier.MAX_TARGET_LENGTH,
     )
 
     # The identifier's target URL, e.g., "http://foo.com/bar".

@@ -19,6 +19,9 @@ import django.db.transaction
 
 import ezidapp.models.shoulder
 import ezidapp.models.validation
+import ezidapp.models.group
+import ezidapp.models.realm
+
 import impl.log as log
 import impl.nog.minter
 import impl.util
@@ -345,3 +348,38 @@ class User(django.db.models.Model):
 #         caches = (pidCache, usernameCache, idCache)
 #         _caches = caches
 #     return caches
+
+
+class AnonymousUser(object):
+    """An anonymous user
+
+    This class can be used directly. An object need not be instantiated.
+    """
+    pid = "anonymous"
+    username = "anonymous"
+
+    # anonymous_group_model = django.apps.apps.get_model('ezidapp', 'AnonymousGroup')
+    group = ezidapp.models.group.AnonymousGroup
+    #realm = django.apps.apps.get_model('ezidapp', 'AnonymousRealm')
+    realm = ezidapp.models.realm.AnonymousRealm
+
+    class inner(object):
+        def all(self):
+            return []
+
+    shoulders = inner()
+    crossrefEnabled = False
+    crossrefEmail = ""
+    proxies = inner()
+    proxy_for = inner()
+    isGroupAdministrator = False
+    isRealmAdministrator = False
+    isSuperuser = False
+    isPrivileged = False
+    loginEnabled = False
+    isAnonymous = True
+
+    @staticmethod
+    def authenticate(password):
+        logger.debug('User is anonymous. Auth denied')
+        return False

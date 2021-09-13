@@ -311,10 +311,6 @@ ADMIN_SEARCH_GROUP_PID = 'ark:/99166/p9g44hq02'
 
 # Credentials
 
-ARK_PROFILE = 'ERC'
-DOI_PROFILE = 'DATACITE'
-UUID_PROFILE = 'erc'
-
 GOOGLE_ANALYTICS_ID = None
 
 GZIP_COMMAND = '/usr/bin/gzip'
@@ -377,8 +373,13 @@ CROSSREF_PASSWORD = '{{ crossref_password  }}'
 
 # Profiles
 
-# Note: the INTERNAL profile is special and must be listed first.
-PROFILES_KEYS = 'INTERNAL,DATACITE,DC,ERC,CROSSREF'
+DEFAULT_ARK_PROFILE = 'erc'
+DEFAULT_DOI_PROFILE = 'datacite'
+DEFAULT_UUID_PROFILE = 'erc'
+
+PROFILES_KEYS = ['INTERNAL','DATACITE','DC','ERC','CROSSREF']
+
+# The INTERNAL profile is special and must be listed first.
 PROFILE_INTERNAL_NAME = 'internal'
 PROFILE_INTERNAL_DISPLAY_NAME = 'internal'
 PROFILE_INTERNAL_EDITABLE = False

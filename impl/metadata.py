@@ -97,7 +97,7 @@ profiles = [
         getattr(django.conf.settings, f"PROFILE_{k}_EDITABLE"),
         _loadElements(getattr(django.conf.settings, f"PROFILE_{k}_FILE")),
     )
-    for k in django.conf.settings.PROFILES_KEYS.split(',')
+    for k in django.conf.settings.PROFILES_KEYS
 ]
 names = set()
 for p in profiles:

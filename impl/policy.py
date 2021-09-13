@@ -75,7 +75,7 @@ def authorizeUpdate(user, identifier):
         idGroup = identifier.ownergroup
         logger.debug(f'Using identifier for owner and group.')
     else:
-        idOwner = ezidapp.models.util.AnonymousUser
+        idOwner = ezidapp.models.user.AnonymousUser
         idGroup = ezidapp.models.group.AnonymousGroup
         logger.debug(f'Using anonymous owner and group.')
     logger.debug(f'idOwner="{idOwner}" idGroup="{idGroup}"')
@@ -139,9 +139,9 @@ def authorizeOwnershipChange(user, currentOwner, newOwner):
         f'user="{user}" currentOwner="{currentOwner}" newOwner="{newOwner}"'
     )
     if currentOwner is None:
-        currentOwner = ezidapp.models.util.AnonymousUser
+        currentOwner = ezidapp.models.user.AnonymousUser
     if newOwner is None:
-        newOwner = ezidapp.models.util.AnonymousUser
+        newOwner = ezidapp.models.user.AnonymousUser
     if newOwner == currentOwner:
         logging.debug('Authorized: New owner is same as current')
         return True
