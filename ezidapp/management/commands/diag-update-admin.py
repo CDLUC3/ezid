@@ -54,10 +54,7 @@ ADMIN_MODEL_DICT = {
     },
     # EZID custom user authentication
     'ezidapp.Realm': {
-        "name": django.conf.settings.ADMIN_STORE_REALM,
-    },
-    'ezidapp.Realm': {
-        "name": django.conf.settings.ADMIN_SEARCH_REALM,
+        "name": django.conf.settings.ADMIN_REALM,
     },
     'ezidapp.user': {
         'accountEmail': django.conf.settings.ADMIN_EMAIL,

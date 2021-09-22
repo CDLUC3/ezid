@@ -204,18 +204,3 @@ def _enqueueIdentifier(model, identifier, operation, blob):
         ),
     )
     e.save()
-
-
-def is_daemon_enabled(setting_name):
-    assert isinstance(
-        setting_name, str
-    ), 'Call with the name of a DAEMONS_*_ENABLED setting, not the value.'
-    if not django.conf.settings.DAEMONS_ENABLED:
-        return False
-    v = getattr(django.conf.settings, setting_name, None)
-    assert v is not None, f'Unknown setting: {setting_name}'
-    assert v in (
-        True,
-        False,
-    ), f'Setting must be a boolean, not {type(setting_name)}'
-    return v

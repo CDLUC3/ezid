@@ -28,62 +28,23 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     display = 'Binder'
     name = 'binder'
     setting = 'DAEMONS_BINDER_ENABLED'
+    queue = ezidapp.models.async_queue.BinderQueue
+
+    # numWorkerThreads=django.conf.settings.DAEMONS_BINDER_NUM_WORKER_THREADS,
+    # idleSleep=django.conf.settings.DAEMONS_BINDER_PROCESSING_IDLE_SLEEP,
+    # reattemptDelay=django.conf.settings.DAEMONS_BINDER_PROCESSING_ERROR_SLEEP,
 
     def __init__(self):
-        super().__init__(
-            __name__,
-            registrar="binder",
-            queueModel=ezidapp.models.async_queue.BinderQueue,
-            createFunction=self._create,
-            updateFunction=self._update,
-            deleteFunction=self._delete,
-            batchCreateFunction=self._batchCreate,
-            batchUpdateFunction=None,
-            batchDeleteFunction=self._batchDelete,
-            numWorkerThreads=django.conf.settings.DAEMONS_BINDER_NUM_WORKER_THREADS,
-            idleSleep=django.conf.settings.DAEMONS_BINDER_PROCESSING_IDLE_SLEEP,
-            reattemptDelay=django.conf.settings.DAEMONS_BINDER_PROCESSING_ERROR_SLEEP,
-        )
+        super().__init__(__name__)
 
     def add_arguments(self, parser):
-        """
-        Args:
-            parser:
-        """
         super().add_arguments(parser)
 
-    def handle_daemon(self, args):
-        """
-        Args:
-            args:
-        """
-        super().run()
+    def create(self, rows, id_str, metadata):
+        self.callWrapper(rows, impl.noid_egg.setElements, id_str, metadata)
 
-    def _create(self, rows, id_str, metadata):
-        """
-        Args:
-            rows:
-            id_str:
-            metadata:
-        """
-        self.callWrapper(
-            rows,
-            "noid_egg.setElements",
-            impl.noid_egg.setElements,
-            id_str,
-            metadata,
-        )
-
-    def _update(self, rows, id_str, metadata):
-        """
-        Args:
-            rows:
-            id_str:
-            metadata:
-        """
-        m = self.callWrapper(
-            rows, "noid_egg.getElements", impl.noid_egg.getElements, id_str
-        )
+    def update(self, rows, id_str, metadata):
+        m = self.callWrapper(rows, impl.noid_egg.getElements, id_str)
         if m is None:
             m = {}
         for k, v in list(metadata.items()):
@@ -95,35 +56,20 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             if k not in metadata:
                 m[k] = ""
         if len(m) > 0:
-            self.callWrapper(
-                rows, "noid_egg.setElements", impl.noid_egg.setElements, id_str, m
-            )
+            self.callWrapper(rows, impl.noid_egg.setElements, id_str, m)
 
-    def _delete(self, rows, id_str, _metadata):
-        """
-        Args:
-            rows:
-            id_str:
-            _metadata:
-        """
-        self.callWrapper(
-            rows,
-            "noid_egg.deleteIdentifier",
-            impl.noid_egg.deleteIdentifier,
-            id_str,
-        )
+    def delete(self, rows, id_str, _metadata):
+        self.callWrapper(rows, impl.noid_egg.deleteIdentifier, id_str)
 
-    def _batchCreate(self, rows, batch):
+    def batchCreate(self, rows, batch):
         """
         Args:
             rows:
             batch:
         """
-        self.callWrapper(
-            rows, "noid_egg.batchSetElements", impl.noid_egg.batchSetElements, batch
-        )
+        self.callWrapper(rows, impl.noid_egg.batchSetElements, batch)
 
-    def _batchDelete(self, rows, batch):
+    def batchDelete(self, rows, batch):
         """
         Args:
             rows:
@@ -131,7 +77,6 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         """
         self.callWrapper(
             rows,
-            "noid_egg.batchDeleteIdentifier",
             impl.noid_egg.batchDeleteIdentifier,
             [identifier for identifier, metadata in batch],
         )

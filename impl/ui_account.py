@@ -355,13 +355,13 @@ def pwreset(request, pwrr):
         r = decodePasswordResetRequest(pwrr)
         if not r:
             django.contrib.messages.error(request, _("Invalid password reset request."))
-            return impl.ui_common.redirect("/")
+            return django.http.HttpResponseRedirect("/")
         username, t = r
         if int(time.time()) - t >= 24 * 60 * 60:
             django.contrib.messages.error(
                 request, _("Password reset request has expired.")
             )
-            return impl.ui_common.redirect("/")
+            return django.http.HttpResponseRedirect("/")
         d['pwrr'] = pwrr
         if request.method == "GET":
             d['username'] = username
@@ -391,7 +391,7 @@ def pwreset(request, pwrr):
                     user.save()
                     ezidapp.admin.scheduleUserChangePostCommitActions(user)
                 django.contrib.messages.success(request, _("Password changed."))
-                return impl.ui_common.redirect("/")
+                return django.http.HttpResponseRedirect("/")
         else:
             return impl.ui_common.methodNotAllowed(request)
         # noinspection PyUnresolvedReferences
@@ -421,7 +421,7 @@ def pwreset(request, pwrr):
                     return impl.ui_common.render(request, "account/pwreset1", d)
                 else:
                     django.contrib.messages.success(request, _("Email sent."))
-                    return impl.ui_common.redirect("/")
+                    return django.http.HttpResponseRedirect("/")
         else:
             return impl.ui_common.methodNotAllowed(request)
 

@@ -159,12 +159,12 @@ def tombstone(request):
         r = impl.ezid.getMetadata(id_str)
     if type(r) is str:
         django.contrib.messages.error(request, impl.ui_common.formatError(r))
-        return impl.ui_common.redirect("/")
+        return django.http.HttpResponseRedirect("/")
     s, m = r
     assert s.startswith("success:")
     id_str = s[8:].strip()
     if not m["_status"].startswith("unavailable"):
-        return impl.ui_common.redirect(f"/id/{urllib.parse.quote(id_str, ':/')}")
+        return django.http.HttpResponseRedirect(f"/id/{urllib.parse.quote(id_str, ':/')}")
     status = m["_status"]
     reason = tombstone_text
     if "|" in m["_status"]:

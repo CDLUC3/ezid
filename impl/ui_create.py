@@ -3,6 +3,7 @@
 
 import re
 
+import django.conf
 import django.contrib.messages
 import django.shortcuts
 from django.utils.translation import ugettext as _
@@ -39,7 +40,7 @@ def index(_request):
 @impl.ui_common.user_login_required
 def simple(request):
     d = {'menu_item': 'ui_create.simple'}
-    # d["testPrefixes"] = impl.ui_common.testPrefixes
+    d["testPrefixes"] = django.conf.settings.TEST_SHOULDER_DICT
     user = impl.userauth.getUser(request)
     if user.isSuperuser:
         shoulders = [
@@ -62,7 +63,7 @@ def simple(request):
 @impl.ui_common.user_login_required
 def advanced(request):
     d = {'menu_item': 'ui_create.advanced'}
-    d["testPrefixes"] = impl.ui_common.testPrefixes
+    d["testPrefixes"] = django.conf.settings.TEST_SHOULDER_DICT
     user = impl.userauth.getUser(request)
     if user.isSuperuser:
         shoulders = [

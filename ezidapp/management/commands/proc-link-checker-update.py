@@ -108,6 +108,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                         if not si.linkIsBroken:
                             newValue = True
                         lc = next(lcGenerator)
+
+
                     if newValue is not None:
                         # Before updating the Identifier, we carefully lock
                         # the table and ensure that the object still exists.
@@ -123,6 +125,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                             log.exception(' ezidapp.models.identifier.Identifier.DoesNotExist')
                             pass
                     si = next(siGenerator)
+
+
             except Exception as e:
                 log.exception(' Exception as e')
                 self.otherError("linkcheck_update._linkcheckUpdateDaemon", e)

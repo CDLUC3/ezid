@@ -8,6 +8,7 @@ import urllib.parse
 import urllib.request
 import urllib.response
 
+import django.conf
 import django.contrib.messages
 import django.db.models
 import django.http
@@ -167,7 +168,7 @@ def _assignManualTemplate(d):
 def edit(request, identifier):
     """Edit page for a given ID."""
     d = {'menu_item': 'ui_manage.null'}
-    # d["testPrefixes"] = impl.ui_common.testPrefixes
+    d["testPrefixes"] = django.conf.settings.TEST_SHOULDER_DICT
     r = _getLatestMetadata(identifier, request)
     if type(r) is str:
         django.contrib.messages.error(request, impl.ui_common.formatError(r))
@@ -379,7 +380,7 @@ def _schemaDotOrgMetadata(km, id_as_url):
 def details(request):
     """ID Details page for a given ID."""
     d = {'menu_item': 'ui_manage.null'}
-    # d["testPrefixes"] = impl.ui_common.testPrefixes
+    d["testPrefixes"] = django.conf.settings.TEST_SHOULDER_DICT
     identifier = request.path_info[len("/id/") :]
     r = _getLatestMetadata(
         identifier,

@@ -10,6 +10,7 @@ import urllib.parse
 import urllib.request
 import urllib.response
 
+import django.conf
 import django.contrib.messages
 from django.utils.translation import ugettext as _
 
@@ -382,7 +383,7 @@ def _pageLayout(d, REQUEST, s_type="public"):
     """Track user preferences for selected fields, field order, page, and page
     size."""
     d['filtered'] = False if 'filtered' not in d and 'filtered' not in REQUEST else True
-    # d['testPrefixes'] = impl.ui_common.testPrefixes
+    d['testPrefixes'] = django.conf.settings.TEST_SHOULDER_DICT
     d['fields_mapped'] = FIELDS_MAPPED
     d['field_display_types'] = FIELD_DISPLAY_TYPES
     f_order = _fieldOrderByType[s_type]

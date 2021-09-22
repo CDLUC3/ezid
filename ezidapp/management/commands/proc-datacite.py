@@ -59,48 +59,16 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         assert type(r) is not str, "unexpected return: " + r
 
     def _overwrite(self, rows, doi, metadata):
-        self.callWrapper(
-            rows,
-            "datacite.uploadMetadata",
-            self._uploadMetadata,
-            doi,
-            metadata,
-            metadata["_d"],
-        )
-        self.callWrapper(
-            rows,
-            "datacite.setTargetUrl",
-            self._setTargetUrl,
-            doi,
-            metadata["_t"],
-            metadata["_d"],
-        )
+        self.callWrapper(rows, self._uploadMetadata, doi, metadata, metadata["_d"])
+        self.callWrapper(rows, self._setTargetUrl, doi, metadata["_t"], metadata["_d"])
         if (
             metadata.get("_is", "public") != "public"
             or metadata.get("_x", "yes") != "yes"
         ):
-            self.callWrapper(
-                rows,
-                "datacite.deactivate",
-                impl.datacite.deactivate,
-                doi[4:],
-                metadata["_d"],
-            )
+            self.callWrapper(rows, impl.datacite.deactivate, doi[4:], metadata["_d"])
 
     def _delete(self, rows, doi, metadata):
         # We can't actually delete a DOI, so we do the next best thing...
-        self.callWrapper(
-            rows,
-            "datacite.setTargetUrl",
-            self._setTargetUrl,
-            doi,
-            "http://datacite.org/invalidDOI",
-            metadata["_d"],
-        )
-        self.callWrapper(
-            rows,
-            "datacite.deactivate",
-            impl.datacite.deactivate,
-            doi[4:],
-            metadata["_d"],
-        )
+        self.callWrapper(rows, self._setTargetUrl, doi, "http://datacite.org/invalidDOI",
+                         metadata["_d"])
+        self.callWrapper(rows, impl.datacite.deactivate, doi[4:], metadata["_d"])

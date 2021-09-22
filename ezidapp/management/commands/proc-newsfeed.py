@@ -50,11 +50,13 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 log.exception(' Exception as e')
                 self.otherError("newsfeed._newsDaemon", e)
                 items = self._noItems
+
             self._lock.acquire()
             try:
                 if threading.currentThread().getName() == self._threadName:
                     _items = items
             finally:
                 self._lock.release()
+
             # noinspection PyTypeChecker
             time.sleep(self._pollingInterval)

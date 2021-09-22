@@ -68,7 +68,7 @@ def renderIdPage(request, path, d):
     elif d["id_gen_result"] == "method_not_allowed":
         return methodNotAllowed(request)
     elif d["id_gen_result"].startswith("created_identifier:"):
-        return redirect(
+        return django.http.HttpResponseRedirect(
             "/id/" + urllib.parse.quote(result.split()[1], ":/")
         )  # ID Details page
 

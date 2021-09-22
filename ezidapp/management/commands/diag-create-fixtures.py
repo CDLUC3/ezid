@@ -284,7 +284,7 @@ def populate_async_queue():
 #     e.save()
 #
 #
-# def is_daemon_enabled(setting_name):
+# def assert_daemon_enabled(setting_name):
 #     assert isinstance(
 #         setting_name, str
 #     ), 'Call with the name of a DAEMONS_*_ENABLED setting, not the value.'

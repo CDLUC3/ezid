@@ -48,7 +48,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
     def __init__(self):
         super(Command, self).__init__(__name__)
-        self._queue = ezidapp.models.async_queue.CrossrefQueue
+        self.queue = ezidapp.models.async_queue.CrossrefQueue
 
     def add_arguments(self, parser):
         super().add_arguments(parser)
@@ -71,13 +71,13 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 # maxSeq is set to None, thus forcing another round of processing.
                 if maxSeq is not None:
                     if (
-                        self._queue().objects.aggregate(django.db.models.Max("seq"))["seq__max"]
+                        self.queue().objects.aggregate(django.db.models.Max("seq"))["seq__max"]
                         == maxSeq
                     ):
                         continue
                 # Hopefully the queue will not grow so large that the following
                 # query will cause a burden.
-                query = self._queue().objects.all().order_by("seq")
+                query = self.queue().objects.all().order_by("seq")
                 if len(query) > 0:
                     maxSeq = query[len(query) - 1].seq
                 else:
@@ -87,7 +87,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     # necessarily looking at the first, i.e., the earliest, and
                     # the others must represent subsequent modifications.  Hence
                     # we simply delete this entry regardless of its status.
-                    if self._queue().objects.filter(identifier=r.identifier).count() > 1:
+                    if self.queue().objects.filter(identifier=r.identifier).count() > 1:
                         r.delete()
                         maxSeq = None
                     else:
