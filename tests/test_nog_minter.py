@@ -1,7 +1,7 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-import backports.lzma as lzma
+import lzma
 
 import impl.nog.bdb
 import impl.nog.filesystem

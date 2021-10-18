@@ -35,8 +35,6 @@ import impl.nog.util
 import impl.util
 import impl.util2
 
-import ezidapp.models.async_queue
-
 log = logging.getLogger(__name__)
 
 

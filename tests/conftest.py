@@ -28,13 +28,11 @@ import django.test.client
 import pytest
 
 import ezidapp
-
 # Queues
 import ezidapp.models.async_queue
-import ezidapp.models.datacenter
 import ezidapp.models.async_queue
+import ezidapp.models.datacenter
 import ezidapp.models.link_checker
-
 import ezidapp.models.shoulder
 import ezidapp.models.user
 import ezidapp.models.util
@@ -107,12 +105,11 @@ ADMIN_MODEL_DICT = {
     },
     # EZID custom user authentication
     'ezidapp.Realm': {
-        "name": django.conf.settings.ADMIN_STORE_REALM,
+        "name": django.conf.settings.ADMIN_REALM,
     },
-    'ezidapp.Realm': {
-        "name": django.conf.settings.ADMIN_SEARCH_REALM,
-    },
-    'ezidapp.storeuser': {
+    'ezidapp.user': {
+        'pid': django.conf.settings.ADMIN_USER_PID,
+        'username': django.conf.settings.ADMIN_USERNAME,
         'accountEmail': django.conf.settings.ADMIN_EMAIL,
         'crossrefEmail': django.conf.settings.ADMIN_CROSSREF_EMAIL,
         'crossrefEnabled': django.conf.settings.ADMIN_CROSSREF_ENABLED,
@@ -124,16 +121,14 @@ ADMIN_MODEL_DICT = {
         'loginEnabled': True,
         'notes': django.conf.settings.ADMIN_NOTES,
         # 'password': django.conf.settings.ADMIN_PASSWORD,
-        'pid': django.conf.settings.ADMIN_STORE_USER_PID,
         'primaryContactEmail': django.conf.settings.ADMIN_PRIMARY_CONTACT_EMAIL,
         'primaryContactName': django.conf.settings.ADMIN_PRIMARY_CONTACT_NAME,
         'primaryContactPhone': django.conf.settings.ADMIN_PRIMARY_CONTACT_PHONE,
         'secondaryContactEmail': django.conf.settings.ADMIN_SECONDARY_CONTACT_EMAIL,
         'secondaryContactName': django.conf.settings.ADMIN_SECONDARY_CONTACT_NAME,
         'secondaryContactPhone': django.conf.settings.ADMIN_SECONDARY_CONTACT_PHONE,
-        'username': django.conf.settings.ADMIN_USERNAME,
     },
-    'ezidapp.storegroup': {
+    'ezidapp.group': {
         'accountType': '',
         'agreementOnFile': False,
         'crossrefEnabled': django.conf.settings.ADMIN_CROSSREF_ENABLED,
@@ -143,15 +138,7 @@ ADMIN_MODEL_DICT = {
         'organizationName': django.conf.settings.ADMIN_ORG_NAME,
         'organizationStreetAddress': '(:unap)',
         'organizationUrl': django.conf.settings.ADMIN_ORG_URL,
-        'pid': django.conf.settings.ADMIN_STORE_GROUP_PID,
-    },
-    'ezidapp.searchuser': {
-        'pid': django.conf.settings.ADMIN_SEARCH_USER_PID,
-        'username': django.conf.settings.ADMIN_USERNAME,
-    },
-    'ezidapp.searchgroup': {
-        'groupname': django.conf.settings.ADMIN_GROUPNAME,
-        'pid': django.conf.settings.ADMIN_SEARCH_GROUP_PID,
+        'pid': django.conf.settings.ADMIN_GROUP_PID,
     },
 }
 

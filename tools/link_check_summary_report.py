@@ -34,7 +34,6 @@ import django.db.models
 import ezidapp.models.link_checker
 import ezidapp.models.realm
 import ezidapp.models.user
-import impl
 
 BAD_RECHECK_MIN_INTERVAL = int(
     django.conf.settings.LINKCHECKER_BAD_RECHECK_MIN_INTERVAL
