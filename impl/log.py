@@ -223,7 +223,7 @@ def _notifyAdmins(error):
         # noinspection PyUnresolvedReferences
         for e, r in list(_sentErrors.items()):
             # noinspection PyTypeChecker
-            if t - r[0] > int(django.conf.settings.EMAIL_ERROR_LIFETIME):
+            if t - r[0] > django.conf.settings.EMAIL_ERROR_LIFETIME:
                 # Error has expired; remove it from cache.
                 # noinspection PyUnresolvedReferences
                 del _sentErrors[e]
@@ -239,7 +239,7 @@ def _notifyAdmins(error):
             # noinspection PyUnresolvedReferences
             r = _sentErrors[similarError]
             # noinspection PyTypeChecker
-            if t - r[0] <= int(django.conf.settings.EMAIL_ERROR_SUPPRESSION_WINDOW):
+            if t - r[0] <= django.conf.settings.EMAIL_ERROR_SUPPRESSION_WINDOW:
                 r[1] += 1
                 suppress = True
             else:
@@ -265,7 +265,7 @@ def _notifyAdmins(error):
             "will be suppressed for the next {}.\n\n{}".format(
                 str(
                     datetime.timedelta(
-                        seconds=int(django.conf.settings.EMAIL_ERROR_SUPPRESSION_WINDOW)
+                        seconds=django.conf.settings.EMAIL_ERROR_SUPPRESSION_WINDOW
                     )
                 ),
                 error,

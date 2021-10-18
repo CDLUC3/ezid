@@ -12,7 +12,9 @@
 # usernames to numbers of waiting requests.  If _paused is true, no
 # new locks are granted, but the mechanism otherwise operates
 # normally.
+import threading
 
+import django.conf
 
 _lockedIdentifiers = set()
 _activeUsers = {}
@@ -39,7 +41,7 @@ def _acquireIdentifierLock(identifier, user):
         _paused
         or identifier in _lockedIdentifiers
         or _activeUsers.get(user, 0)
-        >= int(django.conf.settings.MAX_CONCURRENT_OPERATIONS_PER_USER)
+        >= django.conf.settings.MAX_CONCURRENT_OPERATIONS_PER_USER
     ):
         # noinspection PyTypeChecker
         if _activeUsers.get(user, 0) + _waitingUsers.get(user, 0) >= int(

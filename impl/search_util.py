@@ -68,7 +68,7 @@ def withAutoReconnect(functionName, function, continuationCheck=None):
             if not firstError:
                 impl.log.otherError("search_util.withAutoReconnect/" + functionName, e)
                 # noinspection PyTypeChecker
-                time.sleep(int(django.conf.settings.DATABASES_RECONNECT_DELAY))
+                time.sleep(django.conf.settings.DATABASES_RECONNECT_DELAY)
             if continuationCheck is not None and not continuationCheck():
                 raise AbortException()
             # In some cases a lost connection causes the thread's database connection object to be

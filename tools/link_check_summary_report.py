@@ -39,7 +39,7 @@ import impl
 BAD_RECHECK_MIN_INTERVAL = int(
     django.conf.settings.LINKCHECKER_BAD_RECHECK_MIN_INTERVAL
 )
-NOTIFICATION_THRESHOLD = int(django.conf.settings.LINKCHECKER_NOTIFICATION_THRESHOLD)
+NOTIFICATION_THRESHOLD = django.conf.settings.LINKCHECKER_NOTIFICATION_THRESHOLD
 
 message = """Dear EZID administrator,
 

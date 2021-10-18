@@ -235,7 +235,7 @@ def main():
         type="int",
         dest="threshold",
         help="override the configured notification threshold",
-        default=int(django.conf.settings.LINKCHECKER_NOTIFICATION_THRESHOLD),
+        default=django.conf.settings.LINKCHECKER_NOTIFICATION_THRESHOLD,
     )
     options, args = p.parse_args()
     if len(args) > 0:

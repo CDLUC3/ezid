@@ -406,7 +406,7 @@ def dispatch(request):
         elif oaiRequest[0] == "ListIdentifiers":
             r = _doHarvest(
                 oaiRequest,
-                int(django.conf.settings.OAI_BATCH_SIZE),
+                django.conf.settings.OAI_BATCH_SIZE,
                 includeMetadata=False,
             )
         elif oaiRequest[0] == "ListMetadataFormats":
@@ -414,7 +414,7 @@ def dispatch(request):
         elif oaiRequest[0] == "ListRecords":
             r = _doHarvest(
                 oaiRequest,
-                int(django.conf.settings.OAI_BATCH_SIZE),
+                django.conf.settings.OAI_BATCH_SIZE,
                 includeMetadata=True,
             )
         elif oaiRequest[0] == "ListSets":

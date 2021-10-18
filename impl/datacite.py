@@ -695,7 +695,7 @@ def pingDataciteOnly():
             if c:
                 c.close()
         # noinspection PyTypeChecker
-        time.sleep(int(django.conf.settings.DATACITE_REATTEMPT_DELAY))
+        time.sleep(django.conf.settings.DATACITE_REATTEMPT_DELAY)
 
 
 def dcmsRecordToHtml(record):

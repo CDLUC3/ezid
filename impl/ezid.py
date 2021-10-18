@@ -66,7 +66,7 @@ def _acquireIdentifierLock(identifier, user):
     while (
         _paused
         or identifier in _lockedIdentifiers
-        or _activeUsers.get(user, 0) >= int(django.conf.settings.MAX_CONCURRENT_OPERATIONS_PER_USER)
+        or _activeUsers.get(user, 0) >= django.conf.settings.MAX_CONCURRENT_OPERATIONS_PER_USER
     ):
         # noinspection PyTypeChecker
         if _activeUsers.get(user, 0) + _waitingUsers.get(user, 0) >= int(
