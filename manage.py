@@ -3,10 +3,13 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-import os
-import sys
+"""\
+Entry point for all Django and EZID management commands.
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings.test_settings')
+Do not set a default for DJANGO_SETTINGS_MODULE here, as it tends to hide a missing
+configuration, and no single default is good for all environments.
+"""
+import sys
 
 import django.core.management
 
