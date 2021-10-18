@@ -68,7 +68,7 @@ ADMIN_MODEL_DICT = {
         'loginEnabled': True,
         'notes': django.conf.settings.ADMIN_NOTES,
         # 'password': django.conf.settings.ADMIN_PASSWORD,
-        'pid': django.conf.settings.ADMIN_STORE_USER_PID,
+        'pid': django.conf.settings.ADMIN_USER_PID,
         'primaryContactEmail': django.conf.settings.ADMIN_PRIMARY_CONTACT_EMAIL,
         'primaryContactName': django.conf.settings.ADMIN_PRIMARY_CONTACT_NAME,
         'primaryContactPhone': django.conf.settings.ADMIN_PRIMARY_CONTACT_PHONE,
@@ -87,15 +87,7 @@ ADMIN_MODEL_DICT = {
         'organizationName': django.conf.settings.ADMIN_ORG_NAME,
         'organizationStreetAddress': '(:unap)',
         'organizationUrl': django.conf.settings.ADMIN_ORG_URL,
-        'pid': django.conf.settings.ADMIN_STORE_GROUP_PID,
-    },
-    'ezidapp.searchuser': {
-        'pid': django.conf.settings.ADMIN_SEARCH_USER_PID,
-        'username': django.conf.settings.ADMIN_USERNAME,
-    },
-    'ezidapp.searchgroup': {
-        'groupname': django.conf.settings.ADMIN_GROUPNAME,
-        'pid': django.conf.settings.ADMIN_SEARCH_GROUP_PID,
+        'pid': django.conf.settings.ADMIN_GROUP_PID,
     },
 }
 
@@ -124,7 +116,6 @@ class Command(django.core.management.BaseCommand):
 
         # EZID custom auth
 
-        # Store
         realm = ezidapp.models.realm.Realm.objects.update_or_create(
             defaults=ADMIN_MODEL_DICT['ezidapp.Realm'], name='CDL'
         )[0]
@@ -149,30 +140,3 @@ class Command(django.core.management.BaseCommand):
         )[0]
         user.setPassword(django.conf.settings.ADMIN_PASSWORD)
         user.save()
-
-        # Search
-        search_realm = ezidapp.models.realm.Realm.objects.update_or_create(
-            defaults=ADMIN_MODEL_DICT['ezidapp.Realm'],
-            name='CDL',
-        )[0]
-        search_group = ezidapp.models.group.Group.objects.update_or_create(
-            defaults={
-                **ADMIN_MODEL_DICT['ezidapp.searchgroup'],
-                'realm': search_realm,
-                'groupname': 'admin',
-                # },
-            },
-            groupname='admin',
-        )[0]
-        search_user = ezidapp.models.user.User.objects.update_or_create(
-            defaults={
-                **ADMIN_MODEL_DICT['ezidapp.searchuser'],
-                'realm': search_realm,
-                'group': search_group,
-                'username': 'admin',
-                # },
-            },
-            username='admin',
-        )[0]
-        # search_user.setPassword(django.conf.settings.ADMIN_PASSWORD)
-        # search_user.save()
