@@ -78,7 +78,7 @@ if DAEMONS_ENABLED == 'auto':
 # - True: The daemon is available to be started.
 # - False: The daemon cannot run.
 # - See the DAEMONS_ENABLED setting above.
-# DAEMONS_SEARCHDB_ENABLED = True
+DAEMONS_SEARCH_INDEXER_ENABLED = True
 DAEMONS_NEWSFEED_ENABLED = True
 DAEMONS_STATUS_ENABLED = True
 DAEMONS_BINDER_ENABLED = True
