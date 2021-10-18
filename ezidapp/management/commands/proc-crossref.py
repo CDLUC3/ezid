@@ -61,7 +61,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             django.db.connections["search"].close()
 
             # noinspection PyTypeChecker
-            time.sleep(int(django.conf.settings.DAEMONS_CROSSREF_PROCESSING_IDLE_SLEEP))
+            time.sleep(django.conf.settings.DAEMONS_CROSSREF_PROCESSING_IDLE_SLEEP)
 
             try:
                 # First, a quick test to avoid retrieving the entire table if nothing needs to be
@@ -82,6 +82,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     maxSeq = query[len(query) - 1].seq
                 else:
                     maxSeq = None
+
                 for r in query:
                     # If there are multiple entries for this identifier, we are
                     # necessarily looking at the first, i.e., the earliest, and

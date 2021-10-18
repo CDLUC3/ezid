@@ -34,9 +34,11 @@ import impl.util
 
 _LT = logging.getLogger("tracer")
 
+log = logging.getLogger(__name__)
 
 @impl.log.stacklog
 def _issue(method, operations):
+    log.info('_issue', repr(method), repr(operations))
     # noinspection PyUnresolvedReferences
     r = urllib.request.Request(django.conf.settings.BINDER_URL + "?-")
     r.get_method = lambda: method
@@ -59,16 +61,16 @@ def _issue(method, operations):
             if len(o) > 3:
                 s += " " + impl.util.encode3(o[3])
             l.append(s)
-        r.data = "\n".join(l)
+        r.data = "\n".join(l).encode('utf-8')
     # noinspection PyTypeChecker
-    for i in range(int(django.conf.settings.BINDER_NUM_ATTEMPTS)):
+    for i in range(django.conf.settings.BINDER_NUM_ATTEMPTS):
         c = None
         try:
             c = urllib.request.urlopen(r)
             s = c.readlines()
         except Exception:
             # noinspection PyTypeChecker
-            if i == int(django.conf.settings.BINDER_NUM_ATTEMPTS) - 1:
+            if i == django.conf.settings.BINDER_NUM_ATTEMPTS - 1:
                 raise
         else:
             break
@@ -76,15 +78,15 @@ def _issue(method, operations):
             if c:
                 c.close()
         # noinspection PyTypeChecker
-        time.sleep(int(django.conf.settings.BINDER_REATTEMPT_DELAY))
+        time.sleep(django.conf.settings.BINDER_REATTEMPT_DELAY)
     # noinspection PyUnboundLocalVariable,PyUnboundLocalVariable
     return s
 
 
 def _error(operation, s):
     return (
-        f"unexpected return from noid egg '{operation}' "
-        f"operation, output follows\n{''.join(s)}"
+        f'unexpected return from noid egg "{operation}":\n '
+        f'{"".join(str(x) for x in s)}'
     )
 
 
@@ -132,18 +134,18 @@ def batchSetElements(batch):
     'batch' should be a list of (identifier, name/value dictionary)
     tuples.
     """
-    l = []
+    bind_list = []
     for identifier, d in batch:
         for e, v in list(d.items()):
             e = e.strip()
             assert len(e) > 0, "empty label"
             v = v.strip()
             if v == "":
-                l.append((identifier, "rm", e))
+                bind_list.append((identifier, "rm", e))
             else:
-                l.append((identifier, "set", e, v))
-    s = _issue("POST", l)
-    assert len(s) >= 2 and s[-2] == "egg-status: 0\n", _error("set/rm", s)
+                bind_list.append((identifier, "set", e, v))
+    s = _issue("POST", bind_list)
+    assert len(s) >= 2 and s[-2] == b"egg-status: 0\n", _error("set/rm", s)
 
 
 def getElements(identifier):

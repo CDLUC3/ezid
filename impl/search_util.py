@@ -29,16 +29,14 @@ _lock = threading.Lock()
 
 _stopwords = None
 _minimumWordLength = None
-django.conf.settings.DATABASES["search"][
-    "fulltextSearchSupported"
-] = django.conf.settings.DATABASES["search"]["fulltextSearchSupported"]
-if django.conf.settings.DATABASES["search"]["fulltextSearchSupported"]:
+
+if django.conf.settings.FULL_TEXT_SUPPORTED:
     _stopwords = (
         django.conf.settings.SEARCH_STOPWORDS
         + " "
         + django.conf.settings.SEARCH_EXTRA_STOPWORDS
     ).split()
-    _minimumWordLength = int(django.conf.settings.SEARCH_MINIMUM_WORD_LENGTH)
+    _minimumWordLength = django.conf.settings.SEARCH_MINIMUM_WORD_LENGTH
 
 _numActiveSearches = 0
 

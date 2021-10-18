@@ -3,21 +3,20 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-# Emails link checker reports to all owners of identifiers whose check
-# failures have reached the notification threshold.
-#
-# Usage: link-check-emailer [options]
-#
-# Options:
-#   -a EMAIL  override the account email address (one owner only)
-#   -b        bcc realm administrators
-#   -f FILE   don't email, just write CSV file (one owner only)
-#   -o OWNER  process the specified owner only; may be repeated
-#   -t N      override the configured notification threshold
-#
-# Greg Janee <gjanee@ucop.edu>
-# October 2016
-import django.conf
+"""\
+Emails link checker reports to all owners of identifiers whose check
+failures have reached the notification threshold.
+
+Usage: link-check-emailer [options]
+
+Options:
+  -a EMAIL  override the account email address (one owner only)
+  -b        bcc realm administrators
+  -f FILE   don't email, just write CSV file (one owner only)
+  -o OWNER  process the specified owner only; may be repeated
+  -t N      override the configured notification threshold
+"""
+
 import csv
 import http
 import optparse
@@ -27,15 +26,14 @@ import subprocess
 import tempfile
 
 import django.conf
+import django.conf
 import django.core.exceptions
 import django.core.mail
 
-# import ezidapp.models
-import ezidapp.models.link_checker
 import ezidapp.models.identifier
+import ezidapp.models.link_checker
 import ezidapp.models.user
-from impl import config
-from impl import util
+import impl
 
 
 def encode(s):
@@ -105,7 +103,7 @@ def writeCsv(lcList, filename):
                 lc.identifier,
                 encode(lc.target),
                 str(lc.numFailures),
-                util.formatTimestampZulu(lc.lastCheckTime),
+                impl.util.formatTimestampZulu(lc.lastCheckTime),
                 encode(formatError(lc.returnCode, lc.error)),
                 encode(lc.aux.resourceCreator),
                 encode(lc.aux.resourceTitle),

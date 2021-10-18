@@ -15,16 +15,12 @@ import django.db.transaction
 import django.db.utils
 
 import ezidapp.models.identifier
-
-# import ezidapp.models.identifier
 import ezidapp.models.model_util
 import ezidapp.models.shoulder
 import ezidapp.models.user
 import ezidapp.models.util
 import impl.enqueue
 import impl.log
-
-# import noid_nog
 import impl.nog.minter
 import impl.policy
 import impl.util
