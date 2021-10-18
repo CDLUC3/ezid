@@ -5,6 +5,7 @@
 """
 
 import django.db.models
+
 import impl.util
 
 
@@ -22,11 +23,28 @@ class AsyncQueueBase(django.db.models.Model):
         """This model does not itself cause a table to be created. Tables are created by
         subclasses below.
         """
+
         abstract = True
 
-    @staticmethod
-    def operationLabelToCode(label):
-        return AsyncQueueBase._operation_dict[label]
+    # Operation to perform
+    CREATE = "C"
+    UPDATE = "U"
+    DELETE = "D"
+    OPERATION_CODE_TO_LABEL_DICT = {CREATE: "create", UPDATE: "update", DELETE: "delete"}
+    OPERATION_LABEL_TO_CODE_DICT = {v: k for k, v in OPERATION_CODE_TO_LABEL_DICT.items()}
+
+    # Status of operation
+    UNSUBMITTED = "U"
+    SUBMITTED = "S"
+    WARNING = "W"
+    FAILURE = "F"
+    STATUS_CODE_TO_LABEL_DICT = {
+        UNSUBMITTED: 'Awaiting submission',
+        SUBMITTED: 'Submitted',
+        WARNING: 'Registered with warning',
+        FAILURE: 'Registration failed',
+    }
+    STATUS_LABEL_TO_CODE_DICT = {v: k for k, v in STATUS_CODE_TO_LABEL_DICT.items()}
 
     # Order of insertion into this table; also, the order in which
     # identifier operations must be performed.
@@ -56,55 +74,20 @@ class AsyncQueueBase(django.db.models.Model):
     #     db_index=True,
     # )
 
-    # The operation which is to be registered.
-    CREATE = "C"
-    UPDATE = "U"
-    DELETE = "D"
-
-    _operation_dict = {
-        "create": CREATE,
-        "update": UPDATE,
-        "delete": DELETE,
-    }
-
     operation = django.db.models.CharField(
         max_length=1,
-        choices=[
-            (CREATE, "create"),
-            (UPDATE, "update"),
-            (DELETE, "delete"),
-        ],
+        choices=OPERATION_CODE_TO_LABEL_DICT.items(),
+        db_index=True,
     )
-
-    # The status of the submission.
-
-    UNSUBMITTED = "U"
-    SUBMITTED = "S"
-    WARNING = "W"
-    FAILURE = "F"
-
-    _status_dict = {
-        UNSUBMITTED: 'Unsubmitted',
-        SUBMITTED: 'Submitted',
-        WARNING: 'Warning',
-        FAILURE: 'Failure',
-    }
 
     status = django.db.models.CharField(
         max_length=1,
-        choices=[
-            (UNSUBMITTED, "awaiting submission"),
-            (SUBMITTED, "submitted"),
-            (WARNING, "registered with warning"),
-            (FAILURE, "registration failed"),
-        ],
+        choices=STATUS_CODE_TO_LABEL_DICT.items(),
         default=UNSUBMITTED,
         db_index=True,
     )
 
-    # Once submitted and polled at least once, any additional status
-    # information as received from Crossref.  See
-    # crossref._pollDepositStatus.
+    # Any additional information associated with the current status
     message = django.db.models.TextField(blank=True)
 
     # Once submitted, the ID of the submission batch.  A UUID, e.g.,
@@ -117,16 +100,11 @@ class AsyncQueueBase(django.db.models.Model):
     error = django.db.models.TextField(blank=True)
 
     # True if the error received is not transient.  Permanent errors
-    # disable processing on the identifier and can be removed only
-    # manually.
+    # disable processing on the identifier and can must be removed manually.
     errorIsPermanent = django.db.models.BooleanField(default=False)
 
 
 # Subclasses that create tables from the abstract base model.
-
-
-class DataciteQueue(AsyncQueueBase):
-    pass
 
 
 class BinderQueue(AsyncQueueBase):
@@ -136,6 +114,13 @@ class BinderQueue(AsyncQueueBase):
 class CrossrefQueue(AsyncQueueBase):
     pass
 
+
+class DataciteQueue(AsyncQueueBase):
+    pass
+
+
+class SearchIndexerQueue(AsyncQueueBase):
+    pass
 
 # The download queue does not relate to a single identifier, so is implemented separately.
 

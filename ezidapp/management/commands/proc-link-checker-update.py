@@ -6,6 +6,7 @@ EZID tables.
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
+import abc
 import logging
 import threading
 import time
@@ -18,13 +19,11 @@ import django.db.transaction
 import ezidapp.management.commands.proc_base
 import ezidapp.models.identifier
 import ezidapp.models.link_checker
-import impl.log
-import impl.nog.util
 
 log = logging.getLogger(__name__)
 
 
-class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
+class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand, abc.ABC):
     help = __doc__
     display = 'LinkCheckerUpdate'
     name = 'linkcheckerupdate'
@@ -146,7 +145,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     _threadName = None
 
     if django.conf.settings.CROSSREF_ENABLED:
-        _resultsUploadCycle = int(django.conf.settings.LINKCHECKER_RESULTS_UPLOAD_CYCLE)
+        _resultsUploadCycle = django.conf.settings.LINKCHECKER_RESULTS_UPLOAD_CYCLE
         _resultsUploadSameTimeOfDay = (
             django.conf.settings.LINKCHECKER_RESULTS_UPLOAD_SAME_TIME_OF_DAY
         )

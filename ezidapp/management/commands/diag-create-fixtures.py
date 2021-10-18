@@ -1,16 +1,10 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-import re
-import time
-
-import ezidapp.models.user
-import random
-
-import ezidapp.models.async_queue
-import ezidapp.models.identifier
 import logging
 import pathlib
+import random
+import time
 
 import django
 import django.apps
@@ -22,8 +16,11 @@ import django.db
 import django.db.transaction
 import django.http.request
 
-import impl.enqueue
+import ezidapp.models.async_queue
+import ezidapp.models.identifier
+import ezidapp.models.user
 import impl.download
+import impl.enqueue
 import impl.log
 import impl.nog.filesystem
 import impl.nog.shoulder
@@ -70,7 +67,15 @@ def create_fixtures():
 
     populate_registration_queue()
 
+
+
+
+
     return
+
+
+
+
 
     for blob_tup in django.conf.settings.BLOB_FIELD_LIST:
         if not blob_tup.is_queue:

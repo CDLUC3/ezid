@@ -2,14 +2,10 @@
 #  http://creativecommons.org/licenses/BSD
 
 import abc
-import contextlib
 import http.client
 import logging
 import os
-import pprint
-import random
 import sys
-import threading
 import time
 import types
 import urllib.error
@@ -18,45 +14,28 @@ import urllib.request
 import urllib.response
 
 import django.conf
+import django.core.management
 import django.db
 import django.db.transaction
 
-import impl.enqueue
-import impl.log
-import impl.nog.util
-import impl.util
 import ezidapp.models.async_queue
 
-import django.core.management
-
-import settings.test_settings
-
 log = logging.getLogger(__name__)
-
-"""
-Queue tables:
-
-ezidapp_binderqueue
-ezidapp_crossrefqueue
-ezidapp_datacitequeue
-ezidapp_downloadqueue
-ezidapp_updatequeue       
-
-"""
 
 
 class AsyncProcessingCommand(abc.ABC, django.core.management.BaseCommand):
     help = __doc__
     setting = None
     name = None
-
-    # queue_model = None
+    queue = None
 
     class _AbortException(Exception):
         pass
 
-    def __init__(self, module_name):
+    def __init__(self):
         super().__init__()
+        self.opt = None
+        self.is_debug = None
 
         # noinspection PyArgumentList
         logging.basicConfig(
@@ -74,22 +53,23 @@ class AsyncProcessingCommand(abc.ABC, django.core.management.BaseCommand):
         )
 
     def handle(self, *args, **opt):
-        log.debug('Testing log level: DEBUG')
-        log.info('Testing log level: INFO')
-        log.error('Testing log level: ERROR')
-        print('Testing stdout')
-        print('Testing stderr', file=sys.stderr)
+        if django.conf.settings.DEBUG:
+            log.debug('Testing log level: DEBUG')
+            log.info('Testing log level: INFO')
+            log.error('Testing log level: ERROR')
+            print('Testing stdout')
+            print('Testing stderr', file=sys.stderr)
 
-        self.assert_daemon_enabled()
-
+        self.assert_proc_enabled()
         self.opt = types.SimpleNamespace(**opt)
         self.is_debug = self.opt.debug
+
         # impl.nog.util.log_setup(self.module_name, self.opt.debug)
 
         # with self.lock:
         self.run()
 
-    def assert_daemon_enabled(self):
+    def assert_proc_enabled(self):
         if not django.conf.settings.DAEMONS_ENABLED:
             self.raise_command_error(f'Cannot start. "DAEMONS_ENABLED" is not True')
 
@@ -109,7 +89,9 @@ class AsyncProcessingCommand(abc.ABC, django.core.management.BaseCommand):
     def run(self):
         """Run async processing loop forever"""
         while True:
-            qs = self.queue.objects.filter(errorIsPermanent=False).order_by("seq")[
+            qs = self.queue.objects.filter(
+                status=ezidapp.models.async_queue.AsyncQueueBase.UNSUBMITTED,
+            ).order_by("seq")[
                 : django.conf.settings.MAX_BATCH_SIZE
             ]
             if not qs:
@@ -117,53 +99,35 @@ class AsyncProcessingCommand(abc.ABC, django.core.management.BaseCommand):
                 time.sleep(django.conf.settings.DAEMONS_BINDER_PROCESSING_IDLE_SLEEP)
                 continue
 
-            for task in qs:
-                if task.operation == ezidapp.models.async_queue.AsyncQueueBase.CREATE:
-                    self.create(task)
-                elif task.operation == ezidapp.models.async_queue.AsyncQueueBase.UPDATE:
-                    self.update(task)
-                elif task.operation == ezidapp.models.async_queue.AsyncQueueBase.DELETE:
-                    self.delete(task)
+            for task_model in qs:
+                try:
+                    self.do_task(task_model)
+                except Exception as e:
+                    log.exception('Task registration error')
+                    task_model.error = str(e)
+                    if self.is_permanent_error(e):
+                        task_model.status = ezidapp.models.async_queue.AsyncQueueBase.FAILURE,
+                        task_model.errorIsPermanent = True
+                        # raise
                 else:
-                    self.raise_command_error(self, f'Invalid operation: {task.operation}')
+                    task_model.status = ezidapp.models.async_queue.AsyncQueueBase.SUBMITTED
+                    task_model.submitTime = self.now_int()
 
-            for row in self.queue.objects.all().order_by("seq")[
-                : django.conf.settings.MAX_BATCH_SIZE
-            ]:
-                pass
+                task_model.save()
 
-    def callWrapper(self, task, function, *args):
-        """This function should be used by registrars to wrap calls to registrar-
-        specific create/update/delete functions.
-
-        It hides all transient errors (by retrying indefinitely) and raises
-        all others. 'sh' and 'task' are supplied by this module and should
-        simply be passed through.  'function' is the function to call;
-        'methodName' is its name for error reporting purposes.  Any
-        additional arguments are passed through to 'function'.
-        """
-        log.debug(
-            pprint.pformat(
-                dict(
-                    callWrapper=self,
-                    task=task,
-                    function=function,
-                    args=args,
-                )
-            )
-        )
-        try:
-            r = function(*args)
-            # breakpoint()
-            log.debug(f'Returning: {r}')
-        except Exception as e:
-            task.error = impl.util.formatException(e)
-            if self.is_permanent_error(e):
-                task.errorIsPermanent = True
+    def do_task(self, task_model):
+        label_str = ezidapp.models.async_queue.AsyncQueueBase.OPERATION_CODE_TO_LABEL_DICT[
+            task_model.operation
+        ]
+        log.debug(self.fmt_msg(f'Processing task: {label_str}'))
+        if task_model.operation == ezidapp.models.async_queue.AsyncQueueBase.CREATE:
+            self.create(task_model)
+        elif task_model.operation == ezidapp.models.async_queue.AsyncQueueBase.UPDATE:
+            self.update(task_model)
+        elif task_model.operation == ezidapp.models.async_queue.AsyncQueueBase.DELETE:
+            self.delete(task_model)
         else:
-            task.error = 'Successful'
-
-        task.save()
+            raise AssertionError(f'Invalid operation: {task_model.operation}')
 
     # def sleep(self, duration=None):
     #     django.db.connections["default"].close()
@@ -171,31 +135,41 @@ class AsyncProcessingCommand(abc.ABC, django.core.management.BaseCommand):
 
     def is_permanent_error(self, e):
         """Return True if exception appears to be due to a permanent error"""
-        return (
-            (isinstance(e, urllib.error.HTTPError) and e.code >= 500)
-            or (isinstance(e, IOError) and not isinstance(e, urllib.error.HTTPError))
-            or isinstance(e, http.client.HTTPException)
-        )
+        # We were able to connect to the server, but it returned a 5xx response
+        if isinstance(e, urllib.error.HTTPError) and e.code >= 500:
+            return True
+        # We received an OS level exception that was not urllib HTTP related
+        if isinstance(e, OSError) and not isinstance(e, urllib.error.HTTPError):
+            return True
+        # We received an exception from Python's built-in HTTP client
+        if isinstance(e, http.client.HTTPException):
+            return True
+        return False
 
     @staticmethod
     def now():
         return time.time()
 
     @staticmethod
-    def nowi():
+    def now_int():
         return int(AsyncProcessingCommand.now())
 
     def raise_command_error(self, msg_str):
         raise django.core.management.CommandError(
-            f'Async process {self.name} error: {msg_str}). '
-            f'Using settings module "{os.environ["DJANGO_SETTINGS_MODULE"]}'
+            self.fmt_msg(
+                f'Error: {msg_str}). '
+                f'Using settings module "{os.environ["DJANGO_SETTINGS_MODULE"]}"'
+            )
         )
 
-    def create(self, task):
+    def create(self, task_model):
         raise NotImplementedError()
 
-    def update(self, task):
+    def update(self, task_model):
         raise NotImplementedError()
 
-    def delete(self, task):
+    def delete(self, task_model):
         raise NotImplementedError()
+
+    def fmt_msg(self, fmt_str: str, *a, **kw):
+        return f'Async process {self.name}: {fmt_str.format(*a, **kw)}'

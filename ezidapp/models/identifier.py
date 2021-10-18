@@ -77,6 +77,7 @@ class IdentifierBase(django.db.models.Model):
         """This model does not itself cause a table to be created. Tables are created by
         subclasses below.
         """
+
         abstract = True
 
     # The identifier in qualified, normalized form, e.g.,
@@ -1136,8 +1137,10 @@ class SearchIdentifier(IdentifierBase):
 #         cache[key] = i
 #     return i, cache
 
+
 class Identifier(IdentifierBase):
     pass
+
 
 class RefIdentifier(IdentifierBase):
     """Identifier referenced in task queues

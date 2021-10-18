@@ -12,8 +12,6 @@
 
 import logging
 
-import django.conf
-
 import ezidapp.management.commands.proc_base
 import ezidapp.models.async_queue
 import impl.log
@@ -40,11 +38,18 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     def add_arguments(self, parser):
         super().add_arguments(parser)
 
-    def create(self, rows, id_str, metadata):
-        self.callWrapper(rows, impl.noid_egg.setElements, id_str, metadata)
+    def create(self, task_model):
+        id_str = task_model.refIdentifier.identifier
+        metadata = task_model.refIdentifier.metadata
+        impl.noid_egg.setElements(id_str, metadata)
 
-    def update(self, rows, id_str, metadata):
-        m = self.callWrapper(rows, impl.noid_egg.getElements, id_str)
+    def update(self, task_model):
+        id_str = task_model.ref_identifier.identifier
+
+        # TODO: Is this part still required?
+        # id_str, metadata = task_model.
+
+        m = impl.noid_egg.getElements(id_str)
         if m is None:
             m = {}
         for k, v in list(metadata.items()):
@@ -56,27 +61,15 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             if k not in metadata:
                 m[k] = ""
         if len(m) > 0:
-            self.callWrapper(rows, impl.noid_egg.setElements, id_str, m)
+            impl.noid_egg.setElements(id_str, m)
 
-    def delete(self, rows, id_str, _metadata):
-        self.callWrapper(rows, impl.noid_egg.deleteIdentifier, id_str)
+    def delete(self, id_str, _metadata):
+        impl.noid_egg.deleteIdentifier(id_str)
 
-    def batchCreate(self, rows, batch):
-        """
-        Args:
-            rows:
-            batch:
-        """
-        self.callWrapper(rows, impl.noid_egg.batchSetElements, batch)
+    def batchCreate(self, batch):
+        impl.noid_egg.batchSetElements(batch)
 
-    def batchDelete(self, rows, batch):
-        """
-        Args:
-            rows:
-            batch:
-        """
-        self.callWrapper(
-            rows,
-            impl.noid_egg.batchDeleteIdentifier,
+    def batchDelete(self, batch):
+        impl.noid_egg.batchDeleteIdentifier(
             [identifier for identifier, metadata in batch],
         )

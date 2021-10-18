@@ -88,11 +88,8 @@ import django.conf
 import django.core.management
 
 import ezidapp.management.commands.proc_base
-
 import ezidapp.models.identifier
-
 import ezidapp.models.link_checker
-
 import impl
 import impl.nog.util
 import impl.util
@@ -226,9 +223,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     def loadExclusionFile(self):
         if self._exclusionFile is None:
             return
-        if self.nowi() - self._lastExclusionFileCheckTime < 10:
+        if self.now_int() - self._lastExclusionFileCheckTime < 10:
             return
-        _lastExclusionFileCheckTime = self.nowi()
+        _lastExclusionFileCheckTime = self.now_int()
         f = None
         s = None
         try:
@@ -300,8 +297,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         numDeletions = 0
         numUpdates = 0
         numUnvisited = 0
-        good = [0, 0, self.nowi()]  # [total, to visit, oldest timestamp]
-        bad = [0, 0, self.nowi()]
+        good = [0, 0, self.now_int()]  # [total, to visit, oldest timestamp]
+        bad = [0, 0, self.now_int()]
         # noinspection PyTypeChecker
         import ezidapp.models.link_checker
         lcGenerator = self.harvest(ezidapp.models.link_checker.LinkChecker)
@@ -420,8 +417,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         _workset = []
         numOwnersCapped = 0
         numUnvisited = 0
-        good = [0, self.nowi()]  # [total, oldest timestamp]
-        bad = [0, self.nowi()]
+        good = [0, self.now_int()]  # [total, oldest timestamp]
+        bad = [0, self.now_int()]
 
         search_user_model = django.apps.apps.get_model('ezidapp', 'User')
 
@@ -444,7 +441,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
             qs = query(
                 True,
-                self.nowi() - django.conf.settings.LINKCHECKER_BAD_RECHECK_MIN_INTERVAL,
+                self.now_int() - django.conf.settings.LINKCHECKER_BAD_RECHECK_MIN_INTERVAL,
                 django.conf.settings.LINKCHECKER_WORKSET_OWNER_MAX_LINKS,
             )
             if len(qs) > 0:
@@ -453,7 +450,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             if django.conf.settings.LINKCHECKER_WORKSET_OWNER_MAX_LINKS - len(qs) > 0:
                 q = query(
                     False,
-                    self.nowi()
+                    self.now_int()
                     - django.conf.settings.LINKCHECKER_GOOD_RECHECK_MIN_INTERVAL,
                     django.conf.settings.LINKCHECKER_WORKSET_OWNER_MAX_LINKS - len(qs),
                 )

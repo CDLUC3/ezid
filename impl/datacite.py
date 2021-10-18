@@ -1,8 +1,7 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-"""Interface to DataCite <http://www.datacite.org/>
-
+"""\
 Interface to the DataCite Metadata Store <https://mds.datacite.org/>
 operated by the Technische Informationsbibliothek (TIB)
 <http://www.tib.uni-hannover.de/>.
@@ -23,7 +22,6 @@ from typing import Pattern
 import django.conf
 import lxml.etree
 
-# import ezidapp.models.shoulder
 import ezidapp.models.validation
 import impl.mapping
 import impl.util
@@ -118,7 +116,7 @@ def registerIdentifier(doi, targetUrl, datacenter=None):
         return None
     # To deal with transient problems with the Handle system underlying
     # the DataCite service, we make multiple attempts.
-    for i in range(int(django.conf.settings.DATACITE_NUM_ATTEMPTS)):
+    for i in range(django.conf.settings.DATACITE_NUM_ATTEMPTS):
         o = urllib.request.build_opener(_HTTPErrorProcessor)
         r = urllib.request.Request(django.conf.settings.DATACITE_DOI_URL)
         # We manually supply the HTTP Basic authorization header to avoid
@@ -141,7 +139,7 @@ def registerIdentifier(doi, targetUrl, datacenter=None):
         c = None
         try:
             _modifyActiveCount(1)
-            c = o.open(r, timeout=int(django.conf.settings.DATACITE_TIMEOUT))
+            c = o.open(r, timeout=django.conf.settings.DATACITE_TIMEOUT)
             assert (
                 c.read() == "OK"
             ), "unexpected return from DataCite register DOI operation"
@@ -151,11 +149,11 @@ def registerIdentifier(doi, targetUrl, datacenter=None):
                 return message
             if (
                 e.code != 500
-                or i == int(django.conf.settings.DATACITE_NUM_ATTEMPTS) - 1
+                or i == django.conf.settings.DATACITE_NUM_ATTEMPTS - 1
             ):
                 raise e
         except Exception:
-            if i == int(django.conf.settings.DATACITE_NUM_ATTEMPTS) - 1:
+            if i == django.conf.settings.DATACITE_NUM_ATTEMPTS - 1:
                 raise
         else:
             break
@@ -163,7 +161,7 @@ def registerIdentifier(doi, targetUrl, datacenter=None):
             _modifyActiveCount(-1)
             if c:
                 c.close()
-        time.sleep(int(django.conf.settings.DATACITE_REATTEMPT_DELAY))
+        time.sleep(django.conf.settings.DATACITE_REATTEMPT_DELAY)
     return None
 
 
@@ -189,7 +187,7 @@ def getTargetUrl(doi, datacenter=None):
     """
     # To hide transient network errors, we make multiple attempts.
     # noinspection PyTypeChecker
-    for i in range(int(django.conf.settings.DATACITE_NUM_ATTEMPTS)):
+    for i in range(django.conf.settings.DATACITE_NUM_ATTEMPTS):
         o = urllib.request.build_opener(_HTTPErrorProcessor)
         # noinspection PyUnresolvedReferences,PyUnresolvedReferences
         r = urllib.request.Request(
@@ -208,7 +206,7 @@ def getTargetUrl(doi, datacenter=None):
         c = None
         try:
             _modifyActiveCount(1)
-            c = o.open(r, timeout=int(django.conf.settings.DATACITE_TIMEOUT))
+            c = o.open(r, timeout=django.conf.settings.DATACITE_TIMEOUT)
             return c.read()
         except urllib.error.HTTPError as e:
             if e.code == 404:
@@ -216,19 +214,19 @@ def getTargetUrl(doi, datacenter=None):
             # noinspection PyTypeChecker
             if (
                 e.code != 500
-                or i == int(django.conf.settings.DATACITE_NUM_ATTEMPTS) - 1
+                or i == django.conf.settings.DATACITE_NUM_ATTEMPTS - 1
             ):
                 raise e
         except Exception:
             # noinspection PyTypeChecker
-            if i == int(django.conf.settings.DATACITE_NUM_ATTEMPTS) - 1:
+            if i == django.conf.settings.DATACITE_NUM_ATTEMPTS - 1:
                 raise
         finally:
             _modifyActiveCount(-1)
             if c:
                 c.close()
         # noinspection PyTypeChecker
-        time.sleep(int(django.conf.settings.DATACITE_REATTEMPT_DELAY))
+        time.sleep(django.conf.settings.DATACITE_REATTEMPT_DELAY)
 
 
 _prologRE: Pattern[str] = re.compile(
@@ -495,7 +493,7 @@ def uploadMetadata(doi, current, delta, forceUpload=False, datacenter=None):
         return None
     # To hide transient network errors, we make multiple attempts.
     # noinspection PyTypeChecker
-    for i in range(int(django.conf.settings.DATACITE_NUM_ATTEMPTS)):
+    for i in range(django.conf.settings.DATACITE_NUM_ATTEMPTS):
         o = urllib.request.build_opener(_HTTPErrorProcessor)
         # noinspection PyTypeChecker
         r = urllib.request.Request(django.conf.settings.DATACITE_METADATA_URL)
@@ -514,7 +512,7 @@ def uploadMetadata(doi, current, delta, forceUpload=False, datacenter=None):
         c = None
         try:
             _modifyActiveCount(1)
-            c = o.open(r, timeout=int(django.conf.settings.DATACITE_TIMEOUT))
+            c = o.open(r, timeout=django.conf.settings.DATACITE_TIMEOUT)
             s = c.read()
             assert s.startswith("OK"), (
                 "unexpected return from DataCite store metadata operation: " + s
@@ -526,12 +524,12 @@ def uploadMetadata(doi, current, delta, forceUpload=False, datacenter=None):
             # noinspection PyTypeChecker
             if (
                 e.code != 500
-                or i == int(django.conf.settings.DATACITE_NUM_ATTEMPTS) - 1
+                or i == django.conf.settings.DATACITE_NUM_ATTEMPTS - 1
             ):
                 raise e
         except Exception:
             # noinspection PyTypeChecker
-            if i == int(django.conf.settings.DATACITE_NUM_ATTEMPTS) - 1:
+            if i == django.conf.settings.DATACITE_NUM_ATTEMPTS - 1:
                 raise
         else:
             return None
@@ -540,13 +538,13 @@ def uploadMetadata(doi, current, delta, forceUpload=False, datacenter=None):
             if c:
                 c.close()
         # noinspection PyTypeChecker
-        time.sleep(int(django.conf.settings.DATACITE_REATTEMPT_DELAY))
+        time.sleep(django.conf.settings.DATACITE_REATTEMPT_DELAY)
 
 
 def _deactivate(doi, datacenter):
     # To hide transient network errors, we make multiple attempts.
     # noinspection PyTypeChecker
-    for i in range(int(django.conf.settings.DATACITE_NUM_ATTEMPTS)):
+    for i in range(django.conf.settings.DATACITE_NUM_ATTEMPTS):
         o = urllib.request.build_opener(_HTTPErrorProcessor)
         # noinspection PyUnresolvedReferences
         r = urllib.request.Request(
@@ -566,7 +564,7 @@ def _deactivate(doi, datacenter):
         c = None
         try:
             _modifyActiveCount(1)
-            c = o.open(r, timeout=int(django.conf.settings.DATACITE_TIMEOUT))
+            c = o.open(r, timeout=django.conf.settings.DATACITE_TIMEOUT)
             assert (
                 c.read() == "OK"
             ), "unexpected return from DataCite deactivate DOI operation"
@@ -574,12 +572,12 @@ def _deactivate(doi, datacenter):
             # noinspection PyTypeChecker
             if (
                 e.code != 500
-                or i == int(django.conf.settings.DATACITE_NUM_ATTEMPTS) - 1
+                or i == django.conf.settings.DATACITE_NUM_ATTEMPTS - 1
             ):
                 raise e
         except Exception:
             # noinspection PyTypeChecker
-            if i == int(django.conf.settings.DATACITE_NUM_ATTEMPTS) - 1:
+            if i == django.conf.settings.DATACITE_NUM_ATTEMPTS - 1:
                 raise
         else:
             break
@@ -588,7 +586,7 @@ def _deactivate(doi, datacenter):
             if c:
                 c.close()
         # noinspection PyTypeChecker
-        time.sleep(int(django.conf.settings.DATACITE_REATTEMPT_DELAY))
+        time.sleep(django.conf.settings.DATACITE_REATTEMPT_DELAY)
 
 
 def deactivate(doi, datacenter=None):
@@ -658,7 +656,7 @@ def pingDataciteOnly():
         return "up"
     # To hide transient network errors, we make multiple attempts.
     # noinspection PyTypeChecker
-    for i in range(int(django.conf.settings.DATACITE_NUM_ATTEMPTS)):
+    for i in range(django.conf.settings.DATACITE_NUM_ATTEMPTS):
         o = urllib.request.build_opener(_HTTPErrorProcessor)
         # noinspection PyUnresolvedReferences
         r = urllib.request.Request(
@@ -682,11 +680,11 @@ def pingDataciteOnly():
         c = None
         try:
             _modifyActiveCount(1)
-            c = o.open(r, timeout=int(django.conf.settings.DATACITE_TIMEOUT))
+            c = o.open(r, timeout=django.conf.settings.DATACITE_TIMEOUT)
             assert c.read() == django.conf.settings.DATACITE_PING_TARGET
         except Exception:
             # noinspection PyTypeChecker
-            if i == int(django.conf.settings.DATACITE_NUM_ATTEMPTS) - 1:
+            if i == django.conf.settings.DATACITE_NUM_ATTEMPTS - 1:
                 return "down"
         else:
             return "up"

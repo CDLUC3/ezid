@@ -75,7 +75,7 @@ def getTable(owner=None, ownergroup=None, realm=None):
     #     and django.conf.settings.DAEMONS_STATISTICS_ENABLED ! flag removed
     # )
     # if django.conf.settings.CROSSREF_ENABLED:
-    #     _computeCycle = int(django.conf.settings.DAEMONS_STATISTICS_COMPUTE_CYCLE)
+    #     _computeCycle = django.conf.settings.DAEMONS_STATISTICS_COMPUTE_CYCLE
     #     _computeSameTimeOfDay = (
     #         django.conf.settings.DAEMONS_STATISTICS_COMPUTE_SAME_TIME_OF_DAY
     #     )
