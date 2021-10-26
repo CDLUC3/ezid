@@ -46,6 +46,7 @@ BerkeleyDB keys (EZID names / N2T names):
 from __future__ import absolute_import, division, print_function
 
 import logging
+import config
 import re
 
 import nog.bdb
@@ -69,6 +70,7 @@ XDIG_DICT = {
     "n": 19, "p": 20, "q": 21, "r": 22, "s": 23, "t": 24, "v": 25, "w": 26, "x": 27,
     "z": 28,
 }
+PROTO_SUPER_SHOULDER = config.get("shoulders.proto_super_shoulder")
 # fmt:on
 XDIG_STR = "0123456789bcdfghjkmnpqrstvwxz"
 ALPHA_COUNT = len(XDIG_STR)
@@ -157,7 +159,10 @@ def create_minter_database(shoulder_ns, root_path=None, mask_str='eedk'):
     bdb_path = nog.bdb.get_path(shoulder_ns, root_path, is_new=True)
 
     with Minter(bdb_path, is_new=True, dry_run=False) as minter:
-        full_shoulder_str = '/'.join([shoulder_ns.naan_prefix, shoulder_ns.shoulder])
+        shoulder_val = shoulder_ns.shoulder
+        if shoulder_ns.naan_prefix in PROTO_SUPER_SHOULDER and shoulder_val is None:
+            shoulder_val = PROTO_SUPER_SHOULDER[shoulder_ns.naan_prefix]
+        full_shoulder_str = '/'.join([shoulder_ns.naan_prefix, shoulder_val])
         minter.create(full_shoulder_str, mask_str)
 
     return bdb_path
