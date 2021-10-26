@@ -59,6 +59,16 @@ _lock = threading.Condition()
 _paused = False
 
 
+
+PROTO_SUPER_SHOULDER ={
+    "doi:10.7286/":"doi:10.7286/V1", # doi:10.7286/
+    "doi:10.4246/":"doi:10.4246/P6", # doi:10.4246/
+    "ark:/88435/":"ark:/88435/dc", # ark:/88435/
+    "doi:10.15697/":"doi:10.15697/FK2", # doi:10.15697/
+    "ark:/12345/":"ark:/12345/fk8", # ark:/12345/
+}
+
+
 def _incrementCount(d, k):
     d[k] = d.get(k, 0) + 1
 
@@ -207,10 +217,15 @@ def _mintIdentifier(shoulder, user, metadata={}):
         identifier = minter.mint_id(shoulder_model)
         logger.debug('Minter returned identifier: {}'.format(identifier))
 
+        # proto super shoulder fix
+        prefix_val = shoulder_model.prefix
+        if shoulder_model.prefix in PROTO_SUPER_SHOULDER:
+            prefix_val = PROTO_SUPER_SHOULDER[shoulder_model.prefix]
+
         if shoulder_model.prefix.startswith('doi:'):
-            identifier = shoulder_model.prefix + identifier.upper()
+            identifier = prefix_val + identifier.upper()
         elif shoulder_model.prefix.startswith('ark:/'):
-            identifier = shoulder_model.prefix + identifier.lower()
+            identifier = prefix_val + identifier.lower()
         else:
             raise False, 'Expected ARK or DOI prefix, not "{}"'.format(
                 shoulder_model.prefix
