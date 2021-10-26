@@ -46,7 +46,6 @@ BerkeleyDB keys (EZID names / N2T names):
 from __future__ import absolute_import, division, print_function
 
 import logging
-import config
 import re
 
 import nog.bdb
