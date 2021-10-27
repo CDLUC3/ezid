@@ -288,7 +288,7 @@ def formulateQuery(
                         v = "doi:" + v
                 if v == None:
                     v = value
-            filters.append(django.db.models.Q(identifier__startswith=v))
+            filters.append(django.db.models.Q(identifier__istartswith=v))
         elif column == "identifierType":
             if isinstance(value, basestring):
                 value = [value]
