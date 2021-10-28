@@ -215,17 +215,14 @@ logging.config.dictConfig(
                     '%(process)d %(thread)s %(message)s'
                 ),
             },
-            'trace_log': {
-                'level': 'DEBUG',
-                'class': 'logging.FileHandler',
-                'filename': LOG_DIR / 'trace.log',
-                'formatter': 'trace',
+            'trace': {
+                'format': (
+                    '%(asctime)s %(levelname)s '
+                    '%(module)s.%(funcName)s:%(lineno)s: %(message)s'
+                )
             },
-            'ecs_json': {
-                'level': 'DEBUG',
-                'class': 'logging.FileHandler',
-                'filename': LOG_DIR / 'ecs_json.log',
-                'formatter': "ecs_logging"
+            'ecs_logging': {
+                 'class': 'ecs_logging.StdlibFormatter',
             },
         },
         'handlers': {
