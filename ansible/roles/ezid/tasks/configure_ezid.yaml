@@ -15,8 +15,8 @@
 
 - name: settings.py
   template:
-    #src: "{{ app_dir }}/ezid/settings/settings_template.py"
-    src: "templates/ezid/settings/settings.py.j2"
+    src: "{{ app_dir }}/ezid/settings/settings.py.j2"
+    #src: "templates/ezid/settings/settings.py.j2"
     dest: "{{ app_dir }}/ezid/settings/settings.py"
     owner: "{{ user }}"
     group: "{{ group }}"
