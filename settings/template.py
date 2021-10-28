@@ -1,7 +1,9 @@
+# Copyright©2021, Regents of the University of California
+# http://creativecommons.org/licenses/BSD
+
 """EZID settings
+{# Jinja template for EZID settings #}
 """
-#  Copyright©2021, Regents of the University of California
-#  http://creativecommons.org/licenses/BSD
 
 import collections
 import logging.config
@@ -12,6 +14,7 @@ import sys
 
 import django.utils.translation
 
+
 # When DEBUG == True, any errors in EZID are returned to the user as pages containing
 # full stack traces and additional information. Should only be used for development.
 DEBUG = True
@@ -19,6 +22,49 @@ DEBUG = True
 # When STANDALONE == True, Django handles serving of static files. Should only be used
 # for development.
 STANDALONE = False
+
+# Database
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': '{{ database_host }}',
+        'NAME': '{{ database_name }}',
+        'USER': '{{ database_user }}',
+        'PASSWORD': '{{ database_password }}',
+        'PORT': '{{ database_port }}',
+        'OPTIONS': {'charset': 'utf8mb4'},
+        'ATOMIC_REQUESTS': False,
+        'AUTOCOMMIT': True,
+        'CONN_MAX_AGE': 0,
+        'TIME_ZONE': None,
+        'TEST': {
+            'CHARSET': None,
+            'COLLATION': None,
+            'NAME': None,
+            'MIRROR': None,
+        },
+    },
+}
+
+FULL_TEXT_SUPPORTED = False
+DATABASES_RECONNECT_DELAY = 60
+
+# The options in this section are used only if fulltext search is supported by the
+# search database.  The following two options could be obtained from MySQL directly, but
+# we put them here to avoid any overt dependencies on MySQL.
+SEARCH_MINIMUM_WORD_LENGTH = 3
+SEARCH_STOPWORDS = (
+    'about are com for from how that the this was what when where who will with und www'
+)
+
+# The following additional stopwords, determined empirically, are the words that appear
+# in the keyword text of more than 20% of identifiers.
+SEARCH_EXTRA_STOPWORDS = (
+    'http https ark org cdl cdlib doi merritt lib ucb dataset and data edu 13030 type '
+    'version systems inc planet conquest 6068 datasheet servlet dplanet dataplanet '
+    'statisticaldatasets'
+)
 
 # Absolute paths
 
@@ -103,30 +149,6 @@ DAEMONS_STATISTICS_COMPUTE_SAME_TIME_OF_DAY = True
 
 MAX_CONCURRENT_OPERATIONS_PER_USER = 4
 MAX_THREADS_PER_USER = 16
-
-# DB
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'HOST': '{{ database_host }}',
-        'NAME': '{{ database_name }}',
-        'USER': '{{ database_user }}',
-        'PASSWORD': '{{ database_password }}',
-        'PORT': '{{ database_port }}',
-        'OPTIONS': {'charset': 'utf8mb4'},
-        'ATOMIC_REQUESTS': False,
-        'AUTOCOMMIT': True,
-        'CONN_MAX_AGE': 0,
-        'TIME_ZONE': None,
-        'TEST': {
-            'CHARSET': None,
-            'COLLATION': None,
-            'NAME': None,
-            'MIRROR': None,
-        },
-    },
-}
 
 DATABASES['search'] = DATABASES['default'].copy()
 DATABASES['search']['fulltextSearchSupported'] = True
@@ -494,9 +516,8 @@ TEMPLATES = [
 ]
 
 # Django 3.2 transitions from using a 32-bit counter for the automatically generated primary
-# key, to using a 64-bit counter. To prevent
+# key, to using a 64-bit counter.
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
-
 
 QUERY_PAGE_SIZE = 10000
 
@@ -515,3 +536,8 @@ BLOB_FIELD_LIST = [
     BlobField('Identifier', 'cm', False),
     BlobField('Identifier', 'cm', False),
 ]
+
+
+# print('Installing exception hook')
+# import impl.nog.tb
+# sys.excepthook = impl.nog.tb.traceback_with_local_vars
