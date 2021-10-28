@@ -18,8 +18,8 @@
 
 	ErrorLog {{ app_dir }}/var/log/httpd/ezid_error.log
 	LogLevel warn
-	LogFormat "%{Host}i:%p %h %t \"%r\" %>s %b %D" commonplus
-	CustomLog "|/usr/sbin/rotatelogs -l {{ app_dir }}/var/log/httpd/ezid_access.log.%Y-%m-%d 2419200" commonplus
+        CustomLog {{ app_dir }}/var/log/httpd/ezid_access.log combined
+
 
  	AllowEncodedSlashes On
  	RewriteEngine on
