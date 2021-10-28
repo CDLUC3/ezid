@@ -31,6 +31,7 @@ TEMPLATE_DIR = PROJECT_ROOT / 'templates'  # /apps/ezid/ezid/templates
 # Dirs above PROJECT_ROOT
 HOME_DIR = (PROJECT_ROOT / '..').resolve()  # /apps/ezid
 MINTERS_PATH = HOME_DIR / 'var' / 'minters'  # /apps/ezid/var/minters
+LOG_DIR = HOME_DIR / 'logs' # /apps/ezid/logs
 
 ROOT_URLCONF = 'settings.urls'
 
@@ -228,31 +229,26 @@ logging.config.dictConfig(
             'request_log': {
                 'level': 'DEBUG',
                 'class': 'logging.FileHandler',
-                'filename': "%(SITE_ROOT)s/logs/request.log",
-                "formatter": 'simple',
+                'filename': LOG_DIR / 'request.log',
+                'formatter': 'simple',
             },
             'trace_log': {
                 'level': 'DEBUG',
                 'class': 'logging.FileHandler',
-                'filename': "%(SITE_ROOT)s/logs/trace.log",
-                "formatter": 'trace',
+                'filename': LOG_DIR / 'trace.log',
+                'formatter': 'trace',
             },
             'ecs_json': {
                 'level': 'DEBUG',
                 'class': 'logging.FileHandler',
-                'filename': "%(SITE_ROOT)s/logs/ecs_json.log",
-                "formatter": "ecs_logging"
+                'filename': LOG_DIR / 'ecs_json.log',
+                'formatter': "ecs_logging"
             },
         },
         'loggers': {
-            'root': {
-                'handlers': ['request_log', 'ecs_json'],
+            '': {
+                'handlers': ['request_log', 'trace_log', 'ecs_json'],
                 'propagate': True,
-                'level': 'DEBUG',
-            },
-            'tracer': {
-                'handlers': ['trace_log'],
-                'propagate': false,
                 'level': 'DEBUG',
             },
             # Increase logging level on loggers that are noisy at debug level
