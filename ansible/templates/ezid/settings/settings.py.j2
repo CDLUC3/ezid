@@ -6,6 +6,7 @@ import os
 import pathlib
 import socket
 import sys
+import ecs_logging
 
 import django.utils.translation
 
@@ -200,13 +201,22 @@ logging.config.dictConfig(
         'version': 1,
         'disable_existing_loggers': False,
         'formatters': {
+            'simple': {'format': '%(asctime)s %(levelname)8s %(message)s'},
             'verbose': {
                 'format': (
                     '%(levelname)8s %(name)8s %(module)s '
                     '%(process)d %(thread)s %(message)s'
                 ),
             },
-            'simple': {'format': '%(levelname)8s %(message)s'},
+            'trace': {
+                'format': (
+                    '%(asctime)s %(levelname)s '
+                    '%(module)s.%(funcName)s:%(lineno)s: %(message)s'
+                )
+            },
+            'ecs_logging': {
+                 'class': 'ecs_logging.StdlibFormatter',
+            },
         },
         'handlers': {
             'console': {
@@ -215,11 +225,34 @@ logging.config.dictConfig(
                 'formatter': 'verbose',
                 'stream': sys.stdout,
             },
+            'request_log': {
+                'level': 'DEBUG',
+                'class': 'logging.FileHandler',
+                'filename': "%(SITE_ROOT)s/logs/request.log",
+                "formatter": 'simple',
+            },
+            'trace_log': {
+                'level': 'DEBUG',
+                'class': 'logging.FileHandler',
+                'filename': "%(SITE_ROOT)s/logs/trace.log",
+                "formatter": 'trace',
+            },
+            'ecs_json': {
+                'level': 'DEBUG',
+                'class': 'logging.FileHandler',
+                'filename': "%(SITE_ROOT)s/logs/ecs_json.log",
+                "formatter": "ecs_logging"
+            },
         },
         'loggers': {
-            '': {
-                'handlers': ['console'],
+            'root': {
+                'handlers': ['request_log', 'ecs_json'],
                 'propagate': True,
+                'level': 'DEBUG',
+            },
+            'tracer': {
+                'handlers': ['trace_log'],
+                'propagate': false,
                 'level': 'DEBUG',
             },
             # Increase logging level on loggers that are noisy at debug level
