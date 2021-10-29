@@ -41,6 +41,8 @@
       - "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/python"
       - "{{ app_dir }}/ezid/manage.py"
       - collectstatic
+      - --clear
+      - --no-input
   register: _response2
 
 #- when: _response1.rc is defined
