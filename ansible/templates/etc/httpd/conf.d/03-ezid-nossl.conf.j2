@@ -33,8 +33,8 @@
  		WSGIPassAuthorization on
  	</Directory>     	
 
- 	Alias /static {{ app_dir }}/ezid/static
- 	<Directory {{ app_dir }}/ezid/static>
+ 	Alias /static {{ app_dir }}/ezid/static_src
+ 	<Directory {{ app_dir }}/ezid/static_src>
  		Require all granted
  	</Directory>
  	
