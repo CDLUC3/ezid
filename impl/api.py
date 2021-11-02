@@ -465,28 +465,13 @@ def _statusLineGenerator(includeSuccessLine):
         yield "success: server paused\n"
     while True:
         activeUsers, waitingUsers, isPaused = impl.ezid.getStatus()
-        na = sum(activeUsers.values())
-        nw = sum(waitingUsers.values())
-        ndo = impl.datacite.numActiveOperations()
-        bql = impl.statistics.getBinderQueueLength()
-        dql = impl.statistics.getDataCiteQueueLength()
-        nas = impl.search_util.numActiveSearches()
         s = (
-            "STATUS {} activeOperations={:d}{} waitingRequests={:d}{} "
-            "activeDataciteOperations={:d} updateQueueLength={:d} "
-            "binderQueueLength={:d} "
-            "dataciteQueueLength={:d} activeSearches={:d}\n".format(
-                "paused" if isPaused else "running",
-                na,
-                _formatUserCountList(activeUsers),
-                nw,
-                _formatUserCountList(waitingUsers),
-                ndo,
-                ql,
-                bql,
-                dql,
-                nas,
-            )
+            f"STATUS {'paused' if isPaused else 'running'} "
+            f"activeOperations={sum(activeUsers.values())}"
+            f"waitingRequests={sum(waitingUsers.values())}"
+            f"activeDataciteOperations={impl.datacite.numActiveOperations()} "
+            f"binderQueueLength={impl.statistics.getBinderQueueLength()} "
+            f"dataciteQueueLength={impl.statistics.getDataCiteQueueLength()}"
         )
         yield s.encode("utf-8")
         time.sleep(3)
