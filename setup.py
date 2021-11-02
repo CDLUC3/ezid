@@ -50,9 +50,6 @@ EZID_META = dict(
     license='http://creativecommons.org/licenses/BSD/',
     author='Regents of the University of California',
     author_email='',
-    install_requires=[
-        '',
-    ],
     description='EZID',
     setup_requires=[
         "setuptools_git >= 1.1",
