@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 """Traceback formatter for console output
 
 This traceback formatter is based on the following thoughts:
@@ -51,13 +54,11 @@ raised, and text and type of the raised exception object.
 frame.
 """
 
-#  Copyright©2021, Regents of the University of California
-#  http://creativecommons.org/licenses/BSD
-
 import logging
 import pathlib
 import pprint
 import shutil
+import textwrap
 import traceback
 
 import pygments
@@ -66,7 +67,6 @@ import pygments.formatters.html
 import pygments.formatters.terminal256
 import pygments.lexers
 import pygments.styles
-import textwrap
 
 # print(list(pygments.lexers.get_all_lexers()))
 # print(list(pygments.formatters.get_all_formatters()))
