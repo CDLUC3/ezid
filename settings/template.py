@@ -1,5 +1,5 @@
-# Copyright©2021, Regents of the University of California
-# http://creativecommons.org/licenses/BSD
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
 
 """EZID settings
 {# Jinja template for EZID settings #}
@@ -13,7 +13,6 @@ import socket
 import sys
 
 import django.utils.translation
-
 
 # When DEBUG == True, any errors in EZID are returned to the user as pages containing
 # full stack traces and additional information. Should only be used for development.
@@ -47,24 +46,29 @@ DATABASES = {
     },
 }
 
-FULL_TEXT_SUPPORTED = False
 DATABASES_RECONNECT_DELAY = 60
 
 # The options in this section are used only if fulltext search is supported by the
 # search database.  The following two options could be obtained from MySQL directly, but
 # we put them here to avoid any overt dependencies on MySQL.
 SEARCH_MINIMUM_WORD_LENGTH = 3
-SEARCH_STOPWORDS = (
-    'about are com for from how that the this was what when where who will with und www'
-)
+
+# fmt:off
+SEARCH_STOPWORDS = [
+    'about', 'are', 'com', 'for', 'from', 'how', 'that', 'the', 'this', 'was', 'what', 'when',
+    'where', 'who', 'will', 'with', 'und', 'www'
+]
+# fmt:on
 
 # The following additional stopwords, determined empirically, are the words that appear
 # in the keyword text of more than 20% of identifiers.
-SEARCH_EXTRA_STOPWORDS = (
-    'http https ark org cdl cdlib doi merritt lib ucb dataset and data edu 13030 type '
-    'version systems inc planet conquest 6068 datasheet servlet dplanet dataplanet '
-    'statisticaldatasets'
-)
+# fmt:off
+SEARCH_STOPWORDS += [
+    'http', 'https', 'ark', 'org', 'cdl', 'cdlib', 'doi', 'merritt', 'lib', 'ucb', 'dataset',
+    'and', 'data', 'edu', '13030', 'type', 'version', 'systems', 'inc', 'planet', 'conquest',
+    '6068', 'datasheet', 'servlet', 'dplanet', 'dataplanet', 'statisticaldatasets',
+]
+# fmt:on
 
 # Absolute paths
 
@@ -150,11 +154,6 @@ DAEMONS_STATISTICS_COMPUTE_SAME_TIME_OF_DAY = True
 MAX_CONCURRENT_OPERATIONS_PER_USER = 4
 MAX_THREADS_PER_USER = 16
 
-DATABASES['search'] = DATABASES['default'].copy()
-DATABASES['search']['fulltextSearchSupported'] = True
-
-DATABASES_RECONNECT_DELAY = 60
-
 # The options in this section are used only if fulltext search is supported by the
 # search database.  The following two options could be obtained from MySQL directly, but
 # we put them here to avoid any overt dependencies on MySQL.
@@ -208,8 +207,7 @@ logging.config.dictConfig(
         'formatters': {
             'verbose': {
                 'format': (
-                    '%(levelname)8s %(name)8s %(module)s '
-                    '%(process)d %(thread)s %(message)s'
+                    '%(levelname)8s %(name)8s %(module)s %(process)d %(thread)s %(message)s'
                 ),
             },
             'simple': {'format': '%(levelname)8s %(message)s'},
@@ -256,7 +254,7 @@ logging.config.dictConfig(
             'asyncio': {
                 'level': 'WARNING',
             },
-        }
+        },
     }
 )
 
@@ -280,9 +278,7 @@ TIME_FORMAT_UI_METADATA = '%Y-%m-%d %H:%M:%S'
 
 # News feed
 
-NEWSFEED_URL = (
-    'http://www.cdlib.org/cdlinfo/category/infrastructure-services/ezid/feed/'
-)
+NEWSFEED_URL = 'http://www.cdlib.org/cdlinfo/category/infrastructure-services/ezid/feed/'
 NEWSFEED_POLLING_INTERVAL = 1800
 
 # Sessions
@@ -323,13 +319,9 @@ ADMIN_SECONDARY_CONTACT_EMAIL = ''
 ADMIN_SECONDARY_CONTACT_NAME = ''
 ADMIN_SECONDARY_CONTACT_PHONE = ''
 
-ADMIN_STORE_REALM = 'CDL'
-ADMIN_STORE_USER_PID = 'ark:/99166/p9kw57h4w'
-ADMIN_STORE_GROUP_PID = 'ark:/99166/p9g44hq02'
-
-ADMIN_SEARCH_REALM = 'CDL'
-ADMIN_SEARCH_USER_PID = 'ark:/99166/p9kw57h4w'
-ADMIN_SEARCH_GROUP_PID = 'ark:/99166/p9g44hq02'
+ADMIN_REALM = 'CDL'
+ADMIN_USER_PID = 'ark:/99166/p9kw57h4w'
+ADMIN_GROUP_PID = 'ark:/99166/p9g44hq02'
 
 # Credentials
 
@@ -399,7 +391,7 @@ DEFAULT_ARK_PROFILE = 'erc'
 DEFAULT_DOI_PROFILE = 'datacite'
 DEFAULT_UUID_PROFILE = 'erc'
 
-PROFILES_KEYS = ['INTERNAL','DATACITE','DC','ERC','CROSSREF']
+PROFILES_KEYS = ['INTERNAL', 'DATACITE', 'DC', 'ERC', 'CROSSREF']
 
 # The INTERNAL profile is special and must be listed first.
 PROFILE_INTERNAL_NAME = 'internal'
@@ -521,9 +513,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 QUERY_PAGE_SIZE = 10000
 
-BlobField = collections.namedtuple(
-    'BlobField', ['model', 'field', 'is_queue']
-)
+BlobField = collections.namedtuple('BlobField', ['model', 'field', 'is_queue'])
 
 BLOB_FIELD_LIST = [
     # metadata = Python or JSON, compound objects
