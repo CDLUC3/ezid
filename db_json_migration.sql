@@ -2,18 +2,31 @@
  * Copyright©2021, Regents of the University of California
  * http://creativecommons.org/licenses/BSD
  */
-# noinspection SpellCheckingInspectionForFile
-
 /*
  * Copyright©2021, Regents of the University of California
  * http://creativecommons.org/licenses/BSD
  */
 
+# noinspection SpellCheckingInspectionForFile
 
-select count(*) from ezidapp_identifier;
-select count(*) from ezidapp_identifier where oaiVisible is null;
-select count(*) from ezidapp_searchidentifier;
-select count(*) from ezidapp_searchidentifier where oaiVisible is null;
+
+create fulltext index ezidapp_searchidentifier_resourceTitle on ezidapp_searchidentifier(resourceTitle);
+create fulltext index ezidapp_searchidentifier_resourceCreator on ezidapp_searchidentifier(resourceCreator);
+create fulltext index ezidapp_searchidentifier_resourcePublisher on ezidapp_searchidentifier(resourcePublisher);
+create fulltext index ezidapp_searchidentifier_keywords on ezidapp_searchidentifier(keywords);
+# drop index ezidapp_searchidentifier_keywords on ezidapp_searchidentifier;
+
+
+select count(*)
+from ezidapp_identifier;
+select count(*)
+from ezidapp_identifier
+where oaiVisible is null;
+select count(*)
+from ezidapp_searchidentifier;
+select count(*)
+from ezidapp_searchidentifier
+where oaiVisible is null;
 
 #### Async queues
 
