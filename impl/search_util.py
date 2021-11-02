@@ -7,7 +7,6 @@
 import functools
 import operator
 import re
-import threading
 import time
 import urllib.parse
 import uuid
@@ -23,22 +22,6 @@ import ezidapp.models.realm
 import ezidapp.models.validation
 import impl.log
 import impl.util
-
-_lock = threading.Lock()
-
-
-_stopwords = None
-_minimumWordLength = None
-
-if django.conf.settings.FULL_TEXT_SUPPORTED:
-    _stopwords = (
-        django.conf.settings.SEARCH_STOPWORDS
-        + " "
-        + django.conf.settings.SEARCH_EXTRA_STOPWORDS
-    ).split()
-    _minimumWordLength = django.conf.settings.SEARCH_MINIMUM_WORD_LENGTH
-
-_numActiveSearches = 0
 
 
 class AbortException(Exception):
@@ -108,9 +91,11 @@ def _processFulltextConstraint(constraint):
     # if a query is malformed according to its less-than-well-defined
     # rules.  For safety we remove all operators that are outside double
     # quotes (i.e., quotes are the only MySQL operator we retain).
+
     inQuote = False
     inWord = False
     words = []
+
     for c in constraint:
         if c == '"':
             if inQuote:
@@ -135,8 +120,12 @@ def _processFulltextConstraint(constraint):
                 inWord = False
     if inQuote:
         words[-1].append('"')
-    # Step 2.  OR processing.  All OR terms are ultimately discarded.
+
+    # OR processing.
+    # All OR terms are ultimately discarded.
+
     words = [[True, "".join(w)] for w in words]
+
     i = 0
     while i < len(words):
         if words[i][1].upper() == "OR":
@@ -147,25 +136,29 @@ def _processFulltextConstraint(constraint):
             del words[i]
         else:
             i += 1
-    # Step 3.  Remove all stopwords.  We can't leave MySQL's default
-    # stopwords in because a plus sign in front of a stopword will cause
-    # zero results to be returned.  Also, we need to remove our own
-    # stopwords anyway.
+
+    # Remove all stopwords.
+    # We can't leave MySQL's default stopwords in because a plus sign in front of a stopword will
+    # cause zero results to be returned.  Also, we need to remove our own stopwords anyway.
+
     i = 0
+
     while i < len(words):
         # noinspection PyTypeChecker
         if not words[i][1].startswith('"') and (
-            len(words[i][1]) < _minimumWordLength or (words[i][1]).lower() in _stopwords
+            len(words[i][1]) < django.conf.settings.SEARCH_MINIMUM_WORD_LENGTH
+            or (words[i][1]).lower() in django.conf.settings.SEARCH_STOPWORDS
         ):
             del words[i]
         else:
             i += 1
+
     if len(words) > 0:
         return " ".join(f"{'+' if w[0] else ''}{w[1]}" for w in words)
     else:
-        # If a constraint has no search terms (e.g., consists of all
-        # stopwords), MySQL returns zero results.  To mimic this behavior
-        # we return an arbitrary constraint having the same behavior.
+        # If a constraint has no search terms (e.g., consists of all stopwords), MySQL returns zero
+        # results. To mimic this behavior we return an arbitrary constraint having the same
+        # behavior.
         return "+x"
 
 
@@ -283,10 +276,7 @@ def formulateQuery(
             filters.append(
                 functools.reduce(
                     operator.or_,
-                    [
-                        django.db.models.Q(identifier__startswith=(v.lower() + ":"))
-                        for v in value
-                    ],
+                    [django.db.models.Q(identifier__startswith=(v.lower() + ":")) for v in value],
                 )
             )
         elif column == "owner":
@@ -363,7 +353,9 @@ def formulateQuery(
                     values.append(value + "/")
             qlist = []
             for v in values:
-                q = django.db.models.Q(searchableTarget=v[::-1][:ezidapp.models.identifier.MAX_TARGET_LENGTH])
+                q = django.db.models.Q(
+                    searchableTarget=v[::-1][: ezidapp.models.identifier.MAX_TARGET_LENGTH]
+                )
                 # noinspection PyTypeChecker
                 if len(v) > ezidapp.models.identifier.MAX_TARGET_LENGTH:
                     q &= django.db.models.Q(target=v)
@@ -380,9 +372,7 @@ def formulateQuery(
         elif column in _fulltextFields:
             if django.conf.settings.DATABASES["search"]["fulltextSearchSupported"]:
                 filters.append(
-                    django.db.models.Q(
-                        **{(column + "__search"): _processFulltextConstraint(value)}
-                    )
+                    django.db.models.Q(**{(column + "__search"): _processFulltextConstraint(value)})
                 )
             else:
                 value = value.split()
@@ -390,32 +380,21 @@ def formulateQuery(
                     filters.append(
                         functools.reduce(
                             operator.and_,
-                            [
-                                django.db.models.Q(**{(column + "__icontains"): v})
-                                for v in value
-                            ],
+                            [django.db.models.Q(**{(column + "__icontains"): v}) for v in value],
                         )
                     )
         elif column == "resourcePublicationYear":
             if value[0] is not None:
                 if value[1] is not None:
                     if value[0] == value[1]:
-                        filters.append(
-                            django.db.models.Q(searchablePublicationYear=value[0])
-                        )
+                        filters.append(django.db.models.Q(searchablePublicationYear=value[0]))
                     else:
-                        filters.append(
-                            django.db.models.Q(searchablePublicationYear__range=value)
-                        )
+                        filters.append(django.db.models.Q(searchablePublicationYear__range=value))
                 else:
-                    filters.append(
-                        django.db.models.Q(searchablePublicationYear__gte=value[0])
-                    )
+                    filters.append(django.db.models.Q(searchablePublicationYear__gte=value[0]))
             else:
                 if value[1] is not None:
-                    filters.append(
-                        django.db.models.Q(searchablePublicationYear__lte=value[1])
-                    )
+                    filters.append(django.db.models.Q(searchablePublicationYear__lte=value[1]))
         elif column == "resourceType":
             if isinstance(value, str):
                 value = [value]
@@ -424,9 +403,7 @@ def formulateQuery(
                     operator.or_,
                     [
                         django.db.models.Q(
-                            searchableResourceType=ezidapp.models.validation.resourceTypes.get(
-                                v, v
-                            )
+                            searchableResourceType=ezidapp.models.validation.resourceTypes.get(v, v)
                         )
                         for v in value
                     ],
@@ -484,24 +461,6 @@ def formulateQuery(
     return qs
 
 
-def _modifyActiveCount(delta):
-    global _numActiveSearches
-    _lock.acquire()
-    try:
-        _numActiveSearches += delta
-    finally:
-        _lock.release()
-
-
-def numActiveSearches():
-    """Return the number of active searches."""
-    _lock.acquire()
-    try:
-        return _numActiveSearches
-    finally:
-        _lock.release()
-
-
 def _isMysqlFulltextError(exception):
     return isinstance(exception, django.db.utils.InternalError) and exception.args == (
         188,
@@ -521,7 +480,6 @@ def executeSearchCountOnly(
     """
     tid = uuid.uuid1()
     try:
-        _modifyActiveCount(1)
         qs = formulateQuery(constraints, selectRelated=selectRelated, defer=defer)
         # noinspection PyTypeChecker
         impl.log.begin(
@@ -546,9 +504,7 @@ def executeSearchCountOnly(
         # MySQL's stopword list.  If MySQL chokes, we retry the query
         # without any quotes in the hopes that any quoted bad words will
         # be removed by our own processing.
-        if _isMysqlFulltextError(e) and any(
-            '"' in constraints.get(f, "") for f in _fulltextFields
-        ):
+        if _isMysqlFulltextError(e) and any('"' in constraints.get(f, "") for f in _fulltextFields):
             constraints2 = constraints.copy()
             for f in _fulltextFields:
                 if f in constraints2:
@@ -561,8 +517,6 @@ def executeSearchCountOnly(
     else:
         impl.log.success(tid, str(c))
         return c
-    finally:
-        _modifyActiveCount(-1)
 
 
 # noinspection PyDefaultArgument,PyDefaultArgument
@@ -584,10 +538,7 @@ def executeSearch(
     """
     tid = uuid.uuid1()
     try:
-        _modifyActiveCount(1)
-        qs = formulateQuery(
-            constraints, orderBy=orderBy, selectRelated=selectRelated, defer=defer
-        )
+        qs = formulateQuery(constraints, orderBy=orderBy, selectRelated=selectRelated, defer=defer)
         # noinspection PyTypeChecker
         impl.log.begin(
             tid,
@@ -607,30 +558,22 @@ def executeSearch(
         qs = qs[from_:to]
         c = len(qs)
     except Exception as e:
-        # MySQL's FULLTEXT engine chokes on a too-frequently-occurring
-        # word (call it a "bad" word) that is not on its own stopword
-        # list.  We weed out bad words using our own stopword list, but
-        # not if they're quoted, and unfortunately MySQL chokes on bad
-        # words quoted or not.  Furthermore, we are unable to add to
-        # MySQL's stopword list.  If MySQL chokes, we retry the query
-        # without any quotes in the hopes that any quoted bad words will
-        # be removed by our own processing.
-        if _isMysqlFulltextError(e) and any(
-            '"' in constraints.get(f, "") for f in _fulltextFields
-        ):
+        # MySQL's FULLTEXT engine chokes on a too-frequently-occurring word (call it a "bad" word)
+        # that is not on its own stopword list.  We weed out bad words using our own stopword list,
+        # but not if they're quoted, and unfortunately MySQL chokes on bad words quoted or not.
+        # Furthermore, we are unable to add to MySQL's stopword list.  If MySQL chokes, we retry the
+        # query without any quotes in the hopes that any quoted bad words will be removed by our own
+        # processing.
+        if _isMysqlFulltextError(e) and any('"' in constraints.get(f, "") for f in _fulltextFields):
             constraints2 = constraints.copy()
             for f in _fulltextFields:
                 if f in constraints2:
                     constraints2[f] = constraints2[f].replace('"', " ")
             impl.log.success(tid, "-1")
-            return executeSearch(
-                user, constraints2, from_, to, orderBy, selectRelated, defer
-            )
+            return executeSearch(user, constraints2, from_, to, orderBy, selectRelated, defer)
         else:
             impl.log.error(tid, e)
             raise
     else:
         impl.log.success(tid, str(c))
         return qs
-    finally:
-        _modifyActiveCount(-1)
