@@ -4,9 +4,6 @@
 """Utility functions
 """
 
-import types
-
-import impl.nog.tb
 import base64
 import calendar
 import datetime
@@ -17,6 +14,7 @@ import re
 import shutil
 import sys
 import time
+import types
 import xml.sax.saxutils
 
 import lxml.etree
@@ -963,8 +961,3 @@ def log_inout(msg_str=None, out_fn=logging.debug):
         return wrapper
 
     return decorator
-
-
-def my_excepthook(type, value, traceback):
-    impl.nog.tb.traceback_with_local_vars(type, value, traceback)
-    # print ('Unhandled error:', type, value)

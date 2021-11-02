@@ -1,11 +1,8 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-import datetime
 import logging
 
-import django.conf
-import django.db.transaction
 import freezegun
 
 import impl.datacite
@@ -78,9 +75,7 @@ class TestAPI:
         )
         result_dict = tests.util.anvl.response_to_dict(response.content)
         result_dict['_url'] = str(ns)
-        assert '_created' in result_dict
-        #     result_list.append(result_dict)
-        # sample.assert_match(result_list, 'view')
+        assert result_dict['status'] == b'success'
 
     # =============================================================================
     #
