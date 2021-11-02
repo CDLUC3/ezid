@@ -3,7 +3,6 @@ Django~=3.2.7
 aiomysql~=0.0.21
 
 mysql~=0.0.3
-#PyMySQL~=1.0.2
 myloginpath~=0.0.2
 
 Jinja2~=3.0.1
@@ -25,3 +24,4 @@ toml~=0.10.2
 
 PyMySQL~=0.9.3
 configparser~=5.0.2
+ecs-logging~=1.1.0

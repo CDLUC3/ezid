@@ -40,7 +40,6 @@ EZID_META = dict(
         'tools',
         'ezidapp.management',
         'ezidapp.models',
-        'ezidapp.migrations',
         'ezidapp.management.commands',
         'impl.nog',
         'ui_tags.templatetags',
