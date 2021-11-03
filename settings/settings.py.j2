@@ -48,24 +48,29 @@ DATABASES = {
     },
 }
 
-FULL_TEXT_SUPPORTED = False
 DATABASES_RECONNECT_DELAY = 60
 
 # The options in this section are used only if fulltext search is supported by the
 # search database.  The following two options could be obtained from MySQL directly, but
 # we put them here to avoid any overt dependencies on MySQL.
 SEARCH_MINIMUM_WORD_LENGTH = 3
-SEARCH_STOPWORDS = (
-    'about are com for from how that the this was what when where who will with und www'
-)
+
+# fmt:off
+SEARCH_STOPWORDS = [
+    'about', 'are', 'com', 'for', 'from', 'how', 'that', 'the', 'this', 'was', 'what', 'when',
+    'where', 'who', 'will', 'with', 'und', 'www'
+]
+# fmt:on
 
 # The following additional stopwords, determined empirically, are the words that appear
 # in the keyword text of more than 20% of identifiers.
-SEARCH_EXTRA_STOPWORDS = (
-    'http https ark org cdl cdlib doi merritt lib ucb dataset and data edu 13030 type '
-    'version systems inc planet conquest 6068 datasheet servlet dplanet dataplanet '
-    'statisticaldatasets'
-)
+# fmt:off
+SEARCH_STOPWORDS += [
+    'http', 'https', 'ark', 'org', 'cdl', 'cdlib', 'doi', 'merritt', 'lib', 'ucb', 'dataset',
+    'and', 'data', 'edu', '13030', 'type', 'version', 'systems', 'inc', 'planet', 'conquest',
+    '6068', 'datasheet', 'servlet', 'dplanet', 'dataplanet', 'statisticaldatasets',
+]
+# fmt:on
 
 # Absolute paths
 
@@ -151,9 +156,6 @@ DAEMONS_STATISTICS_COMPUTE_SAME_TIME_OF_DAY = True
 
 MAX_CONCURRENT_OPERATIONS_PER_USER = 4
 MAX_THREADS_PER_USER = 16
-
-DATABASES['search'] = DATABASES['default'].copy()
-DATABASES['search']['fulltextSearchSupported'] = True
 
 DATABASES_RECONNECT_DELAY = 60
 
@@ -285,7 +287,7 @@ logging.config.dictConfig(
             'asyncio': {
                 'level': 'WARNING',
             },
-        }
+        },
     }
 )
 
@@ -309,9 +311,7 @@ TIME_FORMAT_UI_METADATA = '%Y-%m-%d %H:%M:%S'
 
 # News feed
 
-NEWSFEED_URL = (
-    'http://www.cdlib.org/cdlinfo/category/infrastructure-services/ezid/feed/'
-)
+NEWSFEED_URL = 'http://www.cdlib.org/cdlinfo/category/infrastructure-services/ezid/feed/'
 NEWSFEED_POLLING_INTERVAL = 1800
 
 # Sessions
@@ -342,7 +342,7 @@ ADMIN_ORG_NAME = '{{ admin_org_name }}'
 ADMIN_ORG_URL = '{{ admin_org_url }}'
 
 ADMIN_CROSSREF_EMAIL = '{{ admin_crossref_email }}'
-ADMIN_CROSSREF_ENABLED = '{{ admin_crossref_enabled }}'
+ADMIN_CROSSREF_ENABLED = {{ admin_crossref_enabled }}
 
 ADMIN_PRIMARY_CONTACT_EMAIL = '{{ admin_primary_contact_email }}'
 ADMIN_PRIMARY_CONTACT_NAME = '{{ admin_primary_contact_name }}'
@@ -550,9 +550,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 QUERY_PAGE_SIZE = 10000
 
-BlobField = collections.namedtuple(
-    'BlobField', ['model', 'field', 'is_queue']
-)
+BlobField = collections.namedtuple('BlobField', ['model', 'field', 'is_queue'])
 
 BLOB_FIELD_LIST = [
     # metadata = Python or JSON, compound objects

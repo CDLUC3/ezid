@@ -289,7 +289,6 @@ def django_db_setup(django_db_keepdb):
             "NAME": "ezid_test_db",
             "USER": "travis",
             "PASSWORD": "",
-            "fulltextSearchSupported": True,
             "OPTIONS": {"charset": "utf8mb4"},
             'DATABASE_OPTIONS': {
                 'unix_socket': '/tmp/mysql.sock',

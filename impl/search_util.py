@@ -370,19 +370,9 @@ def formulateQuery(
                 )
             )
         elif column in _fulltextFields:
-            if django.conf.settings.DATABASES["search"]["fulltextSearchSupported"]:
-                filters.append(
-                    django.db.models.Q(**{(column + "__search"): _processFulltextConstraint(value)})
-                )
-            else:
-                value = value.split()
-                if len(value) > 0:
-                    filters.append(
-                        functools.reduce(
-                            operator.and_,
-                            [django.db.models.Q(**{(column + "__icontains"): v}) for v in value],
-                        )
-                    )
+            filters.append(
+                django.db.models.Q(**{(column + "__search"): _processFulltextConstraint(value)})
+            )
         elif column == "resourcePublicationYear":
             if value[0] is not None:
                 if value[1] is not None:
