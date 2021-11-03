@@ -209,9 +209,7 @@ def _mintIdentifier(shoulder, user, metadata={}):
         logger.debug('Minter returned identifier: {}'.format(identifier))
 
         # proto super shoulder check
-        prefix_val = shoulder_model.prefix
-        if shoulder_model.prefix in django.conf.settings.PROTO_SUPER_SHOULDER:
-            prefix_val = django.conf.settings.PROTO_SUPER_SHOULDER[shoulder_model.prefix]
+        prefix_val = django.conf.settings.PROTO_SUPER_SHOULDER.get(shoulder_model.prefix, shoulder_model.prefix)
 
         if shoulder_model.prefix.startswith('doi:'):
             identifier = prefix_val + identifier.upper()
