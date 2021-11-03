@@ -1862,7 +1862,7 @@ ARK identifiers:
 
   #! /bin/bash
   for i in {1..100}; do
-    ezid.py `username`:hl2::`password`:hl2: mint ark:/99999/fk4 | \
+    ezid3.py `username`:hl2::`password`:hl2: mint ark:/99999/fk4 | \
   awk '{ print $2 }'
   done
 
