@@ -177,17 +177,17 @@ supplies HTTP Basic authentication credentials on every request.
 The authentication realm is &quot;EZID&quot;.  For example, credentials can
 be added manually in Python as follows:</p>
 <pre class="literal-block">
-import base64, urllib2
-r = urllib2.Request(&quot;https://ezid.cdlib.org/...&quot;)
+import base64, urllib.request, urllib.error, urllib.parse
+r = urllib.request..Request(&quot;https://ezid.cdlib.org/...&quot;)
 r.add_header(&quot;Authorization&quot;, &quot;Basic &quot; + base64.b64encode(&quot;<span class="hl2">username</span>:<span class="hl2">password</span>&quot;))
 </pre>
 <p>But most programming libraries provide higher-level support for
 authentication.  For example, Python provides HTTPBasicAuthHandler:</p>
 <pre class="literal-block">
-import urllib2
-h = urllib2.HTTPBasicAuthHandler()
+import urllib.request, urllib.error, urllib.parse
+h = urllib.request.HTTPBasicAuthHandler()
 h.add_password(&quot;EZID&quot;, &quot;https://ezid.cdlib.org/&quot;, &quot;<span class="hl2">username</span>&quot;, &quot;<span class="hl2">password</span>&quot;)
-o = urllib2.build_opener(h)
+o = urllib.request.build_opener(h)
 o.open(&quot;https://ezid.cdlib.org/...&quot;)
 </pre>
 <p>The downside of using higher-level authentication mechanisms is

@@ -195,8 +195,8 @@ methods of authentication:
 
    .. parsed-literal::
 
-     import base64, urllib2
-     r = urllib2.Request("\https://ezid.cdlib.org/...")
+     import base64, urllib.request, urllib.error, urllib.parse
+     r = urllib.request..Request("\https://ezid.cdlib.org/...")
      r.add_header("Authorization", "Basic " + \
      base64.b64encode("`username`:hl2::`password`:hl2:"))
 
@@ -205,11 +205,11 @@ methods of authentication:
 
    .. parsed-literal::
 
-     import urllib2
-     h = urllib2.HTTPBasicAuthHandler()
+     import urllib.request, urllib.error, urllib.parse
+     h = urllib.request.HTTPBasicAuthHandler()
      h.add_password("EZID", "\https://ezid.cdlib.org/", "`username`:hl2:", \
      "`password`:hl2:")
-     o = urllib2.build_opener(h)
+     o = urllib.request.build_opener(h)
      o.open("\https://ezid.cdlib.org/...")
 
    The downside of using higher-level authentication mechanisms is
