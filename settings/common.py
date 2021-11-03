@@ -160,6 +160,14 @@ SECRET_PATHS = [
     ("DATABASES", "search", "PORT"),
 ]
 
+PROTO_SUPER_SHOULDER ={
+    "doi:10.7286/":"doi:10.7286/V1", # doi:10.7286/
+    "doi:10.4246/":"doi:10.4246/P6", # doi:10.4246/
+    "ark:/88435/":"ark:/88435/dc", # ark:/88435/
+    "doi:10.15697/":"doi:10.15697/FK2", # doi:10.15697/
+    "ark:/12345/":"ark:/12345/fk8", # ark:/12345/
+}
+
 
 def injectSecrets(deploymentLevel):
     import config_loader
