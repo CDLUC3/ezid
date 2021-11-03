@@ -27,7 +27,7 @@
 .. _DataCite Metadata Scheme: http://schema.datacite.org/
 .. _Dublin Core Metadata Element Set: http://dublincore.org/documents/dces/
 .. _ERC: https://wiki.ucop.edu/display/Curation/ERC
-.. _ezid.py: https://github.com/CDLUC3/ezid-client-tools/blob/master/ezid.py
+.. _ezid3.py: https://github.com/CDLUC3/ezid-client-tools/blob/master/ezid3.py
 .. _gzip: http://www.gzip.org/
 .. _libwww-perl: http://search.cpan.org/dist/libwww-perl/
 .. _N2T: https://n2t.net/
@@ -195,8 +195,8 @@ methods of authentication:
 
    .. parsed-literal::
 
-     import base64, urllib2
-     r = urllib2.Request("\https://ezid.cdlib.org/...")
+     import base64, urllib.request, urllib.error, urllib.parse
+     r = urllib.request..Request("\https://ezid.cdlib.org/...")
      r.add_header("Authorization", "Basic " + \
      base64.b64encode("`username`:hl2::`password`:hl2:"))
 
@@ -205,11 +205,11 @@ methods of authentication:
 
    .. parsed-literal::
 
-     import urllib2
-     h = urllib2.HTTPBasicAuthHandler()
+     import urllib.request, urllib.error, urllib.parse
+     h = urllib.request.HTTPBasicAuthHandler()
      h.add_password("EZID", "\https://ezid.cdlib.org/", "`username`:hl2:", \
      "`password`:hl2:")
-     o = urllib2.build_opener(h)
+     o = urllib.request.build_opener(h)
      o.open("\https://ezid.cdlib.org/...")
 
    The downside of using higher-level authentication mechanisms is
@@ -273,11 +273,11 @@ methods of authentication:
 
    .. parsed-literal::
 
-     import urllib2
-     c = urllib2.urlopen("\https://ezid.cdlib.org/login")
+     import urllib.request, urllib.error, urllib.parse
+     c = urllib.request.urlopen("\https://ezid.cdlib.org/login")
      `cookie`:hl2: = c.headers["Set-Cookie"].split(";")[0]
      ...
-     r = urllib2.Request("\https://ezid.cdlib.org/...")
+     r = urllib.request.Request("https://ezid.cdlib.org/...")
      r.add_header("Cookie", `cookie`:hl2:)
 
    In Java, cookies can be manually captured and set using code
@@ -362,7 +362,7 @@ a UTF-8 encoded string, `anvl`:hl1:, with the following code:
     return re.sub("[%:\\r\\n]", lambda c: "%%%02X" % ord(c.group(0)), s)
 
   `anvl`:hl2: = "\\n".join("%s: %s" % (escape(name), escape(value)) for name,
-    value in `metadata`:hl2:.items()).encode("UTF-8")
+    value in list(`metadata`:hl2:.items())).encode("UTF-8")
 
 Conversely, to parse a UTF-8 encoded string, `anvl`:hl1:, producing
 a dictionary, `metadata`:hl1:\:
@@ -1352,7 +1352,7 @@ response will resemble the following:
 Python command line tool
 ------------------------
 
-ezid.py_ `\ `:ext-icon: is a command line tool, written in Python,
+ezid3.py_ `\ `:ext-icon: is a command line tool, written in Python,
 that is capable of exercising all API functions.  It serves as an
 example of how to use the API from Python, but it's also useful in its
 own right as an easy, scriptable means of accessing EZID
@@ -1360,7 +1360,7 @@ functionality.  The general usage is:
 
 .. parsed-literal::
 
-  % ezid.py `credentials`:hl2: `operation`:hl2: `[arguments...]`:hl2:
+  % ezid3.py `credentials`:hl2: `operation`:hl2: `[arguments...]`:hl2:
 
 Run the tool with no command line arguments for a complete usage
 statement; additional documentation is in the source code.  To give a
@@ -1371,7 +1371,7 @@ To mint a test ARK identifier and supply initial metadata:
 
 .. parsed-literal::
 
-  % ezid.py `username`:hl2::`password`:hl2: mint ark:/99999/fk4 erc.who \
+  % ezid3.py `username`:hl2::`password`:hl2: mint ark:/99999/fk4 erc.who \
   'Proust, Marcel' \\
       erc.what 'Remembrance of Things Past' erc.when 1922
   success: ark:/99999/fk4gt78tq
@@ -1380,7 +1380,7 @@ To get identifier metadata:
 
 .. parsed-literal::
 
-  % ezid.py -dt - view ark:/99999/fk4gt78tq
+  % ezid3.py -dt - view ark:/99999/fk4gt78tq
   success: ark:/99999/fk4gt78tq
   _created: 2013-05-17T18:17:14
   _export: yes
@@ -1409,7 +1409,7 @@ invoking:
 
 .. parsed-literal::
 
-  % ezid.py `username`:hl2::`password`:hl2: mint ark:/99999/fk4 @ metadata.txt
+  % ezid3.py `username`:hl2::`password`:hl2: mint ark:/99999/fk4 @ metadata.txt
 
 And if a metadata element value has the form "@\ `filename`:hl1:", the
 named file is read and treated as a single value.  For example, if
@@ -1419,7 +1419,7 @@ can be minted by invoking:
 
 .. parsed-literal::
 
-  % ezid.py `username`:hl2::`password`:hl2: mint doi:10.5072/FK2 \
+  % ezid3.py `username`:hl2::`password`:hl2: mint doi:10.5072/FK2 \
   datacite @metadata.xml
 
 PHP examples
@@ -1862,7 +1862,7 @@ ARK identifiers:
 
   #! /bin/bash
   for i in {1..100}; do
-    ezid.py `username`:hl2::`password`:hl2: mint ark:/99999/fk4 | \
+    ezid3.py `username`:hl2::`password`:hl2: mint ark:/99999/fk4 | \
   awk '{ print $2 }'
   done
 
