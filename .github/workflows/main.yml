@@ -42,10 +42,10 @@ jobs:
       - name: Packages
         run: sudo apt-get install --yes libdb5.3-dev
 
-      - name: EZID unit tests
-        env:
-          IS_CI: 1
-          DJANGO_SETTINGS_MODULE: settings.tests
+#      - name: EZID unit tests
+#        env:
+#          IS_CI: 1
+#          DJANGO_SETTINGS_MODULE: settings.tests
 
 #          django
 ##      - name: Test
