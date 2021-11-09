@@ -84,7 +84,7 @@ def assert_match(
     if sample_str == current_str:
         return
 
-    if 'IS_TRAVIS' in os.environ or options.error:
+    if 'IS_CI' in os.environ or options.error:
         raise SampleException(
             'Sample mismatch.\nActual:\n{}\nExpected:\n{}\nDiff:\n{}\n'.format(
                 current_str,
