@@ -1,0 +1,59 @@
+name: EZID Tests
+on: push
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    services:
+      mariadb:
+        image: mariadb:latest
+        ports:
+          - 3306
+        env:
+          MYSQL_USER: user
+          MYSQL_PASSWORD: password
+          MYSQL_DATABASE: test
+          MYSQL_ROOT_PASSWORD: password
+        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+
+    strategy:
+      matrix:
+        python-version: [3.9]
+
+    steps:
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+#      - run: mysql
+#      - uses: actions/checkout@v1
+
+#      - name: Verify MariaDB connection
+#        env:
+#          PORT: ${{ job.services.mariadb.ports[3306] }}
+#        run: |
+#          while ! mysqladmin ping -h"127.0.0.1" -P"$PORT" --silent; do
+#            sleep 1
+#          done
+
+      - name: Packages
+        run: sudo apt-get install --yes libdb5.3-dev
+
+      - name: EZID unit tests
+        env:
+          IS_CI: 1
+          DJANGO_SETTINGS_MODULE: settings.tests
+
+#          django
+##      - name: Test
+
+
+#    steps:
+##    - uses: actions/checkout@v2
+##    - uses: actions/setup-node@v1
+#    - run: echo 'test'
+##    - run: npm install
+##    - run: npm test
