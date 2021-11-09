@@ -115,16 +115,14 @@ class IdentifierBase(django.db.models.Model):
     datacenter = django.db.models.ForeignKey(
         'ezidapp.Datacenter',
         blank=True,
-        null=True,
-        default=None,
+        default='',
         on_delete=django.db.models.PROTECT,
     )
 
     profile = django.db.models.ForeignKey(
         'ezidapp.Profile',
         blank=True,
-        null=True,
-        default=None,
+        default='',
         on_delete=django.db.models.PROTECT,
     )
 
@@ -275,16 +273,14 @@ class IdentifierBase(django.db.models.Model):
     owner = django.db.models.ForeignKey(
         'ezidapp.User',
         blank=True,
-        null=True,
-        # default=None, # TODO: Required?
+        default='',
         on_delete=django.db.models.PROTECT,
     )
 
     ownergroup = django.db.models.ForeignKey(
         'ezidapp.Group',
         blank=True,
-        null=True,
-        default=None,
+        default='',
         on_delete=django.db.models.PROTECT,
     )
 
