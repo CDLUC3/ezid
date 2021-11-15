@@ -166,9 +166,7 @@ METADATA_TUP = tuple(
 
 # Database fixtures
 
-# combined-limited: Complete snapshot of the combined store/search DB from stg. All tables
-# are included but limited to 1000 rows.
-REL_DB_FIXTURE_PATH = ROOT_PATH / 'ezidapp/fixtures/combined-limited.json'
+REL_DB_FIXTURE_PATH = ROOT_PATH / 'ezidapp/fixtures/db-fixture.json'
 
 # store-full: Complete snapshot of the combined store/search DB from stg, only the three
 # large tables holding the resolve metadata for the existing minters have been dropped.

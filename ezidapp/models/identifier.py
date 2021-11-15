@@ -115,6 +115,7 @@ class IdentifierBase(django.db.models.Model):
     datacenter = django.db.models.ForeignKey(
         'ezidapp.Datacenter',
         blank=True,
+        null=True,
         default='',
         on_delete=django.db.models.PROTECT,
     )

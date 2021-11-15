@@ -1,6 +1,7 @@
 INFO impl.nog.shoulder shoulder Shoulders:
     INFO impl.nog.shoulder shoulder ark:/13030/bn        ?1?
     INFO impl.nog.shoulder shoulder ark:/86073/b3        American University of Beirut
+    INFO impl.nog.shoulder shoulder doi:10.1111/FK1      Another Shoulder Test
     INFO impl.nog.shoulder shoulder ark:/99999/fk4       ARK Test
     INFO impl.nog.shoulder shoulder ark:/99999/fk8       ARK Test (non-expiring)
     INFO impl.nog.shoulder shoulder ark:/85779/j4        Berkeley Law Library
@@ -54,6 +55,8 @@ INFO impl.nog.shoulder shoulder Shoulders:
     INFO impl.nog.shoulder shoulder doi:10.5070/D8       Diagonal: An Ibero-American Music Review
     INFO impl.nog.shoulder shoulder ark:/21198/n1        DLP
     INFO impl.nog.shoulder shoulder doi:10.5072/FK2      DOI Test
+    INFO impl.nog.shoulder shoulder doi:10.34567/D9      DOI Test Shoulder Crossref
+    INFO impl.nog.shoulder shoulder doi:10.23456/C9      DOI Test Shoulder DataCite
     INFO impl.nog.shoulder shoulder doi:10.5070/D6       Dotawo: A Journal of Nubian Studies
     INFO impl.nog.shoulder shoulder ark:/13030/fq        DPR Legacy
     INFO impl.nog.shoulder shoulder ark:/85782/d8        Drug Design Data (D3R) Resource
@@ -126,6 +129,7 @@ INFO impl.nog.shoulder shoulder Shoulders:
     INFO impl.nog.shoulder shoulder ark:/65665/          National Museum of Natural History, Smithsonian Institution - empty
 shoulder
     INFO impl.nog.shoulder shoulder ark:/88112/x2        National Registry of Exonerations
+    INFO impl.nog.shoulder shoulder doi:10.43256/G5      new org
     INFO impl.nog.shoulder shoulder ark:/81985/n2        NorthwesternUniv
     INFO impl.nog.shoulder shoulder doi:10.18739/        NSF Arctic Data Center
     INFO impl.nog.shoulder shoulder doi:10.18739/A2      NSF Arctic Data Center Minter
@@ -261,12 +265,18 @@ shoulder
     INFO impl.nog.shoulder shoulder doi:10.5070/T3       Teaching and Learning Anthropology
     INFO impl.nog.shoulder shoulder ark:/10945/t4        TeachPitch
     INFO impl.nog.shoulder shoulder doi:10.5070/T2       Territories: A Trans-Cultural Journal of Regional Studies
+    INFO impl.nog.shoulder shoulder doi:10.23232/FK2     Test Shoulder Aug 31
+    INFO impl.nog.shoulder shoulder doi:10.12321/FK2     Test Shoulder Sept 8
+    INFO impl.nog.shoulder shoulder doi:10.5072/FK1      Testing Prefix Allocators
+    INFO impl.nog.shoulder shoulder doi:10.5070/FK1      Testing Prefix Allocators 2
+    INFO impl.nog.shoulder shoulder ark:/23456/          Testing Super-Shoulders
     INFO impl.nog.shoulder shoulder ark:/81423/b1        Texas A&M Univ Batt
     INFO impl.nog.shoulder shoulder ark:/81423/d2        Texas A&M Univ DigProjects
     INFO impl.nog.shoulder shoulder ark:/81423/m3        Texas A&M Univ Libr
     INFO impl.nog.shoulder shoulder ark:/81423/g1        Texas A&M Univ MSL
     INFO impl.nog.shoulder shoulder doi:10.26085/C3      The Center for Effective Global Action
     INFO impl.nog.shoulder shoulder doi:10.5070/Q2       The Equilibrium
+    INFO impl.nog.shoulder shoulder ark:/12345/b8        This is a test
     INFO impl.nog.shoulder shoulder ark:/28722/d9        UC Berkeley
     INFO impl.nog.shoulder shoulder ark:/87297/x3        UC Berkeley Department of Linguistics
     INFO impl.nog.shoulder shoulder doi:10.7297/X2       UC Berkeley Department of Linguistics
