@@ -7,6 +7,7 @@ jobs:
 
     env:
       IS_CI: 1
+      PYTHONPATH: ${{env.GITHUB_WORKSPACE}}
       DJANGO_SETTINGS_MODULE: settings.tests
 
     services:
@@ -81,8 +82,9 @@ jobs:
           pip install --upgrade pip setuptools wheel
           pip install -r ./requirements-dev.txt
 
-#      - name: Dump environment
-#        run: |
+      - name: Dump environment
+        run: |
+          printf 'PYTHONPATH: %s\n' "$PYTHONPATH"
 #          apt-cache pkgnames | sort
 #          find / | grep /bin/ | sort
 #          pip freeze
@@ -124,9 +126,6 @@ jobs:
 
 
       - name: Run tests
-#        env:
-#          IS_CI: 1
-#          DJANGO_SETTINGS_MODULE: settings.tests
         run: |
           pytest
 #        - pip install -e .
