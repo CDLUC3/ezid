@@ -7,7 +7,7 @@ jobs:
 
     env:
       IS_CI: 1
-      PYTHONPATH: ${{GITHUB_WORKSPACE}}
+      PYTHONPATH: ${{ env.GITHUB_WORKSPACE }}
       DJANGO_SETTINGS_MODULE: settings.tests
 
     services:
