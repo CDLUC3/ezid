@@ -81,11 +81,11 @@ jobs:
           pip install --upgrade pip setuptools wheel
           pip install -r ./requirements-dev.txt
 
-      - name: Dump environment
-        env:
-          PYTHONPATH: ${{ env.GITHUB_WORKSPACE }}
-        run: |
-          printf 'PYTHONPATH: %s\n' "$PYTHONPATH"
+#      - name: Dump environment
+#        env:
+#          PYTHONPATH: ${{ env.GITHUB_WORKSPACE }}
+#        run: |
+#          printf 'PYTHONPATH: %s\n' "$PYTHONPATH"
 #          apt-cache pkgnames | sort
 #          find / | grep /bin/ | sort
 #          pip freeze
@@ -128,7 +128,7 @@ jobs:
 
       - name: Run tests
         env:
-          PYTHONPATH: ${{ env.GITHUB_WORKSPACE }}
+          PYTHONPATH: ${{ github.workspace }}
         run: |
           pytest
 #        - pip install -e .
