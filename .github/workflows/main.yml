@@ -7,7 +7,6 @@ jobs:
 
     env:
       IS_CI: 1
-      PYTHONPATH: ${{ env.GITHUB_WORKSPACE }}
       DJANGO_SETTINGS_MODULE: settings.tests
 
     services:
@@ -83,6 +82,8 @@ jobs:
           pip install -r ./requirements-dev.txt
 
       - name: Dump environment
+        env:
+          PYTHONPATH: ${{ env.GITHUB_WORKSPACE }}
         run: |
           printf 'PYTHONPATH: %s\n' "$PYTHONPATH"
 #          apt-cache pkgnames | sort
@@ -126,6 +127,8 @@ jobs:
 
 
       - name: Run tests
+        env:
+          PYTHONPATH: ${{ env.GITHUB_WORKSPACE }}
         run: |
           pytest
 #        - pip install -e .
