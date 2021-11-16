@@ -25,7 +25,7 @@ jobs:
             create user 'ezid_test_user'@'%' identified by 'ezid_test_pw';
             grant all privileges on *.* to 'ezid_test_user'@'%';
             flush privileges;
-          "
+          EOF
 
 #      - name: Install packaged deps
 #        run: |
