@@ -58,16 +58,16 @@ jobs:
         run: |
           mkdir -p ../download/public ../logs
           ./manage.py makemigrations --merge --no-input
-##          python ${TRAVIS_BUILD_DIR}/manage.py migrate
-##          python ${TRAVIS_BUILD_DIR}/manage.py collectstatic --no-input
-##
-##          python ${TRAVIS_BUILD_DIR}/manage.py loaddata --ignorenonexistent store-test
-##          python ${TRAVIS_BUILD_DIR}/manage.py loaddata --ignorenonexistent search-init
-##          python ${TRAVIS_BUILD_DIR}/manage.py loaddata --ignorenonexistent combined-limited
-##
-##          python ${TRAVIS_BUILD_DIR}/manage.py diag-update-admin
-#
-#
+          ./manage.py migrate
+          ./manage.py collectstatic --no-input
+
+          ./manage.py loaddata --ignorenonexistent store-test
+          ./manage.py loaddata --ignorenonexistent search-init
+          ./manage.py loaddata --ignorenonexistent combined-limited
+
+          ./manage.py diag-update-admin
+
+
 #      - name: Run tests
 #        env:
 #          PYTHONPATH: ${{ github.workspace }}
