@@ -40,19 +40,19 @@ jobs:
 #        env:
 #          RUNNER_TOOL_CACHE: $HOME/actions-tool-cache
 
-#      - name: Wait for DB connection
-#        env:
-#          PORT: 3306
-##          PORT: ${{ job.services.mysql.ports[3306] }}
-#        run: |
-#          end=$((SECONDS+5))
-#          while [ $SECONDS -lt $end ]; do
-#            if mysqladmin ping -h"127.0.0.1" -P"$PORT" --silent; then
-#              exit 0
-#            fi
-#            sleep 1
-#          done
-#          exit 1
+      - name: Wait for DB connection
+        env:
+          PORT: 3306
+#          PORT: ${{ job.services.mysql.ports[3306] }}
+        run: |
+          end=$((SECONDS+5))
+          while [ $SECONDS -lt $end ]; do
+            if mysqladmin ping -h"127.0.0.1" -P"$PORT" --silent; then
+              exit 0
+            fi
+            sleep 1
+          done
+          exit 1
 
 #      - name: Stop the Default MySQL
 #        run: sudo service mysql stop
