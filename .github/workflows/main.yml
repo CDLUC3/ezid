@@ -8,6 +8,7 @@ jobs:
     env:
       IS_CI: 1
       DJANGO_SETTINGS_MODULE: settings.tests
+      PYTHONPATH: ${{ env.GITHUB_WORKSPACE }}
 
     steps:
       - uses: actions/checkout@v1
@@ -30,36 +31,33 @@ jobs:
       - name: Install packaged deps
         run: |
           sudo apt-get install --yes libdb5.3-dev
-#
+
       - name: Prepare Python env
         run: |
           pip install --upgrade pip setuptools wheel
           pip install -r ./requirements-dev.txt
 
-#      - name: Dump environment
+      - name: Dump environment
 #        env:
 #          PYTHONPATH: ${{ env.GITHUB_WORKSPACE }}
-#        run: |
-#          printf 'PYTHONPATH: %s\n' "$PYTHONPATH"
-#          apt-cache pkgnames | sort
+        run: |
+          printf 'PYTHONPATH: %s\n' "$PYTHONPATH"
+          apt-cache pkgnames | sort
 #          find / | grep /bin/ | sort
-#          pip freeze
-#          pip check || true
-#          python --version
-#          echo "CWD=${PWD}"
+          pip freeze
+          pip check || true
+          python --version
+          echo "CWD=${PWD}"
 #          mysql -e '
 #            use ezid_test_db;
 #            show tables;
 #            select prefix, minter from ezidapp_shoulder;
 #          '
 
-##
-##
-#
-##      - name: Prepare fixtures
-##        run:
-##          mkdir -p ../download/public ../logs
-##          python ${TRAVIS_BUILD_DIR}/manage.py makemigrations --merge --no-input
+      - name: Prepare fixtures
+        run: |
+          mkdir -p ../download/public ../logs
+          python ${TRAVIS_BUILD_DIR}/manage.py makemigrations --merge --no-input
 ##          python ${TRAVIS_BUILD_DIR}/manage.py migrate
 ##          python ${TRAVIS_BUILD_DIR}/manage.py collectstatic --no-input
 ##
