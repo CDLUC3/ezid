@@ -57,7 +57,7 @@ jobs:
       - name: Prepare fixtures
         run: |
           mkdir -p ../download/public ../logs
-          python ${TRAVIS_BUILD_DIR}/manage.py makemigrations --merge --no-input
+          ./manage.py makemigrations --merge --no-input
 ##          python ${TRAVIS_BUILD_DIR}/manage.py migrate
 ##          python ${TRAVIS_BUILD_DIR}/manage.py collectstatic --no-input
 ##
