@@ -40,17 +40,17 @@ jobs:
       - name: Dump environment
         run: |
           printf 'PYTHONPATH: %s\n' "$PYTHONPATH"
-          apt-cache pkgnames | sort
+          # apt-cache pkgnames | sort
           # find / | grep /bin/ | sort
-          pip freeze
-          pip check || true
-          python --version
+          # pip freeze
+          # pip check || true
+          # python --version
           echo "CWD=${PWD}"
-          # mysql -e '
-          #   use ezid_test_db;
-          #   show tables;
-          #   select prefix, minter from ezidapp_shoulder;
-          # '
+          mysql -e '
+            use ezid_test_db;
+            show tables;
+            select prefix, minter from ezidapp_shoulder;
+          '
 
       - name: Prepare fixtures
         run: |
