@@ -12,15 +12,11 @@ jobs:
 #    services:
 
       DB_DATABASE: ezid_test_db
-      DB_USER: ezid_test_user
+#      DB_USER: ezid_test_user
+      DB_USER: root
       DB_PASSWORD: ezid_test_pw
 
     steps:
-      - name: Set up MySQL
-        run: |
-          sudo /etc/init.d/mysql start
-          mysql -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
-
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
@@ -29,97 +25,102 @@ jobs:
 
       - run: python -c "import sys; print(sys.version)"
 
+      - name: Set up MySQL
+        run: |
+          sudo /etc/init.d/mysql start
+#          mysql -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
+
+##        env:
+##          RUNNER_TOOL_CACHE: $HOME/actions-tool-cache
+#
+#      - name: Wait for DB connection
 #        env:
-#          RUNNER_TOOL_CACHE: $HOME/actions-tool-cache
-
-      - name: Wait for DB connection
-        env:
-          PORT: 3306
-#          PORT: ${{ job.services.mysql.ports[3306] }}
-        run: |
-          end=$((SECONDS+5))
-          while [ $SECONDS -lt $end ]; do
-            if mysqladmin ping -h"127.0.0.1" -P"$PORT" --silent; then
-              exit 0
-            fi
-            sleep 1
-          done
-          exit 1
-
-#      - name: Stop the Default MySQL
-#        run: sudo service mysql stop
+#          PORT: 3306
+##          PORT: ${{ job.services.mysql.ports[3306] }}
+#        run: |
+#          end=$((SECONDS+5))
+#          while [ $SECONDS -lt $end ]; do
+#            if mysqladmin ping -h"127.0.0.1" -P"$PORT" --silent; then
+#              exit 0
+#            fi
+#            sleep 1
+#          done
+#          exit 1
 #
-#      - name: MySQL
-#        uses: mirromutth/mysql-action@v1.1
-#        with:
-#          host port: 3306
-#          container port: 3307
-#          character set server: 'utf8mb4'
-#          collation server: 'utf8mb4_general_ci'
-#          mysql version: '8.0'
-#          mysql database: 'ezid'
-##          mysql root password: ${{ secrets.RootPassword }} # Required if "mysql user" is empty, default is empty. The root superuser password
-##          mysql user: 'developer' # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
-##          mysql password: ${{ secrets.DatabasePassword }} # Required if "mysql user" exists. The password for the "mysql user"
-
-      - name: Install packaged deps
-        run: |
-          sudo apt-get install --yes libdb5.3-dev
-
-      - name: Prepare Python env
-        run: |
-          pip install --upgrade pip setuptools wheel
-          pip install -r ./requirements-dev.txt
-
-#      - name: Dump environment
+##      - name: Stop the Default MySQL
+##        run: sudo service mysql stop
+##
+##      - name: MySQL
+##        uses: mirromutth/mysql-action@v1.1
+##        with:
+##          host port: 3306
+##          container port: 3307
+##          character set server: 'utf8mb4'
+##          collation server: 'utf8mb4_general_ci'
+##          mysql version: '8.0'
+##          mysql database: 'ezid'
+###          mysql root password: ${{ secrets.RootPassword }} # Required if "mysql user" is empty, default is empty. The root superuser password
+###          mysql user: 'developer' # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
+###          mysql password: ${{ secrets.DatabasePassword }} # Required if "mysql user" exists. The password for the "mysql user"
+#
+#      - name: Install packaged deps
+#        run: |
+#          sudo apt-get install --yes libdb5.3-dev
+#
+#      - name: Prepare Python env
+#        run: |
+#          pip install --upgrade pip setuptools wheel
+#          pip install -r ./requirements-dev.txt
+#
+##      - name: Dump environment
+##        env:
+##          PYTHONPATH: ${{ env.GITHUB_WORKSPACE }}
+##        run: |
+##          printf 'PYTHONPATH: %s\n' "$PYTHONPATH"
+##          apt-cache pkgnames | sort
+##          find / | grep /bin/ | sort
+##          pip freeze
+##          pip check || true
+##          ls -l
+##          python --version
+##          ls -la ${HOME}
+##          ls -la ${TRAVIS_BUILD_DIR}
+##          echo "CWD=${PWD}"
+##          mysql -e '
+##            use ezid_test_db;
+##            show tables;
+##            select prefix, minter from ezidapp_shoulder;
+##          '
+#
+##      - name: Prepare database
+##        run: |
+##          mysql -e "
+##            create database if not exists ezid_test_db;
+##            use ezid_test_db;
+##            create user 'ezid_test_user'@'%' identified by '';
+##            grant all privileges on *.* to 'ezid_test_user'@'%';
+##            flush privileges;
+##          "
+##
+#
+##      - name: Prepare fixtures
+##        run:
+##          mkdir -p ../download/public ../logs
+##          python ${TRAVIS_BUILD_DIR}/manage.py makemigrations --merge --no-input
+##          python ${TRAVIS_BUILD_DIR}/manage.py migrate
+##          python ${TRAVIS_BUILD_DIR}/manage.py collectstatic --no-input
+##
+##          python ${TRAVIS_BUILD_DIR}/manage.py loaddata --ignorenonexistent store-test
+##          python ${TRAVIS_BUILD_DIR}/manage.py loaddata --ignorenonexistent search-init
+##          python ${TRAVIS_BUILD_DIR}/manage.py loaddata --ignorenonexistent combined-limited
+##
+##          python ${TRAVIS_BUILD_DIR}/manage.py diag-update-admin
+#
+#
+#      - name: Run tests
 #        env:
-#          PYTHONPATH: ${{ env.GITHUB_WORKSPACE }}
+#          PYTHONPATH: ${{ github.workspace }}
 #        run: |
-#          printf 'PYTHONPATH: %s\n' "$PYTHONPATH"
-#          apt-cache pkgnames | sort
-#          find / | grep /bin/ | sort
-#          pip freeze
-#          pip check || true
-#          ls -l
-#          python --version
-#          ls -la ${HOME}
-#          ls -la ${TRAVIS_BUILD_DIR}
-#          echo "CWD=${PWD}"
-#          mysql -e '
-#            use ezid_test_db;
-#            show tables;
-#            select prefix, minter from ezidapp_shoulder;
-#          '
-
-#      - name: Prepare database
-#        run: |
-#          mysql -e "
-#            create database if not exists ezid_test_db;
-#            use ezid_test_db;
-#            create user 'ezid_test_user'@'%' identified by '';
-#            grant all privileges on *.* to 'ezid_test_user'@'%';
-#            flush privileges;
-#          "
+#          pytest --maxfail 10
 #
-
-#      - name: Prepare fixtures
-#        run:
-#          mkdir -p ../download/public ../logs
-#          python ${TRAVIS_BUILD_DIR}/manage.py makemigrations --merge --no-input
-#          python ${TRAVIS_BUILD_DIR}/manage.py migrate
-#          python ${TRAVIS_BUILD_DIR}/manage.py collectstatic --no-input
-#
-#          python ${TRAVIS_BUILD_DIR}/manage.py loaddata --ignorenonexistent store-test
-#          python ${TRAVIS_BUILD_DIR}/manage.py loaddata --ignorenonexistent search-init
-#          python ${TRAVIS_BUILD_DIR}/manage.py loaddata --ignorenonexistent combined-limited
-#
-#          python ${TRAVIS_BUILD_DIR}/manage.py diag-update-admin
-
-
-      - name: Run tests
-        env:
-          PYTHONPATH: ${{ github.workspace }}
-        run: |
-          pytest --maxfail 10
-
-#        - pip install -e .
+##        - pip install -e .
