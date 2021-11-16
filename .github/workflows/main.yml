@@ -61,11 +61,11 @@ jobs:
           ./manage.py migrate
           ./manage.py collectstatic --no-input
 
-          ./manage.py loaddata --ignorenonexistent store-test
-          ./manage.py loaddata --ignorenonexistent search-init
-          ./manage.py loaddata --ignorenonexistent combined-limited
+          #./manage.py loaddata --ignorenonexistent store-test
+          #./manage.py loaddata --ignorenonexistent search-init
+          #./manage.py loaddata --ignorenonexistent combined-limited
 
-          ./manage.py diag-update-admin
+          #./manage.py diag-update-admin
 
 
 #      - name: Run tests
