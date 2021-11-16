@@ -9,31 +9,23 @@ jobs:
       IS_CI: 1
       DJANGO_SETTINGS_MODULE: settings.tests
 
-    services:
-      mysql:
-        image: mysql:latest
-        ports:
-          - 3306
-        env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: yes
-          MYSQL_USER: ezid_test_user
-          MYSQL_PASSWORD: ezid_test_pw
-          MYSQL_DATABASE: ezid_test_db
-          MYSQL_ROOT_PASSWORD: password
-        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+#    services:
+
+      DB_DATABASE: ezid_test_db
+      DB_USER: ezid_test_user
+      DB_PASSWORD: ezid_test_pw
 
     steps:
+      - name: Set up MySQL
+        run: |
+          sudo /etc/init.d/mysql start
+          mysql -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
+
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
           python-version: '3.9'
           architecture: 'x64'
-
-      # actions/cache is not supported by act
-#      - uses: actions/cache@v2
-#        with:
-#          path: ${{ env.pythonLocation }}
-#          key: ${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}
 
       - run: python -c "import sys; print(sys.version)"
 
