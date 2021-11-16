@@ -8,7 +8,7 @@ jobs:
     env:
       IS_CI: 1
       DJANGO_SETTINGS_MODULE: settings.tests
-      PYTHONPATH: ${{ env.GITHUB_WORKSPACE }}
+      PYTHONPATH: ${{ GITHUB_WORKSPACE }}
 
     steps:
       - uses: actions/checkout@v1
