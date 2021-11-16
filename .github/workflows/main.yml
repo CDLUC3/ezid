@@ -14,6 +14,7 @@ jobs:
 
       - name: Set up MySQL
         run: |
+          sudo /etc/init.d/mysql start
           mysql -h127.0.0.1 -uroot -proot -e 'create database if not exists ezid_test_db;'
 
 #      - name: Install packaged deps
