@@ -27,14 +27,14 @@ jobs:
             flush privileges;
           EOF
 
-#      - name: Install packaged deps
-#        run: |
-#          sudo apt-get install --yes libdb5.3-dev
+      - name: Install packaged deps
+        run: |
+          sudo apt-get install --yes libdb5.3-dev
 #
-#      - name: Prepare Python env
-#        run: |
-#          pip install --upgrade pip setuptools wheel
-#          pip install -r ./requirements-dev.txt
+      - name: Prepare Python env
+        run: |
+          pip install --upgrade pip setuptools wheel
+          pip install -r ./requirements-dev.txt
 
 #      - name: Dump environment
 #        env:
