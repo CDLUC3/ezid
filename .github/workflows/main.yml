@@ -128,5 +128,6 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: |
-          pytest
+          pytest --maxfail 10
+
 #        - pip install -e .
