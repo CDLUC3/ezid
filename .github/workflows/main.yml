@@ -16,49 +16,44 @@ jobs:
           python-version: '3.9'
           architecture: 'x64'
 
-      - name: Set up MySQL
+      - name: Prepare DB
         run: |
           sudo /etc/init.d/mysql start
-          mysql -h127.0.0.1 -uroot -proot -e 'create database if not exists ezid_test_db;'
+          mysql -h127.0.0.1 -uroot -proot << EOF
+            create database if not exists ezid_test_db;
+            use ezid_test_db;
+            create user 'ezid_test_user'@'%' identified by 'ezid_test_pw';
+            grant all privileges on *.* to 'ezid_test_user'@'%';
+            flush privileges;
+          "
 
-      - name: Install packaged deps
-        run: |
-          sudo apt-get install --yes libdb5.3-dev
-
-      - name: Prepare Python env
-        run: |
-          pip install --upgrade pip setuptools wheel
-          pip install -r ./requirements-dev.txt
-
-##      - name: Dump environment
-##        env:
-##          PYTHONPATH: ${{ env.GITHUB_WORKSPACE }}
-##        run: |
-##          printf 'PYTHONPATH: %s\n' "$PYTHONPATH"
-##          apt-cache pkgnames | sort
-##          find / | grep /bin/ | sort
-##          pip freeze
-##          pip check || true
-##          ls -l
-##          python --version
-##          ls -la ${HOME}
-##          ls -la ${TRAVIS_BUILD_DIR}
-##          echo "CWD=${PWD}"
-##          mysql -e '
-##            use ezid_test_db;
-##            show tables;
-##            select prefix, minter from ezidapp_shoulder;
-##          '
+#      - name: Install packaged deps
+#        run: |
+#          sudo apt-get install --yes libdb5.3-dev
 #
-##      - name: Prepare database
-##        run: |
-##          mysql -e "
-##            create database if not exists ezid_test_db;
-##            use ezid_test_db;
-##            create user 'ezid_test_user'@'%' identified by '';
-##            grant all privileges on *.* to 'ezid_test_user'@'%';
-##            flush privileges;
-##          "
+#      - name: Prepare Python env
+#        run: |
+#          pip install --upgrade pip setuptools wheel
+#          pip install -r ./requirements-dev.txt
+
+#      - name: Dump environment
+#        env:
+#          PYTHONPATH: ${{ env.GITHUB_WORKSPACE }}
+#        run: |
+#          printf 'PYTHONPATH: %s\n' "$PYTHONPATH"
+#          apt-cache pkgnames | sort
+#          find / | grep /bin/ | sort
+#          pip freeze
+#          pip check || true
+#          python --version
+#          echo "CWD=${PWD}"
+#          mysql -e '
+#            use ezid_test_db;
+#            show tables;
+#            select prefix, minter from ezidapp_shoulder;
+#          '
+
+##
 ##
 #
 ##      - name: Prepare fixtures
