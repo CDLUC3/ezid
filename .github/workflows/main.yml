@@ -11,16 +11,14 @@ jobs:
 
     services:
       mysql:
-        image: mysql
-#      mariadb:
-#        image: mariadb:latest
+        image: mysql:latest
         ports:
           - 3306
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: yes
-          MYSQL_USER: ezidrw
-          MYSQL_PASSWORD: password
-          MYSQL_DATABASE: ezid
+          MYSQL_USER: ezid_test_user
+          MYSQL_PASSWORD: ezid_test_pw
+          MYSQL_DATABASE: ezid_test_db
           MYSQL_ROOT_PASSWORD: password
         options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
 
