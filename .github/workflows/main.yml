@@ -9,60 +9,13 @@ jobs:
       IS_CI: 1
       DJANGO_SETTINGS_MODULE: settings.tests
 
-#    services:
-
-      DB_DATABASE: ezid_test_db
-#      DB_USER: ezid_test_user
-      DB_USER: root
-      DB_PASSWORD: ezid_test_pw
-
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: '3.9'
-          architecture: 'x64'
-
-      - run: python -c "import sys; print(sys.version)"
+      - uses: actions/checkout@v1
 
       - name: Set up MySQL
         run: |
-          sudo /etc/init.d/mysql start
-          mysql -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
+          mysql -h127.0.0.1 -uroot -proot -e 'create database if not exists ezid_test_db;'
 
-##        env:
-##          RUNNER_TOOL_CACHE: $HOME/actions-tool-cache
-#
-#      - name: Wait for DB connection
-#        env:
-#          PORT: 3306
-##          PORT: ${{ job.services.mysql.ports[3306] }}
-#        run: |
-#          end=$((SECONDS+5))
-#          while [ $SECONDS -lt $end ]; do
-#            if mysqladmin ping -h"127.0.0.1" -P"$PORT" --silent; then
-#              exit 0
-#            fi
-#            sleep 1
-#          done
-#          exit 1
-#
-##      - name: Stop the Default MySQL
-##        run: sudo service mysql stop
-##
-##      - name: MySQL
-##        uses: mirromutth/mysql-action@v1.1
-##        with:
-##          host port: 3306
-##          container port: 3307
-##          character set server: 'utf8mb4'
-##          collation server: 'utf8mb4_general_ci'
-##          mysql version: '8.0'
-##          mysql database: 'ezid'
-###          mysql root password: ${{ secrets.RootPassword }} # Required if "mysql user" is empty, default is empty. The root superuser password
-###          mysql user: 'developer' # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
-###          mysql password: ${{ secrets.DatabasePassword }} # Required if "mysql user" exists. The password for the "mysql user"
-#
 #      - name: Install packaged deps
 #        run: |
 #          sudo apt-get install --yes libdb5.3-dev
