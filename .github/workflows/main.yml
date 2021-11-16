@@ -38,21 +38,19 @@ jobs:
           pip install -r ./requirements-dev.txt
 
       - name: Dump environment
-#        env:
-#          PYTHONPATH: ${{ env.GITHUB_WORKSPACE }}
         run: |
           printf 'PYTHONPATH: %s\n' "$PYTHONPATH"
           apt-cache pkgnames | sort
-#          find / | grep /bin/ | sort
+          # find / | grep /bin/ | sort
           pip freeze
           pip check || true
           python --version
           echo "CWD=${PWD}"
-#          mysql -e '
-#            use ezid_test_db;
-#            show tables;
-#            select prefix, minter from ezidapp_shoulder;
-#          '
+          # mysql -e '
+          #   use ezid_test_db;
+          #   show tables;
+          #   select prefix, minter from ezidapp_shoulder;
+          # '
 
       - name: Prepare fixtures
         run: |
