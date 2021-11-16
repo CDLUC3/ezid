@@ -11,6 +11,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+          architecture: 'x64'
 
       - name: Set up MySQL
         run: |
@@ -20,12 +24,12 @@ jobs:
       - name: Install packaged deps
         run: |
           sudo apt-get install --yes libdb5.3-dev
-#
-#      - name: Prepare Python env
-#        run: |
-#          pip install --upgrade pip setuptools wheel
-#          pip install -r ./requirements-dev.txt
-#
+
+      - name: Prepare Python env
+        run: |
+          pip install --upgrade pip setuptools wheel
+          pip install -r ./requirements-dev.txt
+
 ##      - name: Dump environment
 ##        env:
 ##          PYTHONPATH: ${{ env.GITHUB_WORKSPACE }}
