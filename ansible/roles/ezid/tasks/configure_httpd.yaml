@@ -73,7 +73,8 @@
       owner: "{{user}}"
       group: "{{group}}"
       mode: "0644"
-  - file:
+  - name: delete httpd/conf.d/03-ezid-nossl.conf
+    file:
       path: "{{ app_dir }}/etc/httpd/conf.d/03-ezid-nossl.conf"
       state: absent
 
@@ -86,9 +87,11 @@
       owner: "{{user}}"
       group: "{{group}}"
       mode: "0644"
-  - file:
+  - name: delete httpd/conf.d/00-http-redirect.conf
+    file:
       path: "{{ app_dir }}/etc/httpd/conf.d/00-http-redirect.conf"
       state: absent
-  - file:
+  - name: delete httpd/conf.d/01-ezid-ssl.conf
+    file:
       path: "{{ app_dir }}/etc/httpd/conf.d/01-ezid-ssl.conf"
       state: absent
