@@ -1,3 +1,4 @@
+Listen {{ http_port }}
 <VirtualHost *:{{ http_port }}>
 	ServerName {{ ansible_facts.fqdn }}
 	DirectorySlash Off

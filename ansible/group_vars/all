@@ -20,7 +20,9 @@ ezid_info_pages_branch: master
 ## Apache params
 #
 http_port: 18880
+https_port: 18443
 http_protocol: http
+use_ssl: false
 
 
 # AWS SSM Params
