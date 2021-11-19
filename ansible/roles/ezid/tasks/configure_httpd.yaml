@@ -19,15 +19,6 @@
     group: "{{group}}"
     mode: "0644"
 
-- name: httpd/conf.d/00-base-ssl.conf
-  template:
-    src: "templates/etc/httpd/conf.d/00-base-ssl.conf.j2"
-    dest: "{{ app_dir }}/etc/httpd/conf.d/00-base-ssl.conf"
-    owner: "{{user}}"
-    group: "{{group}}"
-    mode: "0644"
-  when: use_ssl
-
 - name: httpd/conf.d/01-ezid-ssl.conf
   template:
     src: "templates/etc/httpd/conf.d/01-ezid-ssl.conf.j2"

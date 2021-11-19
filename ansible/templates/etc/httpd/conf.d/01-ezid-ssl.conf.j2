@@ -1,6 +1,16 @@
+#  SSL Global Context
+#
+Include /etc/httpd/conf.modules.d/00-ssl.conf
+AddType application/x-x509-ca-cert .crt
+AddType application/x-pkcs7-crl    .crl
+SSLPassPhraseDialog  builtin
+SSLSessionCache         shmcb:{{ app_dir }}/var/run/httpd/sslcache(512000)
+SSLSessionCacheTimeout  300
+Mutex  default
+Listen {{ https_port }}
+
 # Virtual host context
 #
-Listen {{ https_port }}
 <VirtualHost *:{{ https_port }}>
 	ServerName {{ ansible_facts.fqdn }}
 	DirectorySlash Off
