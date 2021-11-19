@@ -19,26 +19,10 @@
     group: "{{group}}"
     mode: "0644"
 
-- name: httpd/conf.d/01-ezid-ssl.conf
-  template:
-    src: "templates/etc/httpd/conf.d/01-ezid-ssl.conf.j2"
-    dest: "{{ app_dir }}/etc/httpd/conf.d/01-ezid-ssl.conf"
-    owner: "{{user}}"
-    group: "{{group}}"
-    mode: "0644"
-  when: use_ssl
-
 - name: httpd/conf.d/02-wsgi.conf
   template:
     src: "templates/etc/httpd/conf.d/02-wsgi.conf.j2"
     dest: "{{ app_dir }}/etc/httpd/conf.d/02-wsgi.conf"
-    owner: "{{user}}"
-    group: "{{group}}"
-    mode: "0644"
-- name: httpd/conf.d/03-ezid-nossl.conf
-  template:
-    src: "templates/etc/httpd/conf.d/03-ezid-nossl.conf.j2"
-    dest: "{{ app_dir }}/etc/httpd/conf.d/03-ezid-nossl.conf"
     owner: "{{user}}"
     group: "{{group}}"
     mode: "0644"
@@ -72,3 +56,39 @@
     owner: "{{user}}"
     group: "{{group}}"
     mode: "0644"
+
+- when: use_ssl
+  block:
+  - name: httpd/conf.d/00-http-redirect.conf
+    template:
+      src: "templates/etc/httpd/conf.d/00-http-redirect.conf.j2"
+      dest: "{{ app_dir }}/etc/httpd/conf.d/00-http-redirect.conf"
+      owner: "{{user}}"
+      group: "{{group}}"
+      mode: "0644"
+  - name: httpd/conf.d/01-ezid-ssl.conf
+    template:
+      src: "templates/etc/httpd/conf.d/01-ezid-ssl.conf.j2"
+      dest: "{{ app_dir }}/etc/httpd/conf.d/01-ezid-ssl.conf"
+      owner: "{{user}}"
+      group: "{{group}}"
+      mode: "0644"
+  - file:
+      path: "{{ app_dir }}/etc/httpd/conf.d/03-ezid-nossl.conf"
+      state: absent
+
+- when: not use_ssl
+  block:
+  - name: httpd/conf.d/03-ezid-nossl.conf
+    template:
+      src: "templates/etc/httpd/conf.d/03-ezid-nossl.conf.j2"
+      dest: "{{ app_dir }}/etc/httpd/conf.d/03-ezid-nossl.conf"
+      owner: "{{user}}"
+      group: "{{group}}"
+      mode: "0644"
+  - file:
+      path: "{{ app_dir }}/etc/httpd/conf.d/00-http-redirect.conf"
+      state: absent
+  - file:
+      path: "{{ app_dir }}/etc/httpd/conf.d/01-ezid-ssl.conf"
+      state: absent
