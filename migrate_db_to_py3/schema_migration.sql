@@ -4,61 +4,64 @@
  */
 
 use ezid;
+use ezid_test_db;
+
+start transaction;
+rollback;
+commit;
+
+###
 
 alter table ezidapp_searchidentifier
-drop key identifier,
-drop index ezidapp_searchidentifier_owner_id_60c2c5fffcb40895_idx,
-drop index ezidapp_searchidentifier_ownergroup_id_4b76dd7c4564df4f_idx,
-drop index ezidapp_searchidentifier_owner_id_47ecdfd54025f1f1_idx,
-drop index ezidapp_searchidentifier_owner_id_59016f4a7ffbcaaa_idx,
-drop index ezidapp_searchidentifier_owner_id_5b203a171bdbab38_idx,
-drop index ezidapp_searchidentifier_owner_id_3e88a7c1b2b5c693_idx,
-drop index ezidapp_searchidentifier_owner_id_58dfc6401ef0e359_idx,
-drop index ezidapp_searchidentifier_owner_id_431b22d7016b97df_idx,
-drop index ezidapp_searchidentifier_owner_id_52f3896c5fc67016_idx,
-drop index ezidapp_searchidentifier_owner_id_5c11adaf88d856d0_idx,
-drop index ezidapp_searchidentifier_owner_id_54da573427e72c0e_idx,
-drop index ezidapp_searchidentifier_owner_id_18a46334256a7530_idx,
-drop index ezidapp_searchidentifier_owner_id_1d05153b51fd9dff_idx,
-drop index ezidapp_searchidentifier_owner_id_76e131b0c70070a1_idx,
-drop index ezidapp_searchidentifier_owner_id_198f8d3796dae4b9_idx,
-drop index ezidapp_searchidentifier_owner_id_263dc1dd7d2fd3ef_idx,
-drop index ezidapp_searchidentifier_ownergroup_id_39b7cdc64bc267c3_idx,
-drop index ezidapp_searchidentifier_ownergroup_id_6c5194bcf1d0014e_idx,
-drop index ezidapp_searchidentifier_ownergroup_id_1d431d7513ab02ec_idx,
-drop index ezidapp_searchidentifier_ownergroup_id_48b886662536e7fd_idx,
-drop index ezidapp_searchidentifier_ownergroup_id_2114f948ed092669_idx,
-drop index ezidapp_searchidentifier_ownergroup_id_6cfbff68ca3e25cb_idx,
-drop index ezidapp_searchidentifier_ownergroup_id_449f25bec77c57da_idx,
-drop index ezidapp_searchidentifier_ownergroup_id_4a1baf4823ddab6c_idx,
-drop index ezidapp_searchidentifier_ownergroup_id_54e4e22002a54d2_idx,
-drop index ezidapp_searchidentifier_ownergroup_id_65871830cd29aaf0_idx,
-drop index ezidapp_searchidentifier_ownergroup_id_4ad29fb0ede49103_idx,
-drop index ezidapp_searchidentifier_ownergroup_id_3ac1ed25c2bfbb2d_idx,
-drop index ezidapp_searchidentifier_ownergroup_id_68875bac9225d3c9_idx,
-drop index ezidapp_searchidentifier_ownergroup_id_2388bfe261a735c5_idx,
-drop index ezidapp_searchidentifie_publicSearchVisible_58de9f6f00b8058e_idx,
-drop index ezidapp_searchidentifie_publicSearchVisible_1932465b0335635c_idx,
-drop index ezidapp_searchidentifie_publicSearchVisible_47b0a294295f5ef5_idx,
-drop index ezidapp_searchidentifie_publicSearchVisible_1e447c57e83c8d5d_idx,
-drop index ezidapp_searchidentifie_publicSearchVisible_47396846c619370f_idx,
-drop index ezidapp_searchidentifie_publicSearchVisible_117042133b78a88e_idx,
-drop index ezidapp_searchidentifier_publicSearchVisible_6807647c6d8cb52_idx,
-drop index ezidapp_searchidentifie_publicSearchVisible_2e067bd0a9494a38_idx,
-drop index ezidapp_searchidentifier_searchableTarget_24d34538786996df_idx,
-drop index ezidapp_searchidentifier_oaiVisible_1d291a23fcff2ce2_idx,
-drop key ezidapp_searchidentifier_resourcetitle,
-drop key ezidapp_searchidentifier_resourcecreator,
-drop key ezidapp_searchidentifier_resourcepublisher,
-drop key ezidapp_searchidentifier_keywords
-drop
-foreign key ez_datacenter_id_2c99a133444936c8_fk_ezidapp_searchdatacenter_id,
-drop
-foreign key ezidapp__profile_id_112e6b8634f63b63_fk_ezidapp_searchprofile_id,
-drop
-foreign key ezidapp_ownergroup_id_69f5065adf48f369_fk_ezidapp_searchgroup_id,
-drop
-foreign key ezidapp_searc_owner_id_17d8ce4cfb6b0401_fk_ezidapp_searchuser_id
+    drop key identifier,
+    drop index ezidapp_searchidentifier_owner_id_60c2c5fffcb40895_idx,
+    drop index ezidapp_searchidentifier_ownergroup_id_4b76dd7c4564df4f_idx,
+    drop index ezidapp_searchidentifier_owner_id_47ecdfd54025f1f1_idx,
+    drop index ezidapp_searchidentifier_owner_id_59016f4a7ffbcaaa_idx,
+    drop index ezidapp_searchidentifier_owner_id_5b203a171bdbab38_idx,
+    drop index ezidapp_searchidentifier_owner_id_3e88a7c1b2b5c693_idx,
+    drop index ezidapp_searchidentifier_owner_id_58dfc6401ef0e359_idx,
+    drop index ezidapp_searchidentifier_owner_id_431b22d7016b97df_idx,
+    drop index ezidapp_searchidentifier_owner_id_52f3896c5fc67016_idx,
+    drop index ezidapp_searchidentifier_owner_id_5c11adaf88d856d0_idx,
+    drop index ezidapp_searchidentifier_owner_id_54da573427e72c0e_idx,
+    drop index ezidapp_searchidentifier_owner_id_18a46334256a7530_idx,
+    drop index ezidapp_searchidentifier_owner_id_1d05153b51fd9dff_idx,
+    drop index ezidapp_searchidentifier_owner_id_76e131b0c70070a1_idx,
+    drop index ezidapp_searchidentifier_owner_id_198f8d3796dae4b9_idx,
+    drop index ezidapp_searchidentifier_owner_id_263dc1dd7d2fd3ef_idx,
+    drop index ezidapp_searchidentifier_ownergroup_id_39b7cdc64bc267c3_idx,
+    drop index ezidapp_searchidentifier_ownergroup_id_6c5194bcf1d0014e_idx,
+    drop index ezidapp_searchidentifier_ownergroup_id_1d431d7513ab02ec_idx,
+    drop index ezidapp_searchidentifier_ownergroup_id_48b886662536e7fd_idx,
+    drop index ezidapp_searchidentifier_ownergroup_id_2114f948ed092669_idx,
+    drop index ezidapp_searchidentifier_ownergroup_id_6cfbff68ca3e25cb_idx,
+    drop index ezidapp_searchidentifier_ownergroup_id_449f25bec77c57da_idx,
+    drop index ezidapp_searchidentifier_ownergroup_id_4a1baf4823ddab6c_idx,
+    drop index ezidapp_searchidentifier_ownergroup_id_54e4e22002a54d2_idx,
+    drop index ezidapp_searchidentifier_ownergroup_id_65871830cd29aaf0_idx,
+    drop index ezidapp_searchidentifier_ownergroup_id_4ad29fb0ede49103_idx,
+    drop index ezidapp_searchidentifier_ownergroup_id_3ac1ed25c2bfbb2d_idx,
+    drop index ezidapp_searchidentifier_ownergroup_id_68875bac9225d3c9_idx,
+    drop index ezidapp_searchidentifier_ownergroup_id_2388bfe261a735c5_idx,
+    drop index ezidapp_searchidentifie_publicsearchvisible_58de9f6f00b8058e_idx,
+    drop index ezidapp_searchidentifie_publicsearchvisible_1932465b0335635c_idx,
+    drop index ezidapp_searchidentifie_publicsearchvisible_47b0a294295f5ef5_idx,
+    drop index ezidapp_searchidentifie_publicsearchvisible_1e447c57e83c8d5d_idx,
+    drop index ezidapp_searchidentifie_publicsearchvisible_47396846c619370f_idx,
+    drop index ezidapp_searchidentifie_publicsearchvisible_117042133b78a88e_idx,
+    drop index ezidapp_searchidentifier_publicsearchvisible_6807647c6d8cb52_idx,
+    drop index ezidapp_searchidentifie_publicsearchvisible_2e067bd0a9494a38_idx,
+    drop index ezidapp_searchidentifier_searchabletarget_24d34538786996df_idx,
+    drop index ezidapp_searchidentifier_oaivisible_1d291a23fcff2ce2_idx,
+    drop key ezidapp_searchidentifier_resourcetitle,
+    drop key ezidapp_searchidentifier_resourcecreator,
+    drop key ezidapp_searchidentifier_resourcepublisher,
+    drop key ezidapp_searchidentifier_keywords,
+    drop foreign key ez_datacenter_id_2c99a133444936c8_fk_ezidapp_searchdatacenter_id,
+    drop foreign key ezidapp__profile_id_112e6b8634f63b63_fk_ezidapp_searchprofile_id,
+    drop foreign key ezidapp_ownergroup_id_69f5065adf48f369_fk_ezidapp_searchgroup_id,
+    drop foreign key ezidapp_searc_owner_id_17d8ce4cfb6b0401_fk_ezidapp_searchuser_id
 # Cannot be dropped due to use as foreign keys
 # drop index ezidapp_searchidentifier_5e7b1936,
 # drop index ezidapp_searchidentifier_365b2611,
@@ -66,52 +69,77 @@ foreign key ezidapp_searc_owner_id_17d8ce4cfb6b0401_fk_ezidapp_searchuser_id
 # drop index ezidapp_searchidentifier_83a0eb3f,
 ;
 
+# Check integrity of the search/store fields on which we'll be joining
+# All counts should be 0.
+select
+    (select count(*) from ezidapp_storeuser        where pid not in    (select pid from ezidapp_searchuser )) as store_user,
+    (select count(*) from ezidapp_storegroup       where pid not in    (select pid from ezidapp_searchgroup )) as store_group,
+    (select count(*) from ezidapp_storeprofile     where label not in  (select label from ezidapp_searchprofile )) as store_profile,
+    (select count(*) from ezidapp_storedatacenter  where symbol not in (select symbol from ezidapp_searchdatacenter )) as store_datacenter,
+
+    (select count(*) from ezidapp_searchuser       where pid not in    (select pid from ezidapp_storeuser )) as search_user,
+    (select count(*) from ezidapp_searchgroup      where pid not in    (select pid from ezidapp_storegroup )) as search_group,
+    (select count(*) from ezidapp_searchprofile    where label not in  (select label from ezidapp_storeprofile )) as search_profile,
+    (select count(*) from ezidapp_searchdatacenter where symbol not in (select symbol from ezidapp_storedatacenter )) as search_datacenter
+;
+
+# Check that there are no nulls.
+# All counts should be 0.
+select
+    (select count(*) from ezidapp_searchidentifier si where si.owner_id is null) as owner,
+    (select count(*) from ezidapp_searchidentifier si where si.ownergroup_id is null) as ownergroup,
+    (select count(*) from ezidapp_searchidentifier si where si.profile_id is null) as `profile`,
+    (select count(*) from ezidapp_searchidentifier si where si.datacenter_id is null) as datacenter
+;
+
+# Check search-to-search FKs.
+# All counts should be 0 BEFORE updating to store.
+select
+    (select count(*) from ezidapp_searchidentifier si where si.owner_id not in (select id from ezidapp_searchuser )) as owner,
+    (select count(*) from ezidapp_searchidentifier si where si.ownergroup_id not in (select id from ezidapp_searchgroup )) as ownergroup,
+    (select count(*) from ezidapp_searchidentifier si where si.profile_id not in (select id from ezidapp_searchprofile )) as label,
+    (select count(*) from ezidapp_searchidentifier si where si.datacenter_id not in (select id from ezidapp_searchdatacenter )) as symbol
+;
+
 start transaction;
 
 update ezidapp_searchidentifier si
-    join ezidapp_searchuser searchuser on searchuser.id = si.owner_id
-    join ezidapp_storeuser storeuser on storeuser.pid = searchuser.pid
-
-    join ezidapp_searchgroup searchgroup on searchgroup.id = si.ownergroup_id
-    join ezidapp_storegroup storegroup on storegroup.pid = searchgroup.pid
-
-    join ezidapp_searchprofile searchprofile on searchprofile.id = si.profile_id
-    join ezidapp_storeprofile storeprofile on storeprofile.label = searchprofile.label
-
-    join ezidapp_searchdatacenter searchdatacenter on searchdatacenter.id = si.datacenter_id
-    join ezidapp_storedatacenter storedatacenter on storedatacenter.symbol = searchdatacenter.symbol
-set si.owner_id = storeuser.id,
+    left join ezidapp_searchuser searchuser on searchuser.id = si.owner_id
+    left join ezidapp_storeuser storeuser on storeuser.pid = searchuser.pid
+    left join ezidapp_searchgroup searchgroup on searchgroup.id = si.ownergroup_id
+    left join ezidapp_storegroup storegroup on storegroup.pid = searchgroup.pid
+    left join ezidapp_searchprofile searchprofile on searchprofile.id = si.profile_id
+    left join ezidapp_storeprofile storeprofile on storeprofile.label = searchprofile.label
+    left join ezidapp_searchdatacenter searchdatacenter on searchdatacenter.id = si.datacenter_id
+    left join ezidapp_storedatacenter storedatacenter on storedatacenter.symbol = searchdatacenter.symbol
+set si.owner_id      = storeuser.id,
     si.ownergroup_id = storegroup.id,
-    si.profile_id = storeprofile.id,
+    si.profile_id    = storeprofile.id,
     si.datacenter_id = storedatacenter.id
 where true
 ;
 
-select
-       (select count(*) from ezidapp_searchidentifier si where si.owner_id not in (select id from ezidapp_storeuser)) as owner,
-       (select count(*) from ezidapp_searchidentifier si where si.ownergroup_id not in (select id from ezidapp_storegroup)) as ownergroup,
-       (select count(*) from ezidapp_searchidentifier si where si.profile_id not in (select id from ezidapp_storeprofile)) as label,
-       (select count(*) from ezidapp_searchidentifier si where si.datacenter_id not in (select id from ezidapp_storedatacenter)) as symbol
+insert into ezidapp_storedatacenter(symbol, name)
+select a.symbol, a.symbol from ezidapp_searchdatacenter a
+where a.symbol not in (select symbol from ezidapp_storedatacenter)
 ;
-# [
-#   {
-#     "owner": 3 171 344,
-#     "ownergroup": 25 512 573,
-#     "label": 0,
-#     "symbol": 147 932
-#   }
-# ]
 
-rollback;
+# Check search-to-store FKs
+# All counts should be 0 AFTER updating to store.
+select
+    (select count(*) from ezidapp_searchidentifier si where si.owner_id not in (select id from ezidapp_storeuser )) as owner,
+    (select count(*) from ezidapp_searchidentifier si where si.ownergroup_id not in (select id from ezidapp_storegroup )) as ownergroup,
+    (select count(*) from ezidapp_searchidentifier si where si.profile_id not in (select id from ezidapp_storeprofile )) as label,
+    (select count(*) from ezidapp_searchidentifier si where si.datacenter_id not in (select id from ezidapp_storedatacenter )) as symbol
+;
+
 
 alter table ezidapp_searchidentifier
-add constraint `ezidapp_searc_owner_id_17d8ce4cfb6b0401_fk_ezidapp_searchuser_id` foreign key (`owner_id`) references `ezidapp_storeuser` (`id`),
-add constraint `ezidapp_ownergroup_id_69f5065adf48f369_fk_ezidapp_searchgroup_id` foreign key (`ownergroup_id`) references `ezidapp_storegroup`(`id`),
-add constraint `ezidapp__profile_id_112e6b8634f63b63_fk_ezidapp_searchprofile_id` foreign key (`profile_id`) references `ezidapp_storeprofile`(`id`),
-add constraint `ez_datacenter_id_2c99a133444936c8_fk_ezidapp_searchdatacenter_id` foreign key (`datacenter_id`) references `ezidapp_storedatacenter`(`id`)
+    add constraint `ezidapp_searc_owner_id_17d8ce4cfb6b0401_fk_ezidapp_searchuser_id` foreign key (`owner_id`) references `ezidapp_storeuser` (`id`),
+    add constraint `ezidapp_ownergroup_id_69f5065adf48f369_fk_ezidapp_searchgroup_id` foreign key (`ownergroup_id`) references `ezidapp_storegroup` (`id`),
+    add constraint `ezidapp__profile_id_112e6b8634f63b63_fk_ezidapp_searchprofile_id` foreign key (`profile_id`) references `ezidapp_storeprofile` (`id`),
+    add constraint `ez_datacenter_id_2c99a133444936c8_fk_ezidapp_searchdatacenter_id` foreign key (`datacenter_id`) references `ezidapp_storedatacenter` (`id`)
 ;
-
-commit;
 
 
 
