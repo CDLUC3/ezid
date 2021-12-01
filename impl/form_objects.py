@@ -648,8 +648,11 @@ class ContribForm(forms.Form):
             ni_s = cleaned_data.get(NAME_ID_SCHEME[0].format(str(i)))
             ni_s_uri = cleaned_data.get(NAME_ID_SCHEME_URI[0].format(str(i)))
             caff = cleaned_data.get("affiliation")
+            caffId = cleaned_data.get("affiliationIdentifier")
+            caffId_s = cleaned_data.get("affiliationIdentifierScheme")
+            caffId_s_uri = cleaned_data.get("affiliationIdentifierSchemeURI")
             """ Use of contributor element requires name and type be populated """
-            if ctype or cname or cfname or cgname or caff or ni or ni_s or ni_s_uri:
+            if ctype or cname or cfname or cgname or caff or caffId or caffId_s or caffId_s_uri or ni or ni_s or ni_s_uri:
                 err1 = _gatherContribErr1(err1, ctype, cname)
             err = _validateNameIdGrouping(i, ni, ni_s, ni_s_uri)
             if err:
