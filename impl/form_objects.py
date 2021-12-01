@@ -422,6 +422,15 @@ class NameIdMultBaseFormSet(BaseFormSet):
         form.fields["affiliation"] = forms.CharField(
             required=False, label=_("Affiliation")
         )
+        form.fields["affiliationIdentifier"] = forms.CharField(
+            required=False, label=_("Affiliation Identifier")
+        )
+        form.fields["affiliationIdentifierScheme"] = forms.CharField(
+            required=False, label=_("Affiliation Identifier Scheme")
+        )
+        form.fields["affiliationIdentifierSchemeURI"] = forms.CharField(
+            required=False, label=_("Affiliation Identifier Scheme URI")
+        )
         return form
 
     def generateNameIdFields(self, x):
