@@ -4,1715 +4,365 @@
  */
 
 use ezid;
-use ezid_test_db;
 
-start transaction;
-rollback;
-commit;
+# Rename tables to remove all 'store' prefixes.
+rename table ezidapp_storedatacenter to ezidapp_datacenter;
+rename table ezidapp_storegroup to ezidapp_group;
+rename table ezidapp_storegroup_shoulders to ezidapp_group_shoulders;
+rename table ezidapp_storeidentifier to ezidapp_identifier;
+rename table ezidapp_storeprofile to ezidapp_profile;
+rename table ezidapp_storerealm to ezidapp_realm;
+rename table ezidapp_storeuser to ezidapp_user;
+rename table ezidapp_storeuser_proxies to ezidapp_user_proxies;
+rename table ezidapp_storeuser_shoulders to ezidapp_user_shoulders;
 
-###
+# Drop the 'stub' tables that exist only to support ezidapp_searchidentifier when located in another DB.
+# These tables contain copies of some of the columns in the corresponding store* tables. The only search*
+# table that remains afterwards is ezidapp_searchidentifier.
+drop table ezidapp_searchdatacenter;
+drop table ezidapp_searchgroup;
+drop table ezidapp_searchprofile;
+drop table ezidapp_searchrealm;
+drop table ezidapp_searchuser;
+
+# Drop everything that may slow down operations on ezidapp_searchidentifier
+
+# Drop foreign key constrants first, to enable dropping the associated indexes
+alter table ezidapp_searchidentifier
+drop constraint `ez_datacenter_id_2c99a133444936c8_fk_ezidapp_searchdatacenter_id`,
+drop constraint `ezidapp__profile_id_112e6b8634f63b63_fk_ezidapp_searchprofile_id`,
+drop constraint `ezidapp_ownergroup_id_69f5065adf48f369_fk_ezidapp_searchgroup_id`,
+drop constraint `ezidapp_searc_owner_id_17d8ce4cfb6b0401_fk_ezidapp_searchuser_id`
+;
+
+# Drop keys and indexes (all except for the id and identifier indexes)
+alter table ezidapp_searchidentifier
+drop index ezidapp_searchidentifie_publicsearchvisible_117042133b78a88e_idx
+, drop index ezidapp_searchidentifie_publicsearchvisible_1932465b0335635c_idx
+, drop index ezidapp_searchidentifie_publicsearchvisible_1e447c57e83c8d5d_idx
+, drop index ezidapp_searchidentifie_publicsearchvisible_2e067bd0a9494a38_idx
+, drop index ezidapp_searchidentifie_publicsearchvisible_47396846c619370f_idx
+, drop index ezidapp_searchidentifie_publicsearchvisible_47b0a294295f5ef5_idx
+, drop index ezidapp_searchidentifie_publicsearchvisible_58de9f6f00b8058e_idx
+, drop index ezidapp_searchidentifier_13bc2970
+, drop index ezidapp_searchidentifier_365b2611
+, drop index ezidapp_searchidentifier_5e7b1936
+, drop index ezidapp_searchidentifier_83a0eb3f
+, drop index ezidapp_searchidentifier_oaivisible_1d291a23fcff2ce2_idx
+, drop index ezidapp_searchidentifier_owner_id_18a46334256a7530_idx
+, drop index ezidapp_searchidentifier_owner_id_198f8d3796dae4b9_idx
+, drop index ezidapp_searchidentifier_owner_id_1d05153b51fd9dff_idx
+, drop index ezidapp_searchidentifier_owner_id_263dc1dd7d2fd3ef_idx
+, drop index ezidapp_searchidentifier_owner_id_3e88a7c1b2b5c693_idx
+, drop index ezidapp_searchidentifier_owner_id_431b22d7016b97df_idx
+, drop index ezidapp_searchidentifier_owner_id_47ecdfd54025f1f1_idx
+, drop index ezidapp_searchidentifier_owner_id_52f3896c5fc67016_idx
+, drop index ezidapp_searchidentifier_owner_id_54da573427e72c0e_idx
+, drop index ezidapp_searchidentifier_owner_id_58dfc6401ef0e359_idx
+, drop index ezidapp_searchidentifier_owner_id_59016f4a7ffbcaaa_idx
+, drop index ezidapp_searchidentifier_owner_id_5b203a171bdbab38_idx
+, drop index ezidapp_searchidentifier_owner_id_5c11adaf88d856d0_idx
+, drop index ezidapp_searchidentifier_owner_id_60c2c5fffcb40895_idx
+, drop index ezidapp_searchidentifier_owner_id_76e131b0c70070a1_idx
+, drop index ezidapp_searchidentifier_ownergroup_id_1d431d7513ab02ec_idx
+, drop index ezidapp_searchidentifier_ownergroup_id_2114f948ed092669_idx
+, drop index ezidapp_searchidentifier_ownergroup_id_2388bfe261a735c5_idx
+, drop index ezidapp_searchidentifier_ownergroup_id_39b7cdc64bc267c3_idx
+, drop index ezidapp_searchidentifier_ownergroup_id_3ac1ed25c2bfbb2d_idx
+, drop index ezidapp_searchidentifier_ownergroup_id_449f25bec77c57da_idx
+, drop index ezidapp_searchidentifier_ownergroup_id_48b886662536e7fd_idx
+, drop index ezidapp_searchidentifier_ownergroup_id_4a1baf4823ddab6c_idx
+, drop index ezidapp_searchidentifier_ownergroup_id_4ad29fb0ede49103_idx
+, drop index ezidapp_searchidentifier_ownergroup_id_4b76dd7c4564df4f_idx
+, drop index ezidapp_searchidentifier_ownergroup_id_54e4e22002a54d2_idx
+, drop index ezidapp_searchidentifier_ownergroup_id_65871830cd29aaf0_idx
+, drop index ezidapp_searchidentifier_ownergroup_id_68875bac9225d3c9_idx
+, drop index ezidapp_searchidentifier_ownergroup_id_6c5194bcf1d0014e_idx
+, drop index ezidapp_searchidentifier_ownergroup_id_6cfbff68ca3e25cb_idx
+, drop index ezidapp_searchidentifier_publicsearchvisible_6807647c6d8cb52_idx
+, drop index ezidapp_searchidentifier_searchabletarget_24d34538786996df_idx
+, drop key ezidapp_searchidentifier_keywords
+, drop key ezidapp_searchidentifier_resourcecreator
+, drop key ezidapp_searchidentifier_resourcepublisher
+, drop key ezidapp_searchidentifier_resourcetitle
+;
+
+# Translate from search to store keys
+
+# user
+update ezidapp_searchidentifier set owner_id = case
+when 1 then 1 when 2 then 2 when 10 then 75 when 13 then 243 when 14 then 248 when 21 then 186 when 26 then 223 when 28 then 65 when 30 then 240 when 31 then 202
+when 39 then 66 when 40 then 87 when 48 then 184 when 52 then 152 when 53 then 242 when 69 then 247 when 75 then 44 when 80 then 182 when 89 then 111 when 93 then 233
+when 96 then 212 when 99 then 230 when 101 then 185 when 102 then 57 when 104 then 110 when 108 then 214 when 111 then 163 when 114 then 207 when 116 then 228 when 117 then 275
+when 118 then 60 when 119 then 208 when 120 then 213 when 123 then 198 when 124 then 209 when 126 then 179 when 130 then 22 when 131 then 59 when 135 then 204 when 136 then 289
+when 137 then 39 when 139 then 134 when 140 then 172 when 145 then 180 when 152 then 26 when 159 then 9 when 160 then 234 when 166 then 238 when 171 then 15 when 173 then 220
+when 175 then 201 when 180 then 244 when 186 then 237 when 187 then 139 when 188 then 210 when 191 then 211 when 192 then 232 when 193 then 130 when 195 then 245 when 199 then 226
+when 204 then 56 when 206 then 100 when 207 then 227 when 210 then 23 when 211 then 268 when 213 then 49 when 214 then 235 when 216 then 98 when 219 then 181 when 222 then 195
+when 225 then 231 when 227 then 216 when 228 then 52 when 229 then 25 when 230 then 124 when 232 then 217 when 235 then 170 when 236 then 219 when 237 then 241 when 239 then 67
+when 241 then 206 when 244 then 225 when 245 then 196 when 246 then 205 when 249 then 99 when 252 then 70 when 261 then 183 when 268 then 108 when 269 then 203 when 271 then 246
+when 272 then 229 when 276 then 109 when 277 then 10 when 279 then 292 when 281 then 105 when 282 then 11 when 284 then 222 when 285 then 221 when 286 then 224 when 287 then 200
+when 290 then 107 when 292 then 290 when 297 then 295 when 298 then 296 when 300 then 298 when 307 then 305 when 308 then 306 when 309 then 307 when 310 then 308 when 311 then 309
+when 316 then 314 when 320 then 318 when 323 then 321 when 324 then 322 when 326 then 324 when 327 then 325 when 328 then 326 when 333 then 331 when 334 then 332 when 337 then 335
+when 338 then 336 when 340 then 338 when 342 then 340 when 344 then 342 when 345 then 343 when 349 then 347 when 350 then 348 when 351 then 349 when 354 then 352 when 358 then 356
+when 359 then 357 when 361 then 359 when 362 then 360 when 363 then 361 when 365 then 363 when 366 then 364 when 371 then 369 when 372 then 370 when 375 then 373 when 378 then 376
+when 379 then 377 when 386 then 384 when 387 then 385 when 388 then 386 when 389 then 387 when 390 then 388 when 391 then 389 when 392 then 390 when 393 then 391 when 394 then 392
+when 395 then 393 when 396 then 394 when 397 then 395 when 398 then 396 when 399 then 397 when 400 then 398 when 401 then 399 when 402 then 400 when 403 then 401 when 404 then 402
+when 406 then 404 when 407 then 405 when 408 then 406 when 409 then 407 when 410 then 408 when 411 then 409 when 415 then 413 when 416 then 414 when 417 then 415 when 418 then 416
+when 419 then 417 when 420 then 418 when 422 then 420 when 423 then 421 when 424 then 422 when 426 then 424 when 427 then 425 when 428 then 426 when 429 then 427 when 430 then 428
+when 431 then 429 when 432 then 430 when 433 then 431 when 434 then 432 when 435 then 433 when 436 then 434 when 437 then 435 when 438 then 437 when 439 then 438 when 440 then 439
+when 441 then 440 when 443 then 442 when 444 then 443 when 445 then 444 when 446 then 445 when 447 then 446 when 448 then 447 when 449 then 448 when 450 then 449 when 451 then 450
+when 452 then 451 when 453 then 452 when 454 then 453 when 455 then 454 when 456 then 455 when 457 then 456 when 458 then 457 when 459 then 458 when 460 then 459 when 461 then 460
+when 462 then 461 when 463 then 462 when 464 then 463 when 465 then 464 when 466 then 465 when 468 then 467 when 469 then 468 when 470 then 469 when 471 then 470 when 472 then 471
+when 473 then 472 when 474 then 473 when 475 then 474 when 476 then 475 when 477 then 476 when 478 then 477 end
+;
+
+# group
+update ezidapp_searchidentifier set ownergroup_id = case
+when 1 then 1  when 2 then 2  when 3 then 223  when 7 then 28  when 10 then 21  when 13 then 263  when 22 then 196  when 27 then 84  when 35 then 172  when 38 then 23
+when 39 then 145  when 50 then 186  when 53 then 57  when 55 then 121  when 75 then 112  when 94 then 202  when 108 then 247  when 110 then 187  when 117 then 190  when 125 then 203
+when 137 then 14  when 147 then 199  when 153 then 51  when 158 then 106  when 161 then 171  when 176 then 159  when 177 then 22  when 185 then 47  when 200 then 224  when 206 then 116
+when 211 then 242  when 215 then 192  when 220 then 92  when 235 then 39  when 251 then 10  when 265 then 264  when 275 then 273  when 283 then 281  when 288 then 286  when 292 then 290
+when 296 then 294  when 297 then 295  when 299 then 297  when 301 then 299  when 303 then 301  when 304 then 302  when 305 then 303  when 306 then 304  when 307 then 305  when 308 then 306
+when 309 then 307  when 310 then 308 end
+;
+
+# profile
+update ezidapp_searchidentifier set profile_id = case
+when 1 then 1  when 2 then 3  when 3 then 2  when 4 then 5  when 5 then 4  when 8 then 8  when 9 then 9  when 11 then 11  when 12 then 12  when 13 then 13 end
+;
+
+# datacenter
+update ezidapp_searchidentifier set datacenter_id = case
+when 1 then 297  when 7 then 1  when 9 then 207  when 15 then 9  when 24 then 181  when 27 then 205  when 29 then 158  when 47 then 182  when 56 then 208  when 97 then 303
+when 111 then 300  when 124 then 304  when 139 then 302  when 174 then 299  when 180 then 184  when 196 then 298  when 200 then 301  when 209 then 305  when 223 then 266  when 224 then 267
+end
+;
+
+
+# Add JSON metadata columns
+
+alter table `ezidapp_searchidentifier`
+add column metadata json default null
+;
+alter table `ezidapp_storeidentifier`
+add column metadata json default null
+;
+update ezidapp_searchidentifier
+set metadata = '{}'
+;
+update ezidapp_storeidentifier
+set metadata = '{}'
+;
+
+# Add async queues
+
+drop table if exists ezidapp_binderqueue;
+drop table if exists ezidapp_crossrefqueue;
+drop table if exists ezidapp_datacitequeue;
+drop table if exists ezidapp_downloadqueue;
+drop table if exists ezidapp_searchindexerqueue;
+drop table if exists ezidapp_updatequeue;
+
+create table `ezidapp_searchindexerqueue` (
+    `seq` int not null auto_increment,
+    `enqueueTime` int not null,
+    `submitTime` int default null,
+    `operation` varchar(1) not null,
+    `status` varchar(1) not null,
+    `message` longtext not null,
+    `batchId` varchar(36) not null,
+    `error` longtext not null,
+    `errorIsPermanent` tinyint(1) not null,
+    `refIdentifier_id` int not null,
+    primary key (`seq`),
+    key `ezidapp_searchindexe_refIdentifier_id_7b72d1a2_fk_ezidapp_r`(`refIdentifier_id`),
+    key `ezidapp_searchindexerqueue_operation_577fd676`(`operation`),
+    key `ezidapp_searchindexerqueue_status_9aeeb55e`(`status`),
+    constraint `ezidapp_searchindexe_refIdentifier_id_7b72d1a2_fk_ezidapp_r` foreign key (`refIdentifier_id`) references `ezidapp_refidentifier`(`id`)
+)
+    engine = InnoDB
+    default charset = utf8mb4
+;
+
+create table ezidapp_binderqueue like ezidapp_searchindexerqueue;
+create table ezidapp_crossrefqueue like ezidapp_searchindexerqueue;
+create table ezidapp_datacitequeue like ezidapp_searchindexerqueue;
+create table ezidapp_downloadqueue like ezidapp_searchindexerqueue;
+create table ezidapp_updatequeue like ezidapp_searchindexerqueue;
+
+# Add constraints back, in order of importance
+
+# !!! The optimal order has not been determined yet !!!
 
 alter table ezidapp_searchidentifier
-    drop key identifier,
-    drop index ezidapp_searchidentifier_owner_id_60c2c5fffcb40895_idx,
-    drop index ezidapp_searchidentifier_ownergroup_id_4b76dd7c4564df4f_idx,
-    drop index ezidapp_searchidentifier_owner_id_47ecdfd54025f1f1_idx,
-    drop index ezidapp_searchidentifier_owner_id_59016f4a7ffbcaaa_idx,
-    drop index ezidapp_searchidentifier_owner_id_5b203a171bdbab38_idx,
-    drop index ezidapp_searchidentifier_owner_id_3e88a7c1b2b5c693_idx,
-    drop index ezidapp_searchidentifier_owner_id_58dfc6401ef0e359_idx,
-    drop index ezidapp_searchidentifier_owner_id_431b22d7016b97df_idx,
-    drop index ezidapp_searchidentifier_owner_id_52f3896c5fc67016_idx,
-    drop index ezidapp_searchidentifier_owner_id_5c11adaf88d856d0_idx,
-    drop index ezidapp_searchidentifier_owner_id_54da573427e72c0e_idx,
-    drop index ezidapp_searchidentifier_owner_id_18a46334256a7530_idx,
-    drop index ezidapp_searchidentifier_owner_id_1d05153b51fd9dff_idx,
-    drop index ezidapp_searchidentifier_owner_id_76e131b0c70070a1_idx,
-    drop index ezidapp_searchidentifier_owner_id_198f8d3796dae4b9_idx,
-    drop index ezidapp_searchidentifier_owner_id_263dc1dd7d2fd3ef_idx,
-    drop index ezidapp_searchidentifier_ownergroup_id_39b7cdc64bc267c3_idx,
-    drop index ezidapp_searchidentifier_ownergroup_id_6c5194bcf1d0014e_idx,
-    drop index ezidapp_searchidentifier_ownergroup_id_1d431d7513ab02ec_idx,
-    drop index ezidapp_searchidentifier_ownergroup_id_48b886662536e7fd_idx,
-    drop index ezidapp_searchidentifier_ownergroup_id_2114f948ed092669_idx,
-    drop index ezidapp_searchidentifier_ownergroup_id_6cfbff68ca3e25cb_idx,
-    drop index ezidapp_searchidentifier_ownergroup_id_449f25bec77c57da_idx,
-    drop index ezidapp_searchidentifier_ownergroup_id_4a1baf4823ddab6c_idx,
-    drop index ezidapp_searchidentifier_ownergroup_id_54e4e22002a54d2_idx,
-    drop index ezidapp_searchidentifier_ownergroup_id_65871830cd29aaf0_idx,
-    drop index ezidapp_searchidentifier_ownergroup_id_4ad29fb0ede49103_idx,
-    drop index ezidapp_searchidentifier_ownergroup_id_3ac1ed25c2bfbb2d_idx,
-    drop index ezidapp_searchidentifier_ownergroup_id_68875bac9225d3c9_idx,
-    drop index ezidapp_searchidentifier_ownergroup_id_2388bfe261a735c5_idx,
-    drop index ezidapp_searchidentifie_publicsearchvisible_58de9f6f00b8058e_idx,
-    drop index ezidapp_searchidentifie_publicsearchvisible_1932465b0335635c_idx,
-    drop index ezidapp_searchidentifie_publicsearchvisible_47b0a294295f5ef5_idx,
-    drop index ezidapp_searchidentifie_publicsearchvisible_1e447c57e83c8d5d_idx,
-    drop index ezidapp_searchidentifie_publicsearchvisible_47396846c619370f_idx,
-    drop index ezidapp_searchidentifie_publicsearchvisible_117042133b78a88e_idx,
-    drop index ezidapp_searchidentifier_publicsearchvisible_6807647c6d8cb52_idx,
-    drop index ezidapp_searchidentifie_publicsearchvisible_2e067bd0a9494a38_idx,
-    drop index ezidapp_searchidentifier_searchabletarget_24d34538786996df_idx,
-    drop index ezidapp_searchidentifier_oaivisible_1d291a23fcff2ce2_idx,
-    drop key ezidapp_searchidentifier_resourcetitle,
-    drop key ezidapp_searchidentifier_resourcecreator,
-    drop key ezidapp_searchidentifier_resourcepublisher,
-    drop key ezidapp_searchidentifier_keywords,
-    drop foreign key ez_datacenter_id_2c99a133444936c8_fk_ezidapp_searchdatacenter_id,
-    drop foreign key ezidapp__profile_id_112e6b8634f63b63_fk_ezidapp_searchprofile_id,
-    drop foreign key ezidapp_ownergroup_id_69f5065adf48f369_fk_ezidapp_searchgroup_id,
-    drop foreign key ezidapp_searc_owner_id_17d8ce4cfb6b0401_fk_ezidapp_searchuser_id
-# Cannot be dropped due to use as foreign keys
-# drop index ezidapp_searchidentifier_5e7b1936,
-# drop index ezidapp_searchidentifier_365b2611,
-# drop index ezidapp_searchidentifier_13bc2970,
-# drop index ezidapp_searchidentifier_83a0eb3f,
+add constraint `ezidapp_searc_owner_id_17d8ce4cfb6b0401_fk_ezidapp_searchuser_id` foreign key (`owner_id`) references `ezidapp_storeuser` (`id`)
+;
+alter table ezidapp_searchidentifier
+add constraint `ezidapp_ownergroup_id_69f5065adf48f369_fk_ezidapp_searchgroup_id` foreign key (`ownergroup_id`) references `ezidapp_storegroup` (`id`)
+;
+alter table ezidapp_searchidentifier
+add constraint `ezidapp__profile_id_112e6b8634f63b63_fk_ezidapp_searchprofile_id` foreign key (`profile_id`) references `ezidapp_storeprofile` (`id`)
+;
+alter table ezidapp_searchidentifier
+add constraint `ez_datacenter_id_2c99a133444936c8_fk_ezidapp_searchdatacenter_id` foreign key (`datacenter_id`) references `ezidapp_storedatacenter` (`id`)
 ;
 
-# Check integrity of the search/store fields on which we'll be joining
-# All counts should be 0.
-select
-    (select count(*) from ezidapp_storeuser        where pid not in    (select pid from ezidapp_searchuser )) as store_user,
-    (select count(*) from ezidapp_storegroup       where pid not in    (select pid from ezidapp_searchgroup )) as store_group,
-    (select count(*) from ezidapp_storeprofile     where label not in  (select label from ezidapp_searchprofile )) as store_profile,
-    (select count(*) from ezidapp_storedatacenter  where symbol not in (select symbol from ezidapp_searchdatacenter )) as store_datacenter,
 
-    (select count(*) from ezidapp_searchuser       where pid not in    (select pid from ezidapp_storeuser )) as search_user,
-    (select count(*) from ezidapp_searchgroup      where pid not in    (select pid from ezidapp_storegroup )) as search_group,
-    (select count(*) from ezidapp_searchprofile    where label not in  (select label from ezidapp_storeprofile )) as search_profile,
-    (select count(*) from ezidapp_searchdatacenter where symbol not in (select symbol from ezidapp_storedatacenter )) as search_datacenter
+create fulltext index ezidapp_searchidentifier_keywords
+on ezidapp_searchidentifier(keywords)
 ;
-
-# Check that there are no nulls.
-# All counts should be 0.
-select
-    (select count(*) from ezidapp_searchidentifier si where si.owner_id is null) as owner,
-    (select count(*) from ezidapp_searchidentifier si where si.ownergroup_id is null) as ownergroup,
-    (select count(*) from ezidapp_searchidentifier si where si.profile_id is null) as `profile`,
-    (select count(*) from ezidapp_searchidentifier si where si.datacenter_id is null) as datacenter
+create fulltext index ezidapp_searchidentifier_resourcecreator
+on ezidapp_searchidentifier(resourcecreator)
 ;
-
-# Check search-to-search FKs.
-# All counts should be 0 BEFORE updating to store.
-select
-    (select count(*) from ezidapp_searchidentifier si where si.owner_id not in (select id from ezidapp_searchuser )) as owner,
-    (select count(*) from ezidapp_searchidentifier si where si.ownergroup_id not in (select id from ezidapp_searchgroup )) as ownergroup,
-    (select count(*) from ezidapp_searchidentifier si where si.profile_id not in (select id from ezidapp_searchprofile )) as label,
-    (select count(*) from ezidapp_searchidentifier si where si.datacenter_id not in (select id from ezidapp_searchdatacenter )) as symbol
+create fulltext index ezidapp_searchidentifier_resourcepublisher
+on ezidapp_searchidentifier(resourcepublisher)
 ;
-
-start transaction;
-
-update ezidapp_searchidentifier si
-    left join ezidapp_searchuser searchuser on searchuser.id = si.owner_id
-    left join ezidapp_storeuser storeuser on storeuser.pid = searchuser.pid
-    left join ezidapp_searchgroup searchgroup on searchgroup.id = si.ownergroup_id
-    left join ezidapp_storegroup storegroup on storegroup.pid = searchgroup.pid
-    left join ezidapp_searchprofile searchprofile on searchprofile.id = si.profile_id
-    left join ezidapp_storeprofile storeprofile on storeprofile.label = searchprofile.label
-    left join ezidapp_searchdatacenter searchdatacenter on searchdatacenter.id = si.datacenter_id
-    left join ezidapp_storedatacenter storedatacenter on storedatacenter.symbol = searchdatacenter.symbol
-set si.owner_id      = storeuser.id,
-    si.ownergroup_id = storegroup.id,
-    si.profile_id    = storeprofile.id,
-    si.datacenter_id = storedatacenter.id
-where true
+create fulltext index ezidapp_searchidentifier_resourcetitle
+on ezidapp_searchidentifier(resourcetitle)
 ;
-
-insert into ezidapp_storedatacenter(symbol, name)
-select a.symbol, a.symbol from ezidapp_searchdatacenter a
-where a.symbol not in (select symbol from ezidapp_storedatacenter)
-;
-
-# Check search-to-store FKs
-# All counts should be 0 AFTER updating to store.
-select
-    (select count(*) from ezidapp_searchidentifier si where si.owner_id not in (select id from ezidapp_storeuser )) as owner,
-    (select count(*) from ezidapp_searchidentifier si where si.ownergroup_id not in (select id from ezidapp_storegroup )) as ownergroup,
-    (select count(*) from ezidapp_searchidentifier si where si.profile_id not in (select id from ezidapp_storeprofile )) as label,
-    (select count(*) from ezidapp_searchidentifier si where si.datacenter_id not in (select id from ezidapp_storedatacenter )) as symbol
-;
-
 
 alter table ezidapp_searchidentifier
-    add constraint `ezidapp_searc_owner_id_17d8ce4cfb6b0401_fk_ezidapp_searchuser_id` foreign key (`owner_id`) references `ezidapp_storeuser` (`id`),
-    add constraint `ezidapp_ownergroup_id_69f5065adf48f369_fk_ezidapp_searchgroup_id` foreign key (`ownergroup_id`) references `ezidapp_storegroup` (`id`),
-    add constraint `ezidapp__profile_id_112e6b8634f63b63_fk_ezidapp_searchprofile_id` foreign key (`profile_id`) references `ezidapp_storeprofile` (`id`),
-    add constraint `ez_datacenter_id_2c99a133444936c8_fk_ezidapp_searchdatacenter_id` foreign key (`datacenter_id`) references `ezidapp_storedatacenter` (`id`)
+add key `ezidapp_searchidentifier_5e7b1936`(`owner_id`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_365b2611`(`ownergroup_id`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_13bc2970`(`datacenter_id`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_83a0eb3f`(`profile_id`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_owner_id_60c2c5fffcb40895_idx`(`owner_id`, `identifier`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_ownergroup_id_4b76dd7c4564df4f_idx`(`ownergroup_id`, `identifier`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_owner_id_47ecdfd54025f1f1_idx`(`owner_id`, `createTime`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_owner_id_59016f4a7ffbcaaa_idx`(`owner_id`, `updateTime`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_owner_id_5b203a171bdbab38_idx`(`owner_id`, `status`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_owner_id_3e88a7c1b2b5c693_idx`(`owner_id`, `exported`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_owner_id_58dfc6401ef0e359_idx`(`owner_id`, `crossrefStatus`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_owner_id_431b22d7016b97df_idx`(`owner_id`, `profile_id`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_owner_id_52f3896c5fc67016_idx`(`owner_id`, `isTest`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_owner_id_5c11adaf88d856d0_idx`(`owner_id`, `searchablePublicationYear`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_owner_id_54da573427e72c0e_idx`(`owner_id`, `searchableResourceType`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_owner_id_18a46334256a7530_idx`(`owner_id`, `hasMetadata`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_owner_id_1d05153b51fd9dff_idx`(`owner_id`, `hasIssues`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_owner_id_76e131b0c70070a1_idx`(`owner_id`, `resourceCreatorPrefix`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_owner_id_198f8d3796dae4b9_idx`(`owner_id`, `resourceTitlePrefix`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_owner_id_263dc1dd7d2fd3ef_idx`(`owner_id`, `resourcePublisherPrefix`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_ownergroup_id_39b7cdc64bc267c3_idx`(`ownergroup_id`, `createTime`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_ownergroup_id_6c5194bcf1d0014e_idx`(`ownergroup_id`, `updateTime`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_ownergroup_id_1d431d7513ab02ec_idx`(`ownergroup_id`, `status`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_ownergroup_id_48b886662536e7fd_idx`(`ownergroup_id`, `exported`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_ownergroup_id_2114f948ed092669_idx`(`ownergroup_id`, `crossrefStatus`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_ownergroup_id_6cfbff68ca3e25cb_idx`(`ownergroup_id`, `profile_id`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_ownergroup_id_449f25bec77c57da_idx`(`ownergroup_id`, `isTest`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_ownergroup_id_4a1baf4823ddab6c_idx`(`ownergroup_id`, `searchablePublicationYear`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_ownergroup_id_54e4e22002a54d2_idx`(`ownergroup_id`, `searchableResourceType`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_ownergroup_id_65871830cd29aaf0_idx`(`ownergroup_id`, `hasMetadata`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_ownergroup_id_4ad29fb0ede49103_idx`(`ownergroup_id`, `hasIssues`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_ownergroup_id_3ac1ed25c2bfbb2d_idx`(`ownergroup_id`, `resourceCreatorPrefix`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_ownergroup_id_68875bac9225d3c9_idx`(`ownergroup_id`, `resourceTitlePrefix`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_ownergroup_id_2388bfe261a735c5_idx`(`ownergroup_id`, `resourcePublisherPrefix`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifie_publicSearchVisible_58de9f6f00b8058e_idx`(`publicSearchVisible`, `identifier`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifie_publicSearchVisible_1932465b0335635c_idx`(`publicSearchVisible`, `createTime`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifie_publicSearchVisible_47b0a294295f5ef5_idx`(`publicSearchVisible`, `updateTime`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifie_publicSearchVisible_1e447c57e83c8d5d_idx`(`publicSearchVisible`, `searchablePublicationYear`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifie_publicSearchVisible_47396846c619370f_idx`(`publicSearchVisible`, `searchableResourceType`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifie_publicSearchVisible_117042133b78a88e_idx`(`publicSearchVisible`, `resourceCreatorPrefix`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_publicSearchVisible_6807647c6d8cb52_idx`(`publicSearchVisible`, `resourceTitlePrefix`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifie_publicSearchVisible_2e067bd0a9494a38_idx`(`publicSearchVisible`, `resourcePublisherPrefix`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_searchableTarget_24d34538786996df_idx`(`searchableTarget`)
+;
+alter table ezidapp_searchidentifier
+add key `ezidapp_searchidentifier_oaiVisible_1d291a23fcff2ce2_idx`(`oaiVisible`, `updateTime`)
 ;
 
-
-
-
-# select
-#     (select count(*) from ezidapp_searchidentifier es) as 'all',
-#     (select count(*) from ezidapp_searchidentifier es where metadata is not null) as 'metadata_not_null'
-# ;
-#
-# select count(*) from ezidapp_searchidentifier es where rand() < 0.01;
-
-# # Set up a fresh ezid_test_db
-# drop database if exists ezid_test_db;
-# create database ezid_test_db;
-# use ezid_test_db;
-# drop user if exists 'ezid_test_user'@'localhost';
-# drop user if exists 'ezid_test_user'@'%';
-# create user 'ezid_test_user'@'localhost' identified by 'ezid_test_pw';
-# grant all privileges on *.* to 'ezid_test_user'@'localhost' with grant option;
-# create user 'ezid_test_user'@'%' identified by 'ezid_test_pw';
-# grant all privileges on *.* to 'ezid_test_user'@'%' with grant option;
-# show databases;
-#
-# # noinspection SpellCheckingInspectionForFile
-# create fulltext index ezidapp_searchidentifier_resourceTitle on ezidapp_searchidentifier(resourceTitle);
-# create fulltext index ezidapp_searchidentifier_resourceCreator on ezidapp_searchidentifier(resourceCreator);
-# create fulltext index ezidapp_searchidentifier_resourcePublisher on ezidapp_searchidentifier(resourcePublisher);
-# create fulltext index ezidapp_searchidentifier_keywords on ezidapp_searchidentifier(keywords);
-# # drop index ezidapp_searchidentifier_keywords on ezidapp_searchidentifier;
-#
-#
-# select count(*)
-# from ezidapp_identifier;
-# select count(*)
-# from ezidapp_identifier
-# where oaiVisible is null;
-# select count(*)
-# from ezidapp_searchidentifier;
-# select count(*)
-# from ezidapp_searchidentifier
-# where oaiVisible is null;
-#
-# #### Async queues
-#
-# select concat('drop table ', table_name, ';')
-# from information_schema.tables t
-# where table_name like 'ezidapp%queue';
-#
-# drop table ezidapp_binderqueue;
-# drop table ezidapp_crossrefqueue;
-# drop table ezidapp_datacitequeue;
-# drop table ezidapp_downloadqueue;
-# drop table ezidapp_searchindexerqueue;
-# drop table ezidapp_updatequeue;
-#
-# create table `ezidapp_searchindexerqueue` (
-#     `seq` int not null auto_increment,
-#     `enqueueTime` int not null,
-#     `submitTime` int default null,
-#     `operation` varchar(1) not null,
-#     `status` varchar(1) not null,
-#     `message` longtext not null,
-#     `batchId` varchar(36) not null,
-#     `error` longtext not null,
-#     `errorIsPermanent` tinyint(1) not null,
-#     `refIdentifier_id` int not null,
-#     primary key (`seq`),
-#     key `ezidapp_searchindexe_refIdentifier_id_7b72d1a2_fk_ezidapp_r`(`refIdentifier_id`),
-#     key `ezidapp_searchindexerqueue_operation_577fd676`(`operation`),
-#     key `ezidapp_searchindexerqueue_status_9aeeb55e`(`status`),
-#     constraint `ezidapp_searchindexe_refIdentifier_id_7b72d1a2_fk_ezidapp_r` foreign key (`refIdentifier_id`) references `ezidapp_refidentifier`(`id`)
-# )
-#     engine = InnoDB
-#     default charset = utf8mb4
-# ;
-#
-# create table ezidapp_binderqueue like ezidapp_searchindexerqueue;
-# create table ezidapp_crossrefqueue like ezidapp_searchindexerqueue;
-# create table ezidapp_datacitequeue like ezidapp_searchindexerqueue;
-# create table ezidapp_downloadqueue like ezidapp_searchindexerqueue;
-# create table ezidapp_updatequeue like ezidapp_searchindexerqueue;
-#
-#
-# #### Backups
-#
-# create table bak_searchidentifier like ezidapp_searchidentifier;
-# insert into bak_searchidentifier
-# select *
-# from ezidapp_searchidentifier es;
-#
-# create table bak_django_migrations like django_migrations;
-# insert bak_django_migrations
-# select *
-# from django_migrations dm;
-# select count(*)
-# from bak_django_migrations bdm;
-#
-# select *
-# from django_migrations bdm
-# where app = 'ezidapp';
-# delete
-# from django_migrations
-# where app = 'ezidapp';
-# select count(*)
-# from django_migrations dm;
-#
-#
-# ####
-#
-#
-# drop table ezidapp_binderqueue;
-#
-# create table if not exists ezidapp_binderqueue (
-#     seq int auto_increment primary key,
-#     enqueuetime int not null,
-#     submittime int null,
-#     operation varchar(1) not null,
-#     status varchar(1) not null,
-#     message longtext not null,
-#     batchid varchar(36) not null,
-#     error longtext not null,
-#     errorispermanent tinyint(1) not null,
-#     refidentifier_id int not null,
-#     constraint ezidapp_binderqueue_refidentifier_id_50f30ec2_fk_ezidapp_r foreign key (refidentifier_id) references ezidapp_refidentifier(id)
-# );
-#
-# create index ezidapp_binderqueue_status_55adbf21 on ezidapp_binderqueue(status);
-#
-#
-#
-# select *
-# from ezidapp_datacenter;
-#
-# show table status;
-#
-# alter table ezidapp_searchidentifier
-# add primary key (`id`);
-# alter table ezidapp_searchidentifier
-# add unique key `identifier`(`identifier`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_5e7b1936`(`owner_id`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_365b2611`(`ownergroup_id`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_13bc2970`(`datacenter_id`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_83a0eb3f`(`profile_id`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_owner_id_60c2c5fffcb40895_idx`(`owner_id`, `identifier`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_ownergroup_id_4b76dd7c4564df4f_idx`(`ownergroup_id`, `identifier`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_owner_id_47ecdfd54025f1f1_idx`(`owner_id`, `createTime`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_owner_id_59016f4a7ffbcaaa_idx`(`owner_id`, `updateTime`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_owner_id_5b203a171bdbab38_idx`(`owner_id`, `status`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_owner_id_3e88a7c1b2b5c693_idx`(`owner_id`, `exported`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_owner_id_58dfc6401ef0e359_idx`(`owner_id`, `crossrefStatus`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_owner_id_431b22d7016b97df_idx`(`owner_id`, `profile_id`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_owner_id_52f3896c5fc67016_idx`(`owner_id`, `isTest`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_owner_id_5c11adaf88d856d0_idx`(`owner_id`, `searchablePublicationYear`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_owner_id_54da573427e72c0e_idx`(`owner_id`, `searchableResourceType`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_owner_id_18a46334256a7530_idx`(`owner_id`, `hasMetadata`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_owner_id_1d05153b51fd9dff_idx`(`owner_id`, `hasIssues`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_owner_id_76e131b0c70070a1_idx`(`owner_id`, `resourceCreatorPrefix`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_owner_id_198f8d3796dae4b9_idx`(`owner_id`, `resourceTitlePrefix`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_owner_id_263dc1dd7d2fd3ef_idx`(`owner_id`, `resourcePublisherPrefix`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_ownergroup_id_39b7cdc64bc267c3_idx`(`ownergroup_id`, `createTime`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_ownergroup_id_6c5194bcf1d0014e_idx`(`ownergroup_id`, `updateTime`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_ownergroup_id_1d431d7513ab02ec_idx`(`ownergroup_id`, `status`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_ownergroup_id_48b886662536e7fd_idx`(`ownergroup_id`, `exported`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_ownergroup_id_2114f948ed092669_idx`(`ownergroup_id`, `crossrefStatus`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_ownergroup_id_6cfbff68ca3e25cb_idx`(`ownergroup_id`, `profile_id`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_ownergroup_id_449f25bec77c57da_idx`(`ownergroup_id`, `isTest`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_ownergroup_id_4a1baf4823ddab6c_idx`(`ownergroup_id`, `searchablePublicationYear`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_ownergroup_id_54e4e22002a54d2_idx`(`ownergroup_id`, `searchableResourceType`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_ownergroup_id_65871830cd29aaf0_idx`(`ownergroup_id`, `hasMetadata`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_ownergroup_id_4ad29fb0ede49103_idx`(`ownergroup_id`, `hasIssues`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_ownergroup_id_3ac1ed25c2bfbb2d_idx`(`ownergroup_id`, `resourceCreatorPrefix`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_ownergroup_id_68875bac9225d3c9_idx`(`ownergroup_id`, `resourceTitlePrefix`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_ownergroup_id_2388bfe261a735c5_idx`(`ownergroup_id`, `resourcePublisherPrefix`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifie_publicSearchVisible_58de9f6f00b8058e_idx`(`publicSearchVisible`, `identifier`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifie_publicSearchVisible_1932465b0335635c_idx`(`publicSearchVisible`, `createTime`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifie_publicSearchVisible_47b0a294295f5ef5_idx`(`publicSearchVisible`, `updateTime`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifie_publicSearchVisible_1e447c57e83c8d5d_idx`(`publicSearchVisible`, `searchablePublicationYear`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifie_publicSearchVisible_47396846c619370f_idx`(`publicSearchVisible`, `searchableResourceType`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifie_publicSearchVisible_117042133b78a88e_idx`(`publicSearchVisible`, `resourceCreatorPrefix`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_publicSearchVisible_6807647c6d8cb52_idx`(`publicSearchVisible`, `resourceTitlePrefix`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifie_publicSearchVisible_2e067bd0a9494a38_idx`(`publicSearchVisible`, `resourcePublisherPrefix`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_searchableTarget_24d34538786996df_idx`(`searchableTarget`);
-# alter table ezidapp_searchidentifier
-# add key `ezidapp_searchidentifier_oaiVisible_1d291a23fcff2ce2_idx`(`oaiVisible`, `updateTime`);
-# alter table ezidapp_searchidentifier
-# add fulltext key `ezidapp_searchidentifier_resourceTitle`(`resourceTitle`);
-# alter table ezidapp_searchidentifier
-# add fulltext key `ezidapp_searchidentifier_resourceCreator`(`resourceCreator`);
-# alter table ezidapp_searchidentifier
-# add fulltext key `ezidapp_searchidentifier_resourcePublisher`(`resourcePublisher`);
-# alter table ezidapp_searchidentifier
-# add fulltext key `ezidapp_searchidentifier_keywords`(`keywords`);
-# alter table ezidapp_searchidentifier
-# add constraint `ez_datacenter_id_2c99a133444936c8_fk_ezidapp_searchdatacenter_id`;
-#
-#
-# # Drop all of Django's internal tables
-# set foreign_key_checks = 0;
-# drop table if exists auth_group cascade;
-# drop table if exists auth_group_permissions cascade;
-# drop table if exists auth_permission cascade;
-# drop table if exists auth_user cascade;
-# drop table if exists auth_user_groups cascade;
-# drop table if exists auth_user_user_permissions cascade;
-# drop table if exists django_admin_log cascade;
-# drop table if exists django_content_type cascade;
-# drop table if exists django_migrations cascade;
-# drop table if exists django_session cascade;
-# set foreign_key_checks = 1;
-#
-# # show create table ezid_test_db.django_content_type;
-# # create table `django_content_type`
-# # (
-# #     `id`        int          not null auto_increment,
-# #     `app_label` varchar(100) not null,
-# #     `model`     varchar(100) not null,
-# #     primary key (`id`),
-# #     unique key `django_content_type_app_label_model_76bd3d3b_uniq` (`app_label`, `model`)
-# # ) engine = InnoDB
-# #   auto_increment = 32
-# #   default charset = latin1
-# # ;
-#
-# delete
-# from test3.django_migrations dm
-# where dm.app = 'ezidapp';
-#
-# ```bash
-# rm -rf ezidapp/migrations/*
-# ./manage.py migrate contenttypes
-# ./manage.py migrate
-# ./manage.py migrate --fake
-# ./manage.py makemigrations ezidapp
-# ./manage.py migrate --fake-initial
-# ```
-#
-#
-# show index from ezidapp_refidentifier;
-# alter table ezidapp_refidentifier
-# drop index identifier;
-# alter table ezidapp_refidentifier
-# add index identifier using btree (identifier);
-#
-# # Rename columns to remove all 'store' prefixes
-# # MySQL 5
-# alter table ezidapp_user_shoulders
-# change column storeuser_id user_id int;
-# alter table ezidapp_group_shoulders
-# change column storegroup_id group_id int;
-# alter table ezidapp_user_proxies
-# change column from_storeuser_id from_user_id int;
-# alter table ezidapp_user_proxies
-# change column to_storeuser_id to_user_id int;
-# # MariaDB
-# alter table ezidapp_user_shoulders rename column storeuser_id to user_id;
-# alter table ezidapp_group_shoulders rename column storegroup_id to group_id;
-# alter table ezidapp_user_proxies rename column from_storeuser_id to from_user_id;
-# alter table ezidapp_user_proxies rename column to_storeuser_id to to_user_id;
-# ;
-#
-# # Rename the tables to remove all 'store' prefixes.
-# rename table ezidapp_storedatacenter to ezidapp_datacenter;
-# rename table ezidapp_storegroup to ezidapp_group;
-# rename table ezidapp_storegroup_shoulders to ezidapp_group_shoulders;
-# rename table ezidapp_storeidentifier to ezidapp_identifier;
-# rename table ezidapp_storeprofile to ezidapp_profile;
-# rename table ezidapp_storerealm to ezidapp_realm;
-# rename table ezidapp_storeuser to ezidapp_user;
-# rename table ezidapp_storeuser_proxies to ezidapp_user_proxies;
-# rename table ezidapp_storeuser_shoulders to ezidapp_user_shoulders;
-#
-# select concat_ws(' ', 'rename table', table_name, 'to', replace(table_name, '_store', '_'), ';')
-# from information_schema.tables
-# where table_schema = 'ezid' and table_name like 'ezidapp_store%'
-# order by table_name
-# ;
-#
-# # Drop the 'stub' tables that exist only to support ezidapp_searchidentifier when located in another DB.
-# # These tables contain copies of some of the columns in the corresponding store* tables. The only search*
-# # table that remains afterwards is ezidapp_searchidentifier.
-# drop table ezidapp_searchdatacenter;
-# drop table ezidapp_searchgroup;
-# drop table ezidapp_searchprofile;
-# drop table ezidapp_searchrealm;
-# drop table ezidapp_searchuser;
-#
-# # MySQL (same as MariaDB, except using 'foreign key' instead of 'constraint')
-#
-# alter table ezidapp_searchgroup
-# drop foreign key ezidapp_sear_realm_id_58cd72178e312e42_fk_ezidapp_searchrealm_id;
-# alter table ezidapp_searchidentifier
-# drop foreign key ez_datacenter_id_2c99a133444936c8_fk_ezidapp_searchdatacenter_id;
-# alter table ezidapp_searchidentifier
-# drop foreign key ezidapp__profile_id_112e6b8634f63b63_fk_ezidapp_searchprofile_id;
-# alter table ezidapp_searchidentifier
-# drop foreign key ezidapp_ownergroup_id_69f5065adf48f369_fk_ezidapp_searchgroup_id;
-# alter table ezidapp_searchidentifier
-# drop foreign key ezidapp_searc_owner_id_17d8ce4cfb6b0401_fk_ezidapp_searchuser_id;
-# alter table ezidapp_searchuser
-# drop foreign key ezidapp_sear_realm_id_3d437af11e1add07_fk_ezidapp_searchrealm_id;
-# alter table ezidapp_shoulder
-# drop foreign key ezid_datacenter_id_4fb7570a75b0c69_fk_ezidapp_storedatacenter_id;
-# alter table ezidapp_shoulder
-# drop foreign key ezidapp_shoulder_registration_agency__ba15f13e_fk_ezidapp_r;
-# alter table ezidapp_shoulder
-# drop foreign key ezidapp_shoulder_shoulder_type_id_184bbced_fk_ezidapp_s;
-# alter table ezidapp_storegroup
-# drop foreign key ezidapp_store_realm_id_3405b66a3ee93b42_fk_ezidapp_storerealm_id;
-# alter table ezidapp_storegroup_shoulders
-# drop foreign key ezidapp__storegroup_id_59e419f89a47aef8_fk_ezidapp_storegroup_id;
-# alter table ezidapp_storegroup_shoulders
-# drop foreign key ezidapp_stor_shoulder_id_592128c84020a89a_fk_ezidapp_shoulder_id;
-# alter table ezidapp_storeidentifier
-# drop foreign key ezi_datacenter_id_3bc5951853d0443c_fk_ezidapp_storedatacenter_id;
-# alter table ezidapp_storeidentifier
-# drop foreign key ezidapp__ownergroup_id_10bf8aa5ea27b4bd_fk_ezidapp_storegroup_id;
-# alter table ezidapp_storeidentifier
-# drop foreign key ezidapp_s_profile_id_4105f1929b18ac77_fk_ezidapp_storeprofile_id;
-# alter table ezidapp_storeidentifier
-# drop foreign key ezidapp_storei_owner_id_2a042b1b01e4a83b_fk_ezidapp_storeuser_id;
-# alter table ezidapp_storeuser
-# drop foreign key ezidapp_store_group_id_7eff2039d02834ed_fk_ezidapp_storegroup_id;
-# alter table ezidapp_storeuser
-# drop foreign key ezidapp_store_realm_id_5d5c037d7f3fac93_fk_ezidapp_storerealm_id;
-# alter table ezidapp_storeuser_proxies
-# drop foreign key ezidapp_storeuser_pr_from_storeuser_id_4dc227f6_fk_ezidapp_s;
-# alter table ezidapp_storeuser_proxies
-# drop foreign key ezidapp_storeuser_pr_to_storeuser_id_5588e255_fk_ezidapp_s;
-# alter table ezidapp_storeuser_shoulders
-# drop foreign key ezidapp_st_storeuser_id_6730d06357e88738_fk_ezidapp_storeuser_id;
-# alter table ezidapp_storeuser_shoulders
-# drop foreign key ezidapp_stor_shoulder_id_760fcf030c9067e7_fk_ezidapp_shoulder_id;
-#
-# select concat_ws(' ', 'alter table', table_name, 'drop foreign key', constraint_name, ';')
-# from information_schema.key_column_usage
-# where referenced_table_schema = 'ezid' and referenced_table_name like 'ezidapp_%';
-#
-#
-# # MariaDB
-#
-# # Queries generated by query below, all search* tables
-# # ezidapp_searchuser,group_id,ezidapp_sear_group_id_488efb1f64647b87_fk_ezidapp_searchgroup_id,ezidapp_searchgroup,id
-# alter table ezidapp_searchuser
-# drop constraint ezidapp_sear_group_id_488efb1f64647b87_fk_ezidapp_searchgroup_id;
-# # ezidapp_searchuser,realm_id,ezidapp_sear_realm_id_3d437af11e1add07_fk_ezidapp_searchrealm_id,ezidapp_searchrealm,id
-# alter table ezidapp_searchuser
-# drop constraint ezidapp_sear_realm_id_3d437af11e1add07_fk_ezidapp_searchrealm_id;
-# # ezidapp_searchidentifier,datacenter_id,ez_datacenter_id_2c99a133444936c8_fk_ezidapp_searchdatacenter_id,ezidapp_searchdatacenter,id
-# alter table ezidapp_searchidentifier
-# drop constraint ez_datacenter_id_2c99a133444936c8_fk_ezidapp_searchdatacenter_id;
-# # ezidapp_searchidentifier,profile_id,ezidapp__profile_id_112e6b8634f63b63_fk_ezidapp_searchprofile_id,ezidapp_searchprofile,id
-# alter table ezidapp_searchidentifier
-# drop constraint ezidapp__profile_id_112e6b8634f63b63_fk_ezidapp_searchprofile_id;
-# # ezidapp_searchidentifier,ownergroup_id,ezidapp_ownergroup_id_69f5065adf48f369_fk_ezidapp_searchgroup_id,ezidapp_searchgroup,id
-# alter table ezidapp_searchidentifier
-# drop constraint ezidapp_ownergroup_id_69f5065adf48f369_fk_ezidapp_searchgroup_id;
-# # ezidapp_searchidentifier,owner_id,ezidapp_searc_owner_id_17d8ce4cfb6b0401_fk_ezidapp_searchuser_id,ezidapp_searchuser,id
-# alter table ezidapp_searchidentifier
-# drop constraint ezidapp_searc_owner_id_17d8ce4cfb6b0401_fk_ezidapp_searchuser_id;
-# # ezidapp_searchgroup,realm_id,ezidapp_sear_realm_id_58cd72178e312e42_fk_ezidapp_searchrealm_id,ezidapp_searchrealm,id
-# alter table ezidapp_searchgroup
-# drop constraint ezidapp_sear_realm_id_58cd72178e312e42_fk_ezidapp_searchrealm_id;
-#
-# # Queries generated by query below, all store* tables
-# # ezidapp_storeuser_shoulders,shoulder_id,ezidapp_stor_shoulder_id_760fcf030c9067e7_fk_ezidapp_shoulder_id,ezidapp_shoulder,id
-# alter table ezidapp_storeuser_shoulders
-# drop constraint ezidapp_stor_shoulder_id_760fcf030c9067e7_fk_ezidapp_shoulder_id;
-# # ezidapp_storeuser_proxies,from_storeuser_id,ezida_from_storeuser_id_199e0c23a1cd56a7_fk_ezidapp_storeuser_id,ezidapp_storeuser,id
-# alter table ezidapp_storeuser_proxies
-# drop constraint ezida_from_storeuser_id_199e0c23a1cd56a7_fk_ezidapp_storeuser_id;
-# # ezidapp_storeuser_proxies,to_storeuser_id,ezidapp_to_storeuser_id_74856b12f826a792_fk_ezidapp_storeuser_id,ezidapp_storeuser,id
-# alter table ezidapp_storeuser_proxies
-# drop constraint ezidapp_to_storeuser_id_74856b12f826a792_fk_ezidapp_storeuser_id;
-# # ezidapp_storegroup,realm_id,ezidapp_store_realm_id_3405b66a3ee93b42_fk_ezidapp_storerealm_id,ezidapp_storerealm,id
-# alter table ezidapp_storegroup
-# drop constraint ezidapp_store_realm_id_3405b66a3ee93b42_fk_ezidapp_storerealm_id;
-# # ezidapp_storegroup_shoulders,storegroup_id,ezidapp__storegroup_id_59e419f89a47aef8_fk_ezidapp_storegroup_id,ezidapp_storegroup,id
-# alter table ezidapp_storegroup_shoulders
-# drop constraint ezidapp__storegroup_id_59e419f89a47aef8_fk_ezidapp_storegroup_id;
-# # ezidapp_storegroup_shoulders,shoulder_id,ezidapp_stor_shoulder_id_592128c84020a89a_fk_ezidapp_shoulder_id,ezidapp_shoulder,id
-# alter table ezidapp_storegroup_shoulders
-# drop constraint ezidapp_stor_shoulder_id_592128c84020a89a_fk_ezidapp_shoulder_id;
-# # ezidapp_storeuser,group_id,ezidapp_store_group_id_7eff2039d02834ed_fk_ezidapp_storegroup_id,ezidapp_storegroup,id
-# alter table ezidapp_storeuser
-# drop constraint ezidapp_store_group_id_7eff2039d02834ed_fk_ezidapp_storegroup_id;
-# # ezidapp_storeuser,realm_id,ezidapp_store_realm_id_5d5c037d7f3fac93_fk_ezidapp_storerealm_id,ezidapp_storerealm,id
-# alter table ezidapp_storeuser
-# drop constraint ezidapp_store_realm_id_5d5c037d7f3fac93_fk_ezidapp_storerealm_id;
-# # ezidapp_storeidentifier,datacenter_id,ezi_datacenter_id_3bc5951853d0443c_fk_ezidapp_storedatacenter_id,ezidapp_storedatacenter,id
-# alter table ezidapp_storeidentifier
-# drop constraint ezi_datacenter_id_3bc5951853d0443c_fk_ezidapp_storedatacenter_id;
-# # ezidapp_storeidentifier,ownergroup_id,ezidapp__ownergroup_id_10bf8aa5ea27b4bd_fk_ezidapp_storegroup_id,ezidapp_storegroup,id
-# alter table ezidapp_storeidentifier
-# drop constraint ezidapp__ownergroup_id_10bf8aa5ea27b4bd_fk_ezidapp_storegroup_id;
-# # ezidapp_storeidentifier,profile_id,ezidapp_s_profile_id_4105f1929b18ac77_fk_ezidapp_storeprofile_id,ezidapp_storeprofile,id
-# alter table ezidapp_storeidentifier
-# drop constraint ezidapp_s_profile_id_4105f1929b18ac77_fk_ezidapp_storeprofile_id;
-# # ezidapp_storeidentifier,owner_id,ezidapp_storei_owner_id_2a042b1b01e4a83b_fk_ezidapp_storeuser_id,ezidapp_storeuser,id
-# alter table ezidapp_storeidentifier
-# drop constraint ezidapp_storei_owner_id_2a042b1b01e4a83b_fk_ezidapp_storeuser_id;
-# # ezidapp_storeuser_shoulders,storeuser_id,ezidapp_st_storeuser_id_6730d06357e88738_fk_ezidapp_storeuser_id,ezidapp_storeuser,id
-# alter table ezidapp_storeuser_shoulders
-# drop constraint ezidapp_st_storeuser_id_6730d06357e88738_fk_ezidapp_storeuser_id;
-# # ezidapp_shoulder,datacenter_id,ezid_datacenter_id_4fb7570a75b0c69_fk_ezidapp_storedatacenter_id,ezidapp_storedatacenter,id
-# alter table ezidapp_shoulder
-# drop constraint ezid_datacenter_id_4fb7570a75b0c69_fk_ezidapp_storedatacenter_id;
-#
-# ## test3
-# alter table ezidapp_shoulder
-# drop constraint ezidapp_shoulder_datacenter_id_077f6b18_fk_ezidapp_s;
-# alter table ezidapp_shoulder
-# drop constraint ezidapp_shoulder_registration_agency__ba15f13e_fk_ezidapp_r;
-# alter table ezidapp_shoulder
-# drop constraint ezidapp_shoulder_shoulder_type_id_184bbced_fk_ezidapp_s;
-# alter table ezidapp_searchgroup
-# drop constraint ezidapp_searchgroup_realm_id_2c9c3c52_fk_ezidapp_searchrealm_id;
-# alter table ezidapp_group
-# drop constraint ezidapp_storegroup_realm_id_0c342308_fk_ezidapp_storerealm_id;
-# alter table ezidapp_group_shoulders
-# drop constraint ezidapp_storegroup_s_storegroup_id_ba874e30_fk_ezidapp_s;
-# alter table ezidapp_group_shoulders
-# drop constraint ezidapp_storegroup_s_shoulder_id_77a48100_fk_ezidapp_s;
-# alter table ezidapp_user
-# drop constraint ezidapp_storeuser_group_id_44816d9d_fk_ezidapp_storegroup_id;
-# alter table ezidapp_user
-# drop constraint ezidapp_storeuser_realm_id_90d87e43_fk_ezidapp_storerealm_id;
-# alter table ezidapp_user_shoulders
-# drop constraint ezidapp_storeuser_sh_shoulder_id_bb6c79e0_fk_ezidapp_s;
-# alter table ezidapp_user_shoulders
-# drop constraint ezidapp_storeuser_sh_storeuser_id_f6a0e6d4_fk_ezidapp_s;
-# alter table ezidapp_user_proxies
-# drop constraint ezidapp_storeuser_pr_from_storeuser_id_4dc227f6_fk_ezidapp_s;
-# alter table ezidapp_user_proxies
-# drop constraint ezidapp_storeuser_pr_to_storeuser_id_5588e255_fk_ezidapp_s;
-# alter table ezidapp_searchuser
-# drop constraint ezidapp_searchuser_group_id_611f6dd8_fk_ezidapp_searchgroup_id;
-# alter table ezidapp_searchuser
-# drop constraint ezidapp_searchuser_realm_id_c56160f4_fk_ezidapp_searchrealm_id;
-# alter table ezidapp_searchidentifier
-# drop constraint ezidapp_searchidenti_datacenter_id_cf60d753_fk_ezidapp_s;
-# alter table ezidapp_searchidentifier
-# drop constraint ezidapp_searchidenti_ownergroup_id_5148144b_fk_ezidapp_s;
-# alter table ezidapp_searchidentifier
-# drop constraint ezidapp_searchidenti_profile_id_0e5a20cb_fk_ezidapp_s;
-# alter table ezidapp_searchidentifier
-# drop constraint ezidapp_searchidenti_owner_id_f7eedd30_fk_ezidapp_s;
-#
-# # Generate queries for dropping foreign key constraints on all ezidapp_ tables
-# select concat_ws(' ', 'alter table', table_name, 'drop constraint', constraint_name, ';'), table_name, column_name,
-#     constraint_name, referenced_table_name, referenced_column_name
-# from information_schema.key_column_usage
-# where referenced_table_schema = 'test3' and referenced_table_name like 'ezidapp_%';
-#
-#
-# select
-#     (select count(*) from ezidapp_searchdatacenter) as searchdatacenter,
-#     (select count(*) from ezidapp_storedatacenter) as storedatacenter,
-#     (select count(*) from ezidapp_searchgroup) as searchgroup,
-#     (select count(*) from ezidapp_storegroup) as storegroup,
-#     (select count(*) from ezidapp_searchidentifier) as searchidentifier,
-#     (select count(*) from ezidapp_storeidentifier) as storeidentifier,
-#     (select count(*) from ezidapp_searchprofile) as searchprofile,
-#     (select count(*) from ezidapp_storeprofile) as storeprofile,
-#     (select count(*) from ezidapp_searchrealm) as searchrealm,
-#     (select count(*) from ezidapp_storerealm) as storerealm,
-#     (select count(*) from ezidapp_searchuser) as searchuser,
-#     (select count(*) from ezidapp_storeuser) as storeuser
-# ;
-#
-#
-# # searchdatacenter
-# # storedatacenter
-# # searchgroup
-# # storegroup
-# # searchidentifier
-# # storeidentifier
-# # searchprofile
-# # storeprofile
-# # searchrealm
-# # storerealm
-# # searchuser
-# # storeuser
-#
-# select column_name
-# from information_schema.columns
-# where table_schema = 'ezid' and table_name = 'ezidapp_searchdatacenter';
-# select column_name
-# from information_schema.columns
-# where table_schema = 'ezid' and table_name = 'ezidapp_storedatacenter';
-# select column_name
-# from information_schema.columns
-# where table_schema = 'ezid' and table_name = 'ezidapp_searchgroup';
-# select column_name
-# from information_schema.columns
-# where table_schema = 'ezid' and table_name = 'ezidapp_storegroup';
-# select column_name
-# from information_schema.columns
-# where table_schema = 'ezid' and table_name = 'ezidapp_searchidentifier';
-# select column_name
-# from information_schema.columns
-# where table_schema = 'ezid' and table_name = 'ezidapp_storeidentifier';
-# select column_name
-# from information_schema.columns
-# where table_schema = 'ezid' and table_name = 'ezidapp_searchprofile';
-# select column_name
-# from information_schema.columns
-# where table_schema = 'ezid' and table_name = 'ezidapp_storeprofile';
-# select column_name
-# from information_schema.columns
-# where table_schema = 'ezid' and table_name = 'ezidapp_searchrealm';
-# select column_name
-# from information_schema.columns
-# where table_schema = 'ezid' and table_name = 'ezidapp_storerealm';
-# select column_name
-# from information_schema.columns
-# where table_schema = 'ezid' and table_name = 'ezidapp_searchuser';
-# select column_name
-# from information_schema.columns
-# where table_schema = 'ezid' and table_name = 'ezidapp_storeuser';
-#
-# ##
-#
-# alter table `ezidapp_searchidentifier`
-# add column metadata json default null;
-# alter table `ezidapp_storeidentifier`
-# add column metadata json default null;
-# update ezidapp_searchidentifier
-# set metadata = '{}';
-# update ezidapp_storeidentifier
-# set metadata = '{}';
-#
-# kill 50;
-#
-# show full processlist;
-#
-# # Time of last update for any storeIdentifier (indicates when the DB was last used)
-# select from_unixtime(max(updatetime))
-# from ezidapp_storeidentifier es;
-#
-# drop index `ezidapp_searchidentifie_publicSearchVisible_117042133b78a88e_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifie_publicSearchVisible_1932465b0335635c_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifie_publicSearchVisible_1e447c57e83c8d5d_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifie_publicSearchVisible_2e067bd0a9494a38_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifie_publicSearchVisible_47396846c619370f_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifie_publicSearchVisible_47b0a294295f5ef5_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifie_publicSearchVisible_58de9f6f00b8058e_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_365b2611` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_keywords` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_oaiVisible_1d291a23fcff2ce2_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_owner_id_18a46334256a7530_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_owner_id_198f8d3796dae4b9_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_owner_id_1d05153b51fd9dff_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_owner_id_263dc1dd7d2fd3ef_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_owner_id_3e88a7c1b2b5c693_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_owner_id_431b22d7016b97df_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_owner_id_47ecdfd54025f1f1_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_owner_id_52f3896c5fc67016_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_owner_id_54da573427e72c0e_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_owner_id_58dfc6401ef0e359_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_owner_id_59016f4a7ffbcaaa_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_owner_id_5b203a171bdbab38_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_owner_id_5c11adaf88d856d0_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_owner_id_60c2c5fffcb40895_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_owner_id_76e131b0c70070a1_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_ownergroup_id_1d431d7513ab02ec_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_ownergroup_id_2114f948ed092669_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_ownergroup_id_2388bfe261a735c5_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_ownergroup_id_39b7cdc64bc267c3_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_ownergroup_id_3ac1ed25c2bfbb2d_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_ownergroup_id_449f25bec77c57da_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_ownergroup_id_48b886662536e7fd_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_ownergroup_id_4a1baf4823ddab6c_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_ownergroup_id_4ad29fb0ede49103_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_ownergroup_id_4b76dd7c4564df4f_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_ownergroup_id_54e4e22002a54d2_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_ownergroup_id_65871830cd29aaf0_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_ownergroup_id_68875bac9225d3c9_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_ownergroup_id_6c5194bcf1d0014e_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_publicSearchVisible_6807647c6d8cb52_idx` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_resourceCreator` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_resourcePublisher` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_resourceTitle` on ezidapp_searchidentifier;
-# drop index `ezidapp_searchidentifier_searchableTarget_24d34538786996df_idx` on ezidapp_searchidentifier;
-#
-# drop index `ezidapp_searchidentifier_ownergroup_id_6cfbff68ca3e25cb_idx` on ezidapp_searchidentifier;
-#
-# ##
-#
-# show create table ezidapp_searchidentifier;
-#
-# create table `ezidapp_searchidentifier` (
-#     `id` int(11) not null auto_increment,
-#     `identifier` varchar(255) character set ascii collate ascii_bin not null,
-#     `createTime` int(11) not null,
-#     `updateTime` int(11) not null,
-#     `status` varchar(1) not null,
-#     `unavailableReason` longtext character set utf8mb4 not null,
-#     `exported` tinyint(1) not null,
-#     `crossrefStatus` varchar(1) not null,
-#     `crossrefMessage` longtext character set utf8mb4 not null,
-#     `target` varchar(2000) not null,
-#     `cm` longblob not null,
-#     `agentRole` varchar(1) not null,
-#     `isTest` tinyint(1) not null,
-#     `owner_id` int(11) not null,
-#     `ownergroup_id` int(11) not null,
-#     `datacenter_id` int(11) default null,
-#     `profile_id` int(11) not null,
-#     `searchableTarget` varchar(255) not null,
-#     `resourceCreator` longtext character set utf8mb4 not null,
-#     `resourceTitle` longtext character set utf8mb4 not null,
-#     `resourcePublisher` longtext character set utf8mb4 not null,
-#     `resourcePublicationDate` longtext character set utf8mb4 not null,
-#     `searchablePublicationYear` int(11) default null,
-#     `resourceType` longtext character set utf8mb4 not null,
-#     `searchableResourceType` varchar(2) not null,
-#     `keywords` longtext character set utf8mb4 not null,
-#     `resourceCreatorPrefix` varchar(50) character set utf8mb4 not null,
-#     `resourceTitlePrefix` varchar(50) character set utf8mb4 not null,
-#     `resourcePublisherPrefix` varchar(50) character set utf8mb4 not null,
-#     `hasMetadata` tinyint(1) not null,
-#     `publicSearchVisible` tinyint(1) not null,
-#     `oaiVisible` tinyint(1) not null,
-#     `hasIssues` tinyint(1) not null,
-#     `linkIsBroken` tinyint(1) not null,
-#     primary key (`id`),
-#     unique key `identifier`(`identifier`),
-#     key `ezidapp_searchidentifier_5e7b1936`(`owner_id`),
-#     key `ezidapp_searchidentifier_365b2611`(`ownergroup_id`),
-#     key `ezidapp_searchidentifier_13bc2970`(`datacenter_id`),
-#     key `ezidapp_searchidentifier_83a0eb3f`(`profile_id`),
-#     key `ezidapp_searchidentifier_owner_id_60c2c5fffcb40895_idx`(`owner_id`, `identifier`),
-#     key `ezidapp_searchidentifier_ownergroup_id_4b76dd7c4564df4f_idx`(`ownergroup_id`, `identifier`),
-#     key `ezidapp_searchidentifier_owner_id_47ecdfd54025f1f1_idx`(`owner_id`, `createTime`),
-#     key `ezidapp_searchidentifier_owner_id_59016f4a7ffbcaaa_idx`(`owner_id`, `updateTime`),
-#     key `ezidapp_searchidentifier_owner_id_5b203a171bdbab38_idx`(`owner_id`, `status`),
-#     key `ezidapp_searchidentifier_owner_id_3e88a7c1b2b5c693_idx`(`owner_id`, `exported`),
-#     key `ezidapp_searchidentifier_owner_id_58dfc6401ef0e359_idx`(`owner_id`, `crossrefStatus`),
-#     key `ezidapp_searchidentifier_owner_id_431b22d7016b97df_idx`(`owner_id`, `profile_id`),
-#     key `ezidapp_searchidentifier_owner_id_52f3896c5fc67016_idx`(`owner_id`, `isTest`),
-#     key `ezidapp_searchidentifier_owner_id_5c11adaf88d856d0_idx`(`owner_id`, `searchablePublicationYear`),
-#     key `ezidapp_searchidentifier_owner_id_54da573427e72c0e_idx`(`owner_id`, `searchableResourceType`),
-#     key `ezidapp_searchidentifier_owner_id_18a46334256a7530_idx`(`owner_id`, `hasMetadata`),
-#     key `ezidapp_searchidentifier_owner_id_1d05153b51fd9dff_idx`(`owner_id`, `hasIssues`),
-#     key `ezidapp_searchidentifier_owner_id_76e131b0c70070a1_idx`(`owner_id`, `resourceCreatorPrefix`),
-#     key `ezidapp_searchidentifier_owner_id_198f8d3796dae4b9_idx`(`owner_id`, `resourceTitlePrefix`),
-#     key `ezidapp_searchidentifier_owner_id_263dc1dd7d2fd3ef_idx`(`owner_id`, `resourcePublisherPrefix`),
-#     key `ezidapp_searchidentifier_ownergroup_id_39b7cdc64bc267c3_idx`(`ownergroup_id`, `createTime`),
-#     key `ezidapp_searchidentifier_ownergroup_id_6c5194bcf1d0014e_idx`(`ownergroup_id`, `updateTime`),
-#     key `ezidapp_searchidentifier_ownergroup_id_1d431d7513ab02ec_idx`(`ownergroup_id`, `status`),
-#     key `ezidapp_searchidentifier_ownergroup_id_48b886662536e7fd_idx`(`ownergroup_id`, `exported`),
-#     key `ezidapp_searchidentifier_ownergroup_id_2114f948ed092669_idx`(`ownergroup_id`, `crossrefStatus`),
-#     key `ezidapp_searchidentifier_ownergroup_id_6cfbff68ca3e25cb_idx`(`ownergroup_id`, `profile_id`),
-#     key `ezidapp_searchidentifier_ownergroup_id_449f25bec77c57da_idx`(`ownergroup_id`, `isTest`),
-#     key `ezidapp_searchidentifier_ownergroup_id_4a1baf4823ddab6c_idx`(`ownergroup_id`, `searchablePublicationYear`),
-#     key `ezidapp_searchidentifier_ownergroup_id_54e4e22002a54d2_idx`(`ownergroup_id`, `searchableResourceType`),
-#     key `ezidapp_searchidentifier_ownergroup_id_65871830cd29aaf0_idx`(`ownergroup_id`, `hasMetadata`),
-#     key `ezidapp_searchidentifier_ownergroup_id_4ad29fb0ede49103_idx`(`ownergroup_id`, `hasIssues`),
-#     key `ezidapp_searchidentifier_ownergroup_id_3ac1ed25c2bfbb2d_idx`(`ownergroup_id`, `resourceCreatorPrefix`),
-#     key `ezidapp_searchidentifier_ownergroup_id_68875bac9225d3c9_idx`(`ownergroup_id`, `resourceTitlePrefix`),
-#     key `ezidapp_searchidentifier_ownergroup_id_2388bfe261a735c5_idx`(`ownergroup_id`, `resourcePublisherPrefix`),
-#     key `ezidapp_searchidentifie_publicSearchVisible_58de9f6f00b8058e_idx`(`publicSearchVisible`, `identifier`),
-#     key `ezidapp_searchidentifie_publicSearchVisible_1932465b0335635c_idx`(`publicSearchVisible`, `createTime`),
-#     key `ezidapp_searchidentifie_publicSearchVisible_47b0a294295f5ef5_idx`(`publicSearchVisible`, `updateTime`),
-#     key `ezidapp_searchidentifie_publicSearchVisible_1e447c57e83c8d5d_idx`(`publicSearchVisible`, `searchablePublicationYear`),
-#     key `ezidapp_searchidentifie_publicSearchVisible_47396846c619370f_idx`(`publicSearchVisible`, `searchableResourceType`),
-#     key `ezidapp_searchidentifie_publicSearchVisible_117042133b78a88e_idx`(`publicSearchVisible`, `resourceCreatorPrefix`),
-#     key `ezidapp_searchidentifier_publicSearchVisible_6807647c6d8cb52_idx`(`publicSearchVisible`, `resourceTitlePrefix`),
-#     key `ezidapp_searchidentifie_publicSearchVisible_2e067bd0a9494a38_idx`(`publicSearchVisible`, `resourcePublisherPrefix`),
-#     key `ezidapp_searchidentifier_searchableTarget_24d34538786996df_idx`(`searchableTarget`),
-#     key `ezidapp_searchidentifier_oaiVisible_1d291a23fcff2ce2_idx`(`oaiVisible`, `updateTime`),
-#     fulltext key `ezidapp_searchidentifier_resourceTitle`(`resourceTitle`),
-#     fulltext key `ezidapp_searchidentifier_resourceCreator`(`resourceCreator`),
-#     fulltext key `ezidapp_searchidentifier_resourcePublisher`(`resourcePublisher`),
-#     fulltext key `ezidapp_searchidentifier_keywords`(`keywords`),
-#     constraint `ez_datacenter_id_2c99a133444936c8_fk_ezidapp_searchdatacenter_id` foreign key (`datacenter_id`) references `ezidapp_searchdatacenter`(`id`),
-#     constraint `ezidapp__profile_id_112e6b8634f63b63_fk_ezidapp_searchprofile_id` foreign key (`profile_id`) references `ezidapp_searchprofile`(`id`),
-#     constraint `ezidapp_ownergroup_id_69f5065adf48f369_fk_ezidapp_searchgroup_id` foreign key (`ownergroup_id`) references `ezidapp_searchgroup`(`id`),
-#     constraint `ezidapp_searc_owner_id_17d8ce4cfb6b0401_fk_ezidapp_searchuser_id` foreign key (`owner_id`) references `ezidapp_searchuser`(`id`)
-# )
-#     engine = InnoDB
-#     auto_increment = 34228809
-#     default charset = utf8
-#     stats_sample_pages = 2000
-# ;
-#
-# ##
-#
-# alter table ezidapp_searchidentifier
-# add column metadata json;
-#
-# select count(*)
-# from ezidapp_searchidentifier es;
-# describe ezidapp_searchidentifier;
-#
-# show variables where value like '%r1%';
-#
-# select *
-# from ezidapp_shoulder es
-# where name like '%api%';
-#
-#
-# show engine innodb status;
-#
-#
-# select count(*)
-# from ezidapp_linkchecker el;
-#
-# select table_rows, table_name
-# from information_schema.tables
-# where table_schema = 'ezid' and table_name like '%_store%'
-# order by table_name
-# ;
-#
-# select table_rows, table_name
-# from information_schema.tables
-# where table_schema = 'ezid' and table_name like '%_search%'
-# order by table_name
-# ;
-#
-#
-# ####
-#
-#
-# create table auth_group (
-#     id int auto_increment primary key,
-#     name varchar(150) not null,
-#     constraint name unique (name)
-# );
-#
-# create table auth_user (
-#     id int auto_increment primary key,
-#     password varchar(128) not null,
-#     last_login datetime(6) null,
-#     is_superuser tinyint(1) not null,
-#     username varchar(150) not null,
-#     first_name varchar(150) not null,
-#     last_name varchar(150) not null,
-#     email varchar(254) not null,
-#     is_staff tinyint(1) not null,
-#     is_active tinyint(1) not null,
-#     date_joined datetime(6) not null,
-#     constraint username unique (username)
-# );
-#
-# create table auth_user_groups (
-#     id int auto_increment primary key,
-#     user_id int not null,
-#     group_id int not null,
-#     constraint user_id unique (user_id, group_id),
-#     constraint auth_user_groups_group_id_33ac548dcf5f8e37_fk_auth_group_id foreign key (group_id) references auth_group(id),
-#     constraint auth_user_groups_user_id_4b5ed4ffdb8fd9b0_fk_auth_user_id foreign key (user_id) references auth_user(id)
-# );
-#
-# create table backup_ezidapp_binderqueue (
-#     seq int default 0 not null,
-#     metadata longblob not null
-# );
-#
-# create table backup_ezidapp_crossrefqueue (
-#     seq int default 0 not null,
-#     metadata longblob not null
-# );
-#
-# create table backup_ezidapp_datacitequeue (
-#     seq int default 0 not null,
-#     metadata longblob not null
-# );
-#
-# create table backup_ezidapp_searchidentifier (
-#     id int default 0 not null,
-#     cm longblob not null
-# );
-#
-# create table django_content_type (
-#     id int auto_increment primary key,
-#     app_label varchar(100) not null,
-#     model varchar(100) not null,
-#     constraint django_content_type_app_label_45f3b1d93ec8c61c_uniq unique (app_label, model)
-# );
-#
-# create table auth_permission (
-#     id int auto_increment primary key,
-#     name varchar(255) not null,
-#     content_type_id int not null,
-#     codename varchar(100) not null,
-#     constraint content_type_id unique (content_type_id, codename),
-#     constraint auth__content_type_id_508cf46651277a81_fk_django_content_type_id foreign key (content_type_id) references django_content_type(id)
-# );
-#
-# create table auth_group_permissions (
-#     id int auto_increment primary key,
-#     group_id int not null,
-#     permission_id int not null,
-#     constraint group_id unique (group_id, permission_id),
-#     constraint auth_group__permission_id_1f49ccbbdc69d2fc_fk_auth_permission_id foreign key (permission_id) references auth_permission(id),
-#     constraint auth_group_permission_group_id_689710a9a73b7457_fk_auth_group_id foreign key (group_id) references auth_group(id)
-# );
-#
-# create table auth_user_user_permissions (
-#     id int auto_increment primary key,
-#     user_id int not null,
-#     permission_id int not null,
-#     constraint user_id unique (user_id, permission_id),
-#     constraint auth_user_u_permission_id_384b62483d7071f0_fk_auth_permission_id foreign key (permission_id) references auth_permission(id),
-#     constraint auth_user_user_permissi_user_id_7f0938558328534a_fk_auth_user_id foreign key (user_id) references auth_user(id)
-# );
-#
-# create table django_admin_log (
-#     id int auto_increment primary key,
-#     action_time datetime(6) not null,
-#     object_id longtext null,
-#     object_repr varchar(200) not null,
-#     action_flag smallint unsigned not null,
-#     change_message longtext not null,
-#     content_type_id int null,
-#     user_id int not null,
-#     constraint djang_content_type_id_697914295151027a_fk_django_content_type_id foreign key (content_type_id) references django_content_type(id),
-#     constraint django_admin_log_user_id_52fdd58701c5f563_fk_auth_user_id foreign key (user_id) references auth_user(id)
-# );
-#
-# create table django_migrations (
-#     id int auto_increment primary key,
-#     app varchar(255) not null,
-#     name varchar(255) not null,
-#     applied datetime(6) not null
-# );
-#
-# create table django_session (
-#     session_key varchar(40) not null primary key,
-#     session_data longtext not null,
-#     expire_date datetime(6) not null
-# );
-#
-# create index django_session_de54fa62 on django_session(expire_date);
-#
-# create table ezidapp_binderqueue (
-#     seq int auto_increment primary key,
-#     enqueuetime int not null,
-#     submittime int null,
-#     identifier varchar(1000) not null,
-#     metadata longblob not null,
-#     owner varchar(1000) not null,
-#     operation varchar(1) not null,
-#     status varchar(1) not null,
-#     message longtext not null,
-#     batchid varchar(36) not null,
-#     error longtext not null,
-#     errorispermanent tinyint(1) not null
-# );
-#
-# create index ezidapp_binderqueue_identifier_9b9a81d1 on ezidapp_binderqueue(identifier);
-#
-# create index ezidapp_binderqueue_owner_7a7cf1d5 on ezidapp_binderqueue(owner);
-#
-# create index ezidapp_binderqueue_status_55adbf21 on ezidapp_binderqueue(status);
-#
-# create table ezidapp_crossrefqueue (
-#     seq int auto_increment primary key,
-#     enqueuetime int not null,
-#     submittime int null,
-#     identifier varchar(1000) not null,
-#     metadata longblob not null,
-#     owner varchar(1000) not null,
-#     operation varchar(1) not null,
-#     status varchar(1) not null,
-#     message longtext not null,
-#     batchid varchar(36) not null,
-#     error longtext not null,
-#     errorispermanent tinyint(1) not null
-# );
-#
-# create index ezidapp_crossrefqueue_identifier_9b5a567d on ezidapp_crossrefqueue(identifier);
-#
-# create index ezidapp_crossrefqueue_owner_5b61bd96 on ezidapp_crossrefqueue(owner);
-#
-# create index ezidapp_crossrefqueue_status_285b2361 on ezidapp_crossrefqueue(status);
-#
-# create table ezidapp_datacenter (
-#     id int auto_increment primary key,
-#     symbol varchar(17) not null,
-#     name varchar(255) not null,
-#     constraint name unique (name),
-#     constraint symbol unique (symbol)
-# );
-#
-# create table ezidapp_datacitequeue (
-#     seq int auto_increment primary key,
-#     enqueuetime int not null,
-#     submittime int null,
-#     identifier varchar(1000) not null,
-#     metadata longblob not null,
-#     owner varchar(1000) not null,
-#     operation varchar(1) not null,
-#     status varchar(1) not null,
-#     message longtext not null,
-#     batchid varchar(36) not null,
-#     error longtext not null,
-#     errorispermanent tinyint(1) not null
-# );
-#
-# create index ezidapp_datacitequeue_identifier_a6494081 on ezidapp_datacitequeue(identifier);
-#
-# create index ezidapp_datacitequeue_owner_c31423b7 on ezidapp_datacitequeue(owner);
-#
-# create index ezidapp_datacitequeue_status_c99416f7 on ezidapp_datacitequeue(status);
-#
-# create table ezidapp_downloadqueue (
-#     seq int default 0 not null,
-#     metadata longblob not null
-# );
-#
-# create table ezidapp_group (
-#     id int auto_increment primary key,
-#     pid varchar(255) collate ascii_bin not null,
-#     groupname varchar(32) not null,
-#     organizationname varchar(255) not null,
-#     organizationacronym varchar(255) not null,
-#     organizationurl varchar(255) not null,
-#     organizationstreetaddress varchar(255) not null,
-#     agreementonfile tinyint(1) not null,
-#     crossrefenabled tinyint(1) not null,
-#     notes longtext not null,
-#     realm_id int not null,
-#     accounttype varchar(1) not null,
-#     constraint groupname unique (groupname),
-#     constraint pid unique (pid)
-# );
-#
-# create index ezidapp_store_realm_id_3405b66a3ee93b42_fk_ezidapp_storerealm_id on ezidapp_group(realm_id);
-#
-# create table ezidapp_group_shoulders (
-#     id int auto_increment primary key,
-#     group_id int null,
-#     shoulder_id int not null,
-#     constraint storegroup_id unique (group_id, shoulder_id)
-# );
-#
-# create index ezidapp_stor_shoulder_id_592128c84020a89a_fk_ezidapp_shoulder_id on ezidapp_group_shoulders(shoulder_id);
-#
-# create table ezidapp_identifier (
-#     id int auto_increment primary key,
-#     identifier varchar(255) collate ascii_bin not null,
-#     createtime int not null,
-#     updatetime int not null,
-#     status varchar(1) not null,
-#     unavailablereason longtext charset utf8mb4 not null,
-#     exported tinyint(1) not null,
-#     crossrefstatus varchar(1) not null,
-#     crossrefmessage longtext charset utf8mb4 not null,
-#     target varchar(2000) not null,
-#     cm longblob not null,
-#     agentrole varchar(1) not null,
-#     istest tinyint(1) not null,
-#     datacenter_id int null,
-#     owner_id int null,
-#     ownergroup_id int null,
-#     profile_id int not null,
-#     metadata json null,
-#     constraint identifier unique (identifier)
-# );
-#
-# create index ezidapp_storeidentifier_13bc2970 on ezidapp_identifier(datacenter_id);
-#
-# create index ezidapp_storeidentifier_365b2611 on ezidapp_identifier(ownergroup_id);
-#
-# create index ezidapp_storeidentifier_5e7b1936 on ezidapp_identifier(owner_id);
-#
-# create index ezidapp_storeidentifier_83a0eb3f on ezidapp_identifier(profile_id);
-#
-# create table ezidapp_linkchecker (
-#     id int auto_increment primary key,
-#     identifier varchar(255) collate ascii_bin not null,
-#     owner_id int not null,
-#     target varchar(2000) not null,
-#     lastchecktime int not null,
-#     numfailures int not null,
-#     returncode int null,
-#     mimetype varchar(255) not null,
-#     size int null,
-#     hash varchar(32) not null,
-#     isbad tinyint(1) not null,
-#     error longtext not null,
-#     constraint identifier unique (identifier)
-# );
-#
-# create index ezidapp_linkchecker_28a3c780 on ezidapp_linkchecker(numfailures);
-#
-# create index ezidapp_linkchecker_5e7b1936 on ezidapp_linkchecker(owner_id);
-#
-# create index ezidapp_linkchecker_owner_id_a6cbca8ea9539b4_idx on ezidapp_linkchecker(owner_id, isbad, lastchecktime);
-#
-# create table ezidapp_newaccountworksheet (
-#     id int auto_increment primary key,
-#     requestdate date not null,
-#     orgname varchar(255) not null,
-#     orgacronym varchar(255) not null,
-#     orgurl varchar(255) not null,
-#     orgstreetaddress varchar(255) not null,
-#     reqname varchar(255) not null,
-#     reqemail varchar(255) not null,
-#     reqphone varchar(255) not null,
-#     priname varchar(255) not null,
-#     priemail varchar(255) not null,
-#     priphone varchar(255) not null,
-#     secname varchar(255) not null,
-#     secemail varchar(255) not null,
-#     secphone varchar(255) not null,
-#     reqarks tinyint(1) not null,
-#     reqdois tinyint(1) not null,
-#     reqcrossref tinyint(1) not null,
-#     reqcrossrefemail varchar(255) not null,
-#     reqcomments longtext not null,
-#     setrealm varchar(255) not null,
-#     setgroupname varchar(255) not null,
-#     setusername varchar(255) not null,
-#     setnotes longtext not null,
-#     staready tinyint(1) not null,
-#     stashoulderscreated tinyint(1) not null,
-#     staaccountcreated tinyint(1) not null,
-#     accountemail varchar(255) not null,
-#     setnondefaultsetup tinyint(1) not null,
-#     setshoulderdisplayname varchar(255) not null,
-#     setuserdisplayname varchar(255) not null
-# );
-#
-# create table ezidapp_profile (
-#     id int auto_increment primary key,
-#     label varchar(32) not null,
-#     constraint label unique (label)
-# );
-#
-# create table ezidapp_realm (
-#     id int auto_increment primary key,
-#     name varchar(32) not null,
-#     constraint name unique (name)
-# );
-#
-#
-#
-# drop table ezidapp_refidentifier;
-#
-# create table ezid.ezidapp_refidentifier (
-#     id int auto_increment primary key,
-#     createtime int not null,
-#     updatetime int not null,
-#     status varchar(1) not null,
-#     unavailablereason longtext not null,
-#     exported tinyint(1) not null,
-#     crossrefstatus varchar(1) not null,
-#     crossrefmessage longtext not null,
-#     target varchar(2000) not null,
-#     cm longblob not null,
-#     metadata json not null,
-#     agentrole varchar(1) not null,
-#     istest tinyint(1) not null,
-#     identifier varchar(255) not null,
-#     datacenter_id int null,
-#     owner_id int null,
-#     ownergroup_id int null,
-#     profile_id int null,
-#     constraint ezidapp_refidentifie_datacenter_id_0927c7e5_fk_ezidapp_d foreign key (datacenter_id) references ezid.ezidapp_datacenter(id),
-#     constraint ezidapp_refidentifier_owner_id_bcf67913_fk_ezidapp_user_id foreign key (owner_id) references ezid.ezidapp_user(id),
-#     constraint ezidapp_refidentifier_ownergroup_id_d390fbc9_fk_ezidapp_group_id foreign key (ownergroup_id) references ezid.ezidapp_group(id),
-#     constraint ezidapp_refidentifier_profile_id_f497af12_fk_ezidapp_profile_id foreign key (profile_id) references ezid.ezidapp_profile(id)
-# );
-#
-#
-#
-# create table ezidapp_refidentifier (
-#     id int auto_increment primary key,
-#     identifier varchar(255) not null,
-#     createtime int not null,
-#     updatetime int not null,
-#     status varchar(1) not null,
-#     unavailablereason longtext not null,
-#     exported tinyint(1) not null,
-#     crossrefstatus varchar(1) not null,
-#     crossrefmessage longtext not null,
-#     target varchar(2000) not null,
-#     metadata json null,
-#     agentrole varchar(1) not null,
-#     istest tinyint(1) not null,
-#     constraint identifier unique (identifier)
-# );
-#
-# create table ezidapp_registrationagency (
-#     id int auto_increment primary key,
-#     registration_agency varchar(32) not null
-# );
-#
-# create table ezidapp_searchidentifier (
-#     id int auto_increment primary key,
-#     identifier varchar(255) collate ascii_bin not null,
-#     createtime int not null,
-#     updatetime int not null,
-#     status varchar(1) not null,
-#     unavailablereason longtext charset utf8mb4 not null,
-#     exported tinyint(1) not null,
-#     crossrefstatus varchar(1) not null,
-#     crossrefmessage longtext charset utf8mb4 not null,
-#     target varchar(2000) not null,
-#     cm longblob not null,
-#     agentrole varchar(1) not null,
-#     istest tinyint(1) not null,
-#     owner_id int not null,
-#     ownergroup_id int not null,
-#     datacenter_id int null,
-#     profile_id int not null,
-#     searchabletarget varchar(255) not null,
-#     resourcecreator longtext charset utf8mb4 not null,
-#     resourcetitle longtext charset utf8mb4 not null,
-#     resourcepublisher longtext charset utf8mb4 not null,
-#     resourcepublicationdate longtext charset utf8mb4 not null,
-#     searchablepublicationyear int null,
-#     resourcetype longtext charset utf8mb4 not null,
-#     searchableresourcetype varchar(2) not null,
-#     keywords longtext charset utf8mb4 not null,
-#     resourcecreatorprefix varchar(50) charset utf8mb4 not null,
-#     resourcetitleprefix varchar(50) charset utf8mb4 not null,
-#     resourcepublisherprefix varchar(50) charset utf8mb4 not null,
-#     hasmetadata tinyint(1) not null,
-#     publicsearchvisible tinyint(1) not null,
-#     oaivisible tinyint(1) not null,
-#     hasissues tinyint(1) not null,
-#     linkisbroken tinyint(1) not null,
-#     metadata json null,
-#     constraint identifier unique (identifier)
-# );
-#
-# create index ezidapp_searchidentifie_publicsearchvisible_47b0a294295f5ef5_idx on ezidapp_searchidentifier(publicsearchvisible, updatetime);
-#
-# create index ezidapp_searchidentifier_13bc2970 on ezidapp_searchidentifier(datacenter_id);
-#
-# create index ezidapp_searchidentifier_5e7b1936 on ezidapp_searchidentifier(owner_id);
-#
-# create index ezidapp_searchidentifier_83a0eb3f on ezidapp_searchidentifier(profile_id);
-#
-# create index ezidapp_searchidentifier_owner_id_5c11adaf88d856d0_idx on ezidapp_searchidentifier(owner_id, searchablepublicationyear);
-#
-# create index ezidapp_searchidentifier_ownergroup_id_2388bfe261a735c5_idx on ezidapp_searchidentifier(ownergroup_id, resourcepublisherprefix);
-#
-# create table ezidapp_servervariables (
-#     id int auto_increment primary key,
-#     alertmessage varchar(255) not null,
-#     secretkey varchar(50) not null
-# );
-#
-# create table ezidapp_shoulder (
-#     id int auto_increment primary key,
-#     prefix varchar(255) collate ascii_bin not null,
-#     type varchar(32) not null,
-#     name varchar(255) not null,
-#     minter varchar(255) not null,
-#     datacenter_id int null,
-#     crossrefenabled tinyint(1) not null,
-#     istest tinyint(1) not null,
-#     active tinyint(1) not null,
-#     date date null,
-#     issupershoulder tinyint(1) not null,
-#     manager varchar(32) null,
-#     prefix_shares_datacenter tinyint(1) not null,
-#     redirect varchar(255) null,
-#     shoulder_type_id int null,
-#     registration_agency_id int null,
-#     constraint name unique (name, type),
-#     constraint prefix unique (prefix)
-# );
-#
-# create index ezid_datacenter_id_4fb7570a75b0c69_fk_ezidapp_storedatacenter_id on ezidapp_shoulder(datacenter_id);
-#
-# create index ezidapp_shoulder_registration_agency__ba15f13e_fk_ezidapp_r on ezidapp_shoulder(registration_agency_id);
-#
-# create index ezidapp_shoulder_shoulder_type_id_184bbced_fk_ezidapp_s on ezidapp_shoulder(shoulder_type_id);
-#
-# create table ezidapp_shouldertype (
-#     id int auto_increment primary key,
-#     shoulder_type varchar(32) not null
-# );
-#
-# create table ezidapp_statistics (
-#     id int auto_increment primary key,
-#     month varchar(7) not null,
-#     owner varchar(255) collate ascii_bin not null,
-#     ownergroup varchar(255) collate ascii_bin not null,
-#     realm varchar(32) not null,
-#     type varchar(32) not null,
-#     hasmetadata tinyint(1) not null,
-#     count int not null,
-#     constraint ezidapp_statistics_month_23cad98a47c1a6fc_uniq unique (month, owner, type, hasmetadata)
-# );
-#
-# create index ezidapp_statistics_7436f942 on ezidapp_statistics(month);
-#
-# create table ezidapp_updatequeue (
-#     seq int default 0 not null,
-#     metadata longblob not null
-# );
-#
-# create table ezidapp_user (
-#     id int auto_increment primary key,
-#     pid varchar(255) collate ascii_bin not null,
-#     username varchar(32) not null,
-#     displayname varchar(255) charset utf8mb4 not null,
-#     accountemail varchar(255) charset utf8mb4 not null,
-#     primarycontactname varchar(255) charset utf8mb4 not null,
-#     primarycontactemail varchar(255) charset utf8mb4 not null,
-#     primarycontactphone varchar(255) charset utf8mb4 not null,
-#     secondarycontactname varchar(255) charset utf8mb4 not null,
-#     secondarycontactemail varchar(255) charset utf8mb4 not null,
-#     secondarycontactphone varchar(255) charset utf8mb4 not null,
-#     inheritgroupshoulders tinyint(1) not null,
-#     crossrefenabled tinyint(1) not null,
-#     crossrefemail varchar(255) not null,
-#     isgroupadministrator tinyint(1) not null,
-#     isrealmadministrator tinyint(1) not null,
-#     issuperuser tinyint(1) not null,
-#     loginenabled tinyint(1) not null,
-#     password varchar(128) not null,
-#     notes longtext not null,
-#     group_id int not null,
-#     realm_id int not null,
-#     constraint pid unique (pid),
-#     constraint username unique (username)
-# );
-#
-# create index ezidapp_store_group_id_7eff2039d02834ed_fk_ezidapp_storegroup_id on ezidapp_user(group_id);
-#
-# create index ezidapp_store_realm_id_5d5c037d7f3fac93_fk_ezidapp_storerealm_id on ezidapp_user(realm_id);
-#
-# create table ezidapp_user_proxies (
-#     id int auto_increment primary key,
-#     from_user_id int null,
-#     to_user_id int null,
-#     constraint from_storeuser_id unique (from_user_id, to_user_id)
-# );
-#
-# create index ezidapp_storeuser_pr_to_storeuser_id_5588e255_fk_ezidapp_s on ezidapp_user_proxies(to_user_id);
-#
-# create table ezidapp_user_shoulders (
-#     id int auto_increment primary key,
-#     user_id int null,
-#     shoulder_id int not null,
-#     constraint storeuser_id unique (user_id, shoulder_id)
-# );
-#
-# create index ezidapp_stor_shoulder_id_760fcf030c9067e7_fk_ezidapp_shoulder_id on ezidapp_user_shoulders(shoulder_id);
-#
-# create table storeidentifier (
-#     id int not null primary key,
-#     meta json null
-# );
-#
-# create table tmp_ezidapp_searchidentifier (
-#     id int not null primary key,
-#     meta json null
-# );
-#
-# create table tmp_ezidapp_storeidentifier (
-#     id int not null primary key,
-#     meta json null
-# );
-#
-# create table tmp_search (
-#     id int auto_increment primary key,
-#     identifier varchar(255) collate ascii_bin not null,
-#     createtime int not null,
-#     updatetime int not null,
-#     status varchar(1) not null,
-#     unavailablereason longtext charset utf8mb4 not null,
-#     exported tinyint(1) not null,
-#     crossrefstatus varchar(1) not null,
-#     crossrefmessage longtext charset utf8mb4 not null,
-#     target varchar(2000) not null,
-#     cm longblob not null,
-#     agentrole varchar(1) not null,
-#     istest tinyint(1) not null,
-#     owner_id int not null,
-#     ownergroup_id int not null,
-#     datacenter_id int null,
-#     profile_id int not null,
-#     searchabletarget varchar(255) not null,
-#     resourcecreator longtext charset utf8mb4 not null,
-#     resourcetitle longtext charset utf8mb4 not null,
-#     resourcepublisher longtext charset utf8mb4 not null,
-#     resourcepublicationdate longtext charset utf8mb4 not null,
-#     searchablepublicationyear int null,
-#     resourcetype longtext charset utf8mb4 not null,
-#     searchableresourcetype varchar(2) not null,
-#     keywords longtext charset utf8mb4 not null,
-#     resourcecreatorprefix varchar(50) charset utf8mb4 not null,
-#     resourcetitleprefix varchar(50) charset utf8mb4 not null,
-#     resourcepublisherprefix varchar(50) charset utf8mb4 not null,
-#     hasmetadata tinyint(1) not null,
-#     publicsearchvisible tinyint(1) not null,
-#     oaivisible tinyint(1) not null,
-#     hasissues tinyint(1) not null,
-#     linkisbroken tinyint(1) not null,
-#     metadata json null
-# );
-#
-# create table tmp_si (
-#     id int auto_increment primary key,
-#     identifier varchar(255) collate ascii_bin not null,
-#     createtime int not null,
-#     updatetime int not null,
-#     status varchar(1) not null,
-#     unavailablereason longtext charset utf8mb4 not null,
-#     exported tinyint(1) not null,
-#     crossrefstatus varchar(1) not null,
-#     crossrefmessage longtext charset utf8mb4 not null,
-#     target varchar(2000) not null,
-#     cm longblob not null,
-#     agentrole varchar(1) not null,
-#     istest tinyint(1) not null,
-#     owner_id int not null,
-#     ownergroup_id int not null,
-#     datacenter_id int null,
-#     profile_id int not null,
-#     searchabletarget varchar(255) not null,
-#     resourcecreator longtext charset utf8mb4 not null,
-#     resourcetitle longtext charset utf8mb4 not null,
-#     resourcepublisher longtext charset utf8mb4 not null,
-#     resourcepublicationdate longtext charset utf8mb4 not null,
-#     searchablepublicationyear int null,
-#     resourcetype longtext charset utf8mb4 not null,
-#     searchableresourcetype varchar(2) not null,
-#     keywords longtext charset utf8mb4 not null,
-#     resourcecreatorprefix varchar(50) charset utf8mb4 not null,
-#     resourcetitleprefix varchar(50) charset utf8mb4 not null,
-#     resourcepublisherprefix varchar(50) charset utf8mb4 not null,
-#     hasmetadata tinyint(1) not null,
-#     publicsearchvisible tinyint(1) not null,
-#     oaivisible tinyint(1) not null,
-#     hasissues tinyint(1) not null,
-#     linkisbroken tinyint(1) not null,
-#     metadata json null,
-#     constraint identifier unique (identifier)
-# );
-#
-# create index ezidapp_searchidentifie_publicsearchvisible_117042133b78a88e_idx on tmp_si(publicsearchvisible, resourcecreatorprefix);
-#
-# create index ezidapp_searchidentifie_publicsearchvisible_1932465b0335635c_idx on tmp_si(publicsearchvisible, createtime);
-#
-# create index ezidapp_searchidentifie_publicsearchvisible_1e447c57e83c8d5d_idx on tmp_si(publicsearchvisible, searchablepublicationyear);
-#
-# create index ezidapp_searchidentifie_publicsearchvisible_2e067bd0a9494a38_idx on tmp_si(publicsearchvisible, resourcepublisherprefix);
-#
-# create index ezidapp_searchidentifie_publicsearchvisible_47396846c619370f_idx on tmp_si(publicsearchvisible, searchableresourcetype);
-#
-# create index ezidapp_searchidentifie_publicsearchvisible_47b0a294295f5ef5_idx on tmp_si(publicsearchvisible, updatetime);
-#
-# create index ezidapp_searchidentifie_publicsearchvisible_58de9f6f00b8058e_idx on tmp_si(publicsearchvisible, identifier);
-#
-# create index ezidapp_searchidentifier_13bc2970 on tmp_si(datacenter_id);
-#
-# create index ezidapp_searchidentifier_365b2611 on tmp_si(ownergroup_id);
-#
-# create index ezidapp_searchidentifier_5e7b1936 on tmp_si(owner_id);
-#
-# create index ezidapp_searchidentifier_83a0eb3f on tmp_si(profile_id);
-#
-# create fulltext index ezidapp_searchidentifier_keywords on tmp_si(keywords);
-#
-# create index ezidapp_searchidentifier_oaivisible_1d291a23fcff2ce2_idx on tmp_si(oaivisible, updatetime);
-#
-# create index ezidapp_searchidentifier_owner_id_18a46334256a7530_idx on tmp_si(owner_id, hasmetadata);
-#
-# create index ezidapp_searchidentifier_owner_id_198f8d3796dae4b9_idx on tmp_si(owner_id, resourcetitleprefix);
-#
-# create index ezidapp_searchidentifier_owner_id_1d05153b51fd9dff_idx on tmp_si(owner_id, hasissues);
-#
-# create index ezidapp_searchidentifier_owner_id_263dc1dd7d2fd3ef_idx on tmp_si(owner_id, resourcepublisherprefix);
-#
-# create index ezidapp_searchidentifier_owner_id_3e88a7c1b2b5c693_idx on tmp_si(owner_id, exported);
-#
-# create index ezidapp_searchidentifier_owner_id_431b22d7016b97df_idx on tmp_si(owner_id, profile_id);
-#
-# create index ezidapp_searchidentifier_owner_id_47ecdfd54025f1f1_idx on tmp_si(owner_id, createtime);
-#
-# create index ezidapp_searchidentifier_owner_id_52f3896c5fc67016_idx on tmp_si(owner_id, istest);
-#
-# create index ezidapp_searchidentifier_owner_id_54da573427e72c0e_idx on tmp_si(owner_id, searchableresourcetype);
-#
-# create index ezidapp_searchidentifier_owner_id_58dfc6401ef0e359_idx on tmp_si(owner_id, crossrefstatus);
-#
-# create index ezidapp_searchidentifier_owner_id_59016f4a7ffbcaaa_idx on tmp_si(owner_id, updatetime);
-#
-# create index ezidapp_searchidentifier_owner_id_5b203a171bdbab38_idx on tmp_si(owner_id, status);
-#
-# create index ezidapp_searchidentifier_owner_id_5c11adaf88d856d0_idx on tmp_si(owner_id, searchablepublicationyear);
-#
-# create index ezidapp_searchidentifier_owner_id_60c2c5fffcb40895_idx on tmp_si(owner_id, identifier);
-#
-# create index ezidapp_searchidentifier_owner_id_76e131b0c70070a1_idx on tmp_si(owner_id, resourcecreatorprefix);
-#
-# create index ezidapp_searchidentifier_ownergroup_id_1d431d7513ab02ec_idx on tmp_si(ownergroup_id, status);
-#
-# create index ezidapp_searchidentifier_ownergroup_id_2114f948ed092669_idx on tmp_si(ownergroup_id, crossrefstatus);
-#
-# create index ezidapp_searchidentifier_ownergroup_id_2388bfe261a735c5_idx on tmp_si(ownergroup_id, resourcepublisherprefix);
-#
-# create index ezidapp_searchidentifier_ownergroup_id_39b7cdc64bc267c3_idx on tmp_si(ownergroup_id, createtime);
-#
-# create index ezidapp_searchidentifier_ownergroup_id_3ac1ed25c2bfbb2d_idx on tmp_si(ownergroup_id, resourcecreatorprefix);
-#
-# create index ezidapp_searchidentifier_ownergroup_id_449f25bec77c57da_idx on tmp_si(ownergroup_id, istest);
-#
-# create index ezidapp_searchidentifier_ownergroup_id_48b886662536e7fd_idx on tmp_si(ownergroup_id, exported);
-#
-# create index ezidapp_searchidentifier_ownergroup_id_4a1baf4823ddab6c_idx on tmp_si(ownergroup_id, searchablepublicationyear);
-#
-# create index ezidapp_searchidentifier_ownergroup_id_4ad29fb0ede49103_idx on tmp_si(ownergroup_id, hasissues);
-#
-# create index ezidapp_searchidentifier_ownergroup_id_4b76dd7c4564df4f_idx on tmp_si(ownergroup_id, identifier);
-#
-# create index ezidapp_searchidentifier_ownergroup_id_54e4e22002a54d2_idx on tmp_si(ownergroup_id, searchableresourcetype);
-#
-# create index ezidapp_searchidentifier_ownergroup_id_65871830cd29aaf0_idx on tmp_si(ownergroup_id, hasmetadata);
-#
-# create index ezidapp_searchidentifier_ownergroup_id_68875bac9225d3c9_idx on tmp_si(ownergroup_id, resourcetitleprefix);
-#
-# create index ezidapp_searchidentifier_ownergroup_id_6c5194bcf1d0014e_idx on tmp_si(ownergroup_id, updatetime);
-#
-# create index ezidapp_searchidentifier_ownergroup_id_6cfbff68ca3e25cb_idx on tmp_si(ownergroup_id, profile_id);
-#
-# create index ezidapp_searchidentifier_publicsearchvisible_6807647c6d8cb52_idx on tmp_si(publicsearchvisible, resourcetitleprefix);
-#
-# create fulltext index ezidapp_searchidentifier_resourcecreator on tmp_si(resourcecreator);
-#
-# create fulltext index ezidapp_searchidentifier_resourcepublisher on tmp_si(resourcepublisher);
-#
-# create fulltext index ezidapp_searchidentifier_resourcetitle on tmp_si(resourcetitle);
-#
-# create index ezidapp_searchidentifier_searchabletarget_24d34538786996df_idx on tmp_si(searchabletarget);
-#
-# create table tmp_si2 (
-#     id int auto_increment primary key,
-#     identifier varchar(255) collate ascii_bin not null,
-#     createtime int not null,
-#     updatetime int not null,
-#     status varchar(1) not null,
-#     unavailablereason longtext charset utf8mb4 not null,
-#     exported tinyint(1) not null,
-#     crossrefstatus varchar(1) not null,
-#     crossrefmessage longtext charset utf8mb4 not null,
-#     target varchar(2000) not null,
-#     cm longblob not null,
-#     agentrole varchar(1) not null,
-#     istest tinyint(1) not null,
-#     owner_id int not null,
-#     ownergroup_id int not null,
-#     datacenter_id int null,
-#     profile_id int not null,
-#     searchabletarget varchar(255) not null,
-#     resourcecreator longtext charset utf8mb4 not null,
-#     resourcetitle longtext charset utf8mb4 not null,
-#     resourcepublisher longtext charset utf8mb4 not null,
-#     resourcepublicationdate longtext charset utf8mb4 not null,
-#     searchablepublicationyear int null,
-#     resourcetype longtext charset utf8mb4 not null,
-#     searchableresourcetype varchar(2) not null,
-#     keywords longtext charset utf8mb4 not null,
-#     resourcecreatorprefix varchar(50) charset utf8mb4 not null,
-#     resourcetitleprefix varchar(50) charset utf8mb4 not null,
-#     resourcepublisherprefix varchar(50) charset utf8mb4 not null,
-#     hasmetadata tinyint(1) not null,
-#     publicsearchvisible tinyint(1) not null,
-#     oaivisible tinyint(1) not null,
-#     hasissues tinyint(1) not null,
-#     linkisbroken tinyint(1) not null,
-#     metadata json null
-# );
-#
-# create table tmp_stid (
-#     id int auto_increment primary key,
-#     identifier varchar(255) collate ascii_bin not null,
-#     createtime int not null,
-#     updatetime int not null,
-#     status varchar(1) not null,
-#     unavailablereason longtext charset utf8mb4 not null,
-#     exported tinyint(1) not null,
-#     crossrefstatus varchar(1) not null,
-#     crossrefmessage longtext charset utf8mb4 not null,
-#     target varchar(2000) not null,
-#     cm longblob not null,
-#     agentrole varchar(1) not null,
-#     istest tinyint(1) not null,
-#     datacenter_id int null,
-#     owner_id int null,
-#     ownergroup_id int null,
-#     profile_id int not null,
-#     metadata json null,
-#     constraint identifier unique (identifier)
-# );
-#
-# create index ezidapp_storeidentifier_13bc2970 on tmp_stid(datacenter_id);
-#
-# create index ezidapp_storeidentifier_365b2611 on tmp_stid(ownergroup_id);
-#
-# create index ezidapp_storeidentifier_5e7b1936 on tmp_stid(owner_id);
-#
-# create index ezidapp_storeidentifier_83a0eb3f on tmp_stid(profile_id);
-#
-# create table tmp_stid2 (
-#     id int auto_increment primary key,
-#     identifier varchar(255) collate ascii_bin not null,
-#     createtime int not null,
-#     updatetime int not null,
-#     status varchar(1) not null,
-#     unavailablereason longtext charset utf8mb4 not null,
-#     exported tinyint(1) not null,
-#     crossrefstatus varchar(1) not null,
-#     crossrefmessage longtext charset utf8mb4 not null,
-#     target varchar(2000) not null,
-#     cm longblob not null,
-#     agentrole varchar(1) not null,
-#     istest tinyint(1) not null,
-#     datacenter_id int null,
-#     owner_id int null,
-#     ownergroup_id int null,
-#     profile_id int not null,
-#     metadata json null,
-#     constraint identifier unique (identifier)
-# );
-#
-# create index ezidapp_storeidentifier_13bc2970 on tmp_stid2(datacenter_id);
-#
-# create index ezidapp_storeidentifier_365b2611 on tmp_stid2(ownergroup_id);
-#
-# create index ezidapp_storeidentifier_5e7b1936 on tmp_stid2(owner_id);
-#
-# create index ezidapp_storeidentifier_83a0eb3f on tmp_stid2(profile_id);
+alter table ezidapp_searchidentifier
+add fulltext key `ezidapp_searchidentifier_resourceTitle`(`resourceTitle`)
+;
+alter table ezidapp_searchidentifier
+add fulltext key `ezidapp_searchidentifier_resourceCreator`(`resourceCreator`)
+;
+alter table ezidapp_searchidentifier
+add fulltext key `ezidapp_searchidentifier_resourcePublisher`(`resourcePublisher`)
+;
+alter table ezidapp_searchidentifier
+add fulltext key `ezidapp_searchidentifier_keywords`(`keywords`)
+;
