@@ -1,12 +1,19 @@
 #!/usr/bin/env python
 
-""""""
-
 # Copyright©2021, Regents of the University of California
 # http://creativecommons.org/licenses/BSD
 
+"""\
+Translate the foreign keys in the ezidapp_searchidentifier to match those in
+ezidapp_storeidentifier.
+
+Doing this in small batches is much faster than running a single query, probably because the
+smaller transactions fit in memory. Large transactions are spilled to disk.
+"""
+
 import contextlib
 import logging
+import os
 import sys
 import time
 
@@ -15,22 +22,27 @@ import mysql.connector.cursor
 
 log = logging.getLogger(__name__)
 
-DB_HOST = '127.0.0.1'
-DB_PORT = '3337'
-DB_ROOT_USER = 'eziddba'
-DB_ROOT_PW = ''
-DB_NAME = 'ezid'
-
-
+# Number of rows to update in each query
 BATCH_SIZE = 10000
 
 
 def main():
+    try:
+        host_str = os.environ['DB_HOST']
+        port_str = os.environ['DB_PORT']
+        user_str = os.environ['DB_USER']
+        pw_str = os.environ['DB_PW']
+        name_str = os.environ['DB_NAME']
+    except KeyError:
+        raise AssertionError(
+            "Must set environment variables: DB_HOST, DB_PORT, DB_USER, DB_PW, DB_NAME"
+        )
+
     start_ts = time.time()
     prev_ts = start_ts
 
-    with connect(DB_NAME) as cnx:
-        cursor = cnx.cursor()
+    with connect(host_str, port_str, user_str, pw_str, name_str) as conn:
+        cursor = conn.cursor()
 
         owner_case_str = get_case_str(cursor, 'user', 'pid')
         group_case_str = get_case_str(cursor, 'group', 'pid')
@@ -40,9 +52,9 @@ def main():
         last_id = 0
 
         while True:
-            cursor = cnx.cursor()
+            cursor = conn.cursor()
 
-            cnx.autocommit = False
+            conn.autocommit = False
 
             cursor.execute('set unique_checks = 0', {})
             cursor.execute('set foreign_key_checks = 0', {})
@@ -63,21 +75,18 @@ def main():
             # print(q)
             cursor.execute(q, {})
 
-            # q = """
-            # select row_count();
-            # """
-            # cursor.execute(q, {})
-            # row_count = cursor.fetchone()[0]
-            # if not row_count:
-            #     break
-
             q = """
             select last_insert_id();
             """
             cursor.execute(q, {})
-            last_id = cursor.fetchone()[0]
+            new_last_id = cursor.fetchone()[0]
 
-            cnx.commit()
+            if new_last_id == last_id:
+                break
+
+            last_id = new_last_id
+
+            conn.commit()
             del cursor
 
             cur_ts = time.time()
@@ -104,22 +113,28 @@ def get_case_str(cursor, table_name, col_name):
 
 
 @contextlib.contextmanager
-def connect(db_name):
-    log.info(f'Connecting to database: {db_name}')
-    cnx = mysql.connector.connect(
+def connect(host_str, port_str, user_str, pw_str, name_str):
+    log.info(f'Connecting to database:')
+    for parm in 'host', 'port', 'user', 'name':
+        log.info(f'{parm}: {locals()[parm + "_str"]}')
+    conn = mysql.connector.connect(
+        host=host_str,
+        port=port_str,
+        user=user_str,
+        password=pw_str,
+        database=name_str,
         use_pure=False,
         pool_size=1,
         pool_name='mypool',
-        host=DB_HOST,
-        port=DB_PORT,
-        user=DB_ROOT_USER,
-        password=DB_ROOT_PW,
-        database=db_name,
     )
+    log.info(f'Connected')
     try:
-        yield cnx
+        yield conn
+    except Exception as e:
+        log.error(f'Database connection failed: {str(e)}')
+        sys.exit(1)
     finally:
-        cnx.close()
+        conn.close()
 
 
 if __name__ == '__main__':
