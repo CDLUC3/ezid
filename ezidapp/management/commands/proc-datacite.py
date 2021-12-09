@@ -1,14 +1,9 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-# =============================================================================
-#
-# EZID :: datacite.py
-#
-# Asynchronous DataCite processing.
-#
-#
-# -----------------------------------------------------------------------------
+"""Asynchronous DataCite processing
+"""
+
 import logging
 
 import django.conf
@@ -25,30 +20,17 @@ log = logging.getLogger(__name__)
 class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     help = __doc__
     display = 'DataCite'
-    name = 'datacite'
     setting = 'DAEMONS_DATACITE_ENABLED'
+    queue = ezidapp.models.async_queue.DataciteQueue
 
-    def __init__(self):
-        super(Command, self).__init__(__name__)
-        self.state = dict(
-            registrar="datacite",
-            queueModel=ezidapp.models.async_queue.DataciteQueue,
-            createFunction=self._overwrite,
-            updateFunction=self._overwrite,
-            deleteFunction=self._delete,
-            batchCreateFunction=None,
-            batchUpdateFunction=None,
-            batchDeleteFunction=None,
-            numWorkerThreads=django.conf.settings.DAEMONS_DATACITE_NUM_WORKER_THREADS,
-            idleSleep=django.conf.settings.DAEMONS_DATACITE_PROCESSING_IDLE_SLEEP,
-            reattemptDelay=django.conf.settings.DAEMONS_DATACITE_PROCESSING_ERROR_SLEEP,
-        )
+    def create(self, task_model):
+        pass
 
-    def add_arguments(self, parser):
-        super().add_arguments(parser)
+    def update(self, task_model):
+        pass
 
-    def handle_daemon(self, *_, **opt):
-        super().run()
+    def delete(self, task_model):
+        pass
 
     def _uploadMetadata(self, doi, metadata, datacenter):
         r = impl.datacite.uploadMetadata(doi[4:], {}, metadata, True, datacenter)

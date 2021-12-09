@@ -1,22 +1,17 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-# =============================================================================
-#
-# EZID :: download.py
-#
-# Batch download.
-#
-# Downloads are created by a single daemon thread.  The download
-# creation process is designed to be restartable at any point: if the
-# server is restarted, the current download resumes where it left off.
-#
-# When the server is reloaded, a new daemon thread gets created.  Race
-# conditions exist between the old and new threads while the old
-# thread still exists, but actual conflicts should be very unlikely.
-#
-#
-# -----------------------------------------------------------------------------
+"""Batch download
+
+Downloads are created by a single daemon thread.  The download
+creation process is designed to be restartable at any point: if the
+server is restarted, the current download resumes where it left off.
+
+When the server is reloaded, a new daemon thread gets created.  Race
+conditions exist between the old and new threads while the old
+thread still exists, but actual conflicts should be very unlikely.
+"""
+
 import argparse
 import csv
 import logging
@@ -51,17 +46,17 @@ log = logging.getLogger(__name__)
 class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     help = __doc__
     display = 'Download'
-    name = 'download'
     setting = 'DAEMONS_DOWNLOAD_ENABLED'
+    queue = ezidapp.models.async_queue.DownloadQueue
 
-    def __init__(self):
-        super(Command, self).__init__(__name__)
+    def create(self, task_model):
+        pass
 
-    def add_arguments(self, parser):
-        super().add_arguments(parser)
+    def update(self, task_model):
+        pass
 
-    def handle_daemon(self, *_, **opt):
-        self.opt = opt = argparse.Namespace(**opt)
+    def delete(self, task_model):
+        pass
 
     def _wrapException(self, context, exception):
         m = str(exception)
@@ -108,7 +103,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             # probe the file to find its size.
             n = f.tell()
         except Exception as e:
-            log.exception(' Exception as e')
+            log.exception('Exception')
             raise self._wrapException("error creating file", e)
         else:
             r.stage = ezidapp.models.async_queue.DownloadQueue.HARVEST
@@ -235,7 +230,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                             assert False, "unhandled case"
                 self._flushFile(f)
             except Exception as e:
-                log.exception(' Exception as e')
+                log.exception('Exception')
                 raise self._wrapException("error writing file", e)
             r.lastId = ids[-1].identifier
             r.fileSize = f.tell()
@@ -250,7 +245,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 f.seek(r.fileSize)
                 f.truncate()
             except Exception as e:
-                log.exception(' Exception as e')
+                log.exception('Exception')
                 raise self._wrapException("error re-opening/seeking/truncating file", e)
             start = r.currentIndex
             for i in range(r.currentIndex, len(r.toHarvest.split(","))):
@@ -264,7 +259,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     f.write(b"</records>")
                     self._flushFile(f)
                 except Exception as e:
-                    log.exception(' Exception as e')
+                    log.exception('Exception')
                     raise self._wrapException("error writing file footer", e)
             r.stage = ezidapp.models.async_queue.DownloadQueue.COMPRESS
             r.save()
@@ -315,7 +310,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 p.returncode == 0 and stderr == ""
             ), f"compression command returned status code {p.returncode:d}, stderr '{stderr}'"
         except Exception as e:
-            log.exception(' Exception as e')
+            log.exception('Exception')
             raise self._wrapException("error compressing file", e)
         else:
             r.stage = ezidapp.models.async_queue.DownloadQueue.DELETE
@@ -331,7 +326,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             if os.path.exists(self._path(r, 1)):
                 os.unlink(self._path(r, 1))
         except Exception as e:
-            log.exception(' Exception as e')
+            log.exception('Exception')
             raise self._wrapException("error deleting uncompressed file", e)
         else:
             r.stage = ezidapp.models.async_queue.DownloadQueue.MOVE
@@ -344,7 +339,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             else:
                 assert os.path.exists(self._path(r, 3)), "file has disappeared"
         except Exception as e:
-            log.exception(' Exception as e')
+            log.exception('Exception')
             raise self._wrapException("error moving compressed file", e)
         else:
             r.stage = ezidapp.models.async_queue.DownloadQueue.NOTIFY
@@ -358,7 +353,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 f"{ezidapp.models.util.getUserByPid(r.requestor).username}\n{r.rawRequest.encode('utf-8')}\n"
             )
         except Exception as e:
-            log.exception(' Exception as e')
+            log.exception('Exception')
             raise self._wrapException("error writing sidecar file", e)
         finally:
             if f:
@@ -394,7 +389,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     fail_silently=True,
                 )
             except Exception as e:
-                log.exception(' Exception as e')
+                log.exception('Exception')
                 raise self._wrapException("error sending email", e)
         r.delete()
 
@@ -404,10 +399,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         doSleep = True
         while True:
             if doSleep:
-                django.db.connections["default"].close()
-                django.db.connections["search"].close()
-                # noinspection PyTypeChecker
-                time.sleep(django.conf.settings.DAEMONS_DOWNLOAD_PROCESSING_IDLE_SLEEP)
+                self.sleep(django.conf.settings.DAEMONS_DOWNLOAD_PROCESSING_IDLE_SLEEP)
             try:
                 r = ezidapp.models.async_queue.DownloadQueue.objects.all().order_by("seq")[:1]
                 if len(r) == 0:
@@ -430,6 +422,6 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     assert False, "unhandled case"
                 doSleep = False
             except Exception as e:
-                log.exception(' Exception as e')
-                self.otherError("download.run", e)
+                log.exception('Exception')
+                impl.log.otherError("download.run", e)
                 doSleep = True

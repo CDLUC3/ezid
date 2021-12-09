@@ -1,7 +1,6 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-import abc
 import http.client
 import logging
 import os
@@ -23,27 +22,20 @@ import ezidapp.models.async_queue
 log = logging.getLogger(__name__)
 
 
-class AsyncProcessingCommand(abc.ABC, django.core.management.BaseCommand):
+class AsyncProcessingCommand(django.core.management.BaseCommand):
     help = __doc__
+    display = None
     setting = None
-    name = None
     queue = None
 
     class _AbortException(Exception):
         pass
 
     def __init__(self):
+        assert self.display is not None
+        assert self.setting is not None
         super().__init__()
         self.opt = None
-        self.is_debug = None
-
-        # noinspection PyArgumentList
-        logging.basicConfig(
-            level=logging.DEBUG,
-            format='%(levelname)8s %(name)8s %(module)s %(process)d %(thread)s %(message)s',
-            stream=sys.stderr,
-            force=True,
-        )
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -62,41 +54,39 @@ class AsyncProcessingCommand(abc.ABC, django.core.management.BaseCommand):
 
         self.assert_proc_enabled()
         self.opt = types.SimpleNamespace(**opt)
-        self.is_debug = self.opt.debug
+        self.opt.debug |= django.conf.settings.DEBUG
+
+        logging.basicConfig(
+            level=logging.DEBUG if self.opt.debug else logging.INFO,
+            format=(
+                f'%(levelname)8s %(name)8s %(module)s %(process)d %(thread)s '
+                f'{self.display}: %(message)s'
+            ),
+            stream=sys.stderr,
+            force=True,
+        )
 
         # impl.nog.util.log_setup(self.module_name, self.opt.debug)
-
         # with self.lock:
+        log.debug('Entering run loop...')
         self.run()
 
-    def assert_proc_enabled(self):
-        if not django.conf.settings.DAEMONS_ENABLED:
-            self.raise_command_error(f'Cannot start. "DAEMONS_ENABLED" is not True')
-
-        v = getattr(django.conf.settings, self.setting, None)
-
-        if v is None:
-            self.raise_command_error(f'Cannot start. "{self.setting}" is missing')
-
-        if v not in (True, False):
-            self.raise_command_error(
-                f'Cannot start. "{self.setting}" must be a boolean, not {type(self.setting)}'
-            )
-
-        if not v:
-            self.raise_command_error(f'Cannot start. "{self.setting}" is False')
-
     def run(self):
-        """Run async processing loop forever"""
+        """Run async processing loop forever.
+
+        The async processes that don't use a queue based on AsyncQueueBase must override
+        this to supply their own loop.
+
+        This method is not called for disabled async processes.
+        """
+        assert self.queue is not None
+
         while True:
             qs = self.queue.objects.filter(
                 status=ezidapp.models.async_queue.AsyncQueueBase.UNSUBMITTED,
-            ).order_by("seq")[
-                : django.conf.settings.MAX_BATCH_SIZE
-            ]
+            ).order_by("seq")[: django.conf.settings.DAEMONS_MATCH_BATCH_SIZE]
             if not qs:
-                # django.db.connections["default"].close()
-                time.sleep(django.conf.settings.DAEMONS_BINDER_PROCESSING_IDLE_SLEEP)
+                self.sleep(django.conf.settings.DAEMONS_BINDER_PROCESSING_IDLE_SLEEP)
                 continue
 
             for task_model in qs:
@@ -105,8 +95,9 @@ class AsyncProcessingCommand(abc.ABC, django.core.management.BaseCommand):
                 except Exception as e:
                     log.exception('Task registration error')
                     task_model.error = str(e)
+                    # noinspection PyTypeChecker
                     if self.is_permanent_error(e):
-                        task_model.status = ezidapp.models.async_queue.AsyncQueueBase.FAILURE,
+                        task_model.status = ezidapp.models.async_queue.AsyncQueueBase.FAILURE
                         task_model.errorIsPermanent = True
                         # raise
                 else:
@@ -115,11 +106,60 @@ class AsyncProcessingCommand(abc.ABC, django.core.management.BaseCommand):
 
                 task_model.save()
 
+            # The previous version of the Crossref process had the following logic,
+            # which would delete earlier tasks from the queue if the queue had multiple
+            # tasks for the same identifier. We currently have not ported this to Py3
+            # because it has the cost of having to check forwards in the queue. The Py2
+            # implementation retrieved the full queue, regardless of size, to do these
+            # checks. If the situation of having multiple updates for the same
+            # identifier in the queue is common enough that it's detrimental to simply
+            # process them all, it would be better to check for duplicates when the
+            # tasks are being inserted in the queue, and update existing tasks there
+            # instead of inserting new ones.
+            #
+            # if self.queue().objects.filter(identifier=r.identifier).count() > 1:
+            #     r.delete()
+            #     maxSeq = None
+            # else:
+            #     if r.status == ezidapp.models.async_queue.CrossrefQueue.UNSUBMITTED:
+            #         self._doDeposit(r)
+            #         maxSeq = None
+            #     elif r.status == ezidapp.models.async_queue.CrossrefQueue.SUBMITTED:
+            #         self._doPoll(r)
+            #         maxSeq = None
+            #     else:
+            #         pass
+
+    def create(self, task_model):
+        """Overridden by processes that use the default run loop"""
+        raise NotImplementedError()
+
+    def update(self, task_model):
+        """Overridden by processes that use the default run loop"""
+        raise NotImplementedError()
+
+    def delete(self, task_model):
+        """Overridden by processes that use the default run loop"""
+        raise NotImplementedError()
+
+    def assert_proc_enabled(self):
+        if not django.conf.settings.DAEMONS_ENABLED:
+            self.raise_command_error(f'Cannot start. "DAEMONS_ENABLED" is not True')
+        v = getattr(django.conf.settings, self.setting, None)
+        if v is None:
+            self.raise_command_error(f'Cannot start. "{self.setting}" is missing')
+        if v not in (True, False):
+            self.raise_command_error(
+                f'Cannot start. "{self.setting}" must be a boolean, not {type(self.setting)}'
+            )
+        if not v:
+            self.raise_command_error(f'Cannot start. "{self.setting}" is False')
+
     def do_task(self, task_model):
         label_str = ezidapp.models.async_queue.AsyncQueueBase.OPERATION_CODE_TO_LABEL_DICT[
             task_model.operation
         ]
-        log.debug(self.fmt_msg(f'Processing task: {label_str}'))
+        log.debug(f'Processing task: {label_str}')
         if task_model.operation == ezidapp.models.async_queue.AsyncQueueBase.CREATE:
             self.create(task_model)
         elif task_model.operation == ezidapp.models.async_queue.AsyncQueueBase.UPDATE:
@@ -128,10 +168,6 @@ class AsyncProcessingCommand(abc.ABC, django.core.management.BaseCommand):
             self.delete(task_model)
         else:
             raise AssertionError(f'Invalid operation: {task_model.operation}')
-
-    # def sleep(self, duration=None):
-    #     django.db.connections["default"].close()
-    #     time.sleep(duration or self.state.idleSleep)
 
     def is_permanent_error(self, e):
         """Return True if exception appears to be due to a permanent error"""
@@ -146,30 +182,26 @@ class AsyncProcessingCommand(abc.ABC, django.core.management.BaseCommand):
             return True
         return False
 
-    @staticmethod
-    def now():
+    def now(self):
         return time.time()
 
-    @staticmethod
-    def now_int():
-        return int(AsyncProcessingCommand.now())
+    def now_int(self):
+        return int(self.now())
+
+    def sleep(self, duration_sec):
+        """Close DB connections and go to sleep"""
+        # The Py2 version frequently closed the database connections, which Django will
+        # automatically reopen as required. This instead closes the connection only if
+        # there are no tasks in the queue, and we are about to go to sleep. Not holding
+        # on to connections during sleep reduces the number of concurrent connection at
+        # the cost of having to reestablish the connection when returning from sleep.
+        log.debug(f'Closing DB connections and sleeping for {duration_sec:.2f}s...')
+        django.db.connections["default"].close()
+        time.sleep(duration_sec)
 
     def raise_command_error(self, msg_str):
         raise django.core.management.CommandError(
-            self.fmt_msg(
-                f'Error: {msg_str}). '
-                f'Using settings module "{os.environ["DJANGO_SETTINGS_MODULE"]}"'
-            )
+            f'Async process: {self.display}. '
+            f'Error: {msg_str}. '
+            f'Using settings module "{os.environ["DJANGO_SETTINGS_MODULE"]}"'
         )
-
-    def create(self, task_model):
-        raise NotImplementedError()
-
-    def update(self, task_model):
-        raise NotImplementedError()
-
-    def delete(self, task_model):
-        raise NotImplementedError()
-
-    def fmt_msg(self, fmt_str: str, *a, **kw):
-        return f'Async process {self.name}: {fmt_str.format(*a, **kw)}'

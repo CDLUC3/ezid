@@ -1,0 +1,77 @@
+name: EZID CI
+on: push
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    env:
+      IS_CI: 1
+      DJANGO_SETTINGS_MODULE: settings.tests
+      PYTHONPATH: ${{ github.workspace }}
+
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+          architecture: 'x64'
+
+      - name: Prepare DB
+        run: |
+          sudo /etc/init.d/mysql start
+          mysql -h127.0.0.1 -uroot -proot << EOF
+            create database if not exists ezid_test_db;
+            use ezid_test_db;
+            create user 'ezid_test_user'@'%' identified by 'ezid_test_pw';
+            grant all privileges on *.* to 'ezid_test_user'@'%';
+            flush privileges;
+          EOF
+
+      - name: Install packaged deps
+        run: |
+          sudo apt-get install --yes libdb5.3-dev
+
+      - name: Prepare Python env
+        run: |
+          pip install --upgrade pip setuptools wheel
+          pip install -r ./requirements-dev.txt
+
+      - name: Dump environment
+        run: |
+          printf 'PYTHONPATH: %s\n' "$PYTHONPATH"
+          # apt-cache pkgnames | sort
+          # find / | grep /bin/ | sort
+          # pip freeze
+          # pip check || true
+          # python --version
+          echo "CWD=${PWD}"
+          ls -l
+          # mysql -e '
+          #  use ezid_test_db;
+          #  show tables;
+          #  select prefix, minter from ezidapp_shoulder;
+          # '
+
+
+      - name: Prepare fixtures
+        run: |
+          mkdir -p ../download/public ../logs
+          ./manage.py makemigrations --merge --no-input
+          ./manage.py migrate
+          ./manage.py collectstatic --no-input
+
+          ./manage.py loaddata --ignorenonexistent db-fixture
+          #./manage.py loaddata --ignorenonexistent search-init
+          #./manage.py loaddata --ignorenonexistent combined-limited
+
+          #./manage.py diag-update-admin
+
+
+#      - name: Run tests
+#        env:
+#          PYTHONPATH: ${{ github.workspace }}
+#        run: |
+#          pytest --maxfail 10
+#
+##        - pip install -e .

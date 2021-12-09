@@ -1,18 +1,18 @@
-"""Identifier statistics.
-
-To avoid burdening online identifier processing, statistics are
-computed periodically by a daemon thread.  We eschew a synchronous,
-inline approach to maintaining statistics because identifier changes
-can be complex (creation times can change, ownership can change,
-even users and groups can change) and tracking the effects of those
-changes on statistics would require knowledge of an identifier's
-pre-change state, which is not recorded.
-"""
-
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-import threading
+"""Identifier statistics
+
+To avoid burdening online identifier processing, statistics are computed periodically by
+a daemon thread.  We eschew a synchronous, inline approach to maintaining statistics
+because identifier changes can be complex (creation times can change, ownership can
+change, even users and groups can change) and tracking the effects of those changes on
+statistics would require knowledge of an identifier's pre-change state, which is not
+recorded.
+"""
+
+import datetime
+import logging
 import time
 
 import django.conf
@@ -25,28 +25,48 @@ import ezidapp.management.commands.proc_base
 import ezidapp.models.identifier
 import ezidapp.models.statistics
 import ezidapp.models.user
+import impl.log
+
+
+log = logging.getLogger(__name__)
 
 
 class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     help = __doc__
     display = 'Statistics'
-    name = 'statistics'
     setting = 'DAEMONS_STATISTICS_ENABLED'
 
     def __init__(self):
-        super(Command, self).__init__(__name__)
+        super().__init__()
 
-    def add_arguments(self, parser):
-        super().add_arguments(parser)
+    def run(self):
+        if django.conf.settings.DAEMONS_STATISTICS_COMPUTE_SAME_TIME_OF_DAY:
+            self.sleep(self._sameTimeOfDayDelta())
+        else:
+            # We arbitrarily sleep 10 minutes to avoid putting a burden on the
+            # server near startup or reload.
+            self.sleep(600)
 
-    def handle_daemon(self, *_, **opt):
-        pass
+        while True:
+            start = self.now()
+            self.recomputeStatistics()
+            if django.conf.settings.DAEMONS_STATISTICS_COMPUTE_SAME_TIME_OF_DAY:
+                self.sleep(self._sameTimeOfDayDelta())
+            else:
+                # noinspection PyTypeChecker
+                self.sleep(
+                    max(
+                        django.conf.settings.DAEMONS_STATISTICS_COMPUTE_CYCLE
+                        - (self.now() - start),
+                        0,
+                    )
+                )
 
     def _sameTimeOfDayDelta(self):
-        now = self.now()()
+        now = datetime.datetime.now()
         midnight = now.replace(hour=0, minute=0, second=0, microsecond=0)
         # noinspection PyTypeChecker
-        d = self._computeCycle - (now - midnight).total_seconds()
+        d = django.conf.settings.DAEMONS_STATISTICS_COMPUTE_CYCLE - (now - midnight).total_seconds()
         if d < 0:
             d += 86400
         return d
@@ -65,9 +85,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         try:
             users = {
                 u.id: (u.pid, u.group.pid, u.realm.name)
-                for u in ezidapp.models.user.User.objects.all().select_related(
-                    "group", "realm"
-                )
+                for u in ezidapp.models.user.User.objects.all().select_related("group", "realm")
             }
             counts = {}
             lastIdentifier = ""
@@ -76,9 +94,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     ezidapp.models.identifier.Identifier.objects.filter(
                         identifier__gt=lastIdentifier
                     )
-                    .only(
-                        "identifier", "owner_id", "createTime", "isTest", "hasMetadata"
-                    )
+                    .only("identifier", "owner_id", "createTime", "isTest", "hasMetadata")
                     .order_by("identifier")
                 )
                 qs = list(qs[:1000])
@@ -109,31 +125,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     c.full_clean(validate_unique=False)
                     c.save(force_insert=True)
         except Exception as e:
-            log.exception(' Exception as e')
-            self.otherError("stats.recomputeStatistics", e)
-
-    def run(self):
-        if self._computeSameTimeOfDay:
-            django.db.connections["default"].close()
-            django.db.connections["search"].close()
-            time.sleep(self._sameTimeOfDayDelta())
-        else:
-            # We arbitrarily sleep 10 minutes to avoid putting a burden on the
-            # server near startup or reload.
-            time.sleep(600)
-        while (
-            django.conf.settings.CROSSREF_ENABLED
-            and threading.currentThread().getName() == self._threadName
-        ):
-            start = time.time()
-            self.recomputeStatistics()
-            django.db.connections["default"].close()
-            django.db.connections["search"].close()
-            if self._computeSameTimeOfDay:
-                time.sleep(self._sameTimeOfDayDelta())
-            else:
-                # noinspection PyTypeChecker
-                time.sleep(max(self._computeCycle - (time.time() - start), 0))
+            log.exception('Exception')
+            impl.log.otherError("stats.recomputeStatistics", e)
 
     def query(
         self,

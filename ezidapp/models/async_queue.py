@@ -10,13 +10,14 @@ import impl.util
 
 
 class AsyncQueueBase(django.db.models.Model):
-    """ORM models for queues of identifier operations awaiting asynchronous registration with an
-    external registrar
+    """ORM models for queues of identifier operations awaiting asynchronous registration
+    with an external registrar
 
-    Operations are removed from this table by the async process after having been successfully
-    submitted.
+    Operations are removed from this table by the async process after having been
+    successfully submitted.
 
-    Operations that cannot be submitted due to a permanent error must be manually removed.
+    Operations that cannot be submitted due to a permanent error must be manually
+    removed.
     """
 
     class Meta:

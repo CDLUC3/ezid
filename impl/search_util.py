@@ -57,7 +57,7 @@ def withAutoReconnect(functionName, function, continuationCheck=None):
             #
             # Django's database connection objects are indexed generically, but are stored
             # thread-local.
-            django.db.connections["search"].close()
+            django.db.connections["default"].close()
             firstError = False
 
 

@@ -1,7 +1,7 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-"""Index identifiers for search.
+"""Index identifiers for search
 
 This async process keeps the SearchIdentifier model in sync with the StoreIdentifier model.
 
@@ -33,13 +33,13 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         if not self._is_anonymous(task_model):
             self._update_or_create(task_model.refIdentifier)
         else:
-            log.debug(self.fmt_msg(f'Skipped create: Anonymous owner'))
+            log.debug(f'Skipped create: Anonymous owner')
 
     def update(self, task_model):
         if not self._is_anonymous(task_model):
             self._update_or_create(task_model.refIdentifier)
         else:
-            log.debug(self.fmt_msg(f'Skipped create: Anonymous owner'))
+            log.debug('Skipped create: Anonymous owner')
 
     def delete(self, task_model):
         if not self._is_anonymous(task_model):
@@ -54,7 +54,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         self,
         ref_id_model: ezidapp.models.identifier.RefIdentifier,
     ):
-        log.debug(self.fmt_msg(f'ref_id_model="{ref_id_model}"'))
+        log.debug(f'ref_id_model="{ref_id_model}"')
         search_id_model = self._ref_id_to_search_id(ref_id_model)
         search_id_model.computeComputedValues()
         search_id_model.save()

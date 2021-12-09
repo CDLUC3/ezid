@@ -39,7 +39,7 @@ TEMPLATE_VARS = {
 
 
 def main():
-    print('Creating settings.test_settings')
+    print('Creating settings.tests')
     settings_path = pathlib.Path(__file__).resolve().parents[2] / 'settings'
     template_str = (settings_path / 'settings_template.py').read_text()
     test_settings_path = settings_path / 'test_settings.py'

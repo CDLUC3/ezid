@@ -2,7 +2,7 @@
 # http://creativecommons.org/licenses/BSD
 
 """EZID settings
-{# Jinja template for EZID settings #}
+
 """
 
 import collections
@@ -29,11 +29,13 @@ STANDALONE = False
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': '{{ database_host }}',
-        'NAME': '{{ database_name }}',
-        'USER': '{{ database_user }}',
-        'PASSWORD': '{{ database_password }}',
-        'PORT': '{{ database_port }}',
+
+        'HOST': 'localhost',
+        'NAME': 'ezid_test_db',
+        'USER': 'ezid_test_user',
+        'PASSWORD': 'ezid_test_pw',
+        'PORT': '3306',
+
         'OPTIONS': {'charset': 'utf8mb4'},
         'ATOMIC_REQUESTS': False,
         'AUTOCOMMIT': True,
@@ -85,7 +87,7 @@ TEMPLATE_DIR = PROJECT_ROOT / 'templates'  # /apps/ezid/ezid/templates
 # Dirs above PROJECT_ROOT
 HOME_DIR = (PROJECT_ROOT / '..').resolve()  # /apps/ezid
 MINTERS_PATH = HOME_DIR / 'var' / 'minters'  # /apps/ezid/var/minters
-LOG_DIR = HOME_DIR / 'logs' # /apps/ezid/logs
+LOG_DIR = HOME_DIR / 'logs'  # /apps/ezid/logs
 
 ROOT_URLCONF = 'settings.urls'
 
@@ -133,7 +135,6 @@ if DAEMONS_ENABLED == 'auto':
 # - See the DAEMONS_ENABLED setting above.
 DAEMONS_SEARCH_INDEXER_ENABLED = True
 DAEMONS_NEWSFEED_ENABLED = True
-DAEMONS_STATISTICS_ENABLED = True
 DAEMONS_STATUS_ENABLED = True
 DAEMONS_BINDER_ENABLED = True
 DAEMONS_DATACITE_ENABLED = True
@@ -146,13 +147,14 @@ DAEMONS_BACKGROUND_PROCESSING_IDLE_SLEEP = 5
 DAEMONS_STATUS_LOGGING_INTERVAL = 60
 DAEMONS_BINDER_PROCESSING_IDLE_SLEEP = 5
 DAEMONS_BINDER_PROCESSING_ERROR_SLEEP = 300
+DAEMONS_BINDER_NUM_WORKER_THREADS = 3
 DAEMONS_DATACITE_PROCESSING_IDLE_SLEEP = 5
 DAEMONS_DATACITE_PROCESSING_ERROR_SLEEP = 300
+DAEMONS_DATACITE_NUM_WORKER_THREADS = 3
 DAEMONS_CROSSREF_PROCESSING_IDLE_SLEEP = 60
 DAEMONS_DOWNLOAD_PROCESSING_IDLE_SLEEP = 10
 DAEMONS_STATISTICS_COMPUTE_CYCLE = 3600
 DAEMONS_STATISTICS_COMPUTE_SAME_TIME_OF_DAY = True
-DAEMONS_MATCH_BATCH_SIZE = 100
 
 MAX_CONCURRENT_OPERATIONS_PER_USER = 4
 MAX_THREADS_PER_USER = 16
@@ -182,7 +184,7 @@ if 'HOSTNAME' in os.environ:
 else:
     SERVER_EMAIL = 'ezid@' + socket.gethostname()
 
-EMAIL_NEW_ACCOUNT_EMAIL = '{{ email_new_account }}'
+EMAIL_NEW_ACCOUNT_EMAIL = 'invalid@invalid.invalid'
 
 # Error notification emails sufficiently similar to previously-sent
 # emails are suppressed for 'error_suppression_window' seconds; the
@@ -213,18 +215,16 @@ logging.config.dictConfig(
             'simple': {'format': '%(asctime)s %(levelname)8s %(message)s'},
             'verbose': {
                 'format': (
-                    '%(levelname)8s %(name)8s %(module)s '
-                    '%(process)d %(thread)s %(message)s'
+                    '%(levelname)8s %(name)8s %(module)s ' '%(process)d %(thread)s %(message)s'
                 ),
             },
             'trace': {
                 'format': (
-                    '%(asctime)s %(levelname)s '
-                    '%(module)s.%(funcName)s:%(lineno)s: %(message)s'
+                    '%(asctime)s %(levelname)s ' '%(module)s.%(funcName)s:%(lineno)s: %(message)s'
                 )
             },
             'ecs_logging': {
-                 'class': 'ecs_logging.StdlibFormatter',
+                'class': 'ecs_logging.StdlibFormatter',
             },
         },
         'handlers': {
@@ -234,58 +234,67 @@ logging.config.dictConfig(
                 'formatter': 'verbose',
                 'stream': sys.stdout,
             },
-            'request_log': {
-                'level': 'DEBUG',
-                'class': 'logging.FileHandler',
-                'filename': LOG_DIR / 'request.log',
-                'formatter': 'simple',
-            },
-            'trace_log': {
-                'level': 'DEBUG',
-                'class': 'logging.FileHandler',
-                'filename': LOG_DIR / 'trace.log',
-                'formatter': 'trace',
-            },
-            'ecs_json': {
-                'level': 'DEBUG',
-                'class': 'logging.FileHandler',
-                'filename': LOG_DIR / 'ecs_json.log',
-                'formatter': "ecs_logging"
-            },
+            # 'request_log': {
+            #     'level': 'DEBUG',
+            #     'class': 'logging.FileHandler',
+            #     'filename': LOG_DIR / 'request.log',
+            #     'formatter': 'simple',
+            # },
+            # 'trace_log': {
+            #     'level': 'DEBUG',
+            #     'class': 'logging.FileHandler',
+            #     'filename': LOG_DIR / 'trace.log',
+            #     'formatter': 'trace',
+            # },
+            # 'ecs_json': {
+            #     'level': 'DEBUG',
+            #     'class': 'logging.FileHandler',
+            #     'filename': LOG_DIR / 'ecs_json.log',
+            #     'formatter': "ecs_logging"
+            # },
         },
         'loggers': {
             '': {
-                'handlers': ['request_log', 'trace_log', 'ecs_json'],
+                'handlers': [
+                    # 'request_log',
+                    # 'trace_log',
+                    # 'ecs_json',
+                ],
                 'propagate': True,
                 'level': 'DEBUG',
             },
             # Increase logging level on loggers that are noisy at debug level
             # Note: django.server logs at warning level for 404s.
             'django.server': {
-                # 'level': 'DEBUG',
-                'level': 'ERROR',
+                'level': 'DEBUG',
+                # 'level': 'ERROR',
             },
             'django.db': {
-                # 'level': 'DEBUG',
-                'level': 'ERROR',
+                'level': 'DEBUG',
+                # 'level': 'ERROR',
             },
             'django.request': {
-                'level': 'ERROR',
+                'level': 'DEBUG',
+                # 'level': 'ERROR',
             },
             # TODO: Look into messages about missing variables in templates
             'django.template': {
                 'level': 'INFO',
             },
             'filelock': {
-                'level': 'ERROR',
+                'level': 'DEBUG',
+                # 'level': 'ERROR',
             },
             'django.utils.autoreload': {
-                'level': 'ERROR',
+                'level': 'DEBUG',
+                # 'level': 'ERROR',
             },
             'botocore': {'level': 'ERROR'},
             # Suppress 'Using selector: EpollSelector'
             'asyncio': {
+                # 'level': 'DEBUG',
                 'level': 'WARNING',
+                # 'level': 'ERROR',
             },
         },
     }
@@ -293,7 +302,7 @@ logging.config.dictConfig(
 
 # Server instance
 
-EZID_BASE_URL = '{{ ezid_base_url }}'
+EZID_BASE_URL = 'https://ezid.cdlib.org'
 ALLOWED_HOSTS = ['*']
 SECRET_KEY = '< placeholder - do not modify >'
 
@@ -329,32 +338,32 @@ SESSION_COOKIE_PATH = '/'
 # $ cd ezid
 # $ ./manage.py diag-update-admin
 
-ADMIN_USERNAME = '{{ admin_username }}'
-ADMIN_PASSWORD = '{{ admin_password }}'
+ADMIN_USERNAME = 'admin'
+ADMIN_PASSWORD = 'admin'
 
-ADMIN_GROUPNAME = '{{ admin_groupname }}'
-ADMIN_NOTES = '{{ admin_notes }}'
-ADMIN_EMAIL = '{{ admin_email }}'
-ADMIN_DISPLAY_NAME = '{{ admin_display_name }}'
+ADMIN_GROUPNAME = ''
+ADMIN_NOTES = ''
+ADMIN_EMAIL = ''
+ADMIN_DISPLAY_NAME = ''
 
-ADMIN_ORG_ACRONYM = '{{ admin_org_acronym }}'
-ADMIN_ORG_NAME = '{{ admin_org_name }}'
-ADMIN_ORG_URL = '{{ admin_org_url }}'
+ADMIN_ORG_ACRONYM = ''
+ADMIN_ORG_NAME = ''
+ADMIN_ORG_URL = ''
 
-ADMIN_CROSSREF_EMAIL = '{{ admin_crossref_email }}'
-ADMIN_CROSSREF_ENABLED = {{ admin_crossref_enabled }}
+ADMIN_CROSSREF_EMAIL = ''
+ADMIN_CROSSREF_ENABLED = True
 
-ADMIN_PRIMARY_CONTACT_EMAIL = '{{ admin_primary_contact_email }}'
-ADMIN_PRIMARY_CONTACT_NAME = '{{ admin_primary_contact_name }}'
-ADMIN_PRIMARY_CONTACT_PHONE = '{{ admin_primary_contact_phone }}'
+ADMIN_PRIMARY_CONTACT_EMAIL = ''
+ADMIN_PRIMARY_CONTACT_NAME = ''
+ADMIN_PRIMARY_CONTACT_PHONE = ''
 
-ADMIN_SECONDARY_CONTACT_EMAIL = '{{ admin_secondary_contact_email }}'
-ADMIN_SECONDARY_CONTACT_NAME = '{{ admin_secondary_contact_name }}'
-ADMIN_SECONDARY_CONTACT_PHONE = '{{ admin_secondary_contact_phone }}'
+ADMIN_SECONDARY_CONTACT_EMAIL = ''
+ADMIN_SECONDARY_CONTACT_NAME = ''
+ADMIN_SECONDARY_CONTACT_PHONE = ''
 
-ADMIN_REALM = '{{ admin_search_realm }}'
-ADMIN_USER_PID = '{{ admin_search_user_pid }}'
-ADMIN_GROUP_PID = '{{ admin_search_group_pid }}'
+ADMIN_REALM = ''
+ADMIN_USER_PID = ''
+ADMIN_GROUP_PID = ''
 
 # Credentials
 
@@ -363,15 +372,15 @@ GOOGLE_ANALYTICS_ID = None
 GZIP_COMMAND = '/usr/bin/gzip'
 ZIP_COMMAND = '/usr/bin/zip'
 
-BINDER_URL = '{{ binder_url }}'
-BINDER_USERNAME = '{{ binder_username }}'
-BINDER_PASSWORD = '{{ binder_password }}'
+BINDER_URL = 'https://n2t-stg.n2t.net/a/ezid/b'
+BINDER_USERNAME = 'ezid'
+BINDER_PASSWORD = ''
 BINDER_NUM_ATTEMPTS = 3
 BINDER_REATTEMPT_DELAY = 5
 
 # The ARK resolvers correspond to the above binders.
-RESOLVER_DOI = '{{ resolver_doi }}'
-RESOLVER_ARK = '{{ resolver_ark }}'
+RESOLVER_DOI = 'https://doi.org'
+RESOLVER_ARK = 'https://n2t-stg.n2t.net'
 
 # Shoulders
 SHOULDERS_ARK_TEST = 'ark:/99999/fk4'
@@ -387,8 +396,8 @@ TEST_SHOULDER_DICT = [
 # DataCite
 
 DATACITE_ENABLED = False
-DATACITE_DOI_URL = '{{ datacite_doi_url  }}'
-DATACITE_METADATA_URL = '{{ datacite_metadata_url  }}'
+DATACITE_DOI_URL = 'https://mds.datacite.org/doi'
+DATACITE_METADATA_URL = 'https://mds.datacite.org/metadata'
 
 DATACITE_NUM_ATTEMPTS = 3
 DATACITE_REATTEMPT_DELAY = 5
@@ -400,8 +409,8 @@ DATACITE_ALLOCATORS = 'CDL,PURDUE'
 
 # Allocator
 
-ALLOCATOR_CDL_PASSWORD = '{{ allocator_cdl_password  }}'
-ALLOCATOR_PURDUE_PASSWORD = '{{ allocator_purdue_password  }}'
+ALLOCATOR_CDL_PASSWORD = ''
+ALLOCATOR_PURDUE_PASSWORD = ''
 
 # Crossref
 
@@ -415,8 +424,8 @@ CROSSREF_REAL_SERVER = 'doi.crossref.org'
 CROSSREF_TEST_SERVER = 'test.crossref.org'
 CROSSREF_DEPOSIT_URL = 'https://%%s/servlet/deposit'
 CROSSREF_RESULTS_URL = 'https://%%s/servlet/submissionDownload'
-CROSSREF_USERNAME = '{{ crossref_username  }}'
-CROSSREF_PASSWORD = '{{ crossref_password  }}'
+CROSSREF_USERNAME = ''
+CROSSREF_PASSWORD = ''
 
 # Profiles
 
@@ -424,7 +433,7 @@ DEFAULT_ARK_PROFILE = 'erc'
 DEFAULT_DOI_PROFILE = 'datacite'
 DEFAULT_UUID_PROFILE = 'erc'
 
-PROFILES_KEYS = ['INTERNAL','DATACITE','DC','ERC','CROSSREF']
+PROFILES_KEYS = ['INTERNAL', 'DATACITE', 'DC', 'ERC', 'CROSSREF']
 
 # The INTERNAL profile is special and must be listed first.
 PROFILE_INTERNAL_NAME = 'internal'
@@ -460,7 +469,7 @@ OAI_BATCH_SIZE = 100
 CLOUDWATCH_ENABLED = True
 CLOUDWATCH_REGION = 'us-west-2'
 CLOUDWATCH_NAMESPACE = 'EZID'
-CLOUDWATCH_INSTANCE_NAME = '{{ cloudwatch_instance_name  }}'
+CLOUDWATCH_INSTANCE_NAME = 'uc3-ezidx2-dev'
 
 # Linkchecker
 
@@ -545,6 +554,21 @@ TEMPLATES = [
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 QUERY_PAGE_SIZE = 10000
+
+BlobField = collections.namedtuple('BlobField', ['model', 'field', 'is_queue'])
+
+BLOB_FIELD_LIST = [
+    # metadata = Python or JSON, compound objects
+    BlobField('BinderQueue', 'metadata', True),
+    BlobField('CrossrefQueue', 'metadata', True),
+    BlobField('DataciteQueue', 'metadata', True),
+    # object = Identifier (Model)
+    BlobField('DownloadQueue', 'object', True),
+    # cm = CompressedJsonField (Field)
+    BlobField('Identifier', 'cm', False),
+    BlobField('Identifier', 'cm', False),
+]
+
 
 # print('Installing exception hook')
 # import impl.nog.tb

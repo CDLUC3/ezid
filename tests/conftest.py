@@ -166,9 +166,7 @@ METADATA_TUP = tuple(
 
 # Database fixtures
 
-# combined-limited: Complete snapshot of the combined store/search DB from stg. All tables
-# are included but limited to 1000 rows.
-REL_DB_FIXTURE_PATH = ROOT_PATH / 'ezidapp/fixtures/combined-limited.json'
+REL_DB_FIXTURE_PATH = ROOT_PATH / 'ezidapp/fixtures/db-fixture.json'
 
 # store-full: Complete snapshot of the combined store/search DB from stg, only the three
 # large tables holding the resolve metadata for the existing minters have been dropped.
@@ -689,7 +687,7 @@ def django_save_db_fixture(db_key=DEFAULT_DB_KEY):
 
 def django_load_db_fixture(rel_json_fixture_path, db_key=DEFAULT_DB_KEY):
     log.debug("Populating DB from compressed JSON fixture file. db_key={}".format(db_key))
-    fixture_file_path = impl.nog.filesystem.abs_path(REL_DB_FIXTURE_PATH.as_posix())
+    fixture_file_path = impl.nog.filesystem.abs_path(rel_json_fixture_path.as_posix())
     django.core.management.call_command("loaddata", fixture_file_path, database=db_key)
     django_commit_and_close(db_key)
 

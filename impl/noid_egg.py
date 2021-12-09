@@ -3,20 +3,16 @@
 
 """Interface to the "egg" (binder) portion of noid
 
-A note on encodings.  Identifiers and metadata elements (both names
-and values) are sent to noid in encoded form; see util.encode{3,4}.
-Metadata elements received from void are UTF-8-encoded and utilize
-percent-encoding.  Though this received encoding does not exactly
-match the transmitted encoding, the decoding performed by
-util.decode is nevertheless compatible and so we use it.  (Consider
-a Python Unicode value u"Greg%Jan\xe9e".  This is sent as
-"Greg%25Jan%C3%A9e" but received back as "Greg%25Jan\xc3\xa9e",
-which, when percent- and UTF-8-decoded, yields the original value.)
+A note on encodings.  Identifiers and metadata elements (both names and values) are sent to noid in
+encoded form; see util.encode{3,4}. Metadata elements received from void are UTF-8-encoded and
+utilize percent-encoding.  Though this received encoding does not exactly match the transmitted
+encoding, the decoding performed by util.decode is nevertheless compatible and so we use it.
+(Consider a Python Unicode value u"Greg%Jan\xe9e".  This is sent as "Greg%25Jan%C3%A9e" but received
+back as "Greg%25Jan\xc3\xa9e", which, when percent- and UTF-8-decoded, yields the original value.)
 
-This module performs whitespace processing.  Leading and trailing
-whitespace is stripped from both element names and values.  Empty
-names are not allowed.  Setting an empty value causes the element to
-be deleted; as a consequence, empty values are never returned.
+This module performs whitespace processing.  Leading and trailing whitespace is stripped from both
+element names and values.  Empty names are not allowed.  Setting an empty value causes the element
+to be deleted; as a consequence, empty values are never returned.
 """
 
 import logging
@@ -32,9 +28,10 @@ import django.conf
 import impl.log
 import impl.util
 
-_LT = logging.getLogger("tracer")
-
 log = logging.getLogger(__name__)
+
+DECODE_RX = re.compile("\^([0-9a-fA-F][0-9a-fA-F])?")
+
 
 @impl.log.stacklog
 def _issue(method, operations):
@@ -50,19 +47,22 @@ def _issue(method, operations):
             django.conf.settings.BINDER_PASSWORD,
         ),
     )
-    if len(operations) > 0:
-        r.add_header("Content-Type", "text/plain")
-        l = []
-        for o in operations:
-            # o = (identifier, operation [,element [, value]])
-            s = f":hx% {impl.util.encode4(o[0])}.{o[1]}"
-            if len(o) > 2:
-                s += " " + impl.util.encode4(o[2])
-            if len(o) > 3:
-                s += " " + impl.util.encode3(o[3])
-            l.append(s)
-        r.data = "\n".join(l).encode('utf-8')
-    # noinspection PyTypeChecker
+
+    r.add_header("Content-Type", "text/plain")
+
+    s = ""
+
+    l = []
+    for o in operations:
+        # o = (identifier, operation [,element [, value]])
+        s = f":hx% {impl.util.encode4(o[0])}.{o[1]}"
+        if len(o) > 2:
+            s += " " + impl.util.encode4(o[2])
+        if len(o) > 3:
+            s += " " + impl.util.encode3(o[3])
+        l.append(s)
+    r.data = "\n".join(l).encode('utf-8')
+
     for i in range(django.conf.settings.BINDER_NUM_ATTEMPTS):
         c = None
         try:
@@ -79,15 +79,12 @@ def _issue(method, operations):
                 c.close()
         # noinspection PyTypeChecker
         time.sleep(django.conf.settings.BINDER_REATTEMPT_DELAY)
-    # noinspection PyUnboundLocalVariable,PyUnboundLocalVariable
+
     return s
 
 
 def _error(operation, s):
-    return (
-        f'unexpected return from noid egg "{operation}":\n '
-        f'{"".join(str(x) for x in s)}'
-    )
+    return f'unexpected return from noid egg "{operation}":\n ' f'{"".join(str(x) for x in s)}'
 
 
 def identifierExists(id_str):
@@ -223,9 +220,6 @@ def ping():
         return "down"
 
 
-_decodePattern = re.compile("\^([0-9a-fA-F][0-9a-fA-F])?")
-
-
 def _decodeRewriter(m):
     assert len(m.group(0)) == 3, "circumflex decode error"
     return chr(int(m.group(0)[1:], 16))
@@ -237,4 +231,4 @@ def decodeRaw(s):
 
     Raises AssertionError and UnicodeDecodeError.
     """
-    return _decodePattern.sub(_decodeRewriter, s)
+    return DECODE_RX.sub(_decodeRewriter, s)

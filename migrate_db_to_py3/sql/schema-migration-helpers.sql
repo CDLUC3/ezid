@@ -2,72 +2,317 @@
  * Copyright©2021, Regents of the University of California
  * http://creativecommons.org/licenses/BSD
  */
-/*
- * Copyright©2021, Regents of the University of California
- * http://creativecommons.org/licenses/BSD
- */
+
+use ezid;
+
+show engine innodb status;
+show table status;
+show full processlist;
+select version();
+
+kill 50;
+
+set @@autocommit = 0;
+start transaction;
+rollback;
+commit;
+
+select now();
+select max(id) from ezidapp_searchidentifier;
+
+# Time of last update for any storeIdentifier (indicates when the DB was last used)
+select from_unixtime(max(updatetime))
+from ezidapp_storeidentifier es;
+
+# MySQL [ezid]> show global variables like 'innodb_buffer%';
+# +-------------------------------------+----------------+
+# | Variable_name                       | Value          |
+# +-------------------------------------+----------------+
+# | innodb_buffer_pool_chunk_size       | 134217728      |
+# | innodb_buffer_pool_dump_at_shutdown | ON             |
+# | innodb_buffer_pool_dump_now         | OFF            |
+# | innodb_buffer_pool_dump_pct         | 25             |
+# | innodb_buffer_pool_filename         | ib_buffer_pool |
+# | innodb_buffer_pool_instances        | 8              |
+# | innodb_buffer_pool_load_abort       | OFF            |
+# | innodb_buffer_pool_load_at_startup  | ON             |
+# | innodb_buffer_pool_load_now         | OFF            |
+# | innodb_buffer_pool_size             | 1073741824     |
+# +-------------------------------------+----------------+
+# 10 rows in set (0.09 sec)
+
+select
+    ( select count(*) from ezidapp_searchidentifier) as search,
+    ( select count(*) from ezidapp_storeidentifier) as store,
+    ( select count(*) from ezidapp_searchidentifier es) as 'all',
+    ( select count(*) from ezidapp_searchidentifier es where metadata is not null) as metadata_not_null
+;
+
+# List all constraints
+select constraint_name,
+       unique_constraint_name,
+       match_option,
+       update_rule,
+       delete_rule,
+       table_name,
+       referenced_table_name
+from information_schema.referential_constraints
+where constraint_schema = 'ezid'
+;
+
+# Template for counter loop in stored procedure
+delimiter $$
+drop procedure if exists drop_stubs $$
+create procedure drop_stubs()
+begin
+  declare c int default 0;
+  l1 : loop
+    if (c = 10) then
+      leave l1;
+    end if;
+    set c = c + 1;
+    select c;
+  end loop;
+end$$
+delimiter ;
+
+
+select column_name
+from
+  information_schema.key_column_usage
+where
+    table_name = 'ezidapp_searchidentifier'
+    and constraint_schema = 'ezid'
+;
+
+
+
+
+alter table ezidapp_searchidentifier
+drop key ezidapp_searchidentifier_keywords;
+alter table ezidapp_searchidentifier
+drop key ezidapp_searchidentifier_resourcecreator;
+alter table ezidapp_searchidentifier
+drop key ezidapp_searchidentifier_resourcepublisher;
+alter table ezidapp_searchidentifier
+drop key ezidapp_searchidentifier_resourcetitle;
+
+select match (keywords) against ('water') from ezidapp_searchidentifier es group by es.keywords with rollup ;
+
+select keywords from ezidapp_searchidentifier limit 100;
+
+
+###############
+
+
+select count(*) from ezidapp_searchidentifier es group by es.hasissues;
+# select count(*) from ezidapp_searchidentifier es group by es.;
+
+select count(*) from ezidapp_linkchecker el;
+select * from ezidapp_linkchecker el;
+
+
+# Create drop statements for stub tables
+# select concat_ws(' ', 'rename table', table_name, 'to', replace(table_name, '_store', '_'), ';')
+# from information_schema.tables
+# where table_schema = 'ezid' and table_name like 'ezidapp_store%'
+# order by table_name
+# ;
+
+select concat('lock ', table_name, ' write;')
+from information_schema.tables where table_schema='ezid' and table_name like 'ezidapp_%' order by table_name;
+
+lock tables
+  ezidapp_binderqueue write
+, ezidapp_crossrefqueue write
+, ezidapp_datacitequeue write
+, ezidapp_downloadqueue write
+, ezidapp_linkchecker write
+, ezidapp_newaccountworksheet write
+, ezidapp_registrationagency write
+, ezidapp_searchdatacenter write
+, ezidapp_searchgroup write
+, ezidapp_searchidentifier write
+, ezidapp_searchprofile write
+, ezidapp_searchrealm write
+, ezidapp_searchuser write
+, ezidapp_servervariables write
+, ezidapp_shoulder write
+, ezidapp_shouldertype write
+, ezidapp_statistics write
+, ezidapp_storedatacenter write
+, ezidapp_storegroup write
+, ezidapp_storegroup_shoulders write
+, ezidapp_storeidentifier write
+, ezidapp_storeprofile write
+, ezidapp_storerealm write
+, ezidapp_storeuser write
+, ezidapp_storeuser_proxies write
+, ezidapp_storeuser_shoulders write
+, ezidapp_updatequeue write
+;
+
+unlock tables;
+
+############
+
+# Generate queries to drop constraints
+select concat('alter table ', table_name, ' drop foreign key ', constraint_name, ';')
+from information_schema.referential_constraints
+where constraint_schema = 'ezid'
+;
+
+alter table auth_group_permissions drop foreign key auth_group__permission_id_1f49ccbbdc69d2fc_fk_auth_permission_id;
+alter table auth_group_permissions drop foreign key auth_group_permission_group_id_689710a9a73b7457_fk_auth_group_id;
+alter table auth_permission drop foreign key auth__content_type_id_508cf46651277a81_fk_django_content_type_id;
+alter table auth_user_groups drop foreign key auth_user_groups_group_id_33ac548dcf5f8e37_fk_auth_group_id;
+alter table auth_user_groups drop foreign key auth_user_groups_user_id_4b5ed4ffdb8fd9b0_fk_auth_user_id;
+alter table auth_user_user_permissions drop foreign key auth_user_u_permission_id_384b62483d7071f0_fk_auth_permission_id;
+alter table auth_user_user_permissions drop foreign key auth_user_user_permissi_user_id_7f0938558328534a_fk_auth_user_id;
+alter table django_admin_log drop foreign key djang_content_type_id_697914295151027a_fk_django_content_type_id;
+alter table django_admin_log drop foreign key django_admin_log_user_id_52fdd58701c5f563_fk_auth_user_id;
+alter table ezidapp_searchgroup drop foreign key ezidapp_sear_realm_id_58cd72178e312e42_fk_ezidapp_searchrealm_id;
+alter table ezidapp_searchuser drop foreign key ezidapp_sear_group_id_488efb1f64647b87_fk_ezidapp_searchgroup_id;
+alter table ezidapp_searchuser drop foreign key ezidapp_sear_realm_id_3d437af11e1add07_fk_ezidapp_searchrealm_id;
+alter table ezidapp_shoulder drop foreign key ezid_datacenter_id_4fb7570a75b0c69_fk_ezidapp_storedatacenter_id;
+alter table ezidapp_shoulder drop foreign key ezidapp_shoulder_registration_agency__ba15f13e_fk_ezidapp_r;
+alter table ezidapp_shoulder drop foreign key ezidapp_shoulder_shoulder_type_id_184bbced_fk_ezidapp_s;
+alter table ezidapp_storegroup drop foreign key ezidapp_store_realm_id_3405b66a3ee93b42_fk_ezidapp_storerealm_id;
+alter table ezidapp_storegroup_shoulders drop foreign key ezidapp__storegroup_id_59e419f89a47aef8_fk_ezidapp_storegroup_id;
+alter table ezidapp_storegroup_shoulders drop foreign key ezidapp_stor_shoulder_id_592128c84020a89a_fk_ezidapp_shoulder_id;
+alter table ezidapp_storeidentifier drop foreign key ezi_datacenter_id_3bc5951853d0443c_fk_ezidapp_storedatacenter_id;
+alter table ezidapp_storeidentifier drop foreign key ezidapp__ownergroup_id_10bf8aa5ea27b4bd_fk_ezidapp_storegroup_id;
+alter table ezidapp_storeidentifier drop foreign key ezidapp_s_profile_id_4105f1929b18ac77_fk_ezidapp_storeprofile_id;
+alter table ezidapp_storeidentifier drop foreign key ezidapp_storei_owner_id_2a042b1b01e4a83b_fk_ezidapp_storeuser_id;
+alter table ezidapp_storeuser drop foreign key ezidapp_store_group_id_7eff2039d02834ed_fk_ezidapp_storegroup_id;
+alter table ezidapp_storeuser drop foreign key ezidapp_store_realm_id_5d5c037d7f3fac93_fk_ezidapp_storerealm_id;
+alter table ezidapp_storeuser_proxies drop foreign key ezida_from_storeuser_id_199e0c23a1cd56a7_fk_ezidapp_storeuser_id;
+alter table ezidapp_storeuser_proxies drop foreign key ezidapp_to_storeuser_id_74856b12f826a792_fk_ezidapp_storeuser_id;
+alter table ezidapp_storeuser_shoulders drop foreign key ezidapp_st_storeuser_id_6730d06357e88738_fk_ezidapp_storeuser_id;
+alter table ezidapp_storeuser_shoulders drop foreign key ezidapp_stor_shoulder_id_760fcf030c9067e7_fk_ezidapp_shoulder_id;
+
+###########
+
+# Replace
+# ((when \d+ then \d+ ){10})
+# $1\n
+
+# user
+# 27min on RDS
+select concat(' when ', a.id, ' then ', b.id)
+from ezidapp_searchuser a join ezidapp_storeuser b on a.pid = b.pid
+order by a.id
+;
+
+# Only works in MyISAM
+# alter table ezidapp_searchidentifier disable keys;
+
+# group
+select now();
+select concat(' when ', a.id, ' then ', b.id)
+from ezidapp_searchgroup a join ezidapp_storegroup b on a.pid = b.pid
+order by a.id
+;
+
+# profile
+select concat(' when ', a.id, ' then ', b.id)
+from ezidapp_searchprofile a join ezidapp_storeprofile b on a.label = b.label
+order by a.id
+;
+
+#
+select concat(' when ', a.id, ' then ', b.id)
+from ezidapp_searchdatacenter a join ezidapp_storedatacenter b on a.symbol = b.symbol
+order by a.id
+;
+
+# Check integrity of the search/store fields on which we'll be joining
+# All counts should be 0.
+select
+    (select count(*) from ezidapp_storeuser        where pid not in    (select pid from ezidapp_searchuser )) as store_user,
+    (select count(*) from ezidapp_storegroup       where pid not in    (select pid from ezidapp_searchgroup )) as store_group,
+    (select count(*) from ezidapp_storeprofile     where label not in  (select label from ezidapp_searchprofile )) as store_profile,
+    (select count(*) from ezidapp_storedatacenter  where symbol not in (select symbol from ezidapp_searchdatacenter )) as store_datacenter,
+
+    (select count(*) from ezidapp_searchuser       where pid not in    (select pid from ezidapp_storeuser )) as search_user,
+    (select count(*) from ezidapp_searchgroup      where pid not in    (select pid from ezidapp_storegroup )) as search_group,
+    (select count(*) from ezidapp_searchprofile    where label not in  (select label from ezidapp_storeprofile )) as search_profile,
+    (select count(*) from ezidapp_searchdatacenter where symbol not in (select symbol from ezidapp_storedatacenter )) as search_datacenter
+;
+
+# Check that there are no nulls.
+# All counts should be 0.
+select
+    (select count(*) from ezidapp_searchidentifier si where si.owner_id is null) as owner,
+    (select count(*) from ezidapp_searchidentifier si where si.ownergroup_id is null) as ownergroup,
+    (select count(*) from ezidapp_searchidentifier si where si.profile_id is null) as `profile`,
+    (select count(*) from ezidapp_searchidentifier si where si.datacenter_id is null) as datacenter
+;
+
+# Check search-to-search FKs.
+# All counts should be 0 BEFORE updating to store.
+select
+    (select count(*) from ezidapp_searchidentifier si where si.owner_id not in (select id from ezidapp_searchuser )) as owner,
+    (select count(*) from ezidapp_searchidentifier si where si.ownergroup_id not in (select id from ezidapp_searchgroup )) as ownergroup,
+    (select count(*) from ezidapp_searchidentifier si where si.profile_id not in (select id from ezidapp_searchprofile )) as label,
+    (select count(*) from ezidapp_searchidentifier si where si.datacenter_id not in (select id from ezidapp_searchdatacenter )) as symbol
+;
+
+update ezidapp_searchidentifier si
+    join ezidapp_searchuser searchuser on searchuser.id = si.owner_id
+    join ezidapp_storeuser storeuser on storeuser.pid = searchuser.pid
+#     left join ezidapp_searchgroup searchgroup on searchgroup.id = si.ownergroup_id
+#     left join ezidapp_storegroup storegroup on storegroup.pid = searchgroup.pid
+#     left join ezidapp_searchprofile searchprofile on searchprofile.id = si.profile_id
+#     left join ezidapp_storeprofile storeprofile on storeprofile.label = searchprofile.label
+#     left join ezidapp_searchdatacenter searchdatacenter on searchdatacenter.id = si.datacenter_id
+#     left join ezidapp_storedatacenter storedatacenter on storedatacenter.symbol = searchdatacenter.symbol
+set si.owner_id      = storeuser.id
+#     si.ownergroup_id = storegroup.id,
+#     si.profile_id    = storeprofile.id,
+#     si.datacenter_id = storedatacenter.id
+where true
+;
+
+insert into ezidapp_storedatacenter(symbol, name)
+select a.symbol, a.symbol from ezidapp_searchdatacenter a
+where a.symbol not in (select symbol from ezidapp_storedatacenter)
+;
+
+# Check search-to-store FKs
+# All counts should be 0 AFTER updating to store.
+select
+    (select count(*) from ezidapp_searchidentifier si where si.owner_id not in (select id from ezidapp_storeuser )) as owner,
+    (select count(*) from ezidapp_searchidentifier si where si.ownergroup_id not in (select id from ezidapp_storegroup )) as ownergroup,
+    (select count(*) from ezidapp_searchidentifier si where si.profile_id not in (select id from ezidapp_storeprofile )) as label,
+    (select count(*) from ezidapp_searchidentifier si where si.datacenter_id not in (select id from ezidapp_storedatacenter )) as symbol
+;
+
+# Set up a fresh ezid_test_db
+
+drop database if exists ezid_test_db;
+create database ezid_test_db;
+use ezid_test_db;
+drop user if exists 'ezid_test_user'@'localhost';
+drop user if exists 'ezid_test_user'@'%';
+create user 'ezid_test_user'@'localhost' identified by 'ezid_test_pw';
+grant all privileges on *.* to 'ezid_test_user'@'localhost' with grant option;
+create user 'ezid_test_user'@'%' identified by 'ezid_test_pw';
+grant all privileges on *.* to 'ezid_test_user'@'%' with grant option;
+show databases;
 
 # noinspection SpellCheckingInspectionForFile
-
-
 create fulltext index ezidapp_searchidentifier_resourceTitle on ezidapp_searchidentifier(resourceTitle);
 create fulltext index ezidapp_searchidentifier_resourceCreator on ezidapp_searchidentifier(resourceCreator);
 create fulltext index ezidapp_searchidentifier_resourcePublisher on ezidapp_searchidentifier(resourcePublisher);
 create fulltext index ezidapp_searchidentifier_keywords on ezidapp_searchidentifier(keywords);
 # drop index ezidapp_searchidentifier_keywords on ezidapp_searchidentifier;
 
-
-select count(*)
-from ezidapp_identifier;
-select count(*)
-from ezidapp_identifier
-where oaiVisible is null;
-select count(*)
-from ezidapp_searchidentifier;
-select count(*)
-from ezidapp_searchidentifier
-where oaiVisible is null;
-
-#### Async queues
+# Queues
 
 select concat('drop table ', table_name, ';')
 from information_schema.tables t
 where table_name like 'ezidapp%queue';
-
-drop table ezidapp_binderqueue;
-drop table ezidapp_crossrefqueue;
-drop table ezidapp_datacitequeue;
-drop table ezidapp_downloadqueue;
-drop table ezidapp_searchindexerqueue;
-drop table ezidapp_updatequeue;
-
-create table `ezidapp_searchindexerqueue` (
-    `seq` int not null auto_increment,
-    `enqueueTime` int not null,
-    `submitTime` int default null,
-    `operation` varchar(1) not null,
-    `status` varchar(1) not null,
-    `message` longtext not null,
-    `batchId` varchar(36) not null,
-    `error` longtext not null,
-    `errorIsPermanent` tinyint(1) not null,
-    `refIdentifier_id` int not null,
-    primary key (`seq`),
-    key `ezidapp_searchindexe_refIdentifier_id_7b72d1a2_fk_ezidapp_r`(`refIdentifier_id`),
-    key `ezidapp_searchindexerqueue_operation_577fd676`(`operation`),
-    key `ezidapp_searchindexerqueue_status_9aeeb55e`(`status`),
-    constraint `ezidapp_searchindexe_refIdentifier_id_7b72d1a2_fk_ezidapp_r` foreign key (`refIdentifier_id`) references `ezidapp_refidentifier`(`id`)
-)
-    engine = InnoDB
-    default charset = utf8mb4
-;
-
-create table ezidapp_binderqueue like ezidapp_searchindexerqueue;
-create table ezidapp_crossrefqueue like ezidapp_searchindexerqueue;
-create table ezidapp_datacitequeue like ezidapp_searchindexerqueue;
-create table ezidapp_downloadqueue like ezidapp_searchindexerqueue;
-create table ezidapp_updatequeue like ezidapp_searchindexerqueue;
-
 
 #### Backups
 
@@ -92,9 +337,7 @@ where app = 'ezidapp';
 select count(*)
 from django_migrations dm;
 
-
 ####
-
 
 drop table ezidapp_binderqueue;
 
@@ -113,152 +356,6 @@ create table if not exists ezidapp_binderqueue (
 );
 
 create index ezidapp_binderqueue_status_55adbf21 on ezidapp_binderqueue(status);
-
-
-
-select *
-from ezidapp_datacenter;
-
-show table status;
-
-alter table ezidapp_searchidentifier
-add primary key (`id`);
-alter table ezidapp_searchidentifier
-add unique key `identifier`(`identifier`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_5e7b1936`(`owner_id`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_365b2611`(`ownergroup_id`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_13bc2970`(`datacenter_id`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_83a0eb3f`(`profile_id`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_owner_id_60c2c5fffcb40895_idx`(`owner_id`, `identifier`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_ownergroup_id_4b76dd7c4564df4f_idx`(`ownergroup_id`, `identifier`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_owner_id_47ecdfd54025f1f1_idx`(`owner_id`, `createTime`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_owner_id_59016f4a7ffbcaaa_idx`(`owner_id`, `updateTime`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_owner_id_5b203a171bdbab38_idx`(`owner_id`, `status`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_owner_id_3e88a7c1b2b5c693_idx`(`owner_id`, `exported`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_owner_id_58dfc6401ef0e359_idx`(`owner_id`, `crossrefStatus`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_owner_id_431b22d7016b97df_idx`(`owner_id`, `profile_id`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_owner_id_52f3896c5fc67016_idx`(`owner_id`, `isTest`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_owner_id_5c11adaf88d856d0_idx`(`owner_id`, `searchablePublicationYear`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_owner_id_54da573427e72c0e_idx`(`owner_id`, `searchableResourceType`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_owner_id_18a46334256a7530_idx`(`owner_id`, `hasMetadata`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_owner_id_1d05153b51fd9dff_idx`(`owner_id`, `hasIssues`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_owner_id_76e131b0c70070a1_idx`(`owner_id`, `resourceCreatorPrefix`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_owner_id_198f8d3796dae4b9_idx`(`owner_id`, `resourceTitlePrefix`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_owner_id_263dc1dd7d2fd3ef_idx`(`owner_id`, `resourcePublisherPrefix`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_ownergroup_id_39b7cdc64bc267c3_idx`(`ownergroup_id`, `createTime`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_ownergroup_id_6c5194bcf1d0014e_idx`(`ownergroup_id`, `updateTime`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_ownergroup_id_1d431d7513ab02ec_idx`(`ownergroup_id`, `status`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_ownergroup_id_48b886662536e7fd_idx`(`ownergroup_id`, `exported`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_ownergroup_id_2114f948ed092669_idx`(`ownergroup_id`, `crossrefStatus`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_ownergroup_id_6cfbff68ca3e25cb_idx`(`ownergroup_id`, `profile_id`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_ownergroup_id_449f25bec77c57da_idx`(`ownergroup_id`, `isTest`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_ownergroup_id_4a1baf4823ddab6c_idx`(`ownergroup_id`, `searchablePublicationYear`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_ownergroup_id_54e4e22002a54d2_idx`(`ownergroup_id`, `searchableResourceType`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_ownergroup_id_65871830cd29aaf0_idx`(`ownergroup_id`, `hasMetadata`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_ownergroup_id_4ad29fb0ede49103_idx`(`ownergroup_id`, `hasIssues`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_ownergroup_id_3ac1ed25c2bfbb2d_idx`(`ownergroup_id`, `resourceCreatorPrefix`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_ownergroup_id_68875bac9225d3c9_idx`(`ownergroup_id`, `resourceTitlePrefix`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_ownergroup_id_2388bfe261a735c5_idx`(`ownergroup_id`, `resourcePublisherPrefix`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifie_publicSearchVisible_58de9f6f00b8058e_idx`(`publicSearchVisible`, `identifier`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifie_publicSearchVisible_1932465b0335635c_idx`(`publicSearchVisible`, `createTime`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifie_publicSearchVisible_47b0a294295f5ef5_idx`(`publicSearchVisible`, `updateTime`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifie_publicSearchVisible_1e447c57e83c8d5d_idx`(`publicSearchVisible`, `searchablePublicationYear`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifie_publicSearchVisible_47396846c619370f_idx`(`publicSearchVisible`, `searchableResourceType`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifie_publicSearchVisible_117042133b78a88e_idx`(`publicSearchVisible`, `resourceCreatorPrefix`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_publicSearchVisible_6807647c6d8cb52_idx`(`publicSearchVisible`, `resourceTitlePrefix`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifie_publicSearchVisible_2e067bd0a9494a38_idx`(`publicSearchVisible`, `resourcePublisherPrefix`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_searchableTarget_24d34538786996df_idx`(`searchableTarget`);
-alter table ezidapp_searchidentifier
-add key `ezidapp_searchidentifier_oaiVisible_1d291a23fcff2ce2_idx`(`oaiVisible`, `updateTime`);
-alter table ezidapp_searchidentifier
-add fulltext key `ezidapp_searchidentifier_resourceTitle`(`resourceTitle`);
-alter table ezidapp_searchidentifier
-add fulltext key `ezidapp_searchidentifier_resourceCreator`(`resourceCreator`);
-alter table ezidapp_searchidentifier
-add fulltext key `ezidapp_searchidentifier_resourcePublisher`(`resourcePublisher`);
-alter table ezidapp_searchidentifier
-add fulltext key `ezidapp_searchidentifier_keywords`(`keywords`);
-alter table ezidapp_searchidentifier
-add constraint `ez_datacenter_id_2c99a133444936c8_fk_ezidapp_searchdatacenter_id`;
-
-
-
-# Fresh start on migrations
-# delete from django_migrations
-#
-#     Remove migrations from your migrations folder for the app
-#
-# rm -rf <app>/migrations/
-#
-#     Reset the migration for builtin apps(like admin)
-#
-# python manage.py migrate --fake
-#
-#     Create initial migration for each and every app
-#
-# python manage.py makemigrations <app>
-#
-#     The final step is to create fake initial migrations
-#
-# python manage.py migrate --fake-initial
-
-#  Apply all migrations: admin, auth, contenttypes, ezidapp, sessions
-
-#  admin
-#  auth
-#  contenttypes
-#  sessions
-#  ezidapp
-
-#  ./manage.py migrate contenttypes
-#  ./manage.py migrate admin
-#  ./manage.py migrate auth
-#  ./manage.py migrate sessions
-#  ./manage.py migrate ezidapp
-
 
 # Drop all of Django's internal tables
 set foreign_key_checks = 0;
@@ -300,7 +397,6 @@ rm -rf ezidapp/migrations/*
 ./manage.py migrate --fake-initial
 ```
 
-
 show index from ezidapp_refidentifier;
 alter table ezidapp_refidentifier
 drop index identifier;
@@ -323,32 +419,6 @@ alter table ezidapp_group_shoulders rename column storegroup_id to group_id;
 alter table ezidapp_user_proxies rename column from_storeuser_id to from_user_id;
 alter table ezidapp_user_proxies rename column to_storeuser_id to to_user_id;
 ;
-
-# Rename the tables to remove all 'store' prefixes.
-rename table ezidapp_storedatacenter to ezidapp_datacenter;
-rename table ezidapp_storegroup to ezidapp_group;
-rename table ezidapp_storegroup_shoulders to ezidapp_group_shoulders;
-rename table ezidapp_storeidentifier to ezidapp_identifier;
-rename table ezidapp_storeprofile to ezidapp_profile;
-rename table ezidapp_storerealm to ezidapp_realm;
-rename table ezidapp_storeuser to ezidapp_user;
-rename table ezidapp_storeuser_proxies to ezidapp_user_proxies;
-rename table ezidapp_storeuser_shoulders to ezidapp_user_shoulders;
-
-select concat_ws(' ', 'rename table', table_name, 'to', replace(table_name, '_store', '_'), ';')
-from information_schema.tables
-where table_schema = 'ezid' and table_name like 'ezidapp_store%'
-order by table_name
-;
-
-# Drop the 'stub' tables that exist only to support ezidapp_searchidentifier when located in another DB.
-# These tables contain copies of some of the columns in the corresponding store* tables. The only search*
-# table that remains afterwards is ezidapp_searchidentifier.
-drop table ezidapp_searchdatacenter;
-drop table ezidapp_searchgroup;
-drop table ezidapp_searchprofile;
-drop table ezidapp_searchrealm;
-drop table ezidapp_searchuser;
 
 # MySQL (same as MariaDB, except using 'foreign key' instead of 'constraint')
 
@@ -400,7 +470,6 @@ drop foreign key ezidapp_stor_shoulder_id_760fcf030c9067e7_fk_ezidapp_shoulder_i
 select concat_ws(' ', 'alter table', table_name, 'drop foreign key', constraint_name, ';')
 from information_schema.key_column_usage
 where referenced_table_schema = 'ezid' and referenced_table_name like 'ezidapp_%';
-
 
 # MariaDB
 
@@ -471,66 +540,26 @@ drop constraint ezidapp_st_storeuser_id_6730d06357e88738_fk_ezidapp_storeuser_id
 alter table ezidapp_shoulder
 drop constraint ezid_datacenter_id_4fb7570a75b0c69_fk_ezidapp_storedatacenter_id;
 
-## test3
-alter table ezidapp_shoulder
-drop constraint ezidapp_shoulder_datacenter_id_077f6b18_fk_ezidapp_s;
-alter table ezidapp_shoulder
-drop constraint ezidapp_shoulder_registration_agency__ba15f13e_fk_ezidapp_r;
-alter table ezidapp_shoulder
-drop constraint ezidapp_shoulder_shoulder_type_id_184bbced_fk_ezidapp_s;
-alter table ezidapp_searchgroup
-drop constraint ezidapp_searchgroup_realm_id_2c9c3c52_fk_ezidapp_searchrealm_id;
-alter table ezidapp_group
-drop constraint ezidapp_storegroup_realm_id_0c342308_fk_ezidapp_storerealm_id;
-alter table ezidapp_group_shoulders
-drop constraint ezidapp_storegroup_s_storegroup_id_ba874e30_fk_ezidapp_s;
-alter table ezidapp_group_shoulders
-drop constraint ezidapp_storegroup_s_shoulder_id_77a48100_fk_ezidapp_s;
-alter table ezidapp_user
-drop constraint ezidapp_storeuser_group_id_44816d9d_fk_ezidapp_storegroup_id;
-alter table ezidapp_user
-drop constraint ezidapp_storeuser_realm_id_90d87e43_fk_ezidapp_storerealm_id;
-alter table ezidapp_user_shoulders
-drop constraint ezidapp_storeuser_sh_shoulder_id_bb6c79e0_fk_ezidapp_s;
-alter table ezidapp_user_shoulders
-drop constraint ezidapp_storeuser_sh_storeuser_id_f6a0e6d4_fk_ezidapp_s;
-alter table ezidapp_user_proxies
-drop constraint ezidapp_storeuser_pr_from_storeuser_id_4dc227f6_fk_ezidapp_s;
-alter table ezidapp_user_proxies
-drop constraint ezidapp_storeuser_pr_to_storeuser_id_5588e255_fk_ezidapp_s;
-alter table ezidapp_searchuser
-drop constraint ezidapp_searchuser_group_id_611f6dd8_fk_ezidapp_searchgroup_id;
-alter table ezidapp_searchuser
-drop constraint ezidapp_searchuser_realm_id_c56160f4_fk_ezidapp_searchrealm_id;
-alter table ezidapp_searchidentifier
-drop constraint ezidapp_searchidenti_datacenter_id_cf60d753_fk_ezidapp_s;
-alter table ezidapp_searchidentifier
-drop constraint ezidapp_searchidenti_ownergroup_id_5148144b_fk_ezidapp_s;
-alter table ezidapp_searchidentifier
-drop constraint ezidapp_searchidenti_profile_id_0e5a20cb_fk_ezidapp_s;
-alter table ezidapp_searchidentifier
-drop constraint ezidapp_searchidenti_owner_id_f7eedd30_fk_ezidapp_s;
-
 # Generate queries for dropping foreign key constraints on all ezidapp_ tables
 select concat_ws(' ', 'alter table', table_name, 'drop constraint', constraint_name, ';'), table_name, column_name,
     constraint_name, referenced_table_name, referenced_column_name
 from information_schema.key_column_usage
 where referenced_table_schema = 'test3' and referenced_table_name like 'ezidapp_%';
 
-
-select (select count(*) from ezidapp_searchdatacenter) as searchdatacenter,
-        (select count(*) from ezidapp_storedatacenter) as storedatacenter,
-        (select count(*) from ezidapp_searchgroup) as searchgroup,
-        (select count(*) from ezidapp_storegroup) as storegroup,
-        (select count(*) from ezidapp_searchidentifier) as searchidentifier,
-        (select count(*) from ezidapp_storeidentifier) as storeidentifier,
-        (select count(*) from ezidapp_searchprofile) as searchprofile,
-        (select count(*) from ezidapp_storeprofile) as storeprofile,
-        (select count(*) from ezidapp_searchrealm) as searchrealm,
-        (select count(*) from ezidapp_storerealm) as storerealm,
-        (select count(*) from ezidapp_searchuser) as searchuser, (select count(*) from ezidapp_storeuser) as storeuser
+select
+    (select count(*) from ezidapp_searchdatacenter) as searchdatacenter,
+    (select count(*) from ezidapp_storedatacenter) as storedatacenter,
+    (select count(*) from ezidapp_searchgroup) as searchgroup,
+    (select count(*) from ezidapp_storegroup) as storegroup,
+    (select count(*) from ezidapp_searchidentifier) as searchidentifier,
+    (select count(*) from ezidapp_storeidentifier) as storeidentifier,
+    (select count(*) from ezidapp_searchprofile) as searchprofile,
+    (select count(*) from ezidapp_storeprofile) as storeprofile,
+    (select count(*) from ezidapp_searchrealm) as searchrealm,
+    (select count(*) from ezidapp_storerealm) as storerealm,
+    (select count(*) from ezidapp_searchuser) as searchuser,
+    (select count(*) from ezidapp_storeuser) as storeuser
 ;
-
 
 # searchdatacenter
 # storedatacenter
@@ -583,23 +612,6 @@ from information_schema.columns
 where table_schema = 'ezid' and table_name = 'ezidapp_storeuser';
 
 ##
-
-alter table `ezidapp_searchidentifier`
-add column metadata json default null;
-alter table `ezidapp_storeidentifier`
-add column metadata json default null;
-update ezidapp_searchidentifier
-set metadata = '{}';
-update ezidapp_storeidentifier
-set metadata = '{}';
-
-kill 50;
-
-show full processlist;
-
-# Time of last update for any storeIdentifier (indicates when the DB was last used)
-select from_unixtime(max(updatetime))
-from ezidapp_storeidentifier es;
 
 drop index `ezidapp_searchidentifie_publicSearchVisible_117042133b78a88e_idx` on ezidapp_searchidentifier;
 drop index `ezidapp_searchidentifie_publicSearchVisible_1932465b0335635c_idx` on ezidapp_searchidentifier;
@@ -763,10 +775,6 @@ select *
 from ezidapp_shoulder es
 where name like '%api%';
 
-
-show engine innodb status;
-
-
 select count(*)
 from ezidapp_linkchecker el;
 
@@ -782,9 +790,7 @@ where table_schema = 'ezid' and table_name like '%_search%'
 order by table_name
 ;
 
-
-####
-
+#
 
 create table auth_group (
     id int auto_increment primary key,
@@ -1100,8 +1106,6 @@ create table ezidapp_realm (
     constraint name unique (name)
 );
 
-
-
 drop table ezidapp_refidentifier;
 
 create table ezid.ezidapp_refidentifier (
@@ -1128,8 +1132,6 @@ create table ezid.ezidapp_refidentifier (
     constraint ezidapp_refidentifier_ownergroup_id_d390fbc9_fk_ezidapp_group_id foreign key (ownergroup_id) references ezid.ezidapp_group(id),
     constraint ezidapp_refidentifier_profile_id_f497af12_fk_ezidapp_profile_id foreign key (profile_id) references ezid.ezidapp_profile(id)
 );
-
-
 
 create table ezidapp_refidentifier (
     id int auto_increment primary key,
@@ -1402,102 +1404,6 @@ create table tmp_si (
     constraint identifier unique (identifier)
 );
 
-create index ezidapp_searchidentifie_publicsearchvisible_117042133b78a88e_idx on tmp_si(publicsearchvisible, resourcecreatorprefix);
-
-create index ezidapp_searchidentifie_publicsearchvisible_1932465b0335635c_idx on tmp_si(publicsearchvisible, createtime);
-
-create index ezidapp_searchidentifie_publicsearchvisible_1e447c57e83c8d5d_idx on tmp_si(publicsearchvisible, searchablepublicationyear);
-
-create index ezidapp_searchidentifie_publicsearchvisible_2e067bd0a9494a38_idx on tmp_si(publicsearchvisible, resourcepublisherprefix);
-
-create index ezidapp_searchidentifie_publicsearchvisible_47396846c619370f_idx on tmp_si(publicsearchvisible, searchableresourcetype);
-
-create index ezidapp_searchidentifie_publicsearchvisible_47b0a294295f5ef5_idx on tmp_si(publicsearchvisible, updatetime);
-
-create index ezidapp_searchidentifie_publicsearchvisible_58de9f6f00b8058e_idx on tmp_si(publicsearchvisible, identifier);
-
-create index ezidapp_searchidentifier_13bc2970 on tmp_si(datacenter_id);
-
-create index ezidapp_searchidentifier_365b2611 on tmp_si(ownergroup_id);
-
-create index ezidapp_searchidentifier_5e7b1936 on tmp_si(owner_id);
-
-create index ezidapp_searchidentifier_83a0eb3f on tmp_si(profile_id);
-
-create fulltext index ezidapp_searchidentifier_keywords on tmp_si(keywords);
-
-create index ezidapp_searchidentifier_oaivisible_1d291a23fcff2ce2_idx on tmp_si(oaivisible, updatetime);
-
-create index ezidapp_searchidentifier_owner_id_18a46334256a7530_idx on tmp_si(owner_id, hasmetadata);
-
-create index ezidapp_searchidentifier_owner_id_198f8d3796dae4b9_idx on tmp_si(owner_id, resourcetitleprefix);
-
-create index ezidapp_searchidentifier_owner_id_1d05153b51fd9dff_idx on tmp_si(owner_id, hasissues);
-
-create index ezidapp_searchidentifier_owner_id_263dc1dd7d2fd3ef_idx on tmp_si(owner_id, resourcepublisherprefix);
-
-create index ezidapp_searchidentifier_owner_id_3e88a7c1b2b5c693_idx on tmp_si(owner_id, exported);
-
-create index ezidapp_searchidentifier_owner_id_431b22d7016b97df_idx on tmp_si(owner_id, profile_id);
-
-create index ezidapp_searchidentifier_owner_id_47ecdfd54025f1f1_idx on tmp_si(owner_id, createtime);
-
-create index ezidapp_searchidentifier_owner_id_52f3896c5fc67016_idx on tmp_si(owner_id, istest);
-
-create index ezidapp_searchidentifier_owner_id_54da573427e72c0e_idx on tmp_si(owner_id, searchableresourcetype);
-
-create index ezidapp_searchidentifier_owner_id_58dfc6401ef0e359_idx on tmp_si(owner_id, crossrefstatus);
-
-create index ezidapp_searchidentifier_owner_id_59016f4a7ffbcaaa_idx on tmp_si(owner_id, updatetime);
-
-create index ezidapp_searchidentifier_owner_id_5b203a171bdbab38_idx on tmp_si(owner_id, status);
-
-create index ezidapp_searchidentifier_owner_id_5c11adaf88d856d0_idx on tmp_si(owner_id, searchablepublicationyear);
-
-create index ezidapp_searchidentifier_owner_id_60c2c5fffcb40895_idx on tmp_si(owner_id, identifier);
-
-create index ezidapp_searchidentifier_owner_id_76e131b0c70070a1_idx on tmp_si(owner_id, resourcecreatorprefix);
-
-create index ezidapp_searchidentifier_ownergroup_id_1d431d7513ab02ec_idx on tmp_si(ownergroup_id, status);
-
-create index ezidapp_searchidentifier_ownergroup_id_2114f948ed092669_idx on tmp_si(ownergroup_id, crossrefstatus);
-
-create index ezidapp_searchidentifier_ownergroup_id_2388bfe261a735c5_idx on tmp_si(ownergroup_id, resourcepublisherprefix);
-
-create index ezidapp_searchidentifier_ownergroup_id_39b7cdc64bc267c3_idx on tmp_si(ownergroup_id, createtime);
-
-create index ezidapp_searchidentifier_ownergroup_id_3ac1ed25c2bfbb2d_idx on tmp_si(ownergroup_id, resourcecreatorprefix);
-
-create index ezidapp_searchidentifier_ownergroup_id_449f25bec77c57da_idx on tmp_si(ownergroup_id, istest);
-
-create index ezidapp_searchidentifier_ownergroup_id_48b886662536e7fd_idx on tmp_si(ownergroup_id, exported);
-
-create index ezidapp_searchidentifier_ownergroup_id_4a1baf4823ddab6c_idx on tmp_si(ownergroup_id, searchablepublicationyear);
-
-create index ezidapp_searchidentifier_ownergroup_id_4ad29fb0ede49103_idx on tmp_si(ownergroup_id, hasissues);
-
-create index ezidapp_searchidentifier_ownergroup_id_4b76dd7c4564df4f_idx on tmp_si(ownergroup_id, identifier);
-
-create index ezidapp_searchidentifier_ownergroup_id_54e4e22002a54d2_idx on tmp_si(ownergroup_id, searchableresourcetype);
-
-create index ezidapp_searchidentifier_ownergroup_id_65871830cd29aaf0_idx on tmp_si(ownergroup_id, hasmetadata);
-
-create index ezidapp_searchidentifier_ownergroup_id_68875bac9225d3c9_idx on tmp_si(ownergroup_id, resourcetitleprefix);
-
-create index ezidapp_searchidentifier_ownergroup_id_6c5194bcf1d0014e_idx on tmp_si(ownergroup_id, updatetime);
-
-create index ezidapp_searchidentifier_ownergroup_id_6cfbff68ca3e25cb_idx on tmp_si(ownergroup_id, profile_id);
-
-create index ezidapp_searchidentifier_publicsearchvisible_6807647c6d8cb52_idx on tmp_si(publicsearchvisible, resourcetitleprefix);
-
-create fulltext index ezidapp_searchidentifier_resourcecreator on tmp_si(resourcecreator);
-
-create fulltext index ezidapp_searchidentifier_resourcepublisher on tmp_si(resourcepublisher);
-
-create fulltext index ezidapp_searchidentifier_resourcetitle on tmp_si(resourcetitle);
-
-create index ezidapp_searchidentifier_searchabletarget_24d34538786996df_idx on tmp_si(searchabletarget);
-
 create table tmp_si2 (
     id int auto_increment primary key,
     identifier varchar(255) collate ascii_bin not null,
@@ -1595,3 +1501,525 @@ create index ezidapp_storeidentifier_365b2611 on tmp_stid2(ownergroup_id);
 create index ezidapp_storeidentifier_5e7b1936 on tmp_stid2(owner_id);
 
 create index ezidapp_storeidentifier_83a0eb3f on tmp_stid2(profile_id);
+
+############################
+
+use ezid;
+use ezid_test_db;
+
+#########
+
+select * from ezidapp_searchidentifier es;
+
+select * from ezidapp_searchidentifier es;
+
+describe ezidapp_searchidentifier;
+
+select count(*) from ezidapp_searchidentifier es group by metadata is null;
+select count(*) from tmp_ezidapp_storeidentifier tes group by metadata is null;
+
+select identifier from ezidapp_searchidentifier es join user
+
+############
+
+delete from ezidapp_searchidentifier
+where owner_id not in (select id from ezidapp_user)
+;
+
+delete from ezidapp_searchidentifier
+where datacenter_id not in (select id from ezidapp_datacenter)
+;
+
+select count(*)
+from ezidapp_searchidentifier
+where owner_id not in (select id from ezidapp_user)
+;
+
+select * from ezid_test_db.auth_permission ap;
+
+##########
+
+drop table tmpuser;
+create table tmpuser (
+    id int,
+    pid varchar(1000)
+);
+
+insert into tmpuser (id, pid)
+values
+    (1, 'ark:/99166/p9kw57h4w'),
+    (2, 'ark:/99166/p9jq0st8j'),
+    (10, 'ark:/99166/p90v89j36'),
+    (13, 'ark:/99166/p9183428t'),
+    (14, 'ark:/99166/p91g0hv2q'),
+    (21, 'ark:/99166/p9251fm3t'),
+    (26, 'ark:/99166/p92f7jr0f'),
+    (28, 'ark:/99166/p92j6839m'),
+    (30, 'ark:/99166/p92v2c886'),
+    (31, 'ark:/99166/p92v2c89p'),
+    (39, 'ark:/99166/p93j3915c'),
+    (40, 'ark:/99166/p93n20h05'),
+    (48, 'ark:/99166/p9542j790'),
+    (52, 'ark:/99166/p95x25c19'),
+    (53, 'ark:/99166/p95x25d27'),
+    (69, 'ark:/99166/p9804xj8d'),
+    (75, 'ark:/99166/p98g8fk30'),
+    (80, 'ark:/99166/p9930nv03'),
+    (89, 'ark:/99166/p99w09123'),
+    (93, 'ark:/99166/p9b56d64w'),
+    (96, 'ark:/99166/p9b853m08'),
+    (99, 'ark:/99166/p9bn9x34q'),
+    (101, 'ark:/99166/p9br8mg33'),
+    (102, 'ark:/99166/p9bv79x5t'),
+    (104, 'ark:/99166/p9c824g40'),
+    (108, 'ark:/99166/p9cv4bs44'),
+    (111, 'ark:/99166/p9df6k49v'),
+    (114, 'ark:/99166/p9dv1cp1x'),
+    (116, 'ark:/99166/p9f18sg88'),
+    (117, 'ark:/99166/p9f47gw6m'),
+    (118, 'ark:/99166/p9ff3m244'),
+    (119, 'ark:/99166/p9fj29d32'),
+    (120, 'ark:/99166/p9fn10t6t'),
+    (123, 'ark:/99166/p9fq9q76m'),
+    (124, 'ark:/99166/p9ft8dj4m'),
+    (126, 'ark:/99166/p9g15tb1p'),
+    (130, 'ark:/99166/p9gq6r32g'),
+    (131, 'ark:/99166/p9gt5fg5s'),
+    (135, 'ark:/99166/p9h12v82v'),
+    (136, 'ark:/99166/p9h41jm7p'),
+    (137, 'ark:/99166/p9h41jp25'),
+    (139, 'ark:/99166/p9h98zc6d'),
+    (140, 'ark:/99166/p9h98zg39'),
+    (145, 'ark:/99166/p9hq3s13n'),
+    (152, 'ark:/99166/p9jd4pn9z'),
+    (159, 'ark:/99166/p9k35md9k'),
+    (160, 'ark:/99166/p9k35mg61'),
+    (166, 'ark:/99166/p9kw57k8q'),
+    (171, 'ark:/99166/p9mc8rg4x'),
+    (173, 'ark:/99166/p9mg7fv6r'),
+    (175, 'ark:/99166/p9mk6591h'),
+    (180, 'ark:/99166/p9nv9998r'),
+    (186, 'ark:/99166/p9pn8xf6w'),
+    (187, 'ark:/99166/p9pn8xh1c'),
+    (188, 'ark:/99166/p9pz51k8v'),
+    (191, 'ark:/99166/p9q52ff4b'),
+    (192, 'ark:/99166/p9q52ff7s'),
+    (193, 'ark:/99166/p9qb9v75g'),
+    (195, 'ark:/99166/p9qf8jk1z'),
+    (199, 'ark:/99166/p9qv3c40t'),
+    (204, 'ark:/99166/p9r20rz3t'),
+    (206, 'ark:/99166/p9r785p4f'),
+    (207, 'ark:/99166/p9rb6w21w'),
+    (210, 'ark:/99166/p9rj48x1z'),
+    (211, 'ark:/99166/p9rr1pm86'),
+    (213, 'ark:/99166/p9rx93d3t'),
+    (214, 'ark:/99166/p9s46h63b'),
+    (216, 'ark:/99166/p9sb3wx94'),
+    (219, 'ark:/99166/p9sj19t2p'),
+    (222, 'ark:/99166/p9st7dz94'),
+    (225, 'ark:/99166/p9t43j35j'),
+    (227, 'ark:/99166/p9t727g3f'),
+    (228, 'ark:/99166/p9t727j2v'),
+    (229, 'ark:/99166/p9tb0xv0g'),
+    (230, 'ark:/99166/p9td9n725'),
+    (232, 'ark:/99166/p9td9nb11'),
+    (235, 'ark:/99166/p9tx3557s'),
+    (236, 'ark:/99166/p9v11vk0n'),
+    (237, 'ark:/99166/p9v11vk6j'),
+    (239, 'ark:/99166/p9v40k03t'),
+    (241, 'ark:/99166/p9v40k18p'),
+    (244, 'ark:/99166/p9v698c2n'),
+    (245, 'ark:/99166/p9v97zs0m'),
+    (246, 'ark:/99166/p9vh5cj8m'),
+    (249, 'ark:/99166/p9w08wj9k'),
+    (252, 'ark:/99166/p9wh2dd5z'),
+    (261, 'ark:/99166/p9z02z927'),
+    (268, 'ark:/99166/p9z892h70'),
+    (269, 'ark:/99166/p9cc0tw5d'),
+    (271, 'ark:/99166/p92v2cc91'),
+    (272, 'ark:/99166/p9td9nb30'),
+    (276, 'ark:/99166/p98g8fm00'),
+    (277, 'ark:/99166/p9pg1hr15'),
+    (279, 'ark:/99166/p9h70834v'),
+    (281, 'ark:/99166/p9th8bq4b'),
+    (282, 'ark:/99166/p9x921m98'),
+    (284, 'ark:/99166/p9b853m46'),
+    (285, 'ark:/99166/p9gb1xk62'),
+    (286, 'ark:/99166/p9w950r23'),
+    (287, 'ark:/99166/p9js9hb3n'),
+    (290, 'ark:/99166/p9v11vp2z'),
+    (292, 'ark:/99166/p9g44ht3v'),
+    (297, 'ark:/99166/p97d2q99b'),
+    (298, 'ark:/99166/p9mc8rk1t'),
+    (300, 'ark:/99166/p9dj58k65'),
+    (307, 'ark:/99166/p9g44ht5t'),
+    (308, 'ark:/99166/p9pk07499'),
+    (309, 'ark:/99166/p9dz03470'),
+    (310, 'ark:/99166/p99z90f8r'),
+    (311, 'ark:/99166/p9vt1gs8k'),
+    (316, 'ark:/99166/p9qf8jn68'),
+    (320, 'ark:/99166/p93b5wb73'),
+    (323, 'ark:/99166/p9x63b82g'),
+    (324, 'ark:/99166/p94q7qt18'),
+    (326, 'ark:/99166/p9v97zv5x'),
+    (327, 'ark:/99166/p94f1mn1r'),
+    (328, 'ark:/99166/p9vx0662d'),
+    (333, 'ark:/99166/p9m03z12x'),
+    (334, 'ark:/99166/p9sf2mf8q'),
+    (337, 'ark:/99166/p9pr7mx63'),
+    (338, 'ark:/99166/p9mk65c1d'),
+    (340, 'ark:/99166/p9r785s4s'),
+    (342, 'ark:/99166/p9gx44z0k'),
+    (344, 'ark:/99166/p90r9m72r'),
+    (345, 'ark:/99166/p9gh9bd14'),
+    (349, 'ark:/99166/p9df6k65t'),
+    (350, 'ark:/99166/p96q1sm3q'),
+    (351, 'ark:/99166/p9x34mw07'),
+    (354, 'ark:/99166/p9dn4003f'),
+    (358, 'ark:/99166/p9b853n16'),
+    (359, 'ark:/99166/p9348gk7b'),
+    (361, 'ark:/99166/p94t6f67f'),
+    (362, 'ark:/99166/p98s4js8x'),
+    (363, 'ark:/99166/p9j38kn0s'),
+    (365, 'ark:/99166/p9ww7737h'),
+    (366, 'ark:/99166/p9rj48z6t'),
+    (371, 'ark:/99166/p98s4js9d'),
+    (372, 'ark:/99166/p9cj87q2f'),
+    (375, 'ark:/99166/p9q814w7j'),
+    (378, 'ark:/99166/p9w669c84'),
+    (379, 'ark:/99166/p9kk94g72'),
+    (386, 'ark:/99166/p9s46hb53'),
+    (387, 'ark:/99166/p91c1tm34'),
+    (388, 'ark:/99166/p96w96f36'),
+    (389, 'ark:/99166/p92j6891f'),
+    (390, 'ark:/99166/p9gx4506b'),
+    (391, 'ark:/99166/p9bv7b143'),
+    (392, 'ark:/99166/p9p26q84k'),
+    (393, 'ark:/99166/p9v11vr4t'),
+    (394, 'ark:/99166/p90863b5c'),
+    (395, 'ark:/99166/p9m03z34s'),
+    (396, 'ark:/99166/p9sj19x3h'),
+    (397, 'ark:/99166/p93t9dc54'),
+    (398, 'ark:/99166/p9pc2tf8k'),
+    (399, 'ark:/99166/p93f4kt6t'),
+    (400, 'ark:/99166/p9p55dp1f'),
+    (401, 'ark:/99166/p9hh6cc0s'),
+    (402, 'ark:/99166/p9707wv1g'),
+    (403, 'ark:/99166/p9377617h'),
+    (404, 'ark:/99166/p9bk16v9k'),
+    (406, 'ark:/99166/p9833n46d'),
+    (407, 'ark:/99166/p94b2xb28'),
+    (408, 'ark:/99166/p9vt1gw21'),
+    (409, 'ark:/99166/p9jd4pv9n'),
+    (410, 'ark:/99166/p9cn6z53q'),
+    (411, 'ark:/99166/p93776180'),
+    (415, 'ark:/99166/p96t0h26b'),
+    (416, 'ark:/99166/p9x921q7n'),
+    (417, 'ark:/99166/p9sj19x5g'),
+    (418, 'ark:/99166/p9z60c771'),
+    (419, 'ark:/99166/p91z4202g'),
+    (420, 'ark:/99166/p9rf5kn0z'),
+    (422, 'ark:/99166/p9mk65f57'),
+    (423, 'ark:/99166/p9kk94j50'),
+    (424, 'ark:/99166/p95d8nm58'),
+    (426, 'ark:/99166/p9j960g57'),
+    (427, 'ark:/99166/p9zc7s11s'),
+    (428, 'ark:/99166/p9tm7266x'),
+    (429, 'ark:/99166/p9pv6bd19'),
+    (430, 'ark:/99166/p9k35mk8b'),
+    (431, 'ark:/99166/p9nv99h31'),
+    (432, 'ark:/99166/p9j67931f'),
+    (433, 'ark:/99166/p92z12w29'),
+    (434, 'ark:/99166/p9sj19x6z'),
+    (435, 'ark:/99166/p96m3392n'),
+    (436, 'ark:/99166/p9x34mz23'),
+    (437, 'ark:/99166/p9fq9qb8x'),
+    (438, 'ark:/99166/p9416t545'),
+    (439, 'ark:/99166/p9j38kq15'),
+    (440, 'ark:/99166/p9c824m58'),
+    (441, 'ark:/99166/p97h1dt14'),
+    (443, 'ark:/99166/p9z02zf9d'),
+    (444, 'ark:/99166/p9sb3x497'),
+    (445, 'ark:/99166/p9gt5fn2k'),
+    (446, 'ark:/99166/p9ww7758w'),
+    (447, 'ark:/99166/p9mc8rn83'),
+    (448, 'ark:/99166/p99z90j5n'),
+    (449, 'ark:/99166/p96688r1t'),
+    (450, 'ark:/99166/p91g0j15t'),
+    (451, 'ark:/99166/p91c1tn42'),
+    (452, 'ark:/99166/p9qv3c93h'),
+    (453, 'ark:/99166/p98p5vg5h'),
+    (454, 'ark:/99166/p94x54p1r'),
+    (455, 'ark:/99166/p9d795h4g'),
+    (456, 'ark:/99166/p98k75332'),
+    (457, 'ark:/99166/p94t6f90d'),
+    (458, 'ark:/99166/p9125qg6z'),
+    (459, 'ark:/99166/p93t9dc92'),
+    (460, 'ark:/99166/p9028pk6q'),
+    (461, 'ark:/99166/p9tb0z19g'),
+    (462, 'ark:/99166/p9hx15x4n'),
+    (463, 'ark:/99166/p9z02zg0h'),
+    (464, 'ark:/99166/p9794114s'),
+    (465, 'ark:/99166/p92j68b0d'),
+    (466, 'ark:/99166/p9s17t01r'),
+    (468, 'ark:/99166/p9bv7b22k'),
+    (469, 'ark:/99166/p9xp6v923'),
+    (470, 'ark:/99166/p9280551c'),
+    (471, 'ark:/99166/p9qv3c940'),
+    (472, 'ark:/99166/p99k4602t'),
+    (473, 'ark:/99166/p9222rc5q'),
+    (474, 'ark:/99166/p9rn30f0j'),
+    (475, 'ark:/99166/p9mw28m6s'),
+    (476, 'ark:/99166/p9cc0v08m'),
+    (477, 'ark:/99166/p9vd6pb42'),
+    (478, 'ark:/99166/p9g44hx2q')
+;
+
+select count(*) from tmpuser e;
+select count(*) from ezidapp_user eu;
+select eu.id, eu.id, eu.pid
+from ezidapp_user eu
+         join tmpuser e on eu.pid = e.pid;
+
+#########
+
+delete from ezidapp_statistics where month not regexp '^(2018|2019|2020|2021)-';
+
+###########
+
+select count(*) from ezidapp_linkchecker el;
+
+delete from ezidapp_linkchecker where identifier not in (select identifier from ezidapp_identifier);
+
+# Checked if it was faster to delete in chunks, but it didn't seem to be.
+
+drop procedure if exists clean_linkchecker;
+
+create procedure clean_linkchecker()
+begin
+    declare c int;
+    x:
+    loop
+        delete
+        from ezidapp_linkchecker el
+        where identifier not in (select identifier from ezidapp_identifier)
+        limit 10000;
+
+        set c = row_count();
+
+        select concat('rows deleted: ', c) as 'debug: ';
+        select concat('rows remaining: ', (select count(*) from ezidapp_linkchecker)) as 'debug: ';
+
+        if (c = 0) then leave x; end if;
+    end loop;
+end;
+
+call clean_linkchecker();
+
+#########
+
+drop table ezidapp_downloadqueue;
+
+create table ezidapp_downloadqueue (
+    seq int auto_increment primary key,
+    enqueueTime int not null,
+    submitTime int null,
+    operation varchar(1) not null,
+    status varchar(1) not null,
+    message longtext not null,
+    batchId varchar(36) not null,
+    error longtext not null,
+    errorIsPermanent tinyint(1) not null,
+    refIdentifier_id int not null,
+    requestTime int not null,
+    rawRequest longtext not null,
+    requestor varchar(255) not null,
+    format varchar(1) not null,
+    compression varchar(1) not null,
+    columns longtext not null,
+    constraints longtext not null,
+    options longtext not null,
+    notify longtext not null,
+    stage varchar(1) not null,
+    filename varchar(1) not null,
+    toHarvest longtext not null,
+    currentIndex int not null,
+    lastId varchar(255) not null,
+    fileSize bigint not null
+)
+    charset = utf8mb4;
+
+create index ezidapp_searchindexe_refIdentifier_id_7b72d1a2_fk_ezidapp_r on ezidapp_downloadqueue(refIdentifier_id);
+
+create index ezidapp_searchindexerqueue_operation_577fd676 on ezidapp_downloadqueue(operation);
+
+create index ezidapp_searchindexerqueue_status_9aeeb55e on ezidapp_downloadqueue(status);
+
+#
+
+alter table ezid.ezidapp_downloadqueue
+add requestTime int not null;
+
+alter table ezid.ezidapp_downloadqueue
+add rawRequest longtext not null;
+
+alter table ezid.ezidapp_downloadqueue
+add requestor varchar(255) not null;
+
+alter table ezid.ezidapp_downloadqueue
+add format varchar(1) not null;
+
+alter table ezid.ezidapp_downloadqueue
+add compression varchar(1) not null;
+
+alter table ezid.ezidapp_downloadqueue
+add columns longtext not null;
+
+alter table ezid.ezidapp_downloadqueue
+add columns longtext not null;
+
+alter table ezid.ezidapp_downloadqueue
+add constraints longtext not null;
+
+alter table ezid.ezidapp_downloadqueue
+add options longtext not null;
+
+alter table ezid.ezidapp_downloadqueue
+add notify longtext not null;
+
+alter table ezid.ezidapp_downloadqueue
+add stage varchar(1) not null;
+
+alter table ezid.ezidapp_downloadqueue
+add filename varchar(1) not null;
+
+alter table ezid.ezidapp_downloadqueue
+add toHarvest longtext not null;
+
+alter table ezid.ezidapp_downloadqueue
+add currentIndex int not null;
+
+alter table ezid.ezidapp_downloadqueue
+add lastId varchar(255) not null;
+
+alter table ezid.ezidapp_downloadqueue
+add fileSize bigint not null;
+
+#############
+
+select (select count(*) from ezidapp_searchidentifier es) as 'search',
+    (select count(*) from ezidapp_searchidentifier es where metadata is not null) as 'search_metadata',
+        (select count(*) from ezidapp_identifier es) as 'store',
+        (select count(*) from ezidapp_identifier es where metadata is not null) as 'store_metadata'
+;
+
+select count(*) from ezidapp_searchidentifier es where rand() < 0.01;
+
+select count(*) from ezidapp_identifier ei where ei.identifier in (select identifier from ezidapp_searchidentifier es);
+
+delete from ezidapp_searchidentifier es where rand() > 0.1;
+
+delete from ezidapp_identifier ei where ei.identifier not in (select identifier from ezidapp_searchidentifier es);
+
+select sum(length(cm)) from ezidapp_searchidentifier es;
+
+# LinkChecker
+
+select count(*) from ezidapp_linkchecker el;
+select * from ezidapp_linkchecker el;
+
+delete from ezidapp_linkchecker el where el.identifier not in (select identifier from ezidapp_searchidentifier es);
+
+update ezidapp_searchidentifier set metadata = '{}' where 1 = 1;
+update ezidapp_identifier set metadata = '{}' where 1 = 1;
+
+#####################3
+
+--
+-- Alter field datacenter on identifier
+--
+update `ezidapp_identifier` set `datacenter_id` = 'NULL' where `datacenter_id` is null;
+alter table `ezidapp_identifier`
+modify `datacenter_id` integer not null;
+--
+-- Alter field owner on identifier
+--
+update `ezidapp_identifier` set `owner_id` = b'NULL' where `owner_id` is null;
+alter table `ezidapp_identifier`
+modify `owner_id` integer not null;
+--
+-- Alter field ownergroup on identifier
+--
+update `ezidapp_identifier` set `ownergroup_id` = b'NULL' where `ownergroup_id` is null;
+alter table `ezidapp_identifier`
+modify `ownergroup_id` integer not null;
+--
+-- Alter field profile on identifier
+--
+update `ezidapp_identifier` set `profile_id` = b'NULL' where `profile_id` is null;
+alter table `ezidapp_identifier`
+modify `profile_id` integer not null;
+--
+-- Alter field datacenter on refidentifier
+--
+alter table `ezidapp_refidentifier`
+drop foreign key `ezidapp_refidentifie_datacenter_id_0927c7e5_fk_ezidapp_d`;
+update `ezidapp_refidentifier` set `datacenter_id` = b'NULL' where `datacenter_id` is null;
+alter table `ezidapp_refidentifier`
+modify `datacenter_id` integer not null;
+alter table `ezidapp_refidentifier`
+add constraint `ezidapp_refidentifie_datacenter_id_0927c7e5_fk_ezidapp_d` foreign key (`datacenter_id`) references `ezidapp_datacenter`(`id`);
+--
+-- Alter field owner on refidentifier
+--
+alter table `ezidapp_refidentifier`
+drop foreign key `ezidapp_refidentifier_owner_id_bcf67913_fk_ezidapp_user_id`;
+update `ezidapp_refidentifier` set `owner_id` = b'NULL' where `owner_id` is null;
+alter table `ezidapp_refidentifier`
+modify `owner_id` integer not null;
+alter table `ezidapp_refidentifier`
+add constraint `ezidapp_refidentifier_owner_id_bcf67913_fk_ezidapp_user_id` foreign key (`owner_id`) references `ezidapp_user`(`id`);
+--
+-- Alter field ownergroup on refidentifier
+--
+alter table `ezidapp_refidentifier`
+drop foreign key `ezidapp_refidentifier_ownergroup_id_d390fbc9_fk_ezidapp_group_id`;
+update `ezidapp_refidentifier` set `ownergroup_id` = b'NULL' where `ownergroup_id` is null;
+alter table `ezidapp_refidentifier`
+modify `ownergroup_id` integer not null;
+alter table `ezidapp_refidentifier`
+add constraint `ezidapp_refidentifier_ownergroup_id_d390fbc9_fk_ezidapp_group_id` foreign key (`ownergroup_id`) references `ezidapp_group`(`id`);
+--
+-- Alter field profile on refidentifier
+--
+alter table `ezidapp_refidentifier`
+drop foreign key `ezidapp_refidentifier_profile_id_f497af12_fk_ezidapp_profile_id`;
+update `ezidapp_refidentifier` set `profile_id` = b'NULL' where `profile_id` is null;
+alter table `ezidapp_refidentifier`
+modify `profile_id` integer not null;
+alter table `ezidapp_refidentifier`
+add constraint `ezidapp_refidentifier_profile_id_f497af12_fk_ezidapp_profile_id` foreign key (`profile_id`) references `ezidapp_profile`(`id`);
+--
+-- Alter field datacenter on searchidentifier
+--
+update `ezidapp_searchidentifier` set `datacenter_id` = b'NULL' where `datacenter_id` is null;
+alter table `ezidapp_searchidentifier`
+modify `datacenter_id` integer not null;
+--
+-- Alter field owner on searchidentifier
+--
+update `ezidapp_searchidentifier` set `owner_id` = b'NULL' where `owner_id` is null;
+alter table `ezidapp_searchidentifier`
+modify `owner_id` integer not null;
+--
+-- Alter field ownergroup on searchidentifier
+--
+update `ezidapp_searchidentifier` set `ownergroup_id` = b'NULL' where `ownergroup_id` is null;
+alter table `ezidapp_searchidentifier`
+modify `ownergroup_id` integer not null;
+--
+-- Alter field profile on searchidentifier
+--
+update `ezidapp_searchidentifier` set `profile_id` = b'NULL' where `profile_id` is null;
+alter table `ezidapp_searchidentifier`
+modify `profile_id` integer not null;

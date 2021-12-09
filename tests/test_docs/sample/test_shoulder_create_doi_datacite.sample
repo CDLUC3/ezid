@@ -1,7 +1,9 @@
 { 'active': True,
   'crossrefEnabled': False,
-  'datacenter': <StoreDatacenter: CDL.UCLA>,
+  'datacenter': <Datacenter: CDL.UCLA>,
   'date': FakeDate(2010, 10, 11),
+  'group_set': <django.db.models.fields.related_descriptors.create_forward_many_to_many_manager.<locals>.ManyRelatedManager object
+at [MEMORY-ADDRESS]>,
   'isArk': False,
   'isCrossref': False,
   'isDatacite': True,
@@ -16,8 +18,6 @@
   'prefix_shares_datacenter': False,
   'registration_agency': None,
   'shoulder_type': None,
-  'storegroup_set': <django.db.models.fields.related_descriptors.create_forward_many_to_many_manager.<locals>.ManyRelatedManager
-object at [MEMORY-ADDRESS]>,
-  'storeuser_set': <django.db.models.fields.related_descriptors.create_forward_many_to_many_manager.<locals>.ManyRelatedManager
-object at [MEMORY-ADDRESS]>,
-  'type': 'DOI'}
+  'type': 'DOI',
+  'user_set': <django.db.models.fields.related_descriptors.create_forward_many_to_many_manager.<locals>.ManyRelatedManager object
+at [MEMORY-ADDRESS]>}

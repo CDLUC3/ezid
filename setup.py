@@ -92,6 +92,15 @@ def gen_install_requires():
     return [req.replace('~=', '==').strip() for req in req_path.open().readlines()]
 
 
+# TODO: Adjust as needed and call
+def mk_paths():
+    """Create directories required by EZID"""
+    (HERE_PATH / '../logs').mkdir(parents=True, exist_ok=True)
+    (HERE_PATH / '../download/public').mkdir(parents=True, exist_ok=True)
+    (HERE_PATH / './db').mkdir(parents=True, exist_ok=True)
+    (HERE_PATH / '../logs/transaction.log').touch()
+
+
 setuptools.setup(
     **EZID_META,
     entry_points={"console_scripts": gen_console_scripts()},

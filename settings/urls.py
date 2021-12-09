@@ -8,10 +8,10 @@ import django.views.defaults
 
 import ezidapp.admin
 
-# These imports are only used by management commands. As the management commands are not imported
-# during initialization of the main server component, we import them here to let the main Django
-# service know that these models exist, so that it doesn't try to delete the associated tables when
-# generating migrations.
+# These imports are only used by management commands. As the management commands are not
+# imported during initialization of the main server component, we import them here to
+# let the main Django service know that these models exist, so that it doesn't try to
+# delete the associated tables when generating migrations.
 # noinspection PyUnresolvedReferences
 import ezidapp.models.link_checker
 import ezidapp.models.statistics

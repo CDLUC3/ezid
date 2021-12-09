@@ -2,6 +2,7 @@
 #  http://creativecommons.org/licenses/BSD
 
 import ezidapp.models
+import ezidapp.models.statistics
 
 
 def getTable(owner=None, ownergroup=None, realm=None):
@@ -65,19 +66,3 @@ def getTable(owner=None, ownergroup=None, realm=None):
         table.append((m, counts[m]))
         lastM = m
     return table
-
-    _computeCycle = None
-    _computeSameTimeOfDay = None
-    _threadName = None
-
-    # django.conf.settings.CROSSREF_ENABLED = (
-    #     django.conf.settings.DAEMONS_ENABLED
-    #     and django.conf.settings.DAEMONS_STATISTICS_ENABLED ! flag removed
-    # )
-    # if django.conf.settings.CROSSREF_ENABLED:
-    #     _computeCycle = django.conf.settings.DAEMONS_STATISTICS_COMPUTE_CYCLE
-    #     _computeSameTimeOfDay = (
-    #         django.conf.settings.DAEMONS_STATISTICS_COMPUTE_SAME_TIME_OF_DAY
-    #     )
-    #     _threadName = uuid.uuid1().hex
-    #     t = threading.Thread(target=_statisticsDaemon, name=_threadName)

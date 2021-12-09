@@ -21,6 +21,7 @@ import ezidapp.models.shoulder
 import ezidapp.models.validation
 import ezidapp.models.group
 import ezidapp.models.realm
+import impl.log
 
 import impl.log as log
 import impl.nog.minter
@@ -83,7 +84,7 @@ class User(django.db.models.Model):
                 assert s.isArk, "Agent shoulder type must be ARK"
                 self.pid = "{}{}".format(s.prefix, impl.nog.minter.mint_id(s))
             except Exception as e:
-                log.otherError("user.User.clean", e)
+                impl.log.otherError("user.User.clean", e)
                 raise
 
 

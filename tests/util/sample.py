@@ -19,6 +19,8 @@ import traceback
 import django
 import django.core
 import django.core.management
+# import django.db.models.fields.related_descriptors
+# import  django.db.models.options
 import filelock
 
 # import _pytest.config
@@ -84,7 +86,7 @@ def assert_match(
     if sample_str == current_str:
         return
 
-    if 'IS_TRAVIS' in os.environ or options.error:
+    if 'IS_CI' in os.environ or options.error:
         raise SampleException(
             'Sample mismatch.\nActual:\n{}\nExpected:\n{}\nDiff:\n{}\n'.format(
                 current_str,
@@ -309,8 +311,8 @@ def _clobber_uncontrolled_volatiles(o_str):
     o_str = re.sub(r"\\d{1,3}h\\d{2}m\\d{2}s", "[ETA-HMS]", o_str)
     # Disk space
     o_str = re.sub(r"[\\s\\d.]+GiB", "[DISK-SPACE]", o_str)
-    # Memory address
-    o_str = re.sub(r"0x[\\da-fA-F]{8,}", "[MEMORY-ADDRESS]", o_str)
+    # Memory address: 0x7f43b68c0190
+    o_str = re.sub(r"0x[\da-fA-F]{8,}", "[MEMORY-ADDRESS]", o_str)
     # Temporary filename
     o_str = re.sub(r"tmp[\\w\\d]*\\.", "[TMP-PATH].", o_str)
     # Command run timer

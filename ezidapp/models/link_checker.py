@@ -11,12 +11,8 @@ import time
 import django.core.validators
 import django.db.models
 
-# import ezidapp.models.identifier
 import ezidapp.models.identifier
 import impl.util
-
-
-# print('\n'.join(str(s) for s in django.apps.apps.get_models()))
 
 
 class LinkChecker(django.db.models.Model):

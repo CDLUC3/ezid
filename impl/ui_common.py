@@ -24,6 +24,7 @@ import ezidapp.models.realm
 # import ezidapp.models.server_variables
 import ezidapp.models.shoulder
 import ezidapp.models.util
+import ezidapp.models.news_feed
 import impl.newsfeed
 import impl.userauth
 
