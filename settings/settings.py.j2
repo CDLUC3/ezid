@@ -121,7 +121,7 @@ STATICFILES_DIRS = [
 # - False: Daemons cannot run. They are disabled regardless of the DAEMONS_*_ENABLED
 #   settings listed below.
 # - 'auto': Set to True if EZID is running under Apache / mod_wsgi, False otherwise.
-DAEMONS_ENABLED = 'auto'
+DAEMONS_ENABLED = 'True'
 
 assert DAEMONS_ENABLED in (True, False, 'auto')
 if DAEMONS_ENABLED == 'auto':
