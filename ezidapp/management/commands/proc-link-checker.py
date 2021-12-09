@@ -1,73 +1,66 @@
+# Copyright©2021, Regents of the University of California
+# http://creativecommons.org/licenses/BSD
+
 """Check target links
 
-    Link checker that tests EZID target URLs.  Only non-default target
-    URLs of public, real identifiers are tested.
+Link checker that tests EZID target URLs. Only non-default target URLs of public, real
+identifiers are tested.
 
-    This script runs continuously and indefinitely.  It runs
-    independently of the main EZID server, and may even run on a
-    different machine, but is nevertheless loosely coupled to EZID in
-    two ways.  1) It communicates with EZID through EZID's search
-    database.  Specifically, the link checker maintains its own table of
-    identifiers and target URLs which it periodically updates from the
-    main EZID tables, and conversely, the EZID server periodically
-    uploads link checker results back into its tables.  These update
-    mechanisms are asynchronous from mainline EZID processing.  2) The
-    link checker lives in and uses some of EZID's codebase, principally
-    to enable database access.
+This script runs continuously and indefinitely. It runs independently of the main EZID
+server, and may even run on a different machine, but is nevertheless loosely coupled to
+EZID in two ways:
 
-    The link checker tests a target URL by performing a GET request on
-    the URL.  A timely 200 response equates to success.
+    1) It communicates with EZID through EZID's search database. Specifically, the link
+    checker maintains its own table of identifiers and target URLs which it periodically
+    updates from the main EZID tables, and conversely, the EZID server periodically
+    uploads link checker results back into its tables. These update mechanisms are
+    asynchronous from mainline EZID processing.
 
-    Between periodic (say, weekly) table updates the link checker
-    processes limited-size worksets.  A workset consists of the "oldest"
-    target URLs (those that were last checked longest ago) from each
-    owner, up to a maximum number per owner.  Parallel Worker threads
-    then visit the URLs in round-robin fashion (i.e., visit one URL from
-    each owner, then repeat the cycle) so as to dilute the burden the
-    link checker places on external servers.  Additionally, the link
-    checker imposes a minimum interval between successive checks against
-    the same owner.  (There is typically a high correlation between
-    owners and servers.)
+    2) The link checker lives in and uses some of EZID's codebase, principally to enable
+    database access.
 
-    Blackout windows are an important feature.  Target URLs are not
-    re-checked within a certain window of time (say, one month).
-    Combined with the round-robin processing described above, the
-    intention is to balance timeliness and exhaustivity (all target URLs
-    will eventually be checked) and fairness (the checks of any given
-    owner's target URLs will not be excessively delayed because another
-    owner has many more identifiers than it).  Additionally, previously
-    failed target URLs utilize a different window (say, 1-2 days) and
-    are given priority in populating worksets, to allow failures to be
-    re-checked more frequently.
+The link checker tests a target URL by performing a GET request on the URL. A timely
+200 response equates to success.
 
-    Failures are not reported immediately because transient outages are
-    frequently encountered.  Only after a target URL consecutively fails
-    some number of checks (say, a dozen over a span of two weeks) is it
-    considered notification-worthy.
+Between periodic (say, weekly) table updates the link checker processes limited-size
+worksets. A workset consists of the "oldest" target URLs (those that were last checked
+longest ago) from each owner, up to a maximum number per owner. Parallel Worker threads
+then visit the URLs in round-robin fashion (i.e., visit one URL from each owner, then
+repeat the cycle) so as to dilute the burden the link checker places on external
+servers. Additionally, the link checker imposes a minimum interval between successive
+checks against the same owner. (There is typically a high correlation between owners
+and servers.)
 
-    Target URLs can be excluded from checking on a per-owner basis.  An
-    exclusion file can be specified on the command line; the file should
-    contain lines of the form:
+Blackout windows are an important feature. Target URLs are not re-checked within a
+certain window of time (say, one month). Combined with the round-robin processing
+described above, the intention is to balance timeliness and exhaustivity (all target
+URLs will eventually be checked) and fairness (the checks of any given owner's target
+URLs will not be excessively delayed because another owner has many more identifiers
+than it). Additionally, previously failed target URLs utilize a different window (say,
+1-2 days) and are given priority in populating worksets, to allow failures to be
+re-checked more frequently.
 
-       username {permanent|temporary}
+Failures are not reported immediately because transient outages are frequently
+encountered. Only after a target URL consecutively fails some number of checks (say, a
+dozen over a span of two weeks) is it considered notification-worthy.
 
-    For example:
+Target URLs can be excluded from checking on a per-owner basis. An exclusion file can
+be specified on the command line; the file should contain lines of the form:
 
-       # this is a comment line
-       merritt temporary
-       data-planet permanent
+    username {permanent|temporary}
 
-    Permanent exclusion differs from temporary in that if an owner is
-    permanently excluded, its identifiers and target URLs are not
-    entered into the link checker's table at all.
+For example:
 
-    The link checker notices within a few seconds when the exclusion
-    file has been modified.  Examine the link checker's log file to
-    confirm that it has been reloaded successfuly.
+    # this is a comment line
+    merritt temporary
+    data-planet permanent
+
+Permanent exclusion differs from temporary in that if an owner is permanently excluded,
+its identifiers and target URLs are not entered into the link checker's table at all.
+
+The link checker notices within a few seconds when the exclusion file has been modified.
+Examine the link checker's log file to confirm that it has been reloaded successfully.
 """
-
-#  Copyright©2021, Regents of the University of California
-#  http://creativecommons.org/licenses/BSD
 
 # noinspection PyUnresolvedReferences
 
@@ -78,7 +71,6 @@ import os
 import re
 import sys
 import threading
-import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -88,8 +80,10 @@ import django.conf
 import django.core.management
 
 import ezidapp.management.commands.proc_base
+import ezidapp.models.async_queue
 import ezidapp.models.identifier
-import ezidapp.models.link_checker
+# import ezidapp.models.link_checker
+import ezidapp.models.user
 import impl
 import impl.nog.util
 import impl.util
@@ -100,21 +94,18 @@ log = logging.getLogger(__name__)
 class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     help = __doc__
     display = 'LinkChecker'
-    name = 'linkchecker'
     setting = 'DAEMONS_LINKCHECKER_ENABLED'
+    queue = ezidapp.models.async_queue.DownloadQueue
 
     def __init__(self):
-        super(Command, self).__init__(__name__)
-        self._exclusionFileModifyTime = None
-        self._lastExclusionFileCheckTime = None
-        self._permanentExcludes = None
-        self._temporaryExcludes = None
+        super().__init__()
+        self._exclusionFileModifyTime = -1
+        self._lastExclusionFileCheckTime = -1
+        self._permanentExcludes = []
+        self._temporaryExcludes = []
         self._exclusionFile = None
 
-    def add_arguments(self, parser):
-        super().add_arguments(parser)
-
-    def handle_daemon(self, *_, **opt):
+    def run(self):
         if len(sys.argv) > 2:
             sys.stderr.write("usage: link-checker [exclusion-file]\n")
             sys.exit(1)
@@ -140,7 +131,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             log.info("begin processing")
             # noinspection PyTypeChecker
             if len(self._workset) > 0:
-                roundStart = self.now()()
+                roundStart = self.now()
                 _stopNow = False
                 _index = 0
                 _totalSleepTime = 0
@@ -185,7 +176,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                         threads[i].join()
                 # noinspection PyTypeChecker
                 numChecked = sum(ow.nextIndex for ow in self._workset)
-                rate = numChecked / (self.now()() - roundStart)
+                rate = numChecked / (self.now() - roundStart)
                 if rate >= 1 / 1.05:  # using this bound avoids printing 1/1.0
                     rate = str(round(rate, 1)) + " links/s"
                 else:
@@ -196,7 +187,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             else:
                 # The sleep below is just to prevent a compute-intensive loop.
                 log.info("end processing (nothing to check)")
-                time.sleep(60)
+                self.sleep(60)
             firstRound = False
 
     # @staticmethod
@@ -245,26 +236,25 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 try:
                     user, flag = l.split()
                 except ValueError:
-                    log.exception(' ValueError')
+                    log.exception('ValueError')
                     assert False, "syntax error on line %d" % n
                 assert flag in ["permanent", "temporary"], "syntax error on line %d" % n
 
                 # search_user_model = django.apps.apps.get_model('ezidapp', 'User')
-                import ezidapp.models.user
 
                 try:
                     (pe if flag == "permanent" else te).append(
                         ezidapp.models.user.User.objects.get(username=user).id
                     )
                 except ezidapp.models.user.User.DoesNotExist:
-                    log.exception(' ezidapp.models.user.User.DoesNotExist')
+                    log.exception('User.DoesNotExist')
                     assert False, "no such user: " + user
             _permanentExcludes = pe
             _temporaryExcludes = te
             _exclusionFileModifyTime = s.st_mtime
             log.info("exclusion file successfully loaded")
         except Exception as e:
-            log.exception(' Exception as e')
+            log.exception('Exception')
             if s is not None:
                 _exclusionFileModifyTime = s.st_mtime
             log.error("error loading exclusion file: " + str(e))
@@ -284,7 +274,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             if len(qs) == 0:
                 break
             for o in qs:
-                if filter is None or list(filter(o)):
+                if filter is None or filter(o):
                     yield o
             lastIdentifier = qs[-1].identifier
         yield None
@@ -299,25 +289,21 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         numUnvisited = 0
         good = [0, 0, self.now_int()]  # [total, to visit, oldest timestamp]
         bad = [0, 0, self.now_int()]
-        # noinspection PyTypeChecker
-        import ezidapp.models.link_checker
-        lcGenerator = self.harvest(ezidapp.models.link_checker.LinkChecker)
-        # link_checker_model = django.apps.apps.get_model('ezidapp', 'LinkChecker')
-        # lcGenerator = self.harvest(link_checker_model)
-        # noinspection PyTypeChecker
-        import ezidapp.models.identifier
 
-        # search_identifier_model = django.apps.apps.get_model(
-        #     'ezidapp', 'Identifier'
-        # )
+        link_checker_model = django.apps.apps.get_model('ezidapp', 'LinkChecker')
+        # lcGenerator = self.harvest(ezidapp.models.link_checker.LinkChecker)
+        lcGenerator = self.harvest(link_checker_model)
+
+        search_identifier_model = django.apps.apps.get_model('ezidapp', 'SearchIdentifier')
         siGenerator = self.harvest(
-            ezidapp.models.identifier.Identifier,
+            search_identifier_model,
             ["identifier", "owner", "status", "target", "isTest"],
             lambda si: si.isPublic
                        and not si.isTest
                        and si.target != si.defaultTarget
                        and si.owner_id not in self._permanentExcludes,
         )
+
         lc = next(lcGenerator)
         si = next(siGenerator)
         while lc is not None or si is not None:
@@ -329,11 +315,16 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 numIdentifiers += 1
                 numAdditions += 1
                 numUnvisited += 1
-                nlc = ezidapp.models.link_checker.LinkChecker(
+                nlc = link_checker_model(
                     identifier=si.identifier,
                     target=si.target,
                     owner_id=si.owner_id,
                 )
+                # nlc = ezidapp.models.link_checker.LinkChecker(
+                #     identifier=si.identifier,
+                #     target=si.target,
+                #     owner_id=si.owner_id,
+                # )
                 nlc.full_clean(validate_unique=False)
                 nlc.save()
                 si = next(siGenerator)
@@ -362,7 +353,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                             # noinspection PyUnresolvedReferences
                             if (
                                     lc.lastCheckTime
-                                    < nowi()
+                                    < self.now_int()
                                     - django.conf.settings.LINKCHECKER_GOOD_RECHECK_MIN_INTERVAL
                             ):
                                 good[1] += 1
@@ -373,7 +364,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                             # noinspection PyUnresolvedReferences
                             if (
                                     lc.lastCheckTime
-                                    < nowi()
+                                    < self.now_int()
                                     - django.conf.settings.LINKCHECKER_BAD_RECHECK_MIN_INTERVAL
                             ):
                                 bad[1] += 1
@@ -431,7 +422,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     'ezidapp', 'LinkChecker'
                 )
                 return list(
-                    ezidapp.models.link_checker.LinkChecker.objects.filter(
+                    ezidapp.models.link_checker.objects.filter(
                         owner_id=user.id
                     )
                         .filter(isBad=isBad)
@@ -592,7 +583,7 @@ class Worker(Command):
                     if r == "finished":
                         return
                     else:  # wait
-                        time.sleep(1)
+                        self.sleep(1)
                         self._lock.acquire()
                         try:
                             self._totalSleepTime += 1
@@ -626,7 +617,7 @@ class Worker(Command):
                     mimeType = c.info().get("Content-Type", "unknown")
                     content = c.read(django.conf.settings.LINKCHECKER_MAX_READ)
                 except http.client.IncompleteRead as e:
-                    log.exception(' http.client.IncompleteRead as e')
+                    log.exception('http.client.IncompleteRead')
                     # Some servers deliver a complete HTML document, but,
                     # apparently expecting further requests from a web browser
                     # that never arrive, hold the connection open and ultimately
@@ -642,11 +633,11 @@ class Worker(Command):
                         success = False
                         returnCode = -1
                 except urllib.error.HTTPError as e:
-                    log.exception(' urllib.error.HTTPError as e')
+                    log.exception('HTTPError')
                     success = False
                     returnCode = e.code
                 except Exception as e:
-                    log.exception(' Exception as e')
+                    log.exception('Exception')
                     success = False
                     returnCode = -1
                 else:
@@ -670,6 +661,5 @@ class Worker(Command):
 
                 self.markLinkChecked(index)
 
-        except Exception as e:
-            log.exception(' Exception as e')
-            pass
+        except Exception:
+            log.exception('Exception')

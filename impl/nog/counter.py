@@ -37,7 +37,7 @@ class Counter:
 
     def print_counters(self):
         if not self.count_dict:
-            self.p("No checks counted yet...")
+            self.p("No events counted yet...")
             return
         self.p("Counters:")
         for k, v in sorted(self.count_dict.items()):

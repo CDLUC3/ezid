@@ -1,8 +1,7 @@
-"""Activate an existing shoulder."""
-
-
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
+
+"""Activate an existing shoulder."""
 
 import argparse
 import logging
@@ -12,8 +11,6 @@ import django.core.management
 import django.db.transaction
 
 import ezidapp.models.shoulder
-# # import ezidapp.models
-# import impl.nog.reload
 import impl.nog.util
 
 log = logging.getLogger(__name__)
@@ -30,9 +27,7 @@ class Command(django.core.management.BaseCommand):
         parser.add_argument(
             'shoulder_str',
             metavar='shoulder',
-            help="""
-            Full shoulder. E.g., ark:/99999/fk4        
-        """,
+            help="Full shoulder. E.g., ark:/99999/fk4",
         )
         parser.add_argument(
             '--debug',
@@ -61,5 +56,3 @@ class Command(django.core.management.BaseCommand):
         shoulder_model.save()
 
         log.info('Shoulder activated: {}'.format(shoulder_str))
-
-        # impl.nog.reload.trigger_reload()

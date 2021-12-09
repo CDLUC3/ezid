@@ -1,19 +1,22 @@
-"""Interface to the EZID RSS news feed
-"""
-
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
+"""Interface to the EZID RSS news feed.
+
+The RSS feed configured in settings NEWSFEED_URL is periodically downloaded and checked
+for new entries. Any new entries are added to the EZID database.
+"""
+import datetime
 import logging
-import threading
 import time
 
 import django.conf
 import feedparser
 
 import ezidapp.management.commands.proc_base
+import ezidapp.models.identifier
+import ezidapp.models.news_feed
 import impl.log
-import impl.nog.util
 
 log = logging.getLogger(__name__)
 
@@ -21,42 +24,25 @@ log = logging.getLogger(__name__)
 class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     help = __doc__
     display = 'NewsFeed'
-    name = 'newsfeed'
     setting = 'DAEMONS_NEWSFEED_ENABLED'
 
-    def __init__(self):
-        super(Command, self).__init__(__name__)
-
-    def add_arguments(self, parser):
-        super().add_arguments(parser)
-
-    def handle_daemon(self, *_, **opt):
-        pass
-
     def run(self):
-        while (
-            django.conf.settings.CROSSREF_ENABLED
-            and threading.currentThread().getName() == self._threadName
-        ):
+        while True:
             try:
-                feed = feedparser.parse(self._url)
-                if len(feed.entries) > 0:
-                    items = []
-                    for i in range(min(len(feed.entries), 3)):
-                        items.append((feed.entries[i].title, feed.entries[i].link))
-                else:
-                    items = self._noItems
+                feed = feedparser.parse(django.conf.settings.NEWSFEED_URL)
+                for entry in feed.entries:
+                    if not ezidapp.models.news_feed.NewsFeed.objects.filter(
+                        feed_id=entry.id
+                    ).exists():
+                        ezidapp.models.news_feed.NewsFeed(
+                            feed_id=entry.id,
+                            published=datetime.datetime.fromtimestamp(
+                                time.mktime(entry.published_parsed)),
+                            title=entry.title,
+                            link=entry.link,
+                        ).save()
             except Exception as e:
-                log.exception(' Exception as e')
-                self.otherError("newsfeed._newsDaemon", e)
-                items = self._noItems
+                log.exception('Exception')
+                impl.log.otherError("newsfeed._newsDaemon", e)
 
-            self._lock.acquire()
-            try:
-                if threading.currentThread().getName() == self._threadName:
-                    _items = items
-            finally:
-                self._lock.release()
-
-            # noinspection PyTypeChecker
-            time.sleep(self._pollingInterval)
+            self.sleep(django.conf.settings.NEWSFEED_POLLING_INTERVAL)

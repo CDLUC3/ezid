@@ -1,14 +1,9 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-# =============================================================================
-#
-# EZID :: crossref.py
-#
-# Interface to Crossref <http://www.crossref.org/>.
-#
-#
-# -----------------------------------------------------------------------------
+"""Interface to Crossref <http://www.crossref.org/>
+"""
+
 import logging
 import re
 import time
@@ -41,67 +36,17 @@ log = logging.getLogger(__name__)
 class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     help = __doc__
     display = 'Crossref'
-    name = 'crossref'
     setting = 'DAEMONS_CROSSREF_ENABLED'
+    queue = ezidapp.models.async_queue.CrossrefQueue
 
-    def __init__(self):
-        super(Command, self).__init__(__name__)
-        self.queue = ezidapp.models.async_queue.CrossrefQueue
+    def create(self, task_model):
+        pass
 
-    def add_arguments(self, parser):
-        super().add_arguments(parser)
+    def update(self, task_model):
+        pass
 
-    def handle_daemon(self, *_, **opt):
-        maxSeq = None
-
-        while True:
-            django.db.connections["default"].close()
-            django.db.connections["search"].close()
-
-            # noinspection PyTypeChecker
-            time.sleep(django.conf.settings.DAEMONS_CROSSREF_PROCESSING_IDLE_SLEEP)
-
-            try:
-                # First, a quick test to avoid retrieving the entire table if nothing needs to be
-                # done.
-                #
-                # In the loop below, if any entry is deleted or if any identifier is processed,
-                # maxSeq is set to None, thus forcing another round of processing.
-                if maxSeq is not None:
-                    if (
-                        self.queue().objects.aggregate(django.db.models.Max("seq"))["seq__max"]
-                        == maxSeq
-                    ):
-                        continue
-                # Hopefully the queue will not grow so large that the following
-                # query will cause a burden.
-                query = self.queue().objects.all().order_by("seq")
-                if len(query) > 0:
-                    maxSeq = query[len(query) - 1].seq
-                else:
-                    maxSeq = None
-
-                for r in query:
-                    # If there are multiple entries for this identifier, we are
-                    # necessarily looking at the first, i.e., the earliest, and
-                    # the others must represent subsequent modifications.  Hence
-                    # we simply delete this entry regardless of its status.
-                    if self.queue().objects.filter(identifier=r.identifier).count() > 1:
-                        r.delete()
-                        maxSeq = None
-                    else:
-                        if r.status == ezidapp.models.async_queue.CrossrefQueue.UNSUBMITTED:
-                            self._doDeposit(r)
-                            maxSeq = None
-                        elif r.status == ezidapp.models.async_queue.CrossrefQueue.SUBMITTED:
-                            self._doPoll(r)
-                            maxSeq = None
-                        else:
-                            pass
-            except Exception as e:
-                log.exception(' Exception as e')
-                self.otherError("crossref.run", e)
-                maxSeq = None
+    def delete(self, task_model):
+        pass
 
     def _notOne(self, n):
         if n == 0:
@@ -118,18 +63,16 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     def _buildDeposit(self, body, registrant, doi, targetUrl, withdrawTitles=False, bodyOnly=False):
         """Build a Crossref metadata submission document
 
-        'body' should be a
-        Crossref <body> child element as a Unicode string, and is assumed to
-        have been validated and normalized per validateBody above.
-        'registrant' is inserted in the header.  'doi' should be a
-        scheme-less DOI identifier (e.g., "10.5060/FOO").  The return is a
-        tuple (document, body, batchId) where 'document' is the entire
-        submission document as a serialized Unicode string (with the DOI and
-        target URL inserted), 'body' is the same but just the <body> child
-        element, and 'batchId' is the submission batch identifier.
-        Options: if 'withdrawTitles' is true, the title(s) corresponding to
-        the DOI being defined are prepended with "WITHDRAWN:" (in 'document'
-        only).  If 'bodyOnly' is true, only the body is returned.
+        'body' should be a Crossref <body> child element as a Unicode string, and is
+        assumed to have been validated and normalized per validateBody above.
+        'registrant' is inserted in the header.  'doi' should be a scheme-less DOI
+        identifier (e.g., "10.5060/FOO").  The return is a tuple (document, body,
+        batchId) where 'document' is the entire submission document as a serialized
+        Unicode string (with the DOI and target URL inserted), 'body' is the same but
+        just the <body> child element, and 'batchId' is the submission batch identifier.
+        Options: if 'withdrawTitles' is true, the title(s) corresponding to the DOI
+        being defined are prepended with "WITHDRAWN:" (in 'document' only).  If
+        'bodyOnly' is true, only the body is returned.
         """
         body = lxml.etree.XML(body)
         m = self.TAG_REGEX.match(body.tag)
@@ -152,7 +95,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         head = lxml.etree.SubElement(root, q("head"))
         batchId = str(uuid.uuid1())
         lxml.etree.SubElement(head, q("doi_batch_id")).text = batchId
-        lxml.etree.SubElement(head, q("timestamp")).text = str(int(time.time() * 100))
+        lxml.etree.SubElement(head, q("timestamp")).text = str(int(self.now() * 100))
         e = lxml.etree.SubElement(head, q("depositor"))
         if version >= "4.3.4":
             lxml.etree.SubElement(
@@ -253,21 +196,20 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     "unexpected return from metadata submission: " + r
                 )
             except urllib.error.HTTPError as e:
-                log.exception(' urllib.error.HTTPError as e')
+                log.exception('HTTPError')
                 msg = None
                 if e.fp is not None:
                     try:
                         msg = e.fp.read()
                     except Exception:
-                        log.exception(' Exception')
-                        pass
+                        log.exception('Exception')
                 raise Exception(msg) from e
             finally:
                 if c:
                     c.close()
         except Exception as e:
-            log.exception(' Exception as e')
-            self.otherError(
+            log.exception('Exception')
+            impl.log.otherError(
                 "crossref._submitDeposit",
                 self._wrapException(f"error submitting deposit, doi {doi}, batch {batchId}", e),
             )
@@ -327,14 +269,13 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 )
                 response = c.read()
             except urllib.error.HTTPError as e:
-                log.exception(' urllib.error.HTTPError as e')
+                log.exception('HTTPError')
                 msg = None
                 if e.fp is not None:
                     try:
                         msg = e.fp.read()
                     except Exception:
-                        log.exception(' Exception')
-                        pass
+                        log.exception('Exception')
                 raise Exception(msg) from e
             finally:
                 if c:
@@ -344,7 +285,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 # based on the embedded encoding declaration.
                 root = lxml.etree.XML(response)
             except Exception as e:
-                log.exception(' Exception as e')
+                log.exception('Exception')
                 assert False, "XML parse error: " + str(e)
             assert root.tag == "doi_batch_diagnostic", (
                 "unexpected response root element: " + root.tag
@@ -378,40 +319,40 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 else:
                     assert False, "unexpected status value: " + d.attrib["status"]
         except Exception as e:
-            log.exception(' Exception as e')
-            self.otherError(
+            log.exception('Exception')
+            impl.log.otherError(
                 "crossref._pollDepositStatus",
                 self._wrapException(f"error polling deposit status, doi {doi}, batch {batchId}", e),
             )
             return "unknown", None
 
     def _doDeposit(self, r):
-        m = impl.util.deblobify(r.metadata)
+        r = impl.util.deblobify(r.metadata)
         if r.operation == ezidapp.models.async_queue.CrossrefQueue.DELETE:
             url = "http://datacite.org/invalidDOI"
         else:
-            url = m["_t"]
+            url = r["_t"]
         submission, body, batchId = self._buildDeposit(
-            m["crossref"],
+            r["crossref"],
             ezidapp.models.util.getUserByPid(r.owner).username,
             r.identifier[4:],
             url,
             withdrawTitles=(
                 r.operation == ezidapp.models.async_queue.CrossrefQueue.DELETE
-                or m.get("_is", "public").startswith("unavailable")
+                or r.get("_is", "public").startswith("unavailable")
             ),
         )
         if self._submitDeposit(submission, batchId, r.identifier[4:]):
             if r.operation == ezidapp.models.async_queue.CrossrefQueue.DELETE:
-                # Well this is awkard.  If the identifier was deleted, there's
-                # no point in polling for the status... if anything goes wrong,
-                # there's no correction that could possibly be made, as the
-                # identifier no longer exists as far as EZID is concerned.
+                # Well this is awkward.  If the identifier was deleted, there's no point
+                # in polling for the status... if anything goes wrong, there's no
+                # correction that could possibly be made, as the identifier no longer
+                # exists as far as EZID is concerned.
                 r.delete()
             else:
                 r.status = ezidapp.models.async_queue.CrossrefQueue.SUBMITTED
                 r.batchId = batchId
-                r.submitTime = int(time.time())
+                r.submitTime = int(self.now())
                 r.save()
 
     def _sendEmail(self, emailAddress, r):
@@ -448,10 +389,10 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 fail_silently=True,
             )
         except Exception as e:
-            log.exception(' Exception as e')
+            log.exception('Exception')
             raise self._wrapException("error sending email", e)
 
-    def _oneline(self, s):
+    def _oneLine(self, s):
         return re.sub(r"\s", " ", s)
 
     def _doPoll(self, r):
@@ -471,7 +412,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                         crs = ezidapp.models.identifier.Identifier.CR_WARNING
                     else:
                         crs = ezidapp.models.identifier.Identifier.CR_FAILURE
-                    crm = self._oneline(t[1]).strip()
+                    crm = self._oneLine(t[1]).strip()
                 # We update the identifier's Crossref status in the store and
                 # search databases, but do so in such a way as to avoid
                 # infinite loops and triggering further updates to DataCite or

@@ -1,14 +1,23 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-_NO_NEWS = [("No news available", None)]
-_ITEMS = _NO_NEWS
+import ezidapp.models.news_feed
+
+NO_NEWS = [("No news available", None)]
 
 
-def getLatestItems(self):
-    """Returns the latest news items (up to 3 items) as a list of tuples
-
-    [(title, URL), ...].  At least one item is always returned.  The URL
-    may be None in a tuple.
+def getLatestItems():
+    """Returns the latest news items (1 to 3 items)
+    [(title, URL), ...].
     """
-    return self._ITEMS
+    qs = (
+        ezidapp.models.news_feed.NewsFeed.objects.all()
+        .order_by('-published')
+        .values(
+            'title',
+            'link',
+        )[:3]
+    )
+    if qs.exists():
+        return [(q['title'], q['link']) for q in qs]
+    return NO_NEWS

@@ -85,6 +85,33 @@ where
     and constraint_schema = 'ezid'
 ;
 
+
+
+
+alter table ezidapp_searchidentifier
+drop key ezidapp_searchidentifier_keywords;
+alter table ezidapp_searchidentifier
+drop key ezidapp_searchidentifier_resourcecreator;
+alter table ezidapp_searchidentifier
+drop key ezidapp_searchidentifier_resourcepublisher;
+alter table ezidapp_searchidentifier
+drop key ezidapp_searchidentifier_resourcetitle;
+
+select match (keywords) against ('water') from ezidapp_searchidentifier es group by es.keywords with rollup ;
+
+select keywords from ezidapp_searchidentifier limit 100;
+
+
+###############
+
+
+select count(*) from ezidapp_searchidentifier es group by es.hasissues;
+# select count(*) from ezidapp_searchidentifier es group by es.;
+
+select count(*) from ezidapp_linkchecker el;
+select * from ezidapp_linkchecker el;
+
+
 # Create drop statements for stub tables
 # select concat_ws(' ', 'rename table', table_name, 'to', replace(table_name, '_store', '_'), ';')
 # from information_schema.tables

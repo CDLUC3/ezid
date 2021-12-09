@@ -191,6 +191,7 @@ def enqueueRequest(state, user, request):
         return f"success: {django.conf.settings.EZID_BASE_URL}/download/{filename}.{_fileSuffix(r)}"
     except Exception as e:
         impl.log.otherError("download.enqueueRequest", e)
+        # noinspection PyUnresolvedReferences
         if sys.is_running_under_pytest:
             raise
         return "error: internal server error"

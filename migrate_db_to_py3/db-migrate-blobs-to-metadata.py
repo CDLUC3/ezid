@@ -5,8 +5,7 @@
 
 """Migrate EZID's various legacy blob formats to JSON.
 
-The blobs are read from the cm field and stored in the metadata fields of the
-ezidapp_searchidentifier and ezidapp_storeidentifier tables.
+The blobs are read from cm fields and stored in metadata fields.
 """
 import argparse
 import ast
@@ -29,13 +28,19 @@ import mysql.connector.cursor
 
 log = logging.getLogger(__name__)
 
-BATCH_SIZE = 10_000
+BATCH_SIZE = 100_000
+POOL_CHUNK_SIZE = 1000
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('table', choices=['store', 'search'])
     args = parser.parse_args()
+
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format='%(levelname)-8s %(message)s',
+    )
 
     try:
         conn_args = dict(
@@ -57,25 +62,17 @@ class MigrateBlobsToMetadata:
     def __init__(self, conn_args, table_str):
         # self.counter = impl.nog.counter.Counter(out_fn=log.info)
         # self.counter_lock = multiprocessing.RLock()
-        self.page_size = 10_000
+        self.page_size = BATCH_SIZE
         self.start_ts = time.time()
         self.prev_ts = self.start_ts
         self.conn_args = conn_args
         self.table_str = table_str
 
     def run(self):
-        pool = multiprocessing.pool.Pool(4 * multiprocessing.cpu_count())
-        # pool = multiprocessing.pool.Pool(
-        #     processes=2,
-        # initializer=myinit,
-        # initargs=self.conn_args,
-        # )
+        pool = multiprocessing.pool.Pool(8 * multiprocessing.cpu_count())
 
         with connect(self.conn_args) as conn:
-            # n.conn = conn
-
             cursor = conn.cursor()
-            # cursor = conn.cursor()
             # conn.autocommit = False
             cursor.execute('set unique_checks = 0', {})
             cursor.execute('set foreign_key_checks = 0', {})
@@ -89,7 +86,7 @@ class MigrateBlobsToMetadata:
                 where id = last_insert_id(id)
                 and id > {last_id}
                 order by id
-                limit {BATCH_SIZE}
+                limit {self.page_size}
                 ;
                 """
                 print(f'id > {last_id}')
@@ -101,13 +98,9 @@ class MigrateBlobsToMetadata:
                 res = pool.map_async(
                     functools.partial(proc_blob, self.conn_args, self.table_str),
                     cursor.fetchall(),
-                    100,
+                    POOL_CHUNK_SIZE,
                 )
                 res.get()
-
-                #     # metadata_json = metadata_json.replace("\\", '\\\\')
-                #     # print(metadata_json)
-                #     # pprint.pp(json.loads(metadata_json))
 
                 q = """
                 select last_insert_id();
@@ -117,6 +110,9 @@ class MigrateBlobsToMetadata:
 
                 if new_last_id == last_id:
                     break
+
+                # if new_last_id > 100_000:
+                #    break
 
                 last_id = new_last_id
 
@@ -134,30 +130,31 @@ def proc_blob(conn_args, table_str, args):
     # print('#'*100)
     row_id, blob_bytes = args
     # print(conn_args, row_id, blob_bytes)
+    # print(row_id)
+    # print(blob_bytes)
 
     if not hasattr(proc_blob, 'conn'):
-        print('Connecting')
+        print(f'Connecting PID {multiprocessing.current_process().pid}')
         proc_blob.conn = mysql.connector.connect(
             use_pure=False,
             **conn_args,
         )
 
-    json_str, op_list = decode(blob_bytes)
-    # JSON will be both validated and normalized by MySQL
     try:
-        metadata_dict = json.loads(json_str)
-    except json.decoder.JSONDecodeError:
+        json_str, op_list = decode(blob_bytes)
+    except Exception as e:
+        log.error(f'Decode error: {str(e)}')
         return
 
-    # print(metadata_dict)
+    # JSON will be both validated and normalized by MySQL
 
     proc_blob.conn.cursor().execute(
         f"""
-    update ezidapp_{table_str}identifier
-    set metadata = %s
-    where id = %s
-    """,
-        (json.dumps(metadata_dict), row_id),
+        update ezidapp_{table_str}identifier
+        set metadata = %s
+        where id = %s
+        """,
+        (json_str, row_id),
     )
 
 

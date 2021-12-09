@@ -274,6 +274,7 @@ class IdentifierBase(django.db.models.Model):
     owner = django.db.models.ForeignKey(
         'ezidapp.User',
         blank=True,
+        null=True,
         default='',
         on_delete=django.db.models.PROTECT,
     )
@@ -281,17 +282,18 @@ class IdentifierBase(django.db.models.Model):
     ownergroup = django.db.models.ForeignKey(
         'ezidapp.Group',
         blank=True,
+        null=True,
         default='',
         on_delete=django.db.models.PROTECT,
     )
 
-    # The time the identifier was created as a Unix timestamp.  If not
+    # The time the identifier was created as a Unix timestamp. If not
     # specified, the current time is used.
     createTime = django.db.models.IntegerField(
         blank=True, default="", validators=[django.core.validators.MinValueValidator(0)]
     )
 
-    # The time the identifier was last updated as a Unix timestamp.  If
+    # The time the identifier was last updated as a Unix timestamp. If
     # not specified, the current time is used.
     updateTime = django.db.models.IntegerField(
         blank=True, default="", validators=[django.core.validators.MinValueValidator(0)]

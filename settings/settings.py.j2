@@ -133,6 +133,7 @@ if DAEMONS_ENABLED == 'auto':
 # - See the DAEMONS_ENABLED setting above.
 DAEMONS_SEARCH_INDEXER_ENABLED = True
 DAEMONS_NEWSFEED_ENABLED = True
+DAEMONS_STATISTICS_ENABLED = True
 DAEMONS_STATUS_ENABLED = True
 DAEMONS_BINDER_ENABLED = True
 DAEMONS_DATACITE_ENABLED = True
@@ -145,14 +146,13 @@ DAEMONS_BACKGROUND_PROCESSING_IDLE_SLEEP = 5
 DAEMONS_STATUS_LOGGING_INTERVAL = 60
 DAEMONS_BINDER_PROCESSING_IDLE_SLEEP = 5
 DAEMONS_BINDER_PROCESSING_ERROR_SLEEP = 300
-DAEMONS_BINDER_NUM_WORKER_THREADS = 3
 DAEMONS_DATACITE_PROCESSING_IDLE_SLEEP = 5
 DAEMONS_DATACITE_PROCESSING_ERROR_SLEEP = 300
-DAEMONS_DATACITE_NUM_WORKER_THREADS = 3
 DAEMONS_CROSSREF_PROCESSING_IDLE_SLEEP = 60
 DAEMONS_DOWNLOAD_PROCESSING_IDLE_SLEEP = 10
 DAEMONS_STATISTICS_COMPUTE_CYCLE = 3600
 DAEMONS_STATISTICS_COMPUTE_SAME_TIME_OF_DAY = True
+DAEMONS_MATCH_BATCH_SIZE = 100
 
 MAX_CONCURRENT_OPERATIONS_PER_USER = 4
 MAX_THREADS_PER_USER = 16
@@ -545,21 +545,6 @@ TEMPLATES = [
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 QUERY_PAGE_SIZE = 10000
-
-BlobField = collections.namedtuple('BlobField', ['model', 'field', 'is_queue'])
-
-BLOB_FIELD_LIST = [
-    # metadata = Python or JSON, compound objects
-    BlobField('BinderQueue', 'metadata', True),
-    BlobField('CrossrefQueue', 'metadata', True),
-    BlobField('DataciteQueue', 'metadata', True),
-    # object = Identifier (Model)
-    BlobField('DownloadQueue', 'object', True),
-    # cm = CompressedJsonField (Field)
-    BlobField('Identifier', 'cm', False),
-    BlobField('Identifier', 'cm', False),
-]
-
 
 # print('Installing exception hook')
 # import impl.nog.tb

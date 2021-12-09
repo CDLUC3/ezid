@@ -27,6 +27,11 @@ BATCH_SIZE = 10000
 
 
 def main():
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format='%(levelname)-8s %(message)s',
+    )
+
     try:
         host_str = os.environ['DB_HOST']
         port_str = os.environ['DB_PORT']
