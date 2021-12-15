@@ -2024,8 +2024,14 @@ update `ezidapp_searchidentifier` set `profile_id` = b'NULL' where `profile_id` 
 alter table `ezidapp_searchidentifier`
 modify `profile_id` integer not null;
 
+# Order of importance for keys was found by running this query on the production database:
+#
+# select count_star, index_name
+# from performance_schema.table_io_waits_summary_by_index_usage
+# where object_name='ezidapp_searchidentifier'
+# group by count_star, index_name
+# order by count_star desc;
 
-# MySQL [ezid]> select count_star, index_name from performance_schema.table_io_waits_summary_by_index_usage where object_name='ezidapp_searchidentifier' group by count_star, index_name order by count_star desc;
 # +------------+------------------------------------------------------------------+
 # | count_star | index_name                                                       |
 # +------------+------------------------------------------------------------------+
