@@ -85,7 +85,8 @@ drop key ezidapp_searchidentifier_resourcetitle
 # Translate from search to store FKs in ezidapp_searchidentifier
 # Time on stg-py3 host and DB: 17 min
 # Time on stg-py3 host and dev DB: 24 min (probably starting with full level of burst tokens)
-# Run db-update-fk.py
+
+-- Run: db-update-fk.py
 
 #@#
 
@@ -131,7 +132,9 @@ add column `metadata` json null check (json_valid(`metadata`));
 
 #@#
 
-# Run db-migrate-blobs-to-metadata.py
+# Decode blobs to JSON and write them to the new metadata columns.
+
+-- Run: db-migrate-blobs-to-metadata.py
 
 #@#
 
