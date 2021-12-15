@@ -2023,3 +2023,120 @@ modify `ownergroup_id` integer not null;
 update `ezidapp_searchidentifier` set `profile_id` = b'NULL' where `profile_id` is null;
 alter table `ezidapp_searchidentifier`
 modify `profile_id` integer not null;
+
+
+# MySQL [ezid]> select count_star, index_name from performance_schema.table_io_waits_summary_by_index_usage where object_name='ezidapp_searchidentifier' group by count_star, index_name order by count_star desc;
+# +------------+------------------------------------------------------------------+
+# | count_star | index_name                                                       |
+# +------------+------------------------------------------------------------------+
+# | 8137470925 | identifier                                                       |
+# | 1694234344 | ezidapp_searchidentifie_publicSearchVisible_58de9f6f00b8058e_idx |
+# | 1470014804 | ezidapp_searchidentifier_oaiVisible_1d291a23fcff2ce2_idx         |
+# |  211448890 | ezidapp_searchidentifier_5e7b1936                                |
+# |   93001201 | ezidapp_searchidentifier_owner_id_59016f4a7ffbcaaa_idx           |
+# |   84129679 | ezidapp_searchidentifier_365b2611                                |
+# |   81640063 | ezidapp_searchidentifier_13bc2970                                |
+# |   71055879 | ezidapp_searchidentifier_owner_id_60c2c5fffcb40895_idx           |
+# |   64647693 | ezidapp_searchidentifie_publicSearchVisible_1e447c57e83c8d5d_idx |
+# |   60195608 | ezidapp_searchidentifie_publicSearchVisible_1932465b0335635c_idx |
+# |   59627193 | ezidapp_searchidentifier_owner_id_54da573427e72c0e_idx           |
+# |   30770472 | ezidapp_searchidentifier_owner_id_47ecdfd54025f1f1_idx           |
+# |   27213349 | ezidapp_searchidentifier_83a0eb3f                                |
+# |   23410277 | ezidapp_searchidentifier_ownergroup_id_6c5194bcf1d0014e_idx      |
+# |   19388568 | ezidapp_searchidentifier_owner_id_3e88a7c1b2b5c693_idx           |
+# |   14880395 | ezidapp_searchidentifier_owner_id_431b22d7016b97df_idx           |
+# |   14274173 | ezidapp_searchidentifier_ownergroup_id_4ad29fb0ede49103_idx      |
+# |   14193439 | ezidapp_searchidentifier_ownergroup_id_6cfbff68ca3e25cb_idx      |
+# |   11497247 | ezidapp_searchidentifier_ownergroup_id_2114f948ed092669_idx      |
+# |    5411586 | ezidapp_searchidentifier_owner_id_5c11adaf88d856d0_idx           |
+# |    4652160 | ezidapp_searchidentifier_ownergroup_id_68875bac9225d3c9_idx      |
+# |    4298890 | ezidapp_searchidentifier_ownergroup_id_4b76dd7c4564df4f_idx      |
+# |    3779471 | ezidapp_searchidentifier_ownergroup_id_39b7cdc64bc267c3_idx      |
+# |    3023677 | ezidapp_searchidentifier_owner_id_5b203a171bdbab38_idx           |
+# |    3001925 | ezidapp_searchidentifier_owner_id_58dfc6401ef0e359_idx           |
+# |    2991637 | ezidapp_searchidentifier_ownergroup_id_4a1baf4823ddab6c_idx      |
+# |    2549026 | ezidapp_searchidentifier_owner_id_1d05153b51fd9dff_idx           |
+# |    2066398 | PRIMARY                                                          |
+# |    1600118 | ezidapp_searchidentifier_owner_id_198f8d3796dae4b9_idx           |
+# |     747300 | ezidapp_searchidentifier_ownergroup_id_449f25bec77c57da_idx      |
+# |     525993 | NULL                                                             |
+# |      86164 | ezidapp_searchidentifier_owner_id_76e131b0c70070a1_idx           |
+# |      35588 | ezidapp_searchidentifier_ownergroup_id_48b886662536e7fd_idx      |
+# |       5492 | ezidapp_searchidentifier_owner_id_18a46334256a7530_idx           |
+# |       4718 | ezidapp_searchidentifie_publicSearchVisible_47396846c619370f_idx |
+# |          4 | ezidapp_searchidentifier_searchableTarget_24d34538786996df_idx   |
+# |          0 | ezidapp_searchidentifier_keywords                                |
+# |          0 | ezidapp_searchidentifier_ownergroup_id_1d431d7513ab02ec_idx      |
+# |          0 | ezidapp_searchidentifier_ownergroup_id_2388bfe261a735c5_idx      |
+# |          0 | ezidapp_searchidentifier_ownergroup_id_3ac1ed25c2bfbb2d_idx      |
+# |          0 | ezidapp_searchidentifier_ownergroup_id_54e4e22002a54d2_idx       |
+# |          0 | ezidapp_searchidentifier_ownergroup_id_65871830cd29aaf0_idx      |
+# |          0 | ezidapp_searchidentifier_owner_id_263dc1dd7d2fd3ef_idx           |
+# |          0 | ezidapp_searchidentifier_owner_id_52f3896c5fc67016_idx           |
+# |          0 | ezidapp_searchidentifier_publicSearchVisible_6807647c6d8cb52_idx |
+# |          0 | ezidapp_searchidentifier_resourceCreator                         |
+# |          0 | ezidapp_searchidentifier_resourcePublisher                       |
+# |          0 | ezidapp_searchidentifier_resourceTitle                           |
+# |          0 | ezidapp_searchidentifie_publicSearchVisible_117042133b78a88e_idx |
+# |          0 | ezidapp_searchidentifie_publicSearchVisible_2e067bd0a9494a38_idx |
+# |          0 | ezidapp_searchidentifie_publicSearchVisible_47b0a294295f5ef5_idx |
+# +------------+------------------------------------------------------------------+
+#
+# Ordered by sum_time_wait:
+#
+# +------------+------------------------------------------------------------------+
+# | count_star | index_name                                                       |
+# +------------+------------------------------------------------------------------+
+# | 8137471364 | identifier                                                       |
+# | 1470097704 | ezidapp_searchidentifier_oaiVisible_1d291a23fcff2ce2_idx         |
+# |   64647693 | ezidapp_searchidentifie_publicSearchVisible_1e447c57e83c8d5d_idx |
+# |   60195608 | ezidapp_searchidentifie_publicSearchVisible_1932465b0335635c_idx |
+# | 1694234344 | ezidapp_searchidentifie_publicSearchVisible_58de9f6f00b8058e_idx |
+# |   93001201 | ezidapp_searchidentifier_owner_id_59016f4a7ffbcaaa_idx           |
+# |     526415 | NULL                                                             |
+# |    2066432 | PRIMARY                                                          |
+# |   71055879 | ezidapp_searchidentifier_owner_id_60c2c5fffcb40895_idx           |
+# |  211448890 | ezidapp_searchidentifier_5e7b1936                                |
+# |   23410277 | ezidapp_searchidentifier_ownergroup_id_6c5194bcf1d0014e_idx      |
+# |   14274173 | ezidapp_searchidentifier_ownergroup_id_4ad29fb0ede49103_idx      |
+# |   30770472 | ezidapp_searchidentifier_owner_id_47ecdfd54025f1f1_idx           |
+# |   59627193 | ezidapp_searchidentifier_owner_id_54da573427e72c0e_idx           |
+# |   84129679 | ezidapp_searchidentifier_365b2611                                |
+# |   81640063 | ezidapp_searchidentifier_13bc2970                                |
+# |   27213349 | ezidapp_searchidentifier_83a0eb3f                                |
+# |    2549026 | ezidapp_searchidentifier_owner_id_1d05153b51fd9dff_idx           |
+# |   14193439 | ezidapp_searchidentifier_ownergroup_id_6cfbff68ca3e25cb_idx      |
+# |    1600118 | ezidapp_searchidentifier_owner_id_198f8d3796dae4b9_idx           |
+# |    4652160 | ezidapp_searchidentifier_ownergroup_id_68875bac9225d3c9_idx      |
+# |   14880395 | ezidapp_searchidentifier_owner_id_431b22d7016b97df_idx           |
+# |   11497247 | ezidapp_searchidentifier_ownergroup_id_2114f948ed092669_idx      |
+# |   19388568 | ezidapp_searchidentifier_owner_id_3e88a7c1b2b5c693_idx           |
+# |    3779471 | ezidapp_searchidentifier_ownergroup_id_39b7cdc64bc267c3_idx      |
+# |    4298890 | ezidapp_searchidentifier_ownergroup_id_4b76dd7c4564df4f_idx      |
+# |    5411586 | ezidapp_searchidentifier_owner_id_5c11adaf88d856d0_idx           |
+# |    3023677 | ezidapp_searchidentifier_owner_id_5b203a171bdbab38_idx           |
+# |    3001925 | ezidapp_searchidentifier_owner_id_58dfc6401ef0e359_idx           |
+# |    2991637 | ezidapp_searchidentifier_ownergroup_id_4a1baf4823ddab6c_idx      |
+# |     747300 | ezidapp_searchidentifier_ownergroup_id_449f25bec77c57da_idx      |
+# |      86164 | ezidapp_searchidentifier_owner_id_76e131b0c70070a1_idx           |
+# |       4718 | ezidapp_searchidentifie_publicSearchVisible_47396846c619370f_idx |
+# |       5492 | ezidapp_searchidentifier_owner_id_18a46334256a7530_idx           |
+# |      35588 | ezidapp_searchidentifier_ownergroup_id_48b886662536e7fd_idx      |
+# |          4 | ezidapp_searchidentifier_searchableTarget_24d34538786996df_idx   |
+# |          0 | ezidapp_searchidentifie_publicSearchVisible_47b0a294295f5ef5_idx |
+# |          0 | ezidapp_searchidentifier_ownergroup_id_65871830cd29aaf0_idx      |
+# |          0 | ezidapp_searchidentifier_ownergroup_id_1d431d7513ab02ec_idx      |
+# |          0 | ezidapp_searchidentifie_publicSearchVisible_2e067bd0a9494a38_idx |
+# |          0 | ezidapp_searchidentifier_ownergroup_id_54e4e22002a54d2_idx       |
+# |          0 | ezidapp_searchidentifier_keywords                                |
+# |          0 | ezidapp_searchidentifier_publicSearchVisible_6807647c6d8cb52_idx |
+# |          0 | ezidapp_searchidentifier_resourcePublisher                       |
+# |          0 | ezidapp_searchidentifier_ownergroup_id_2388bfe261a735c5_idx      |
+# |          0 | ezidapp_searchidentifie_publicSearchVisible_117042133b78a88e_idx |
+# |          0 | ezidapp_searchidentifier_resourceCreator                         |
+# |          0 | ezidapp_searchidentifier_owner_id_263dc1dd7d2fd3ef_idx           |
+# |          0 | ezidapp_searchidentifier_owner_id_52f3896c5fc67016_idx           |
+# |          0 | ezidapp_searchidentifier_resourceTitle                           |
+# |          0 | ezidapp_searchidentifier_ownergroup_id_3ac1ed25c2bfbb2d_idx      |
+# +------------+------------------------------------------------------------------+
+# 51 rows in set (0.00 sec)
