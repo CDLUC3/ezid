@@ -325,6 +325,28 @@ def _validateNameIdGrouping(suffix, ni, ni_s, ni_s_uri):
     return err
 
 
+def _validateAffiliationIdGrouping(caff, caffId, caffId_s, caffId_s_uri):
+    err={}
+    if caff and not caffId:
+        err['affiliation-affiliationIdentifier'] = _(
+            "An Affiliation Identifier must be filled in if you specify an Affiliation."
+        )
+    if caff and caffId and not caffId_s:
+        err['affiliation-affiliationIdentifierScheme'] = _(
+            "An Affiliation Identifier Scheme must be filled in if you specify an Affiliation Identifier."
+        )
+    if caff and caffId and caffId_s and not caffId_s_uri:
+        err['affiliation-schemeURI'] = _(
+            "An Affiliation Identifier Scheme URI must be filled in if you specify an Affiliation Identifier."
+        )
+    if caffId or caffId_s or caffId_s_uri:
+        if not caff:
+            err['affiliation'] = _(
+                "An Affiliation must be filled in if you specify an Affiliation Identifier / Affiliation Identifier Scheme "
+            )
+    return err
+
+
 def _validate_geolong(n):
     m = re.match(REGEX_GEOPOINT, n)
     if not m or float(n) < -180 or float(n) > 180:
@@ -422,13 +444,13 @@ class NameIdMultBaseFormSet(BaseFormSet):
         form.fields["affiliation"] = forms.CharField(
             required=False, label=_("Affiliation")
         )
-        form.fields["affiliationIdentifier"] = forms.CharField(
+        form.fields["affiliation-affiliationIdentifier"] = forms.CharField(
             required=False, label=_("Affiliation Identifier")
         )
-        form.fields["affiliationIdentifierScheme"] = forms.CharField(
+        form.fields["affiliation-affiliationIdentifierScheme"] = forms.CharField(
             required=False, label=_("Affiliation Identifier Scheme")
         )
-        form.fields["affiliationIdentifierSchemeURI"] = forms.CharField(
+        form.fields["affiliation-schemeURI"] = forms.CharField(
             required=False, label=_("Affiliation Identifier Scheme URI")
         )
         return form
@@ -469,12 +491,20 @@ class CreatorForm(forms.Form):
 
     def clean(self):
         cleaned_data = super(CreatorForm, self).clean()
+        caff = cleaned_data.get("affiliation")
+        caffId = cleaned_data.get("affiliation-affiliationIdentifier")
+        caffId_s = cleaned_data.get("affiliation-affiliationIdentifierScheme")
+        caffId_s_uri = cleaned_data.get("affiliation-schemeURI")
         errs = {}
         for i in range(0, len(self.fields) / 3 - 1):
             ni = cleaned_data.get(NAME_ID[0].format(str(i)))
             ni_s = cleaned_data.get(NAME_ID_SCHEME[0].format(str(i)))
             ni_s_uri = cleaned_data.get(NAME_ID_SCHEME_URI[0].format(str(i)))
             err = _validateNameIdGrouping(i, ni, ni_s, ni_s_uri)
+            if err:
+                errs.update(err.items())
+        if caff or caffId or caffId_s or caffId_s_uri:
+            err = _validateAffiliationIdGrouping(caff, caffId, caffId_s, caffId_s_uri)
             if err:
                 errs.update(err.items())
         if errs:
@@ -642,22 +672,26 @@ class ContribForm(forms.Form):
         cname = cleaned_data.get("contributorName")
         cfname = cleaned_data.get("familyName")
         cgname = cleaned_data.get("givenName")
-        err1, err2 = {}, {}
+        caff = cleaned_data.get("affiliation")
+        caffId = cleaned_data.get("affiliation-affiliationIdentifier")
+        caffId_s = cleaned_data.get("affiliation-affiliationIdentifierScheme")
+        caffId_s_uri = cleaned_data.get("affiliation-schemeURI")
+        err1, err2, err3 = {}, {}, {}
         for i in range(0, len(self.fields) / 3 - 1):
             ni = cleaned_data.get(NAME_ID[0].format(str(i)))
             ni_s = cleaned_data.get(NAME_ID_SCHEME[0].format(str(i)))
             ni_s_uri = cleaned_data.get(NAME_ID_SCHEME_URI[0].format(str(i)))
-            caff = cleaned_data.get("affiliation")
-            caffId = cleaned_data.get("affiliationIdentifier")
-            caffId_s = cleaned_data.get("affiliationIdentifierScheme")
-            caffId_s_uri = cleaned_data.get("affiliationIdentifierSchemeURI")
             """ Use of contributor element requires name and type be populated """
-            if ctype or cname or cfname or cgname or caff or caffId or caffId_s or caffId_s_uri or ni or ni_s or ni_s_uri:
+            if ctype or cname or cfname or cgname or ni or ni_s or ni_s_uri:
                 err1 = _gatherContribErr1(err1, ctype, cname)
             err = _validateNameIdGrouping(i, ni, ni_s, ni_s_uri)
             if err:
                 err2.update(err.items())
-        errs = dict(err1.items() + err2.items())
+        if caff or caffId or caffId_s or caffId_s_uri:
+            err = _validateAffiliationIdGrouping(caff, caffId, caffId_s, caffId_s_uri)
+            if err:
+                err3.update(err.items())
+        errs = dict(err1.items() + err2.items() + err3.items())
         if errs:
             raise ValidationError(errs)
         return cleaned_data
