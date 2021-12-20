@@ -90,7 +90,7 @@ class MigrateBlobsToMetadata:
                 ;
                 """
                 print(f'id > {last_id}')
-                print(q)
+                # print(q)
                 cursor.execute(q, {})
 
                 # cursor.fetchall()
@@ -120,7 +120,7 @@ class MigrateBlobsToMetadata:
                 # del cursor
 
                 cur_ts = time.time()
-                print(f'Batch: {cur_ts - self.prev_ts:.2f}s')
+                print(f'Convert BLOBs to metadata: {self.table_str}: {cur_ts - self.prev_ts:.2f}s')
                 self.prev_ts = cur_ts
 
         print(f'Total {time.time() - self.start_ts:.2f}s')

@@ -5,6 +5,10 @@
 
 use ezid;
 
+set @@autocommit = 0;
+set unique_checks = 0;
+set foreign_key_checks = 0;
+
 show engine innodb status;
 show table status;
 show full processlist;
@@ -12,7 +16,6 @@ select version();
 
 kill 50;
 
-set @@autocommit = 0;
 start transaction;
 rollback;
 commit;
@@ -41,12 +44,152 @@ from ezidapp_storeidentifier es;
 # +-------------------------------------+----------------+
 # 10 rows in set (0.09 sec)
 
+
+#############
+
+# Check for invalid foreign keys.
+
+DROP PROCEDURE IF EXISTS ANALYZE_INVALID_FOREIGN_KEYS;
+DELIMITER $$
+CREATE
+    PROCEDURE `ANALYZE_INVALID_FOREIGN_KEYS`(
+        checked_database_name VARCHAR(64),
+        checked_table_name VARCHAR(64),
+        temporary_result_table ENUM('Y', 'N'))
+
+    LANGUAGE SQL
+    NOT DETERMINISTIC
+    READS SQL DATA
+
+    BEGIN
+        DECLARE TABLE_SCHEMA_VAR VARCHAR(64);
+        DECLARE TABLE_NAME_VAR VARCHAR(64);
+        DECLARE COLUMN_NAME_VAR VARCHAR(64);
+        DECLARE CONSTRAINT_NAME_VAR VARCHAR(64);
+        DECLARE REFERENCED_TABLE_SCHEMA_VAR VARCHAR(64);
+        DECLARE REFERENCED_TABLE_NAME_VAR VARCHAR(64);
+        DECLARE REFERENCED_COLUMN_NAME_VAR VARCHAR(64);
+        DECLARE KEYS_SQL_VAR VARCHAR(1024);
+
+        DECLARE done INT DEFAULT 0;
+
+        DECLARE foreign_key_cursor CURSOR FOR
+            SELECT
+                `TABLE_SCHEMA`,
+                `TABLE_NAME`,
+                `COLUMN_NAME`,
+                `CONSTRAINT_NAME`,
+                `REFERENCED_TABLE_SCHEMA`,
+                `REFERENCED_TABLE_NAME`,
+                `REFERENCED_COLUMN_NAME`
+            FROM
+                information_schema.KEY_COLUMN_USAGE
+            WHERE
+                `CONSTRAINT_SCHEMA` LIKE checked_database_name AND
+                `TABLE_NAME` LIKE checked_table_name AND
+                `REFERENCED_TABLE_SCHEMA` IS NOT NULL;
+
+        DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+        IF temporary_result_table = 'N' THEN
+            DROP TEMPORARY TABLE IF EXISTS INVALID_FOREIGN_KEYS;
+            DROP TABLE IF EXISTS INVALID_FOREIGN_KEYS;
+
+            CREATE TABLE INVALID_FOREIGN_KEYS(
+                `TABLE_SCHEMA` VARCHAR(64),
+                `TABLE_NAME` VARCHAR(64),
+                `COLUMN_NAME` VARCHAR(64),
+                `CONSTRAINT_NAME` VARCHAR(64),
+                `REFERENCED_TABLE_SCHEMA` VARCHAR(64),
+                `REFERENCED_TABLE_NAME` VARCHAR(64),
+                `REFERENCED_COLUMN_NAME` VARCHAR(64),
+                `INVALID_KEY_COUNT` INT,
+                `INVALID_KEY_SQL` VARCHAR(1024)
+            );
+        ELSEIF temporary_result_table = 'Y' THEN
+            DROP TEMPORARY TABLE IF EXISTS INVALID_FOREIGN_KEYS;
+            DROP TABLE IF EXISTS INVALID_FOREIGN_KEYS;
+
+            CREATE TEMPORARY TABLE INVALID_FOREIGN_KEYS(
+                `TABLE_SCHEMA` VARCHAR(64),
+                `TABLE_NAME` VARCHAR(64),
+                `COLUMN_NAME` VARCHAR(64),
+                `CONSTRAINT_NAME` VARCHAR(64),
+                `REFERENCED_TABLE_SCHEMA` VARCHAR(64),
+                `REFERENCED_TABLE_NAME` VARCHAR(64),
+                `REFERENCED_COLUMN_NAME` VARCHAR(64),
+                `INVALID_KEY_COUNT` INT,
+                `INVALID_KEY_SQL` VARCHAR(1024)
+            );
+        END IF;
+
+
+        OPEN foreign_key_cursor;
+        foreign_key_cursor_loop: LOOP
+            FETCH foreign_key_cursor INTO
+            TABLE_SCHEMA_VAR,
+            TABLE_NAME_VAR,
+            COLUMN_NAME_VAR,
+            CONSTRAINT_NAME_VAR,
+            REFERENCED_TABLE_SCHEMA_VAR,
+            REFERENCED_TABLE_NAME_VAR,
+            REFERENCED_COLUMN_NAME_VAR;
+            IF done THEN
+                LEAVE foreign_key_cursor_loop;
+            END IF;
+
+
+            SET @from_part = CONCAT('FROM ', '`', TABLE_SCHEMA_VAR, '`.`', TABLE_NAME_VAR, '`', ' AS REFERRING ',
+                 'LEFT JOIN `', REFERENCED_TABLE_SCHEMA_VAR, '`.`', REFERENCED_TABLE_NAME_VAR, '`', ' AS REFERRED ',
+                 'ON (REFERRING', '.`', COLUMN_NAME_VAR, '`', ' = ', 'REFERRED', '.`', REFERENCED_COLUMN_NAME_VAR, '`', ') ',
+                 'WHERE REFERRING', '.`', COLUMN_NAME_VAR, '`', ' IS NOT NULL ',
+                 'AND REFERRED', '.`', REFERENCED_COLUMN_NAME_VAR, '`', ' IS NULL');
+            SET @full_query = CONCAT('SELECT COUNT(*) ', @from_part, ' INTO @invalid_key_count;');
+            PREPARE stmt FROM @full_query;
+
+            EXECUTE stmt;
+            IF @invalid_key_count > 0 THEN
+                INSERT INTO
+                    INVALID_FOREIGN_KEYS
+                SET
+                    `TABLE_SCHEMA` = TABLE_SCHEMA_VAR,
+                    `TABLE_NAME` = TABLE_NAME_VAR,
+                    `COLUMN_NAME` = COLUMN_NAME_VAR,
+                    `CONSTRAINT_NAME` = CONSTRAINT_NAME_VAR,
+                    `REFERENCED_TABLE_SCHEMA` = REFERENCED_TABLE_SCHEMA_VAR,
+                    `REFERENCED_TABLE_NAME` = REFERENCED_TABLE_NAME_VAR,
+                    `REFERENCED_COLUMN_NAME` = REFERENCED_COLUMN_NAME_VAR,
+                    `INVALID_KEY_COUNT` = @invalid_key_count,
+                    `INVALID_KEY_SQL` = CONCAT('SELECT ',
+                        'REFERRING.', '`', COLUMN_NAME_VAR, '` ', 'AS "Invalid: ', COLUMN_NAME_VAR, '", ',
+                        'REFERRING.* ',
+                        @from_part, ';');
+            END IF;
+            DEALLOCATE PREPARE stmt;
+
+        END LOOP foreign_key_cursor_loop;
+    END$$
+
+DELIMITER ;
+
+CALL ANALYZE_INVALID_FOREIGN_KEYS('%', '%', 'Y');
+DROP PROCEDURE IF EXISTS ANALYZE_INVALID_FOREIGN_KEYS;
+
+SELECT * FROM INVALID_FOREIGN_KEYS;
+
+
+######
+
+
 select
     ( select count(*) from ezidapp_searchidentifier) as search,
     ( select count(*) from ezidapp_storeidentifier) as store,
-    ( select count(*) from ezidapp_searchidentifier es) as 'all',
-    ( select count(*) from ezidapp_searchidentifier es where metadata is not null) as metadata_not_null
+    ( select count(*) from ezidapp_searchidentifier where metadata is not null) as metadata_not_null
 ;
+
+select publicsearchvisible, count(*) from ezidapp_searchidentifier es group by es.publicsearchvisible;
+
+show create table ezidapp_searchidentifier;
 
 # List all constraints
 select constraint_name,
@@ -86,17 +229,7 @@ where
 ;
 
 
-
-
-alter table ezidapp_searchidentifier
-drop key ezidapp_searchidentifier_keywords;
-alter table ezidapp_searchidentifier
-drop key ezidapp_searchidentifier_resourcecreator;
-alter table ezidapp_searchidentifier
-drop key ezidapp_searchidentifier_resourcepublisher;
-alter table ezidapp_searchidentifier
-drop key ezidapp_searchidentifier_resourcetitle;
-
+# Test the keywords fulltext index
 select match (keywords) against ('water') from ezidapp_searchidentifier es group by es.keywords with rollup ;
 
 select keywords from ezidapp_searchidentifier limit 100;
@@ -258,27 +391,6 @@ select
     (select count(*) from ezidapp_searchidentifier si where si.datacenter_id not in (select id from ezidapp_searchdatacenter )) as symbol
 ;
 
-update ezidapp_searchidentifier si
-    join ezidapp_searchuser searchuser on searchuser.id = si.owner_id
-    join ezidapp_storeuser storeuser on storeuser.pid = searchuser.pid
-#     left join ezidapp_searchgroup searchgroup on searchgroup.id = si.ownergroup_id
-#     left join ezidapp_storegroup storegroup on storegroup.pid = searchgroup.pid
-#     left join ezidapp_searchprofile searchprofile on searchprofile.id = si.profile_id
-#     left join ezidapp_storeprofile storeprofile on storeprofile.label = searchprofile.label
-#     left join ezidapp_searchdatacenter searchdatacenter on searchdatacenter.id = si.datacenter_id
-#     left join ezidapp_storedatacenter storedatacenter on storedatacenter.symbol = searchdatacenter.symbol
-set si.owner_id      = storeuser.id
-#     si.ownergroup_id = storegroup.id,
-#     si.profile_id    = storeprofile.id,
-#     si.datacenter_id = storedatacenter.id
-where true
-;
-
-insert into ezidapp_storedatacenter(symbol, name)
-select a.symbol, a.symbol from ezidapp_searchdatacenter a
-where a.symbol not in (select symbol from ezidapp_storedatacenter)
-;
-
 # Check search-to-store FKs
 # All counts should be 0 AFTER updating to store.
 select
@@ -287,6 +399,23 @@ select
     (select count(*) from ezidapp_searchidentifier si where si.profile_id not in (select id from ezidapp_storeprofile )) as label,
     (select count(*) from ezidapp_searchidentifier si where si.datacenter_id not in (select id from ezidapp_storedatacenter )) as symbol
 ;
+
+# update ezidapp_searchidentifier si
+#     join ezidapp_searchuser searchuser on searchuser.id = si.owner_id
+#     join ezidapp_storeuser storeuser on storeuser.pid = searchuser.pid
+#     left join ezidapp_searchgroup searchgroup on searchgroup.id = si.ownergroup_id
+#     left join ezidapp_storegroup storegroup on storegroup.pid = searchgroup.pid
+#     left join ezidapp_searchprofile searchprofile on searchprofile.id = si.profile_id
+#     left join ezidapp_storeprofile storeprofile on storeprofile.label = searchprofile.label
+#     left join ezidapp_searchdatacenter searchdatacenter on searchdatacenter.id = si.datacenter_id
+#     left join ezidapp_storedatacenter storedatacenter on storedatacenter.symbol = searchdatacenter.symbol
+# set si.owner_id      = storeuser.id
+#     si.ownergroup_id = storegroup.id,
+#     si.profile_id    = storeprofile.id,
+#     si.datacenter_id = storedatacenter.id
+# where true
+# ;
+
 
 # Set up a fresh ezid_test_db
 

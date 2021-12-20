@@ -12,7 +12,6 @@
 
 use ezid;
 
-set @@autocommit = 0;
 set unique_checks = 0;
 set foreign_key_checks = 0;
 
@@ -82,17 +81,47 @@ drop key ezidapp_searchidentifier_resourcetitle
 
 #@#
 
+# Search tables are generally subsets of the corresponding store tables. The datacenter tables are an exception, so we
+# must copy a few entries over search to store.
+insert into ezidapp_storedatacenter(symbol, name)
+select a.symbol, a.symbol from ezidapp_searchdatacenter a
+where a.symbol not in (select symbol from ezidapp_storedatacenter)
+;
+
+#@#
+
+# Add JSON metadata columns
+# Time on stg-py3 host and DB with provisioned IO, searchidentifier: 20 min
+alter table `ezidapp_searchidentifier`
+add column `metadata` json null check (json_valid(`metadata`));
+
+# Time on stg-py3 host and DB with provisioned IO, storeidentifier: 12 min
+alter table `ezidapp_storeidentifier`
+add column `metadata` json null check (json_valid(`metadata`));
+
+#@#
+
+# Decode blobs to JSON and write them to the new metadata columns.
+
+# searchidentifier: ~20 min
+# ./db-migrate-blobs-to-metadata.py search
+
+# storeidentifier: ~10 min
+# ./db-migrate-blobs-to-metadata.py store
+
+#@#
+
 # Translate from search to store FKs in ezidapp_searchidentifier
 # Time on stg-py3 host and DB: 17 min
 # Time on stg-py3 host and dev DB: 24 min (probably starting with full level of burst tokens)
 
--- Run: db-update-fk.py
+# ./db-update-fk.py
 
 #@#
 
-# Drop the 'stub' tables that exist only to support ezidapp_searchidentifier when located in another DB.
-# These tables contain copies of some of the columns in the corresponding store* tables. The only search*
-# table that remains afterwards is ezidapp_searchidentifier.
+# Drop the 'stub' tables that exist only to support ezidapp_searchidentifier when located in another DB. These tables
+# contain copies of some of the columns in the corresponding store* tables. The only search* table that remains
+# afterwards is ezidapp_searchidentifier.
 drop table ezidapp_searchdatacenter;
 drop table ezidapp_searchgroup;
 drop table ezidapp_searchprofile;
@@ -120,25 +149,6 @@ rename table ezidapp_storeuser_shoulders to ezidapp_user_shoulders;
 # ;
 
 #@#
-
-# Add JSON metadata columns
-# Time on stg-py3 host and DB with provisioned IO: 20 min
-alter table `ezidapp_searchidentifier`
-add column `metadata` json null check (json_valid(`metadata`));
-
-# Time on stg-py3 host and DB with provisioned IO: 12 min
-alter table `ezidapp_identifier`
-add column `metadata` json null check (json_valid(`metadata`));
-
-#@#
-
-# Decode blobs to JSON and write them to the new metadata columns.
-
--- Run: db-migrate-blobs-to-metadata.py
-
-#@#
-
-# This is the final step to run before starting EZID.
 
 # Add async queues
 
@@ -221,19 +231,18 @@ create table ezidapp_downloadqueue (
     charset = utf8mb4
 ;
 
-# Crate fulltext indexes (must be done one at a time)
-# These are required by EZID
-select now();
-alter table ezidapp_searchidentifier add fulltext ezidapp_searchidentifier_keywords(keywords);
-select now();
-alter table ezidapp_searchidentifier add fulltext ezidapp_searchidentifier_resourcecreator(resourcecreator);
-select now();
-alter table ezidapp_searchidentifier add fulltext ezidapp_searchidentifier_resourcepublisher(resourcepublisher);
-select now();
-alter table ezidapp_searchidentifier add fulltext ezidapp_searchidentifier_resourcetitle(resourcetitle);
-select now();
+#@#
 
-# 10 min
+# Crate fulltext indexes (must be done one at a time). 30 min?
+# EZID will not run without these indexes.
+# This is the final step to run before starting EZID.
+
+alter table ezidapp_searchidentifier add fulltext ezidapp_searchidentifier_keywords(keywords);
+alter table ezidapp_searchidentifier add fulltext ezidapp_searchidentifier_resourcecreator(resourcecreator);
+alter table ezidapp_searchidentifier add fulltext ezidapp_searchidentifier_resourcepublisher(resourcepublisher);
+alter table ezidapp_searchidentifier add fulltext ezidapp_searchidentifier_resourcetitle(resourcetitle);
+
+# Create foreign key constraints. 10 min
 alter table ezidapp_searchidentifier
 add constraint `ezidapp_searc_owner_id_17d8ce4cfb6b0401_fk_ezidapp_searchuser_id` foreign key (`owner_id`) references `ezidapp_storeuser` (`id`),
 add constraint `ezidapp_ownergroup_id_69f5065adf48f369_fk_ezidapp_searchgroup_id` foreign key (`ownergroup_id`) references `ezidapp_storegroup` (`id`),
@@ -241,12 +250,7 @@ add constraint `ezidapp__profile_id_112e6b8634f63b63_fk_ezidapp_searchprofile_id
 add constraint `ez_datacenter_id_2c99a133444936c8_fk_ezidapp_searchdatacenter_id` foreign key (`datacenter_id`) references `ezidapp_storedatacenter` (`id`)
 ;
 
-# alter table ezidapp_searchidentifier add fulltext key `ezidapp_searchidentifier_resourceTitle`(`resourceTitle`) ;
-# alter table ezidapp_searchidentifier add fulltext key `ezidapp_searchidentifier_resourceCreator`(`resourceCreator`) ;
-# alter table ezidapp_searchidentifier add fulltext key `ezidapp_searchidentifier_resourcePublisher`(`resourcePublisher`) ;
-# alter table ezidapp_searchidentifier add fulltext key `ezidapp_searchidentifier_keywords`(`keywords`) ;
-
-# Add most used keys, using a batch query
+# Add the most used keys, using a batch query
 
 # 1694234344 | ezidapp_searchidentifie_publicSearchVisible_58de9f6f00b8058e_idx
 # 1470014804 | ezidapp_searchidentifier_oaiVisible_1d291a23fcff2ce2_idx
@@ -259,9 +263,8 @@ add key `ezidapp_searchidentifier_5e7b1936`(`owner_id`)
 
 #@#
 
-# This step can run after EZID has been started.
-
 # Add less used keys one by one, in order of importance.
+# This step can run after EZID has been started.
 
 # 93001201 | ezidapp_searchidentifier_owner_id_59016f4a7ffbcaaa_idx
 alter table ezidapp_searchidentifier
@@ -352,16 +355,16 @@ alter table ezidapp_searchidentifier
 add key `ezidapp_searchidentifie_publicSearchVisible_47396846c619370f_idx`(`publicSearchVisible`, `searchableResourceType`);
 # +------------+------------------------------------------------------------------+
 
-# Unused keys
-# add key `ezidapp_searchidentifier_owner_id_52f3896c5fc67016_idx`(`owner_id`, `isTest`),
-# add key `ezidapp_searchidentifier_owner_id_263dc1dd7d2fd3ef_idx`(`owner_id`, `resourcePublisherPrefix`),
-# add key `ezidapp_searchidentifier_ownergroup_id_1d431d7513ab02ec_idx`(`ownergroup_id`, `status`),
-# add key `ezidapp_searchidentifier_ownergroup_id_54e4e22002a54d2_idx`(`ownergroup_id`, `searchableResourceType`),
-# add key `ezidapp_searchidentifier_ownergroup_id_65871830cd29aaf0_idx`(`ownergroup_id`, `hasMetadata`),
-# add key `ezidapp_searchidentifier_ownergroup_id_3ac1ed25c2bfbb2d_idx`(`ownergroup_id`, `resourceCreatorPrefix`),
-# add key `ezidapp_searchidentifier_ownergroup_id_2388bfe261a735c5_idx`(`ownergroup_id`, `resourcePublisherPrefix`),
-# add key `ezidapp_searchidentifie_publicSearchVisible_47b0a294295f5ef5_idx`(`publicSearchVisible`, `updateTime`),
-# add key `ezidapp_searchidentifie_publicSearchVisible_117042133b78a88e_idx`(`publicSearchVisible`, `resourceCreatorPrefix`),
-# add key `ezidapp_searchidentifier_publicSearchVisible_6807647c6d8cb52_idx`(`publicSearchVisible`, `resourceTitlePrefix`),
-# add key `ezidapp_searchidentifie_publicSearchVisible_2e067bd0a9494a38_idx`(`publicSearchVisible`, `resourcePublisherPrefix`),
-# add key `ezidapp_searchidentifier_searchableTarget_24d34538786996df_idx`(`searchableTarget`),
+-- Unused keys
+-- add key `ezidapp_searchidentifier_owner_id_52f3896c5fc67016_idx`(`owner_id`, `isTest`),
+-- add key `ezidapp_searchidentifier_owner_id_263dc1dd7d2fd3ef_idx`(`owner_id`, `resourcePublisherPrefix`),
+-- add key `ezidapp_searchidentifier_ownergroup_id_1d431d7513ab02ec_idx`(`ownergroup_id`, `status`),
+-- add key `ezidapp_searchidentifier_ownergroup_id_54e4e22002a54d2_idx`(`ownergroup_id`, `searchableResourceType`),
+-- add key `ezidapp_searchidentifier_ownergroup_id_65871830cd29aaf0_idx`(`ownergroup_id`, `hasMetadata`),
+-- add key `ezidapp_searchidentifier_ownergroup_id_3ac1ed25c2bfbb2d_idx`(`ownergroup_id`, `resourceCreatorPrefix`),
+-- add key `ezidapp_searchidentifier_ownergroup_id_2388bfe261a735c5_idx`(`ownergroup_id`, `resourcePublisherPrefix`),
+-- add key `ezidapp_searchidentifie_publicSearchVisible_47b0a294295f5ef5_idx`(`publicSearchVisible`, `updateTime`),
+-- add key `ezidapp_searchidentifie_publicSearchVisible_117042133b78a88e_idx`(`publicSearchVisible`, `resourceCreatorPrefix`),
+-- add key `ezidapp_searchidentifier_publicSearchVisible_6807647c6d8cb52_idx`(`publicSearchVisible`, `resourceTitlePrefix`),
+-- add key `ezidapp_searchidentifie_publicSearchVisible_2e067bd0a9494a38_idx`(`publicSearchVisible`, `resourcePublisherPrefix`),
+-- add key `ezidapp_searchidentifier_searchableTarget_24d34538786996df_idx`(`searchableTarget`),
