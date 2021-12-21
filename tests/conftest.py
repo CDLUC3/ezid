@@ -259,7 +259,7 @@ def django_db_setup(django_db_keepdb):
     without having to create it first.
 
     The database is populated from a fixture with a `./manage.py loaddata` command as
-    required. On Travis, this is done in `./.travis.yml`.
+    required. On Actions, this is done in `./.github/main.yml`.
 
     Changes made to the database by the tests are done in transactions that are rolled
     back after each test. However, tests done manually in the UI will permanently change
@@ -274,18 +274,7 @@ def django_db_setup(django_db_keepdb):
             "ENGINE": "django.db.backends.mysql",
             "HOST": "localhost",
             "NAME": "ezid_test_db",
-            "USER": "travis",
-            "PASSWORD": "",
-            "OPTIONS": {"charset": "utf8mb4"},
-            'DATABASE_OPTIONS': {
-                'unix_socket': '/tmp/mysql.sock',
-            },
-        },
-        "search": {
-            "ENGINE": "django.db.backends.mysql",
-            "HOST": "localhost",
-            "NAME": "ezid_test_db",
-            "USER": "travis",
+            "USER": "ezid_test_user",
             "PASSWORD": "",
             "OPTIONS": {"charset": "utf8mb4"},
             'DATABASE_OPTIONS': {

@@ -54,19 +54,20 @@ jobs:
           # '
 
 
-      - name: Prepare fixtures
+      - name: Prepare filesystem
         run: |
           mkdir -p ../download/public ../logs
+
+      - name: Prepare migrations and static
+        run: |
           ./manage.py makemigrations --merge --no-input
           ./manage.py migrate
           ./manage.py collectstatic --no-input
 
-          ./manage.py loaddata --ignorenonexistent db-fixture
-          #./manage.py loaddata --ignorenonexistent search-init
-          #./manage.py loaddata --ignorenonexistent combined-limited
-
-          #./manage.py diag-update-admin
-
+      - name: Prepare fixtures
+        run: |
+          ./manage.py loaddata --ignorenonexistent db
+          ./manage.py diag-update-admin
 
 #      - name: Run tests
 #        env:
