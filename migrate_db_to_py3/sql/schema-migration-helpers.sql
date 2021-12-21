@@ -47,6 +47,20 @@ from ezidapp_storeidentifier es;
 
 #############
 
+create table ezidapp_refidentifier like ezidapp_identifier;
+
+alter table ezidapp_refidentifier
+change column identifier identifier varchar(255)
+character set ascii collate ascii_bin not null
+;
+
+
+#####
+
+
+
+
+
 # Check for invalid foreign keys.
 
 DROP PROCEDURE IF EXISTS ANALYZE_INVALID_FOREIGN_KEYS;

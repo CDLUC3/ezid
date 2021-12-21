@@ -116,14 +116,15 @@ class IdentifierBase(django.db.models.Model):
         'ezidapp.Datacenter',
         blank=True,
         null=True,
-        default='',
+        default=None,
         on_delete=django.db.models.PROTECT,
     )
 
     profile = django.db.models.ForeignKey(
         'ezidapp.Profile',
         blank=True,
-        default='',
+        null=True,
+        default=None,
         on_delete=django.db.models.PROTECT,
     )
 
@@ -273,9 +274,9 @@ class IdentifierBase(django.db.models.Model):
 
     owner = django.db.models.ForeignKey(
         'ezidapp.User',
-        blank=True,
-        null=True,
-        default='',
+        # blank=True,
+        # null=True,
+        # default='',
         on_delete=django.db.models.PROTECT,
     )
 
@@ -283,20 +284,24 @@ class IdentifierBase(django.db.models.Model):
         'ezidapp.Group',
         blank=True,
         null=True,
-        default='',
+        default=None,
         on_delete=django.db.models.PROTECT,
     )
 
     # The time the identifier was created as a Unix timestamp. If not
     # specified, the current time is used.
     createTime = django.db.models.IntegerField(
-        blank=True, default="", validators=[django.core.validators.MinValueValidator(0)]
+        blank=True,
+        default="",
+        validators=[django.core.validators.MinValueValidator(0)],
     )
 
     # The time the identifier was last updated as a Unix timestamp. If
     # not specified, the current time is used.
     updateTime = django.db.models.IntegerField(
-        blank=True, default="", validators=[django.core.validators.MinValueValidator(0)]
+        blank=True,
+        default="",
+        validators=[django.core.validators.MinValueValidator(0)],
     )
 
     RESERVED = "R"
@@ -491,7 +496,10 @@ class IdentifierBase(django.db.models.Model):
     USER = "U"
     GROUP = "G"
     agentRole = django.db.models.CharField(
-        max_length=1, blank=True, choices=[(USER, "user"), (GROUP, "group")], default=""
+        max_length=1,
+        blank=True,
+        choices=[(USER, "user"), (GROUP, "group")],
+        default="",
     )
     agentRoleDisplayToCode = {"user": USER, "group": GROUP}
 
@@ -1018,7 +1026,10 @@ class SearchIdentifier(IdentifierBase):
     # Computed value.  To support searching over target URLs (which are
     # too long to be fully indexed), this field is the last 255
     # characters of the target URL in reverse order.
-    searchableTarget = django.db.models.CharField(max_length=MAX_TARGET_LENGTH, editable=False)
+    searchableTarget = django.db.models.CharField(
+        max_length=MAX_TARGET_LENGTH,
+        editable=False,
+    )
 
     # Citation metadata follows.  Which is to say, the following
     # metadata refers to the resource identified by the identifier, not
@@ -1045,11 +1056,17 @@ class SearchIdentifier(IdentifierBase):
 
     # The year portion of resourcePublicationDate, as a numeric, if one
     # could be extracted; otherwise, None.
-    searchablePublicationYear = django.db.models.IntegerField(blank=True, null=True, editable=False)
+    searchablePublicationYear = django.db.models.IntegerField(
+        blank=True,
+        null=True,
+        editable=False,
+    )
 
     # Computed value: the resource's type, if available, as mapped from
     # the identifier's preferred metadata profile; otherwise, empty.
-    resourceType = django.db.models.TextField(editable=False)
+    resourceType = django.db.models.TextField(
+        editable=False,
+    )
 
     # The general resource type stored as a single-character mnemonic
     # code, if one could be extracted from resourceType; otherwise,
@@ -1073,11 +1090,16 @@ class SearchIdentifier(IdentifierBase):
 
     indexedPrefixLength = 50
     resourceCreatorPrefix = django.db.models.CharField(
-        max_length=indexedPrefixLength, editable=False
+        max_length=indexedPrefixLength,
+        editable=False,
     )
-    resourceTitlePrefix = django.db.models.CharField(max_length=indexedPrefixLength, editable=False)
+    resourceTitlePrefix = django.db.models.CharField(
+        max_length=indexedPrefixLength,
+        editable=False,
+    )
     resourcePublisherPrefix = django.db.models.CharField(
-        max_length=indexedPrefixLength, editable=False
+        max_length=indexedPrefixLength,
+        editable=False,
     )
 
     # Computed value: True if resourceTitle and resourcePublicationDate

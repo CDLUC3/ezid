@@ -74,6 +74,7 @@ call trim_identifier();
 select count(*) from ezidapp_identifier;
 
 # Limit the linker checker to contain state info only for the remaining identifiers.
+# 30 min
 
 drop procedure if exists trim_linkchecker;
 
