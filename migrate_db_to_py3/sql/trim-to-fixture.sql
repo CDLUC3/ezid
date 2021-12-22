@@ -7,16 +7,7 @@
 #
 # The large tables in the DB are trimmed down by randomly removing all but 0.1% of the rows.
 #
-# To create the DB fixture:
-#
-# 1) Migrate the DB to EZID Py 3, but skip the final step, which adds indexes back and makes it
-#    very slow to delete rows.
-# 2) Run the queries in this file.
-# 3) ./manage.py dumpdata --exclude auth.permission --exclude contenttypes > ezidapp/fixtures/db.json
-# 4) xz ezidapp/fixtures/db.json
-#
-# Note: Django automatically searches for compressed fixtures, so `loaddata db` will find and
-# transparently decompress `db.json.xz`.
+# See README.md for how to use this file.
 
 # Run query in small batches to prevent transactions spilling to disk and slowing things down.
 # http://mysql.rjweb.org/doc.php/deletebig
@@ -166,6 +157,12 @@ organizationUrl = '',
 organizationStreetAddress = '',
 notes = ''
 ;
+
+
+
+select * from ezidapp_realm;
+update ezidapp_realm set name = 'CDL' where id = 1;
+
 
 ##############################################
 
