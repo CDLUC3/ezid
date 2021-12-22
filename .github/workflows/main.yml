@@ -73,10 +73,10 @@ jobs:
           ./manage.py loaddata db
           #./manage.py diag-update-admin
 
-#      - name: Run tests
-#        env:
-#          PYTHONPATH: ${{ github.workspace }}
-#        run: |
-#          pytest --maxfail 10
-#
-##        - pip install -e .
+      - name: Run tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          pytest --maxfail 10
+
+#        - pip install -e .
