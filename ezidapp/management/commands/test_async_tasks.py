@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
-"""Test the path from an create/update/delete operation coming in from the API, through to tasks
-queued for the async processes, to final push of operation to N2T, Crossref and DataCite.
-"""
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
+
+"""Test the path from an create/update/delete operation coming in from the API, through
+to tasks queued for the async processes, to final push of operation to N2T, Crossref and
+DataCite.
+"""
 
 import ezidapp.models.util
 import argparse

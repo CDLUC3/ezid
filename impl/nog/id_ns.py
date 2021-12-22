@@ -1,7 +1,9 @@
-"""A class that holds the component strings of an ARK or DOI and provides
-related functions."""
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
+
+"""A class that holds the component strings of an ARK or DOI and provides
+related functions.
+"""
 
 import collections
 import logging

@@ -3,21 +3,20 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-# Creates a link checker summary report in the form of a CSV file.
-# The report lists broken target URL counts broken down by identifier
-# owner and by when the target URL was first detected broken.  The
-# report is either emailed, written to a named file, or written to
-# standard output.
-#
-# Usage: link-check-summary-report [options]
-#
-# Options:
-#   -a EMAIL  email report to address (may be repeated)
-#   -o FILE   output to file
-#   -r REALM  restrict to realm
-#
-# Greg Janee <gjanee@ucop.edu>
-# May 2017
+"""Creates a link checker summary report in the form of a CSV file
+
+The report lists broken target URL counts broken down by identifier
+owner and by when the target URL was first detected broken.  The
+report is either emailed, written to a named file, or written to
+standard output.
+
+Usage: link-check-summary-report [options]
+
+Options:
+  -a EMAIL  email report to address (may be repeated)
+  -o FILE   output to file
+  -r REALM  restrict to realm
+"""
 
 import csv
 import optparse

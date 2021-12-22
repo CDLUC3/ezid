@@ -3,39 +3,35 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-# Compares EZID DOI metadata (as obtained from an EZID raw dump) with
-# DataCite <https://datacite.org/> DOI metadata (as obtained from a
-# DataCite search system query) and Handle System
-# <https://dx.doi.org/> target URLs.  Only target URLs for
-# non-reserved, non-test identifiers are compared; and only metadata
-# for public, exported, non-test identifiers is compared.
-#
-# Usage: diff-ezid-datacite [options] dumpfile queryfile
-#
-# Options:
-#   -p   write progress records to stderr
-#   -s   skip target URL comparisons
-#   -r N restart from the Nth identifier (useful if interrupted)
-#
-# 'dumpfile' should be a raw EZID dump.  If the filename ends with
-# ".gz", the dump is assumed to be gzip-compressed.
-#
-# 'queryfile' should be a CSV file obtained from running
-# 'dump-datacite'.
-#
-# The EZID dump and DataCite query must match in terms of scope.  If
-# the dump represents all identifiers in EZID, then the query should
-# retrieve identifiers for all allocators and datacenters in DataCite
-# that are under EZID's control.
-#
-# This script requires several EZID modules.  The PYTHONPATH
-# environment variable must include the .../SITE_ROOT/PROJECT_ROOT
-# directory; if it doesn't, we attempt to dynamically locate it and
-# add it.  The DJANGO_SETTINGS_MODULE environment variable must be
-# set.
-#
-# Greg Janee <gjanee@ucop.edu>
-# November 2014
+"""Compares EZID DOI metadata (as obtained from an EZID raw dump) with DataCite
+<https://datacite.org/> DOI metadata (as obtained from a DataCite search system query)
+and Handle System <https://dx.doi.org/> target URLs.
+
+Only target URLs for non-reserved, non-test identifiers are compared; and only metadata
+for public, exported, non-test identifiers is compared.
+
+Usage: diff-ezid-datacite [options] dumpfile queryfile
+
+Options:
+
+  -p   write progress records to stderr
+  -s   skip target URL comparisons
+  -r N restart from the Nth identifier (useful if interrupted)
+
+'dumpfile' should be a raw EZID dump.  If the filename ends with ".gz", the dump is
+assumed to be gzip-compressed.
+
+'queryfile' should be a CSV file obtained from running 'dump-datacite'.
+
+The EZID dump and DataCite query must match in terms of scope.  If the dump represents
+all identifiers in EZID, then the query should retrieve identifiers for all allocators
+and datacenters in DataCite that are under EZID's control.
+
+This script requires several EZID modules.  The PYTHONPATH environment variable must
+include the .../SITE_ROOT/PROJECT_ROOT directory; if it doesn't, we attempt to
+dynamically locate it and add it.  The DJANGO_SETTINGS_MODULE environment variable must
+be set.
+"""
 
 import base64
 import gzip

@@ -1,5 +1,8 @@
 #!/usr/bin/env python2
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 """N2T EggNog compatible minter for EZID
 
 Terminology:
@@ -42,10 +45,6 @@ BerkeleyDB keys (EZID names / N2T names):
 - counter_list: Counter top/value pairs, cN/top and cN/value, where N is a value from 0
   to max_combined_count / max_per_counter.
 """
-
-
-#  Copyright©2021, Regents of the University of California
-#  http://creativecommons.org/licenses/BSD
 
 import logging
 import re

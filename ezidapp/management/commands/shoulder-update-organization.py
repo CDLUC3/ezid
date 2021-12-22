@@ -1,6 +1,8 @@
-"""Update the name of the organization for an existing ARK or DOI shoulder."""
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
+
+"""Update the name of the organization for an existing ARK or DOI shoulder
+"""
 
 import argparse
 import logging

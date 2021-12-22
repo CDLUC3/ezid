@@ -3,10 +3,9 @@
 
 """Database model for shoulders in the store database
 
-Upon first request this module syncs shoulders and datacenters in
-the store database against counterparts defined in an external
-shoulder file, adding, modifying, and deleting as necessary.
-Shoulders and datacenters are also loaded into in-memory caches.
+Upon first request this module syncs shoulders and datacenters in the store database
+against counterparts defined in an external shoulder file, adding, modifying, and
+deleting as necessary. Shoulders and datacenters are also loaded into in-memory caches.
 """
 
 

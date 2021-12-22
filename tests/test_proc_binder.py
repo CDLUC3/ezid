@@ -1,7 +1,7 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-"""Test the shoulder-create-ark management command.
+"""Test the shoulder-create-ark management command
 """
 
 import logging

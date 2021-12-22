@@ -3,129 +3,116 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-# The 'dump-store', 'dump-binder', 'select', and 'project' scripts
-# form a dump file query system.  The general usage is:
-#
-#    dump-* | select constraint... | project fields...
-#
-# This script reads a dump file (normal or raw) from standard input,
-# applies a constraint expression to each record, and writes the
-# successful records to standard output.  The input may be
-# gzip-compressed, but the output is never compressed.
-#
-# Usage: select [options] constraint...
-#
-# Options:
-#   -m IDMAP      convert agent identifiers to local names using IDMAP
-#   -z            gunzip the input
-#
-# The -m option is useful when reading records in which agent
-# identifiers have *not* been converted; the specified IDMAP mapping
-# file must be one produced by the 'idmap' script.  (Agent identifiers
-# are converted only for the purpose of constraint evaluation; they
-# are unchanged on output.)
-#
-# The constraint expression is specified directly on the command line.
-# A basic constraint has the form
-#
-#    field operator value
-#
-# e.g.,
-#
-#    _owner = gjanee
-#
-# An identifier record satisfies a basic constraint if the record has
-# a non-empty value for the field and if the record value has the
-# relationship to the constraint value as indicated by the operator.
-# The relational operators (<, <=, =, >=, >) and regular expression
-# match operator (=~) are supported.  In the latter case, the
-# constraint value must be a regular expression expressed using the
-# Perl-like syntax /regexp/ or /regexp/flags.  A forward slash (/) can
-# be placed in the regular expression by preceding it with a backward
-# slash (\).  The i, m, and s flags have their usual interpretations.
-# For example:
-#
-#    _id =~ /doi:10\.5072\/FK2/i
-#
-# There's no fancy parser here, so operators and other
-# syntactic tokens must appear as separate command line arguments.
-# Furthermore, operators such as < must be quoted to avoid
-# interpretation by the shell.  To prevent interpretation of a field
-# or value as a reserved word or punctuation or operator, quote it.
-# But quotes themselves must be quoted to avoid interpretation by the
-# shell, so, sadly, quotes will resemble:
-#
-#    datacite.title = "'and'"
-#
-# A basic constraint can be negated by placing "not" before it, and
-# constraints can be combined using "and" and "or".  Boolean
-# expressions can be grouped using both parentheses and curly braces
-# (curly braces don't require shell quoting).  Example of a
-# boolean expression:
-#
-#    _owner = gjanee or { _ownergroup = cdl and not _owner = jak }
-#
-# There are some special fields.  The _id field holds the identifier.
-# The _fields field is an array of all metadata fields present in the
-# identifier record and can be used in conjunction with the "contains"
-# operator, as in:
-#
-#    _fields contains erc.what
-#
-# The timestamp fields _created and _updated can be compared against
-# dates or times specified in ISO YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS
-# syntaxes.  Times are interpreted relative to the local timezone.  If
-# only a date is specified in the constraint, comparisons are
-# performed on dates only.
-#
-# The _numFields field is a slight syntactic exception in that it must
-# be followed by a regular expression; it is the number of
-# non-internal fields in the record whose names match the regular
-# expression.  For example, to select identifiers having at least one
-# field beginning with "erc.":
-#
-#    _numFields /erc\./ > 0
-#
-# Finally, there are a number of pre-defined macros:
-#
-#    _ark                  Is an ARK identifier.
-#    _doi                  Is a DOI identifier.
-#    _uuid                 Is a UUID identifier.
-#
-#    _real                 Is a real (i.e., non-test) identifier.
-#    _test                 Is a test identifier.
-#
-#    _public               Is public.
-#    _reserved             Is reserved.
-#    _unavailable          Is unavailable.
-#
-#    _exported             Is exported.
-#
-#    _anyMetadata          Has any citation (non-internal) metadata.
-#    _anyDatacite          Has any Datacite metadata.
-#    _anyDublinCore        Has any Dublin Core metadata.
-#    _anyErc               Has any ERC metadata.
-#
-#    _completeErc          Has complete (who/what/when or blob) ERC metadata.
-#    _minimumDatacite      Has (via mapping) minimum Datacite metadata.
-#
-#    _numDataciteFields    Number of Datacite fields.
-#    _numDublinCoreFields  Number of Dublin Core fields.
-#    _numErcFields         Number of ERC fields.
-#
-# Example of macro use:
-#
-#    _owner = gjanee and _ark and _real and not _exported
-#
-# This script requires an EZID module.  The PYTHONPATH environment
-# variable must include the .../SITE_ROOT/PROJECT_ROOT/impl directory;
-# if it doesn't, we attempt to dynamically locate it and add it.
-#
-# Greg Janee <gjanee@ucop.edu>
-# December 2011
+"""The 'dump-store', 'dump-binder', 'select', and 'project' scripts
+form a dump file query system.
 
-# @executable
+The general usage is:
 
+   dump-* | select constraint... | project fields...
+
+This script reads a dump file (normal or raw) from standard input, applies a constraint
+expression to each record, and writes the successful records to standard output.  The
+input may be gzip-compressed, but the output is never compressed.
+
+Usage: select [options] constraint...
+
+Options:
+  -m IDMAP      convert agent identifiers to local names using IDMAP
+  -z            gunzip the input
+
+The -m option is useful when reading records in which agent identifiers have *not* been
+converted; the specified IDMAP mapping file must be one produced by the 'idmap' script.
+(Agent identifiers are converted only for the purpose of constraint evaluation; they are
+unchanged on output.)
+
+The constraint expression is specified directly on the command line. A basic constraint
+has the form
+
+   field operator value
+
+e.g.,
+   _owner = gjanee
+
+An identifier record satisfies a basic constraint if the record has a non-empty value
+for the field and if the record value has the relationship to the constraint value as
+indicated by the operator. The relational operators (<, <=, =, >=, >) and regular
+expression match operator (=~) are supported.  In the latter case, the constraint value
+must be a regular expression expressed using the Perl-like syntax /regexp/ or
+/regexp/flags.  A forward slash (/) can be placed in the regular expression by preceding
+it with a backward slash (\).  The i, m, and s flags have their usual interpretations.
+
+For example:
+
+   _id =~ /doi:10\.5072\/FK2/i
+
+There's no fancy parser here, so operators and other syntactic tokens must appear as
+separate command line arguments. Furthermore, operators such as < must be quoted to
+avoid interpretation by the shell.  To prevent interpretation of a field or value as a
+reserved word or punctuation or operator, quote it. But quotes themselves must be quoted
+to avoid interpretation by the shell, so, sadly, quotes will resemble:
+
+   datacite.title = "'and'"
+
+A basic constraint can be negated by placing "not" before it, and constraints can be
+combined using "and" and "or".  Boolean expressions can be grouped using both
+parentheses and curly braces (curly braces don't require shell quoting).  Example of a
+boolean expression:
+
+   _owner = gjanee or { _ownergroup = cdl and not _owner = jak }
+
+There are some special fields.  The _id field holds the identifier. The _fields field is
+an array of all metadata fields present in the identifier record and can be used in
+conjunction with the "contains" operator, as in:
+
+   _fields contains erc.what
+
+The timestamp fields _created and _updated can be compared against dates or times
+specified in ISO YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS syntaxes.  Times are interpreted
+relative to the local timezone.  If only a date is specified in the constraint,
+comparisons are performed on dates only.
+
+The _numFields field is a slight syntactic exception in that it must be followed by a
+regular expression; it is the number of non-internal fields in the record whose names
+match the regular expression.  For example, to select identifiers having at least one
+field beginning with "erc.":
+
+   _numFields /erc\./ > 0
+
+Finally, there are a number of pre-defined macros:
+
+   _ark                  Is an ARK identifier.
+   _doi                  Is a DOI identifier.
+   _uuid                 Is a UUID identifier.
+
+   _real                 Is a real (i.e., non-test) identifier.
+   _test                 Is a test identifier.
+
+   _public               Is public.
+   _reserved             Is reserved.
+   _unavailable          Is unavailable.
+
+   _exported             Is exported.
+
+   _anyMetadata          Has any citation (non-internal) metadata.
+   _anyDatacite          Has any Datacite metadata.
+   _anyDublinCore        Has any Dublin Core metadata.
+   _anyErc               Has any ERC metadata.
+
+   _completeErc          Has complete (who/what/when or blob) ERC metadata.
+   _minimumDatacite      Has (via mapping) minimum Datacite metadata.
+
+   _numDataciteFields    Number of Datacite fields.
+   _numDublinCoreFields  Number of Dublin Core fields.
+   _numErcFields         Number of ERC fields.
+
+Example of macro use:
+
+   _owner = gjanee and _ark and _real and not _exported
+
+This script requires an EZID module.  The PYTHONPATH environment variable must include
+the .../SITE_ROOT/PROJECT_ROOT/impl directory; if it doesn't, we attempt to dynamically
+locate it and add it.
+"""
 
 import gzip
 import optparse

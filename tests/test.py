@@ -1,8 +1,8 @@
-"""Test the test framework itself"""
-
-
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
+
+"""Test the test framework itself
+"""
 
 def test_1000(apitest_client):
     """Test that the apitest_client fixture returns a client logged in as the apitest user

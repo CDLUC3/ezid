@@ -3,9 +3,8 @@
 
 """Logging functions
 
-What gets logged, where it gets logged, and how
-log records are formatted is all determined by the configuration
-file.  There are eight record types:
+What gets logged, where it gets logged, and how log records are formatted is all
+determined by the configuration file.  There are eight record types:
 
   level  message
   -----  -------
@@ -18,10 +17,9 @@ file.  There are eight record types:
   ERROR  transactionId END ERROR exception...
   ERROR  - ERROR caller exception...
 
-Records are UTF-8 and percent-encoded so that the following
-properties hold: log records contain only graphic ASCII characters
-and spaces; there is a 1-1 correspondence between records and lines;
-and record fields (except for exception strings) are separated by
+Records are UTF-8 and percent-encoded so that the following properties hold: log records
+contain only graphic ASCII characters and spaces; there is a 1-1 correspondence between
+records and lines; and record fields (except for exception strings) are separated by
 spaces.
 """
 

@@ -1,17 +1,12 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-# =============================================================================
-#
-# EZID :: datacite_xml.py
-#
-# Allows processing a form with form elements named with simple XPATH
-# expressions
-# 1) Generates form fields for use with Django form model.
-# 2) Creates an XML document for attaching Datacite XML metadata.
-#
-#
-# -----------------------------------------------------------------------------
+"""Allows processing a form with form elements named with simple XPATH
+expressions
+
+1) Generates form fields for use with Django form model.
+2) Creates an XML document for attaching Datacite XML metadata.
+"""
 
 import collections
 import re

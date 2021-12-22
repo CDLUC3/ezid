@@ -3,48 +3,44 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-# The 'dump-store', 'dump-binder', 'select', and 'project' scripts
-# form a dump file query system.  The general usage is:
-#
-#    dump-* | select constraint... | project fields...
-#
-# This script reads a dump file (normal or raw) from standard input
-# and writes selected fields from those records to standard output.
-#
-# Usage: project [options] fields...
-#
-# Options:
-#   -a            output all fields
-#   -d            decode labels and values
-#   -l            output labels
-#   -m IDMAP      convert agent identifiers to local names using IDMAP
-#   -o            one line per identifier: convert newlines to spaces
-#   -s SEPARATOR  field separator (defaults to space)
-#   -S SEPARATOR  label/value separator (defaults to =)
-#   -t            format timestamps
-#   -z            gunzip the input
-#
-# The '_id' pseudo-field can be used to output the identifier itself.
-#
-# If the -a option is given, any fields specified on the command line
-# are ignored and neither the order nor the presence of fields will be
-# consistent from identifier to identifier.
-#
-# If values are decoded, they are re-UTF-8-encoded when output.  Note
-# that identifiers themselves are never encoded.
-#
-# The -m option is useful when reading records in which agent
-# identifiers have *not* been converted; the specified IDMAP mapping
-# file must be one produced by the 'idmap' script.
-#
-# This script requires an EZID module.  The PYTHONPATH environment
-# variable must include the .../SITE_ROOT/PROJECT_ROOT/impl directory;
-# if it doesn't, we attempt to dynamically locate it and add it.
-#
-# Greg Janee <gjanee@ucop.edu>
-# December 2011
+"""The 'dump-store', 'dump-binder', 'select', and 'project' scripts form a dump file
+query system.
 
-# @executable
+The general usage is:
+
+   dump-* | select constraint... | project fields...
+
+This script reads a dump file (normal or raw) from standard input and writes selected
+fields from those records to standard output.
+
+Usage: project [options] fields...
+
+Options:
+  -a            output all fields
+  -d            decode labels and values
+  -l            output labels
+  -m IDMAP      convert agent identifiers to local names using IDMAP
+  -o            one line per identifier: convert newlines to spaces
+  -s SEPARATOR  field separator (defaults to space)
+  -S SEPARATOR  label/value separator (defaults to =)
+  -t            format timestamps
+  -z            gunzip the input
+
+The '_id' pseudo-field can be used to output the identifier itself.
+If the -a option is given, any fields specified on the command line are ignored and
+neither the order nor the presence of fields will be consistent from identifier to
+identifier.
+
+If values are decoded, they are re-UTF-8-encoded when output.  Note that identifiers
+themselves are never encoded.
+
+The -m option is useful when reading records in which agent identifiers have *not* been
+converted; the specified IDMAP mapping file must be one produced by the 'idmap' script.
+
+This script requires an EZID module.  The PYTHONPATH environment variable must include
+the .../SITE_ROOT/PROJECT_ROOT/impl directory; if it doesn't, we attempt to dynamically
+locate it and add it.
+"""
 
 import gzip
 import optparse

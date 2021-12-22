@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 """Django admin configuration/customization
 
 Beware: there's some
@@ -7,8 +10,6 @@ related to this file are the PROJECT_ROOT/templates/admin and
 PROJECT_ROOT/static/admin directories.
 """
 
-#  Copyright©2021, Regents of the University of California
-#  http://creativecommons.org/licenses/BSD
 
 import copy
 

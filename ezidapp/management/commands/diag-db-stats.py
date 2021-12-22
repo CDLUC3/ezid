@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 """Display basic statistics for all registered models
 
 This command does not alter any information in the database, and should be safe to run at any time,
@@ -8,9 +11,6 @@ database as seen by the ORM. Information is printed for all models that were dis
 model search that Django performs at startup. If any models are missing, it indicates an issue with
 the model search.
 """
-
-#  Copyright©2021, Regents of the University of California
-#  http://creativecommons.org/licenses/BSD
 
 import ezidapp.models.identifier
 import contextlib

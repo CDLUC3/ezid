@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-"""Annotate a stream of identifiers with associated metadata and misc
-housekeeping information pulled from an EZID database.
-"""
-
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
+
+"""Annotate a stream of identifiers with associated metadata and misc housekeeping
+information pulled from an EZID database.
+"""
 
 import argparse
 import collections

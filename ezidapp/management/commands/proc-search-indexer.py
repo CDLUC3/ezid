@@ -3,15 +3,18 @@
 
 """Index identifiers for search
 
-This async process keeps the SearchIdentifier model in sync with the StoreIdentifier model.
+This async process keeps the SearchIdentifier model in sync with the StoreIdentifier
+model.
 
-The StoreIdentifier and SearchIdentifier models hold the same information, but the SearchIdentifier
-model adds a set of indexes that make inserts expensive. So we add and update StoreIdentifier
-"inline", while processing a request, and update SearchIdentifier asynchronously.
+The StoreIdentifier and SearchIdentifier models hold the same information, but the
+SearchIdentifier model adds a set of indexes that make inserts expensive. So we add and
+update StoreIdentifier "inline", while processing a request, and update SearchIdentifier
+asynchronously.
 
-As the changes made to the StoreIdentifer are wrapped in a transaction that covers the request,
-partial changes in StoreIdentifer are not visible to this process, and all changes to a single
-identifier are handled as a single unit after the request is completed.
+As the changes made to the StoreIdentifer are wrapped in a transaction that covers the
+request, partial changes in StoreIdentifer are not visible to this process, and all
+changes to a single identifier are handled as a single unit after the request is
+completed.
 """
 
 import logging

@@ -1,7 +1,8 @@
-"""Permanently merge the master_shoulders.txt file into the database."""
-
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
+
+"""Permanently merge the master_shoulders.txt file into the database
+"""
 
 import argparse
 import datetime

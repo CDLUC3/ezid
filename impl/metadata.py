@@ -3,15 +3,13 @@
 
 """Support for metadata profiles
 
-A profile is an ordered list of
-metadata elements, each of which has internal and display names and
-tooltip text.
+A profile is an ordered list of metadata elements, each of which has internal and
+display names and tooltip text.
 
-This module, upon being loaded, writes
-.../PROJECT_ROOT/static/metadata_tooltips.js.
+This module, upon being loaded, writes ../PROJECT_ROOT/static/metadata_tooltips.js.
 
-Subtle point: to simplify referencing from django templates, this
-module enforces that metadata element names be globally unique.
+Subtle point: to simplify referencing from django templates, this module enforces that
+metadata element names be globally unique.
 """
 
 import os.path

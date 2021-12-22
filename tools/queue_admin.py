@@ -3,19 +3,16 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-# Queue administration tool.  Currently works with the binder and
-# DataCite queues only.  Run with the '-h' option for usage.
-#
-# This script requires several EZID modules.  The PYTHONPATH
-# environment variable must include the .../SITE_ROOT/PROJECT_ROOT
-# directory; if it doesn't, we attempt to dynamically locate it and
-# add it.  The DJANGO_SETTINGS_MODULE environment variable must be
-# set.
-#
-# Greg Janee <gjanee@ucop.edu>
-# January 2018
+"""Queue administration tool
 
-# @executable
+Currently works with the binder and DataCite queues only.  Run with the '-h' option for
+usage.
+
+This script requires several EZID modules.  The PYTHONPATH environment variable must
+include the .../SITE_ROOT/PROJECT_ROOT directory; if it doesn't, we attempt to
+dynamically locate it and add it.  The DJANGO_SETTINGS_MODULE environment variable must
+be set.
+"""
 
 import argparse
 import sys

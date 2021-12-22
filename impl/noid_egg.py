@@ -3,16 +3,19 @@
 
 """Interface to the "egg" (binder) portion of noid
 
-A note on encodings.  Identifiers and metadata elements (both names and values) are sent to noid in
-encoded form; see util.encode{3,4}. Metadata elements received from void are UTF-8-encoded and
-utilize percent-encoding.  Though this received encoding does not exactly match the transmitted
-encoding, the decoding performed by util.decode is nevertheless compatible and so we use it.
-(Consider a Python Unicode value u"Greg%Jan\xe9e".  This is sent as "Greg%25Jan%C3%A9e" but received
-back as "Greg%25Jan\xc3\xa9e", which, when percent- and UTF-8-decoded, yields the original value.)
+A note on encodings.  Identifiers and metadata elements (both names and values) are sent
+to noid in encoded form; see util.encode{3,4}. Metadata elements received from void are
+UTF-8-encoded and utilize percent-encoding.  Though this received encoding does not
+exactly match the transmitted encoding, the decoding performed by util.decode is
+nevertheless compatible and so we use it. (Consider a Python Unicode value
+u"Greg%Jan\xe9e".  This is sent as "Greg%25Jan%C3%A9e" but received back as
+"Greg%25Jan\xc3\xa9e", which, when percent- and UTF-8-decoded, yields the original
+value.)
 
-This module performs whitespace processing.  Leading and trailing whitespace is stripped from both
-element names and values.  Empty names are not allowed.  Setting an empty value causes the element
-to be deleted; as a consequence, empty values are never returned.
+This module performs whitespace processing.  Leading and trailing whitespace is stripped
+from both element names and values.  Empty names are not allowed.  Setting an empty
+value causes the element to be deleted; as a consequence, empty values are never
+returned.
 """
 
 import logging

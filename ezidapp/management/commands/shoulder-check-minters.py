@@ -1,8 +1,9 @@
-"""Check that the BerkeleyDB minters are in the expected locations, can be
-opened, and contains an EZID or N2T minter."""
-
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
+
+"""Check that the BerkeleyDB minters are in the expected locations, can be
+opened, and contains an EZID or N2T minter
+"""
 
 import argparse
 import logging

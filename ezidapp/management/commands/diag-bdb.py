@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 """BerkeleyDB utilities
 
 These utilities work directly with the BerkeleyDB (.bdb) files on disk. They do not
@@ -56,9 +59,6 @@ connect to the EZID database.
   to determine when and where identifiers found 'in the wild' would have been minted.
 """
 
-
-#  Copyright©2021, Regents of the University of California
-#  http://creativecommons.org/licenses/BSD
 
 import argparse
 import logging

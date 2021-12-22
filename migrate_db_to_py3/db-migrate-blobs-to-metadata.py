@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-# Copyright©2021, Regents of the University of California
-# http://creativecommons.org/licenses/BSD
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
 
 """Migrate EZID's various legacy blob formats to JSON.
 

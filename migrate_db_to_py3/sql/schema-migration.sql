@@ -156,11 +156,6 @@ change column to_storeuser_id to_user_id int not null
 ;
 
 
-alter table ezidapp_user_shoulders
-change column storeuser_id user_id int;
-
-
-
 # alter table ezidapp_searchuser
 # drop foreign key ezidapp_sear_group_id_488efb1f64647b87_fk_ezidapp_searchgroup_id,
 # drop foreign key ezidapp_sear_realm_id_3d437af11e1add07_fk_ezidapp_searchrealm_id

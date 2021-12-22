@@ -3,23 +3,20 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-# Dumps the store database to standard output.
-#
-# Usage: dump-store [-erz]
-#
-# Options:
-#   -e exclude reserved identifiers
-#   -r raw dump
-#   -z gzip the output
-#
-# This script requires several EZID modules.  The PYTHONPATH
-# environment variable must include the .../SITE_ROOT/PROJECT_ROOT
-# directory; if it doesn't, we attempt to dynamically locate it and
-# add it.  The DJANGO_SETTINGS_MODULE environment variable must be
-# set.
-#
-# Greg Janee <gjanee@ucop.edu>
-# April 2013
+"""Dumps the store database to standard output.
+
+Usage: dump-store [-erz]
+
+Options:
+  -e exclude reserved identifiers
+  -r raw dump
+  -z gzip the output
+
+This script requires several EZID modules.  The PYTHONPATH environment variable must
+include the .../SITE_ROOT/PROJECT_ROOT directory; if it doesn't, we attempt to
+dynamically locate it and add it.  The DJANGO_SETTINGS_MODULE environment variable must
+be set.
+"""
 
 import gzip
 import optparse

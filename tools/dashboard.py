@@ -3,39 +3,35 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-# Computes cumulative EZID statistics and uploads them to the CDL
-# dashboard service.
-#
-# The statistics consist of cumulative identifier counts aggregated by
-# month and broken down by identifier type (UUIDs are not currently
-# included).  The counts do not include test identifiers, but do
-# include reserved identifiers.  Example data:
-#
-#   YYYY-MM,DOI,ARK
-#   2010-06,1,0
-#   2010-07,44,0
-#   2010-08,134,0
-#   2010-09,1162,15
-#   2010-10,1199,59
-#   2010-11,1296,43089
-#   ...
-#
-# Usage:
-#
-#   dashboard dashurl
-#   dashboard --compute-only > data
-#   dashboard --upload-only dashurl < data
-#
-#     dashurl: dashboard base URL (http[s]://host:port)
-#
-# This script requires several EZID modules.  The PYTHONPATH
-# environment variable must include the .../SITE_ROOT/PROJECT_ROOT
-# directory; if it doesn't, we attempt to dynamically locate it and
-# add it.  The DJANGO_SETTINGS_MODULE environment variable must be
-# set.
-#
-# Greg Janee <gjanee@ucop.edu>
-# November 2011
+"""Computes cumulative EZID statistics and uploads them to the CDL
+dashboard service.
+
+The statistics consist of cumulative identifier counts aggregated by month and broken
+down by identifier type (UUIDs are not currently included).  The counts do not include
+test identifiers, but do include reserved identifiers.  Example data:
+
+  YYYY-MM,DOI,ARK
+  2010-06,1,0
+  2010-07,44,0
+  2010-08,134,0
+  2010-09,1162,15
+  2010-10,1199,59
+  2010-11,1296,43089
+  ...
+
+Usage:
+
+  dashboard dashurl
+  dashboard --compute-only > data
+  dashboard --upload-only dashurl < data
+
+    dashurl: dashboard base URL (http[s]://host:port)
+
+This script requires several EZID modules.  The PYTHONPATH environment variable must
+include the .../SITE_ROOT/PROJECT_ROOT directory; if it doesn't, we attempt to
+dynamically locate it and add it.  The DJANGO_SETTINGS_MODULE environment variable must
+be set.
+"""
 
 import datetime
 import re

@@ -7,6 +7,8 @@
 # https://stackoverflow.com/questions/14284238/how-can-i-improve-delete-from-performance-on-large-innodb-tables
 
 
+# Prepare database for capturing as a DB fixture.
+
 # Run this after the main steps of migrating the DB to EZID 3, but, to save time, before the final
 # step of the migration, which adds the indexes back to ezidapp_searchidentifier.
 
@@ -103,6 +105,47 @@ call trim_linkchecker();
 delete from ezidapp_statistics where month not regexp '^(2018|2019|2020|2021)-';
 delete from django_admin_log where true;
 delete from django_session where true;
+
+
+# Drop / randomize user info
+
+# User fields to keep as is
+update ezidapp_user
+	pid varchar(255) collate ascii_bin not null,
+	inheritGroupShoulders tinyint(1) not null,
+	crossrefEnabled tinyint(1) not null,
+	isGroupAdministrator tinyint(1) not null,
+	isRealmAdministrator tinyint(1) not null,
+	isSuperuser tinyint(1) not null,
+	loginEnabled tinyint(1) not null,
+	group_id int not null,
+	realm_id int not null,
+;
+
+# User fields to randomize
+
+update ezidapp_user
+	username varchar(32) not null,
+	displayName varchar(255) charset utf8mb4 not null,
+	accountEmail varchar(255) charset utf8mb4 not null,
+	password varchar(128) not null,
+	primaryContactName varchar(255) charset utf8mb4 not null,
+	primaryContactEmail varchar(255) charset utf8mb4 not null,
+	primaryContactPhone varchar(255) charset utf8mb4 not null,
+	secondaryContactName varchar(255) charset utf8mb4 not null,
+	secondaryContactEmail varchar(255) charset utf8mb4 not null,
+	secondaryContactPhone varchar(255) charset utf8mb4 not null,
+	crossrefEmail varchar(255) not null,
+	notes longtext not null,
+;
+
+update ezidapp_user
+;
+
+# User fields to clear entirely
+
+
+
 
 
 ##############################################
