@@ -25,8 +25,9 @@ begin
     loop
         delete
         from ezidapp_searchidentifier
-        # 0.001 = .1% average = ~25000 rows
-        where rand() > 0.001
+        where rand() > 0.1
+#         # 0.0001 = .01% average = ~2500 rows
+#         where rand() > 0.0001
         and id = last_insert_id(id)
         and id > last_id
         limit 10000
@@ -99,8 +100,8 @@ call trim_linkchecker();
 # Trim some smaller tables;
 
 delete from ezidapp_statistics where month not regexp '^(2018|2019|2020|2021)-';
-delete from django_admin_log where true;
-delete from django_session where true;
+delete from django_admin_log;
+delete from django_session;
 
 # Drop / randomize user and group info
 
@@ -157,8 +158,6 @@ organizationUrl = '',
 organizationStreetAddress = '',
 notes = ''
 ;
-
-
 
 select * from ezidapp_realm;
 update ezidapp_realm set name = 'CDL' where id = 1;
