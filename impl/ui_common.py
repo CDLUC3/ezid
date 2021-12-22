@@ -28,6 +28,7 @@ import ezidapp.models.news_feed
 import impl.newsfeed
 import impl.userauth
 
+manual_profiles = {"datacite_xml": "DataCite"}
 
 # noinspection PyDefaultArgument
 def render(request, template, context={}):
