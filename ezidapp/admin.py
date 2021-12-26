@@ -131,9 +131,7 @@ class GroupInline(django.contrib.admin.TabularInline):
     verbose_name_plural = "Groups using this shoulder"
 
     def groupLink(self, obj):
-        link = django.urls.reverse(
-            "admin:ezidapp_group_change", args=[obj.group.id]
-        )
+        link = django.urls.reverse("admin:ezidapp_group_change", args=[obj.group.id])
         return f'<a href="{link}">{obj.group.groupname}</a>'
 
     groupLink.allow_tags = True
@@ -165,9 +163,7 @@ class UserInlineForShoulder(django.contrib.admin.TabularInline):
     verbose_name_plural = "Users using this shoulder"
 
     def userLink(self, obj):
-        link = django.urls.reverse(
-            "admin:ezidapp_user_change", args=[obj.user.id]
-        )
+        link = django.urls.reverse("admin:ezidapp_user_change", args=[obj.user.id])
         return f'<a href="{link}">{obj.user.username}</a>'
 
     userLink.allow_tags = True
@@ -209,9 +205,7 @@ class ShoulderAdmin(django.contrib.admin.ModelAdmin):
     registrationAgency.short_description = "DOI registration agency"
 
     def datacenterLink(self, obj):
-        link = django.urls.reverse(
-            "admin:ezidapp_datacenter_change", args=[obj.datacenter.id]
-        )
+        link = django.urls.reverse("admin:ezidapp_datacenter_change", args=[obj.datacenter.id])
         return f'<a href="{link}">{obj.datacenter.symbol}</a>'
 
     datacenterLink.allow_tags = True
@@ -331,9 +325,7 @@ superuser.register(Datacenter, DatacenterAdmin)
 class NewAccountWorksheetForm(django.forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(NewAccountWorksheetForm, self).__init__(*args, **kwargs)
-        self.fields[
-            "orgStreetAddress"
-        ].widget = django.contrib.admin.widgets.AdminTextareaWidget()
+        self.fields["orgStreetAddress"].widget = django.contrib.admin.widgets.AdminTextareaWidget()
 
 
 class NewAccountWorksheetAdmin(django.contrib.admin.ModelAdmin):
@@ -420,9 +412,7 @@ class NewAccountWorksheetAdmin(django.contrib.admin.ModelAdmin):
         if len(newStatus) > 0:
 
             addresses = [
-                a
-                for a in django.conf.settings.EMAIL_NEW_ACCOUNT_EMAIL.split(",")
-                if len(a) > 0
+                a for a in django.conf.settings.EMAIL_NEW_ACCOUNT_EMAIL.split(",") if len(a) > 0
             ]
             if len(addresses) > 0:
                 subject = f'New account "{str(obj)}": {", ".join(newStatus)}'
@@ -467,9 +457,7 @@ class NewAccountWorksheetAdmin(django.contrib.admin.ModelAdmin):
                     str(obj.requestDate),
                     ", ".join(newStatus),
                     django.conf.settings.EZID_BASE_URL,
-                    django.urls.reverse(
-                        "admin:ezidapp_newaccountworksheet_change", args=[obj.id]
-                    ),
+                    django.urls.reverse("admin:ezidapp_newaccountworksheet_change", args=[obj.id]),
                     obj.orgName,
                     obj.orgAcronym,
                     obj.orgUrl,
@@ -513,9 +501,7 @@ class NewAccountWorksheetAdmin(django.contrib.admin.ModelAdmin):
                         request, "Error sending status change email: " + str(e)
                     )
                 else:
-                    django.contrib.messages.success(
-                        request, "Status change email sent."
-                    )
+                    django.contrib.messages.success(request, "Status change email sent.")
 
 
 superuser.register(NewAccountWorksheet, NewAccountWorksheetAdmin)
@@ -595,9 +581,9 @@ class GroupForm(django.forms.ModelForm):
         self.fields[
             "organizationStreetAddress"
         ].widget = django.contrib.admin.widgets.AdminTextareaWidget()
-        self.fields["shoulders"].queryset = Shoulder.objects.filter(
-            isTest=False
-        ).order_by("name", "type")
+        self.fields["shoulders"].queryset = Shoulder.objects.filter(isTest=False).order_by(
+            "name", "type"
+        )
 
 
 def createOrUpdateGroupPid(request, obj, change):
@@ -625,15 +611,11 @@ def createOrUpdateGroupPid(request, obj, change):
         },
     )
     if r.startswith("success:"):
-        django.contrib.messages.success(
-            request, f"Group PID {'updated' if change else 'created'}."
-        )
+        django.contrib.messages.success(request, f"Group PID {'updated' if change else 'created'}.")
     else:
         impl.log.otherError(
             "admin.createOrUpdateGroupPid",
-            Exception(
-                f"ezid.{'setMetadata' if change else 'createIdentifier'} call failed: {r}"
-            ),
+            Exception(f"ezid.{'setMetadata' if change else 'createIdentifier'} call failed: {r}"),
         )
         django.contrib.messages.error(
             request, f"Error {'updating' if change else 'creating'} group PID."
@@ -886,7 +868,7 @@ class UserAdministratorFilter(django.contrib.admin.SimpleListFilter):
 
 class SetPasswordWidget(django.forms.widgets.TextInput):
     # noinspection PyMethodOverriding
-    #def render(self, name, value, attrs=None):
+    # def render(self, name, value, attrs=None):
     def render(self, name, value, attrs=None, renderer=None):
         return super(SetPasswordWidget, self).render(name, "", attrs=attrs)
 
@@ -914,12 +896,8 @@ class UserForm(django.forms.ModelForm):
                     {"shoulders": "User's shoulder set is not a subset of group's."}
                 )
         if cd.get("crossrefEnabled", False):
-            if (
-                self.instance.pk is not None and not self.instance.group.crossrefEnabled
-            ) or (
-                self.instance.pk is None
-                and "group" in cd
-                and not cd["group"].crossrefEnabled
+            if (self.instance.pk is not None and not self.instance.group.crossrefEnabled) or (
+                self.instance.pk is None and "group" in cd and not cd["group"].crossrefEnabled
             ):
                 raise django.core.validators.ValidationError(
                     {"crossrefEnabled": "Group is not Crossref enabled."}
@@ -972,9 +950,7 @@ def createOrUpdateUserPid(request, obj, change):
             "ezid.user.shoulders": " ".join(s.prefix for s in obj.shoulders.all()),
             "ezid.user.crossrefEnabled": str(obj.crossrefEnabled),
             "ezid.user.crossrefEmail": obj.crossrefEmail,
-            "ezid.user.proxies": " ".join(
-                f"{u.username}|{u.pid}" for u in obj.proxies.all()
-            ),
+            "ezid.user.proxies": " ".join(f"{u.username}|{u.pid}" for u in obj.proxies.all()),
             "ezid.user.isGroupAdministrator": str(obj.isGroupAdministrator),
             "ezid.user.isRealmAdministrator": str(obj.isRealmAdministrator),
             "ezid.user.isSuperuser": str(obj.isSuperuser),
@@ -991,9 +967,7 @@ def createOrUpdateUserPid(request, obj, change):
     else:
         impl.log.otherError(
             "admin.createOrUpdateUserPid",
-            Exception(
-                f"ezid.{'setMetadata' if change else 'createIdentifier'} call failed: {r}"
-            ),
+            Exception(f"ezid.{'setMetadata' if change else 'createIdentifier'} call failed: {r}"),
         )
         if request is not None:
             django.contrib.messages.error(
@@ -1003,9 +977,7 @@ def createOrUpdateUserPid(request, obj, change):
 
 class UserAdmin(django.contrib.admin.ModelAdmin):
     def groupLink(self, obj):
-        link = django.urls.reverse(
-            "admin:ezidapp_group_change", args=[obj.group.id]
-        )
+        link = django.urls.reverse("admin:ezidapp_group_change", args=[obj.group.id])
         return f'<a href="{link}">{obj.group.groupname}</a>'
 
     groupLink.allow_tags = True
@@ -1174,9 +1146,9 @@ class UserAdmin(django.contrib.admin.ModelAdmin):
         form.base_fields["shoulders"].widget = django.forms.CheckboxSelectMultiple()
         form.base_fields["shoulders"].help_text = None
         if obj is not None:
-            form.base_fields["proxies"].queryset = form.base_fields[
-                "proxies"
-            ].queryset.exclude(pk=obj.pk)
+            form.base_fields["proxies"].queryset = form.base_fields["proxies"].queryset.exclude(
+                pk=obj.pk
+            )
         form.base_fields["password"].widget = SetPasswordWidget()
         return form
 
