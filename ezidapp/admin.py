@@ -132,7 +132,7 @@ class GroupInline(django.contrib.admin.TabularInline):
 
     def groupLink(self, obj):
         link = django.urls.reverse(
-            "admin:ezidapp_storegroup_change", args=[obj.group.id]
+            "admin:ezidapp_group_change", args=[obj.group.id]
         )
         return f'<a href="{link}">{obj.group.groupname}</a>'
 
@@ -166,7 +166,7 @@ class UserInlineForShoulder(django.contrib.admin.TabularInline):
 
     def userLink(self, obj):
         link = django.urls.reverse(
-            "admin:ezidapp_storeuser_change", args=[obj.user.id]
+            "admin:ezidapp_user_change", args=[obj.user.id]
         )
         return f'<a href="{link}">{obj.user.username}</a>'
 
@@ -210,7 +210,7 @@ class ShoulderAdmin(django.contrib.admin.ModelAdmin):
 
     def datacenterLink(self, obj):
         link = django.urls.reverse(
-            "admin:ezidapp_storedatacenter_change", args=[obj.datacenter.id]
+            "admin:ezidapp_datacenter_change", args=[obj.datacenter.id]
         )
         return f'<a href="{link}">{obj.datacenter.symbol}</a>'
 
@@ -572,7 +572,7 @@ class UserInlineForGroup(django.contrib.admin.TabularInline):
     verbose_name_plural = "Users in this group"
 
     def userLink(self, obj):
-        link = django.urls.reverse("admin:ezidapp_storeuser_change", args=[obj.id])
+        link = django.urls.reverse("admin:ezidapp_user_change", args=[obj.id])
         return f'<a href="{link}">{obj.username}</a>'
 
     userLink.allow_tags = True
@@ -886,7 +886,8 @@ class UserAdministratorFilter(django.contrib.admin.SimpleListFilter):
 
 class SetPasswordWidget(django.forms.widgets.TextInput):
     # noinspection PyMethodOverriding
-    def render(self, name, value, attrs=None):
+    #def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         return super(SetPasswordWidget, self).render(name, "", attrs=attrs)
 
 
@@ -1003,7 +1004,7 @@ def createOrUpdateUserPid(request, obj, change):
 class UserAdmin(django.contrib.admin.ModelAdmin):
     def groupLink(self, obj):
         link = django.urls.reverse(
-            "admin:ezidapp_storegroup_change", args=[obj.group.id]
+            "admin:ezidapp_group_change", args=[obj.group.id]
         )
         return f'<a href="{link}">{obj.group.groupname}</a>'
 
@@ -1031,7 +1032,7 @@ class UserAdmin(django.contrib.admin.ModelAdmin):
     def proxyLinks(self, obj):
         return "<br/>".join(
             '<a href="{}">{} ({})</a>'.format(
-                django.urls.reverse("admin:ezidapp_storeuser_change", args=[u.id]),
+                django.urls.reverse("admin:ezidapp_user_change", args=[u.id]),
                 u.username,
                 django.utils.html.escape(u.displayName),
             )
@@ -1044,7 +1045,7 @@ class UserAdmin(django.contrib.admin.ModelAdmin):
     def reverseProxyLinks(self, obj):
         return "<br/>".join(
             '<a href="{}">{} ({})</a>'.format(
-                django.urls.reverse("admin:ezidapp_storeuser_change", args=[u.id]),
+                django.urls.reverse("admin:ezidapp_user_change", args=[u.id]),
                 u.username,
                 django.utils.html.escape(u.displayName),
             )
