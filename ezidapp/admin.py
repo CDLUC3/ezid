@@ -490,8 +490,6 @@ class NewAccountWorksheetAdmin(django.contrib.admin.ModelAdmin):
                         subject, message, django.conf.settings.SERVER_EMAIL, addresses
                     )
                 except Exception as e:
-                    import django.conf
-
                     if django.conf.settings.DEBUG:
                         import logging
 
