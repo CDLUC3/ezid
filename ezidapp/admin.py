@@ -516,18 +516,19 @@ class RealmAdmin(django.contrib.admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         if change:
-            oldName = Realm.objects.get(pk=obj.pk).name
+            # Old code logic for searchRealm
+            #oldName = Realm.objects.get(pk=obj.pk).name
             obj.save()
-            Realm.objects.filter(name=oldName).update(name=obj.name)
+            #Realm.objects.filter(name=oldName).update(name=obj.name)
         else:
-            sr = Realm(name=obj.name)
-            sr.full_clean()
+            #sr = Realm(name=obj.name)
+            #sr.full_clean()
             obj.save()
-            sr.save()
+            #sr.save()
 
     def delete_model(self, request, obj):
         obj.delete()
-        Realm.objects.filter(name=obj.name).delete()
+        #Realm.objects.filter(name=obj.name).delete()
 
 
 superuser.register(Realm, RealmAdmin)
@@ -804,7 +805,8 @@ class GroupAdmin(django.contrib.admin.ModelAdmin):
 
     def delete_model(self, request, obj):
         obj.delete()
-        Group.objects.filter(pid=obj.pid).delete()
+        # old logic for search group
+        #Group.objects.filter(pid=obj.pid).delete()
         django.contrib.messages.warning(
             request,
             f"Now-defunct group PID {obj.pid} not deleted; you may consider doing so.",
@@ -1200,7 +1202,7 @@ class UserAdmin(django.contrib.admin.ModelAdmin):
 
     def delete_model(self, request, obj):
         obj.delete()
-        User.objects.filter(pid=obj.pid).delete()
+        #User.objects.filter(pid=obj.pid).delete()
         django.contrib.messages.warning(
             request,
             f"Now-defunct user PID {obj.pid} not deleted; you may consider doing so.",
