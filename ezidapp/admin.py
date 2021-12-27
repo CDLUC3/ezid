@@ -592,7 +592,6 @@ class GroupForm(django.forms.ModelForm):
 def createOrUpdateGroupPid(request, obj, change):
     import impl.ezid
     import impl.log
-
     f = impl.ezid.setMetadata if change else impl.ezid.createIdentifier
     logger.debug('createOrUpdateGroupPid, f= %s', f)
     r = f(
@@ -1175,21 +1174,27 @@ class UserAdmin(django.contrib.admin.ModelAdmin):
         return form
 
     def save_model(self, request, obj, form, change):
+        '''
+        obj: User instance
+        '''
+        logger.debug("UserAdmin.save_model: obj(%s): %s", type(obj).__name__, obj)
         if "password" in form.cleaned_data:
             obj.setPassword(form.cleaned_data["password"])
         if change:
             obj.save()
-            User.objects.filter(pid=obj.pid).update(username=obj.username)
+            # This was previously used to update the SearchUser info
+            #User.objects.filter(pid=obj.pid).update(username=obj.username)
         else:
-            su = User(
-                pid=obj.pid,
-                username=obj.username,
-                group=Group.objects.get(pid=obj.group.pid),
-                realm=Realm.objects.get(name=obj.realm.name),
-            )
-            su.full_clean()
+            # old code - su = SearchUser instance
+            #su = User(
+            #    pid=obj.pid,
+            #    username=obj.username,
+            #    group=Group.objects.get(pid=obj.group.pid),
+            #    realm=Realm.objects.get(name=obj.realm.name),
+            #)
+            #su.full_clean()
             obj.save()
-            su.save()
+            #su.save()
         # See discussion in GroupAdmin above.
         onCommitWithSqliteHack(lambda: createOrUpdateUserPid(request, obj, change))
 
