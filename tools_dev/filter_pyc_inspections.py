@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 """Filter inspections exported from PyCharm
 
 This can be used to pick out inspection issues that match some pattern and process them
@@ -15,9 +18,6 @@ Usage:
     misleading -- after import, the XML doc shows up as a regular inspection result with
     full functionality)
 """
-
-#  Copyright©2021, Regents of the University of California
-#  http://creativecommons.org/licenses/BSD
 
 import logging
 import pathlib

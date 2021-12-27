@@ -3,22 +3,20 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-# Moves a group to a different realm.
-#
-# This script modifies the database external to the running server.
-# While this script goes to some pains to ensure that the move can be
-# performed safely and that there will be no conflicts with the
-# server, it does not guarantee that, and hence should be run with
-# caution.
-#
-# This script requires several EZID modules.  The PYTHONPATH
-# environment variable must include the .../SITE_ROOT/PROJECT_ROOT
-# directory; if it doesn't, we attempt to dynamically locate it and
-# add it.  The DJANGO_SETTINGS_MODULE environment variable must be
-# set.
-#
-# Greg Janee <gjanee@ucop.edu>
-# June 2018
+"""Moves a group to a different realm
+
+This script modifies the database external to the running server.
+While this script goes to some pains to ensure that the move can be
+performed safely and that there will be no conflicts with the
+server, it does not guarantee that, and hence should be run with
+caution.
+
+This script requires several EZID modules.  The PYTHONPATH
+environment variable must include the .../SITE_ROOT/PROJECT_ROOT
+directory; if it doesn't, we attempt to dynamically locate it and
+add it.  The DJANGO_SETTINGS_MODULE environment variable must be
+set.
+"""
 
 import argparse
 import sys
@@ -30,7 +28,6 @@ import ezidapp.models.realm
 import ezidapp.models.group
 import ezidapp.models.realm
 
-# @executable
 import ezidapp.models.util
 
 STEPS = [

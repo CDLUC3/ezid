@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 """Minimal EZID API client lib to support testing
 
 This minimal client lib for the EZID API is intended for supporting integrations tests and hence is
@@ -5,9 +8,6 @@ developed using the same version of python utilized by the EZID application.
 
 Based on https://github.com/CDLUC3/ezid-client-tools
 """
-
-#  Copyright©2021, Regents of the University of California
-#  http://creativecommons.org/licenses/BSD
 
 import codecs
 import logging

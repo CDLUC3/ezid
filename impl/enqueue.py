@@ -7,6 +7,7 @@ Identifier create, update and delete operations are propagated to external servi
 to a queue for each service. Each service is handled by a separate async process. The process is
 responsible for removing completed operations from its queue.
 """
+
 import logging
 import time
 

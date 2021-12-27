@@ -3,24 +3,22 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-# Reads from standard input and writes to standard output, converting
-# a raw dump to a normal dump.  Usage:
-#
-#    convert-dump [-m IDMAP] [-z]
-#
-# If the -z option is specified, both the input and output are
-# gzip-compressed.  The -m option uses IDMAP instead of the instance
-# database for conversion of agent identifiers; the specified IDMAP
-# mapping file must be one produced by the 'idmap' script.
-#
-# This script requires several EZID modules.  The PYTHONPATH
-# environment variable must include the .../SITE_ROOT/PROJECT_ROOT
-# directory; if it doesn't, we attempt to dynamically locate it and
-# add it.  The DJANGO_SETTINGS_MODULE environment variable must be
-# set.
-#
-# Greg Janee <gjanee@ucop.edu>
-# April 2013
+"""Reads from standard input and writes to standard output, converting a raw dump to a
+normal dump.
+
+Usage:
+
+   convert-dump [-m IDMAP] [-z]
+
+If the -z option is specified, both the input and output are gzip-compressed.  The -m
+option uses IDMAP instead of the instance database for conversion of agent identifiers;
+the specified IDMAP mapping file must be one produced by the 'idmap' script.
+
+This script requires several EZID modules.  The PYTHONPATH environment variable must
+include the .../SITE_ROOT/PROJECT_ROOT directory; if it doesn't, we attempt to
+dynamically locate it and add it.  The DJANGO_SETTINGS_MODULE environment variable must
+be set.
+"""
 
 import gzip
 import optparse

@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 """Setup for EZID
 
 Front end to setuptools, generates installer metadata and provides a convenient way
@@ -18,8 +21,6 @@ Create a wheel install file:
     python install --upgrade pip wheel
     python setup.py bdist_wheel
 """
-#  Copyright©2021, Regents of the University of California
-#  http://creativecommons.org/licenses/BSD
 
 import os
 import pathlib

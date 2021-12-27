@@ -1,13 +1,8 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-# =============================================================================
-#
-# EZID :: ezidapp/models/profile.py
-#
-# Abstract database model for metadata profiles.
-#
-# -----------------------------------------------------------------------------
+"""Abstract database model for metadata profiles.
+"""
 
 import re
 

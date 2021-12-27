@@ -3,23 +3,20 @@
 
 """Metadata mapping
 
-This module effectively defines a citation
-metadata standard, which we refer to as "kernel" metadata.
+This module effectively defines a citation metadata standard, which we refer to as
+"kernel" metadata.
 
-Subtle point: there are two slightly different mappings.  The
-default mapping (used to support everything except DataCite
-requirements) treats the identifier's preferred metadata profile as
-gospel: no field not in the profile is examined.  The intention of
-this mapping is to support a unified view of identifier native
-metadata.
+Subtle point: there are two slightly different mappings.  The default mapping (used to
+support everything except DataCite requirements) treats the identifier's preferred
+metadata profile as gospel: no field not in the profile is examined.  The intention of
+this mapping is to support a unified view of identifier native metadata.
 
-The other mapping (triggered by datacitePriority=True) is used to
-satisfy DataCite metadata requirements, and it examines and gives
-preference to the DataCite fields (primarily the 'datacite' XML
-field and secondarily the datacite.* itemized fields) regardless of
-the profile.  The intention of this mapping is to allow an
-identifier to retain its native metadata, and to augment or override
-that metadata just for the purposes of satisfying requirements.
+The other mapping (triggered by datacitePriority=True) is used to satisfy DataCite
+metadata requirements, and it examines and gives preference to the DataCite fields
+(primarily the 'datacite' XML field and secondarily the datacite.* itemized fields)
+regardless of the profile.  The intention of this mapping is to allow an identifier to
+retain its native metadata, and to augment or override that metadata just for the
+purposes of satisfying requirements.
 """
 
 import re

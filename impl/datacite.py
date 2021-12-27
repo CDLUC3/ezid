@@ -1,8 +1,7 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-"""\
-Interface to the DataCite Metadata Store <https://mds.datacite.org/>
+"""Interface to the DataCite Metadata Store <https://mds.datacite.org/>
 operated by the Technische Informationsbibliothek (TIB)
 <http://www.tib.uni-hannover.de/>.
 """

@@ -3,23 +3,21 @@
  * http://creativecommons.org/licenses/BSD
  */
 
+# Prepare database for capturing as a DB fixture.
+#
+# The large tables in the DB are trimmed down by randomly removing all but 0.1% of the rows.
+#
+# See README.md for how to use this file.
+
+# Run query in small batches to prevent transactions spilling to disk and slowing things down.
 # http://mysql.rjweb.org/doc.php/deletebig
 # https://stackoverflow.com/questions/14284238/how-can-i-improve-delete-from-performance-on-large-innodb-tables
-
-
-# Run this after the main steps of migrating the DB to EZID 3, but, to save time, before the final
-# step of the migration, which adds the indexes back to ezidapp_searchidentifier.
-
-# This procedure runs a simple query to trim down searchidentifier by randomly selecting 0.1% of the
-# rows. The query is run in small batches to prevent transactions spilling to disk and slowing
-# things down.
 
 drop procedure if exists trim_searchidentifier;
 
 delimiter $$
 create procedure trim_searchidentifier()
 begin
-#     declare c int default 0;
     declare last_id int default 0;
     declare max_id int;
     select max(id) into max_id from ezidapp_searchidentifier;
@@ -27,8 +25,9 @@ begin
     loop
         delete
         from ezidapp_searchidentifier
-        # 0.001 = .1% average = ~25000 rows
-        where rand() > 0.001
+        where rand() > 0.1
+#         # 0.0001 = .01% average = ~2500 rows
+#         where rand() > 0.0001
         and id = last_insert_id(id)
         and id > last_id
         limit 10000
@@ -101,13 +100,72 @@ call trim_linkchecker();
 # Trim some smaller tables;
 
 delete from ezidapp_statistics where month not regexp '^(2018|2019|2020|2021)-';
-delete from django_admin_log where true;
-delete from django_session where true;
+delete from django_admin_log;
+delete from django_session;
+
+# Drop / randomize user and group info
+
+# User fields to keep unchanged
+# id
+# pid
+# inheritGroupShoulders
+# crossrefEnabled
+# crossrefEmail
+# isGroupAdministrator
+# isRealmAdministrator
+# isSuperuser
+# loginEnabled
+# group_id
+# realm_id
+
+# User fields to randomize
+update ezidapp_user set
+username=substr(md5(rand()), 1, 10),
+displayname=substr(md5(rand()), 1, 10)
+;
+
+# User fields to clear
+update ezidapp_user set
+accountEmail='',
+primaryContactName='',
+primaryContactEmail='',
+primaryContactPhone='',
+secondaryContactName='',
+secondaryContactEmail='',
+secondaryContactPhone='',
+notes='',
+password=''
+;
+
+# Group fields to keep unchanged
+# id
+# pid
+# agreementOnFile
+# crossrefEnabled
+# realm_id
+# accountType
+
+# Group fields to randomize
+update ezidapp_group set
+groupname=substr(md5(rand()), 1, 10)
+;
+
+# Group fields to clear
+update ezidapp_group set
+organizationName = '',
+organizationAcronym = '',
+organizationUrl = '',
+organizationStreetAddress = '',
+notes = ''
+;
+
+select * from ezidapp_realm;
+update ezidapp_realm set name = 'CDL' where id = 1;
 
 
 ##############################################
 
-# Check what's left
+# Check remaining rows counts
 
 select
     (select count(*) from ezidapp_linkchecker) as link_checker,

@@ -81,8 +81,8 @@ drop key ezidapp_searchidentifier_resourcetitle
 
 #@#
 
-# Search tables are generally subsets of the corresponding store tables. The datacenter tables are an exception, so we
-# must copy a few entries over search to store.
+# Search tables are generally subsets of the corresponding store tables. The datacenter tables are
+# an exception, so we must copy a few entries over from search to store.
 insert into ezidapp_storedatacenter(symbol, name)
 select a.symbol, a.symbol from ezidapp_searchdatacenter a
 where a.symbol not in (select symbol from ezidapp_storedatacenter)
@@ -138,6 +138,23 @@ rename table ezidapp_storerealm to ezidapp_realm;
 rename table ezidapp_storeuser to ezidapp_user;
 rename table ezidapp_storeuser_proxies to ezidapp_user_proxies;
 rename table ezidapp_storeuser_shoulders to ezidapp_user_shoulders;
+
+# And we can remove "store" in column names
+
+alter table ezidapp_user_shoulders
+change column storeuser_id user_id int not null,
+change column storegroup_id group_id int not null
+;
+
+alter table ezidapp_group_shoulders
+change column storegroup_id group_id int
+;
+
+alter table ezidapp_user_proxies
+change column from_storeuser_id from_user_id int not null,
+change column to_storeuser_id to_user_id int not null
+;
+
 
 # alter table ezidapp_searchuser
 # drop foreign key ezidapp_sear_group_id_488efb1f64647b87_fk_ezidapp_searchgroup_id,
@@ -231,9 +248,20 @@ create table ezidapp_downloadqueue (
     charset = utf8mb4
 ;
 
+
+drop table if exists ezidapp_refidentifier;
+
+create table ezidapp_refidentifier like ezidapp_identifier;
+
+alter table ezidapp_refidentifier
+change column identifier identifier varchar(255)
+character set ascii collate ascii_bin not null
+;
+
+
 #@#
 
-# Crate fulltext indexes (must be done one at a time). 30 min?
+# Create fulltext indexes (must be done one at a time). 30 min?
 # EZID will not run without these indexes.
 # This is the final step to run before starting EZID.
 

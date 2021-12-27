@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 """Create or update the EZID admin account, password and related details
 
 If the EZID admin account does not already exist, crate it. Then, both for existing and
@@ -16,9 +19,6 @@ storage of user account information. As the 'admin' account also stores account
 information in a user account, the admin user is created both as a Django superuser for
 Django and as a user flagged with elevated access in EZID's custom authentication system
 """
-
-#  Copyright©2021, Regents of the University of California
-#  http://creativecommons.org/licenses/BSD
 
 import datetime
 

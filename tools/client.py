@@ -3,73 +3,71 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-# EZID command line client.  Input metadata (from command line
-# parameters and files) is assumed to be UTF-8 encoded, and output
-# metadata is UTF-8 encoded, unless overriden by the -e option.  By
-# default, ANVL responses (currently, that's all responses) are left
-# in %-encoded form.
-#
-# Usage: client [options] server credentials operation...
-#
-#   options:
-#     -d          decode ANVL responses
-#     -e ENCODING character encoding; defaults to UTF-8
-#     -k          disable SSL certificate checking
-#     -l          disable external service updates
-#     -o          one line per ANVL value: convert newlines to spaces
-#     -t          format timestamps
-#
-#   server:
-#     l (local server, no https)
-#     s (staging)
-#     p (production)
-#     http[s]://...
-#
-#   credentials:
-#     username:password
-#     username (password will be prompted for)
-#     sessionid=... (as returned by previous login)
-#     - (none)
-#
-#   operation:
-#     m[int] shoulder [element value ...]
-#     c[reate][!] identifier [element value ...]
-#       create! = create or update
-#     v[iew][!] identifier
-#       view! = match longest identifier prefix
-#     u[pdate] identifier [element value ...]
-#     d[elete] identifier
-#     login
-#     logout
-#     s[tatus] [detailed] [*|subsystemlist]
-#     V[ersion]
-#     p[ause] {on|off|idlewait|monitor}
-#     r[eload]
-#
-# In the above, if an element is "@", the subsequent value is treated
-# as a filename and metadata elements are read from the named
-# ANVL-formatted file.  For example, if file metadata.txt contains:
-#
-#   erc.who: Proust, Marcel
-#   erc.what: Remembrance of Things Past
-#   erc.when: 1922
-#
-# then an identifier with that metadata can be minted by invoking:
-#
-#   client p username:password mint ark:/99999/fk4 @ metadata.txt
-#
-# Otherwise, if a value has the form "@filename", a (single) value is
-# read from the named file.  For example, if file metadata.xml
-# contains a DataCite XML record, then an identifier with that record
-# as the value of the 'datacite' element can be minted by invoking:
-#
-#   client p username:password mint doi:10.5072/FK2 datacite @metadata.xml
-#
-# In both of the above cases, the interpretation of @ can be defeated
-# by doubling it.
-#
-# Greg Janee <gjanee@ucop.edu>
-# May 2013
+"""EZID command line client
+
+Input metadata (from command line parameters and files) is assumed to be UTF-8 encoded,
+and output metadata is UTF-8 encoded, unless overriden by the -e option.  By default,
+ANVL responses (currently, that's all responses) are left in %-encoded form.
+
+Usage: client [options] server credentials operation...
+
+  options:
+    -d          decode ANVL responses
+    -e ENCODING character encoding; defaults to UTF-8
+    -k          disable SSL certificate checking
+    -l          disable external service updates
+    -o          one line per ANVL value: convert newlines to spaces
+    -t          format timestamps
+
+  server:
+    l (local server, no https)
+    s (staging)
+    p (production)
+    http[s]://...
+
+  credentials:
+    username:password
+    username (password will be prompted for)
+    sessionid=... (as returned by previous login)
+    - (none)
+
+  operation:
+    m[int] shoulder [element value ...]
+    c[reate][!] identifier [element value ...]
+      create! = create or update
+    v[iew][!] identifier
+      view! = match longest identifier prefix
+    u[pdate] identifier [element value ...]
+    d[elete] identifier
+    login
+    logout
+    s[tatus] [detailed] [*|subsystemlist]
+    V[ersion]
+    p[ause] {on|off|idlewait|monitor}
+    r[eload]
+
+In the above, if an element is "@", the subsequent value is treated as a filename and
+metadata elements are read from the named ANVL-formatted file.  For example, if file
+metadata.txt contains:
+
+  erc.who: Proust, Marcel
+  erc.what: Remembrance of Things Past
+  erc.when: 1922
+
+then an identifier with that metadata can be minted by invoking:
+
+  client p username:password mint ark:/99999/fk4 @ metadata.txt
+
+Otherwise, if a value has the form "@filename", a (single) value is read from the named
+file.  For example, if file metadata.xml contains a DataCite XML record, then an
+identifier with that record as the value of the 'datacite' element can be minted by
+invoking:
+
+  client p username:password mint doi:10.5072/FK2 datacite @metadata.xml
+
+In both of the above cases, the interpretation of @ can be defeated
+by doubling it.
+"""
 
 import codecs
 import getpass
