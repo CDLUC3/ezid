@@ -44,7 +44,9 @@ from ezidapp.models.user import User
 
 # Enable access to application logging
 import logging
+
 logger = logging.getLogger(__name__)
+
 
 class SuperuserSite(django.contrib.admin.sites.AdminSite):
     # This administrative site allows full access.
@@ -135,7 +137,7 @@ class GroupInline(django.contrib.admin.TabularInline):
 
     def groupLink(self, obj):
         link = django.urls.reverse("admin:ezidapp_group_change", args=[obj.group.id])
-        return f'<a href="{link}">{obj.group.groupname}</a>'
+        return django.utils.html.format_html('<a href="{}">{}</a>', link, obj.group.groupname)
 
     groupLink.allow_tags = True
     groupLink.short_description = "groupname"
@@ -167,7 +169,7 @@ class UserInlineForShoulder(django.contrib.admin.TabularInline):
 
     def userLink(self, obj):
         link = django.urls.reverse("admin:ezidapp_user_change", args=[obj.user.id])
-        return f'<a href="{link}">{obj.user.username}</a>'
+        return django.utils.html.format_html('<a href="{}">{}</a>', link, obj.user.username)
 
     userLink.allow_tags = True
     userLink.short_description = "username"
@@ -209,7 +211,7 @@ class ShoulderAdmin(django.contrib.admin.ModelAdmin):
 
     def datacenterLink(self, obj):
         link = django.urls.reverse("admin:ezidapp_datacenter_change", args=[obj.datacenter.id])
-        return f'<a href="{link}">{obj.datacenter.symbol}</a>'
+        return django.utils.html.format_html('<a href="{}">{}</a>', link, obj.datacenter.symbol)
 
     datacenterLink.allow_tags = True
     datacenterLink.short_description = "datacenter"
@@ -250,7 +252,7 @@ class ShoulderInline(django.contrib.admin.TabularInline):
 
     def shoulderLink(self, obj):
         link = django.urls.reverse("admin:ezidapp_shoulder_change", args=[obj.id])
-        return f'<a href="{link}">{obj.prefix}</a>'
+        return django.utils.html.format_html('<a href="{}">{}</a>', link, obj.prefix)
 
     shoulderLink.allow_tags = True
     shoulderLink.short_description = "prefix"
@@ -560,7 +562,7 @@ class UserInlineForGroup(django.contrib.admin.TabularInline):
 
     def userLink(self, obj):
         link = django.urls.reverse("admin:ezidapp_user_change", args=[obj.id])
-        return f'<a href="{link}">{obj.username}</a>'
+        return django.utils.html.format_html('<a href="{}">{}</a>', link, obj.username)
 
     userLink.allow_tags = True
     userLink.short_description = "username"
@@ -683,13 +685,16 @@ class GroupAdmin(django.contrib.admin.ModelAdmin):
     organizationNameSpelledOut.short_description = "organization name"
 
     def shoulderLinks(self, obj):
-        return "<br/>".join(
-            '<a href="{}">{} ({})</a>'.format(
-                django.urls.reverse("admin:ezidapp_shoulder_change", args=[s.id]),
-                django.utils.html.escape(s.name),
-                s.prefix,
+        return django.utils.html.mark_safe(
+            "<br/>".join(
+                django.utils.html.format_html(
+                    '<a href="{}">{} ({})</a>',
+                    django.urls.reverse("admin:ezidapp_shoulder_change", args=[s.id]),
+                    s.name,
+                    s.prefix,
+                )
+                for s in obj.shoulders.all().order_by("name", "type")
             )
-            for s in obj.shoulders.all().order_by("name", "type")
         )
 
     shoulderLinks.allow_tags = True
@@ -754,17 +759,17 @@ class GroupAdmin(django.contrib.admin.ModelAdmin):
             obj.save()
             # In the python3 version, this was used to create an
             # instance of SearchGroup to mirror obj (which is a Group)
-            #Group.objects.filter(pid=obj.pid).update(groupname=obj.groupname)
+            # Group.objects.filter(pid=obj.pid).update(groupname=obj.groupname)
         else:
             # See above note on sg
-            #sg = Group(
+            # sg = Group(
             #    pid=obj.pid,
             #    groupname=obj.groupname,
             #    realm=Realm.objects.get(name=obj.realm.name),
-            #)
-            #sg.full_clean()
+            # )
+            # sg.full_clean()
             obj.save()
-            #sg.save()
+            # sg.save()
         # Our actions won't take effect until the Django admin's
         # transaction commits sometime in the future, so we defer clearing
         # the relevant caches.  While not obvious, the following calls
@@ -986,7 +991,7 @@ def createOrUpdateUserPid(request, obj, change):
 class UserAdmin(django.contrib.admin.ModelAdmin):
     def groupLink(self, obj):
         link = django.urls.reverse("admin:ezidapp_group_change", args=[obj.group.id])
-        return f'<a href="{link}">{obj.group.groupname}</a>'
+        return django.utils.html.format_html('<a href="{}">{}</a>', link, obj.group.groupname)
 
     groupLink.allow_tags = True
     groupLink.short_description = "group"
@@ -997,39 +1002,48 @@ class UserAdmin(django.contrib.admin.ModelAdmin):
     groupGroupname.short_description = "group"
 
     def shoulderLinks(self, obj):
-        return "<br/>".join(
-            '<a href="{}">{} ({})</a>'.format(
-                django.urls.reverse("admin:ezidapp_shoulder_change", args=[s.id]),
-                django.utils.html.escape(s.name),
-                s.prefix,
+        return django.utils.html.mark_safe(
+            "<br/>".join(
+                django.utils.html.format_html(
+                    '<a href="{}">{} ({})</a>',
+                    django.urls.reverse("admin:ezidapp_shoulder_change", args=[s.id]),
+                    s.name,
+                    s.prefix,
+                )
+                for s in obj.shoulders.all().order_by("name", "type")
             )
-            for s in obj.shoulders.all().order_by("name", "type")
         )
 
     shoulderLinks.allow_tags = True
     shoulderLinks.short_description = "links to shoulders"
 
     def proxyLinks(self, obj):
-        return "<br/>".join(
-            '<a href="{}">{} ({})</a>'.format(
-                django.urls.reverse("admin:ezidapp_user_change", args=[u.id]),
-                u.username,
-                django.utils.html.escape(u.displayName),
+        return django.utils.html.mark_safe(
+            "<br/>".join(
+                django.utils.html.format_html(
+                    '<a href="{}">{} ({})</a>',
+                    django.urls.reverse("admin:ezidapp_user_change", args=[u.id]),
+                    u.username,
+                    django.utils.html.escape(u.displayName),
+                )
+                for u in obj.proxies.all().order_by("username")
             )
-            for u in obj.proxies.all().order_by("username")
         )
 
     proxyLinks.allow_tags = True
     proxyLinks.short_description = "links to proxies"
 
     def reverseProxyLinks(self, obj):
-        return "<br/>".join(
-            '<a href="{}">{} ({})</a>'.format(
-                django.urls.reverse("admin:ezidapp_user_change", args=[u.id]),
-                u.username,
-                django.utils.html.escape(u.displayName),
+        return django.utils.html.mark_safe(
+            "<br/>".join(
+                django.utils.html.format_html(
+                    '<a href="{}">{} ({})</a>',
+                    django.urls.reverse("admin:ezidapp_user_change", args=[u.id]),
+                    u.username,
+                    django.utils.html.escape(u.displayName),
+                )
+                for u in obj.proxy_for.all().order_by("username")
             )
-            for u in obj.proxy_for.all().order_by("username")
         )
 
     reverseProxyLinks.allow_tags = True
