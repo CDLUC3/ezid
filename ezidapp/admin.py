@@ -42,6 +42,9 @@ from ezidapp.models.shoulder import Shoulder
 from ezidapp.models.user import User
 from ezidapp.models.user import User
 
+# Enable access to application logging
+import logging
+logger = logging.getLogger(__name__)
 
 class SuperuserSite(django.contrib.admin.sites.AdminSite):
     # This administrative site allows full access.
@@ -589,6 +592,7 @@ def createOrUpdateGroupPid(request, obj, change):
     import impl.log
 
     f = impl.ezid.setMetadata if change else impl.ezid.createIdentifier
+    logger.debug('createOrUpdateGroupPid, f= %s', f)
     r = f(
         obj.pid,
         ezidapp.models.util.getAdminUser(),
@@ -608,6 +612,7 @@ def createOrUpdateGroupPid(request, obj, change):
             "ezid.group.notes": obj.notes,
         },
     )
+    logger.debug('createOrUpdateGroupPid, r= %s', r)
     if r.startswith("success:"):
         django.contrib.messages.success(request, f"Group PID {'updated' if change else 'created'}.")
     else:
@@ -743,18 +748,23 @@ class GroupAdmin(django.contrib.admin.ModelAdmin):
     form = GroupForm
 
     def save_model(self, request, obj, form, change):
+        # obj is an instance of Group
+        logger.debug("save_model, obj(%s) = %s", type(obj).__name__, obj)
         if change:
             obj.save()
-            Group.objects.filter(pid=obj.pid).update(groupname=obj.groupname)
+            # In the python3 version, this was used to create an
+            # instance of SearchGroup to mirror obj (which is a Group)
+            #Group.objects.filter(pid=obj.pid).update(groupname=obj.groupname)
         else:
-            sg = Group(
-                pid=obj.pid,
-                groupname=obj.groupname,
-                realm=Realm.objects.get(name=obj.realm.name),
-            )
-            sg.full_clean()
+            # See above note on sg
+            #sg = Group(
+            #    pid=obj.pid,
+            #    groupname=obj.groupname,
+            #    realm=Realm.objects.get(name=obj.realm.name),
+            #)
+            #sg.full_clean()
             obj.save()
-            sg.save()
+            #sg.save()
         # Our actions won't take effect until the Django admin's
         # transaction commits sometime in the future, so we defer clearing
         # the relevant caches.  While not obvious, the following calls
