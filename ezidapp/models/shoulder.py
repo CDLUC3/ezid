@@ -163,6 +163,9 @@ class Shoulder(django.db.models.Model):
     date = django.db.models.DateField(null=True, blank=True, editable=False)
     isSupershoulder = django.db.models.BooleanField(default=False, editable=False)
 
+    def __str__(self):
+        return f"{self.name} ({self.prefix})"
+
 
 def getAllShoulders():
     # Returns all shoulders as a list.
