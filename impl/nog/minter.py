@@ -46,10 +46,6 @@ BerkeleyDB keys (EZID names / N2T names):
   to max_combined_count / max_per_counter.
 """
 
-
-#  Copyright©2021, Regents of the University of California
-#  http://creativecommons.org/licenses/BSD
-
 import logging
 import re
 

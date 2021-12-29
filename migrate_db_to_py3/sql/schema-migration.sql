@@ -248,6 +248,17 @@ create table ezidapp_downloadqueue (
     charset = utf8mb4
 ;
 
+
+drop table if exists ezidapp_refidentifier;
+
+create table ezidapp_refidentifier like ezidapp_identifier;
+
+alter table ezidapp_refidentifier
+change column identifier identifier varchar(255)
+character set ascii collate ascii_bin not null
+;
+
+
 #@#
 
 # Create fulltext indexes (must be done one at a time). 30 min?
@@ -343,6 +354,11 @@ add key `ezidapp_searchidentifier_ownergroup_id_39b7cdc64bc267c3_idx`(`ownergrou
 # 3023677 | ezidapp_searchidentifier_owner_id_5b203a171bdbab38_idx
 alter table ezidapp_searchidentifier
 add key `ezidapp_searchidentifier_owner_id_5b203a171bdbab38_idx`(`owner_id`, `status`);
+/*
+ * Copyright©2021, Regents of the University of California
+ * http://creativecommons.org/licenses/BSD
+ */
+
 # 3001925 | ezidapp_searchidentifier_owner_id_58dfc6401ef0e359_idx
 alter table ezidapp_searchidentifier
 add key `ezidapp_searchidentifier_owner_id_58dfc6401ef0e359_idx`(`owner_id`, `crossrefStatus`);

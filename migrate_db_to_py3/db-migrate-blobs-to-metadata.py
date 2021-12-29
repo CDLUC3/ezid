@@ -25,7 +25,6 @@ import zlib
 import mysql.connector
 import mysql.connector.cursor
 
-
 log = logging.getLogger(__name__)
 
 BATCH_SIZE = 100_000
@@ -34,7 +33,7 @@ POOL_CHUNK_SIZE = 1000
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('table', choices=['store', 'search'])
+    parser.add_argument('table', choices=['store', 'search', ''])
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -73,7 +72,9 @@ class MigrateBlobsToMetadata:
 
         with connect(self.conn_args) as conn:
             cursor = conn.cursor()
-            # conn.autocommit = False
+
+            conn.autocommit = True
+
             cursor.execute('set unique_checks = 0', {})
             cursor.execute('set foreign_key_checks = 0', {})
 
@@ -139,6 +140,7 @@ def proc_blob(conn_args, table_str, args):
             use_pure=False,
             **conn_args,
         )
+        proc_blob.conn.autocommit = True
 
     try:
         json_str, op_list = decode(blob_bytes)
@@ -146,8 +148,10 @@ def proc_blob(conn_args, table_str, args):
         log.error(f'Decode error: {str(e)}')
         return
 
-    # JSON will be both validated and normalized by MySQL
+    # if not isinstance(json_str, str):
+    # log.info(f'{row_id} {op_list} - {json_str}')
 
+    # JSON will be both validated and normalized by MySQL
     proc_blob.conn.cursor().execute(
         f"""
         update ezidapp_{table_str}identifier

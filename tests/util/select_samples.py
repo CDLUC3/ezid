@@ -9,9 +9,6 @@ The selected metadata docs should be representative for what's in the database, 
 usable for tests
 """
 
-#  Copyright©2021, Regents of the University of California
-#  http://creativecommons.org/licenses/BSD
-
 import logging
 import lzma
 import math

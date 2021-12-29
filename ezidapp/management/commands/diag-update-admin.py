@@ -20,9 +20,6 @@ information in a user account, the admin user is created both as a Django superu
 Django and as a user flagged with elevated access in EZID's custom authentication system
 """
 
-#  Copyright©2021, Regents of the University of California
-#  http://creativecommons.org/licenses/BSD
-
 import datetime
 
 import django.conf
@@ -37,7 +34,7 @@ import ezidapp.models.user
 
 NOW_TS = datetime.datetime.now()
 
-ADMIN_MODEL_DICT = {
+SETTINGS_DICT = {
     # Django standard user authentication
     'auth.user': {
         'date_joined': NOW_TS,
@@ -48,39 +45,14 @@ ADMIN_MODEL_DICT = {
         'is_superuser': True,
         'last_login': NOW_TS,
         'last_name': '',
-        # 'username': django.conf.settings.ADMIN_USERNAME,
+        'username': django.conf.settings.ADMIN_USERNAME,
         'password': django.conf.settings.ADMIN_PASSWORD,
     },
-    'contenttypes.contenttype': {
-        'app_label': 'admin',
-        'model': 'logentry',
-    },
     # EZID custom user authentication
-    'ezidapp.Realm': {
+    'realm': {
         "name": django.conf.settings.ADMIN_REALM,
     },
-    'ezidapp.user': {
-        'accountEmail': django.conf.settings.ADMIN_EMAIL,
-        'crossrefEmail': django.conf.settings.ADMIN_CROSSREF_EMAIL,
-        'crossrefEnabled': django.conf.settings.ADMIN_CROSSREF_ENABLED,
-        'displayName': django.conf.settings.ADMIN_DISPLAY_NAME,
-        'inheritGroupShoulders': False,
-        'isGroupAdministrator': False,
-        'isRealmAdministrator': False,
-        'isSuperuser': True,
-        'loginEnabled': True,
-        'notes': django.conf.settings.ADMIN_NOTES,
-        # 'password': django.conf.settings.ADMIN_PASSWORD,
-        'pid': django.conf.settings.ADMIN_USER_PID,
-        'primaryContactEmail': django.conf.settings.ADMIN_PRIMARY_CONTACT_EMAIL,
-        'primaryContactName': django.conf.settings.ADMIN_PRIMARY_CONTACT_NAME,
-        'primaryContactPhone': django.conf.settings.ADMIN_PRIMARY_CONTACT_PHONE,
-        'secondaryContactEmail': django.conf.settings.ADMIN_SECONDARY_CONTACT_EMAIL,
-        'secondaryContactName': django.conf.settings.ADMIN_SECONDARY_CONTACT_NAME,
-        'secondaryContactPhone': django.conf.settings.ADMIN_SECONDARY_CONTACT_PHONE,
-        'username': django.conf.settings.ADMIN_USERNAME,
-    },
-    'ezidapp.group': {
+    'group': {
         'accountType': '',
         'agreementOnFile': False,
         'crossrefEnabled': django.conf.settings.ADMIN_CROSSREF_ENABLED,
@@ -91,6 +63,26 @@ ADMIN_MODEL_DICT = {
         'organizationStreetAddress': '(:unap)',
         'organizationUrl': django.conf.settings.ADMIN_ORG_URL,
         'pid': django.conf.settings.ADMIN_GROUP_PID,
+    },
+    'user': {
+        'accountEmail': django.conf.settings.ADMIN_EMAIL,
+        'crossrefEmail': django.conf.settings.ADMIN_CROSSREF_EMAIL,
+        'crossrefEnabled': django.conf.settings.ADMIN_CROSSREF_ENABLED,
+        'displayName': django.conf.settings.ADMIN_DISPLAY_NAME,
+        'inheritGroupShoulders': False,
+        'isGroupAdministrator': False,
+        'isRealmAdministrator': False,
+        'isSuperuser': True,
+        'loginEnabled': True,
+        'notes': django.conf.settings.ADMIN_NOTES,
+        'pid': django.conf.settings.ADMIN_USER_PID,
+        'primaryContactEmail': django.conf.settings.ADMIN_PRIMARY_CONTACT_EMAIL,
+        'primaryContactName': django.conf.settings.ADMIN_PRIMARY_CONTACT_NAME,
+        'primaryContactPhone': django.conf.settings.ADMIN_PRIMARY_CONTACT_PHONE,
+        'secondaryContactEmail': django.conf.settings.ADMIN_SECONDARY_CONTACT_EMAIL,
+        'secondaryContactName': django.conf.settings.ADMIN_SECONDARY_CONTACT_NAME,
+        'secondaryContactPhone': django.conf.settings.ADMIN_SECONDARY_CONTACT_PHONE,
+        'username': django.conf.settings.ADMIN_USERNAME,
     },
 }
 
@@ -105,41 +97,40 @@ class Command(django.core.management.BaseCommand):
         user_model = django.contrib.auth.get_user_model()
 
         with django.db.transaction.atomic():
-            if not user_model.objects.filter(
-                username=django.conf.settings.ADMIN_USERNAME
-            ).exists():
+            if not user_model.objects.filter(username=django.conf.settings.ADMIN_USERNAME).exists():
                 user_model.objects.create_superuser(
-                    **ADMIN_MODEL_DICT['auth.user'],
-                    username=django.conf.settings.ADMIN_USERNAME
+                    **SETTINGS_DICT['auth.user'],
+                    username=django.conf.settings.ADMIN_USERNAME,
                 )
 
-        user = user_model.objects.get(username=django.conf.settings.ADMIN_USERNAME)
+        user = user_model.objects.get(
+            username=django.conf.settings.ADMIN_USERNAME,
+        )
         user.set_password(django.conf.settings.ADMIN_PASSWORD)
         user.save()
 
         # EZID custom auth
 
-        realm = ezidapp.models.realm.Realm.objects.update_or_create(
-            defaults=ADMIN_MODEL_DICT['ezidapp.Realm'], name='CDL'
-        )[0]
-        group = ezidapp.models.group.Group.objects.update_or_create(
+        realm, _created = ezidapp.models.realm.Realm.objects.update_or_create(
+            name=SETTINGS_DICT['realm']['name'],
+            defaults=SETTINGS_DICT['realm'],
+        )
+
+        group, _created = ezidapp.models.group.Group.objects.update_or_create(
+            pid=django.conf.settings.ADMIN_GROUP_PID,
             defaults={
-                **ADMIN_MODEL_DICT['ezidapp.group'],
-                # **{
+                **SETTINGS_DICT['group'],
                 'realm': realm,
-                'groupname': django.conf.settings.ADMIN_GROUPNAME,
-                # },
             },
-            groupname=django.conf.settings.ADMIN_GROUPNAME,
-        )[0]
-        user = ezidapp.models.user.User.objects.update_or_create(
+        )
+
+        user, _created = ezidapp.models.user.User.objects.update_or_create(
+            pid=django.conf.settings.ADMIN_USER_PID,
             defaults={
-                **ADMIN_MODEL_DICT['ezidapp.user'],
+                **SETTINGS_DICT['user'],
                 'realm': realm,
                 'group': group,
-                'username': django.conf.settings.ADMIN_USERNAME,
             },
-            username='admin',
-        )[0]
+        )
         user.setPassword(django.conf.settings.ADMIN_PASSWORD)
         user.save()

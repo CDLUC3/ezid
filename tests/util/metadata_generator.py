@@ -11,8 +11,6 @@ been modified to indicate that they are generic test objects.
 The XML data is modified for each metadata object in which they are used, then combined
 with key/value pairs require by the EZID API, then formatted to ANVL.
 """
-#  Copyright©2021, Regents of the University of California
-#  http://creativecommons.org/licenses/BSD
 
 import logging
 

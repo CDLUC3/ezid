@@ -17,16 +17,9 @@ jobs:
           python-version: '3.9'
           architecture: 'x64'
 
-      - name: Prepare DB
+      - name: Start MySQL service
         run: |
           sudo /etc/init.d/mysql start
-          mysql -h127.0.0.1 -uroot -proot << EOF
-            create database if not exists ezid_test_db;
-            use ezid_test_db;
-            create user 'ezid_test_user'@'%' identified by 'ezid_test_pw';
-            grant all privileges on *.* to 'ezid_test_user'@'%';
-            flush privileges;
-          EOF
 
       - name: Install packaged deps
         run: |
@@ -37,7 +30,7 @@ jobs:
           pip install --upgrade pip setuptools wheel
           pip install -r ./requirements-dev.txt
 
-      - name: Dump environment
+      - name: Dump environment (for troubleshooting)
         run: |
           printf 'PYTHONPATH: %s\n' "$PYTHONPATH"
           # apt-cache pkgnames | sort
@@ -53,25 +46,39 @@ jobs:
           #  select prefix, minter from ezidapp_shoulder;
           # '
 
+      - name: Prepare DB
+        run: |
+          mysql -h127.0.0.1 -uroot -proot << EOF
+            drop database if exists ezid_test_db;
+            create database ezid_test_db;
+            use ezid_test_db;
+            drop user if exists 'ezid_test_user'@'%';
+            create user 'ezid_test_user'@'%' identified by 'ezid_test_pw';
+            grant all privileges on ezid_test_db.* to 'ezid_test_user'@'%';
+            flush privileges;
+          EOF
 
-      - name: Prepare fixtures
+      - name: Prepare filesystem
         run: |
           mkdir -p ../download/public ../logs
-          ./manage.py makemigrations --merge --no-input
+
+      - name: Setup DB and static files
+        run: |
+          # ./manage.py makemigrations --merge --no-input
+          # ./manage.py makemigrations ezidapp
           ./manage.py migrate
           ./manage.py collectstatic --no-input
 
-          ./manage.py loaddata --ignorenonexistent db-fixture
-          #./manage.py loaddata --ignorenonexistent search-init
-          #./manage.py loaddata --ignorenonexistent combined-limited
-
+      - name: Load DB fixture
+        run: |
+          # ./manage.py loaddata --ignorenonexistent db
+          ./manage.py loaddata db
           #./manage.py diag-update-admin
 
+      - name: Run tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          pytest --maxfail 10
 
-#      - name: Run tests
-#        env:
-#          PYTHONPATH: ${{ github.workspace }}
-#        run: |
-#          pytest --maxfail 10
-#
-##        - pip install -e .
+#        - pip install -e .

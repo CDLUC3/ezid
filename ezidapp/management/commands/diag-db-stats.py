@@ -12,15 +12,8 @@ model search that Django performs at startup. If any models are missing, it indi
 the model search.
 """
 
-#  Copyright©2021, Regents of the University of California
-#  http://creativecommons.org/licenses/BSD
-
-import ezidapp.models.identifier
 import contextlib
-import json
 import logging
-import pprint
-import sys
 
 import django.apps
 import django.conf
@@ -28,9 +21,9 @@ import django.contrib.auth.models
 import django.core.management
 import django.db.models
 import django.db.transaction
-import pymysql.cursors
 
 import ezidapp.models.async_queue
+import ezidapp.models.identifier
 import impl.enqueue
 import impl.nog.counter
 import impl.nog.tb

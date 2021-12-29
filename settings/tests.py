@@ -1,20 +1,17 @@
-# Copyright©2021, Regents of the University of California
-# http://creativecommons.org/licenses/BSD
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
 
 """EZID settings
 
 """
 
-import collections
 import logging.config
 import os
 import pathlib
 import socket
 import sys
-import ecs_logging
 
 import django.utils.translation
-
 
 # When DEBUG == True, any errors in EZID are returned to the user as pages containing
 # full stack traces and additional information. Should only be used for development.
@@ -29,13 +26,11 @@ STANDALONE = False
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-
         'HOST': 'localhost',
         'NAME': 'ezid_test_db',
         'USER': 'ezid_test_user',
         'PASSWORD': 'ezid_test_pw',
         'PORT': '3306',
-
         'OPTIONS': {'charset': 'utf8mb4'},
         'ATOMIC_REQUESTS': False,
         'AUTOCOMMIT': True,
@@ -87,7 +82,7 @@ TEMPLATE_DIR = PROJECT_ROOT / 'templates'  # /apps/ezid/ezid/templates
 # Dirs above PROJECT_ROOT
 HOME_DIR = (PROJECT_ROOT / '..').resolve()  # /apps/ezid
 MINTERS_PATH = HOME_DIR / 'var' / 'minters'  # /apps/ezid/var/minters
-LOG_DIR = HOME_DIR / 'logs'  # /apps/ezid/logs
+LOG_DIR = HOME_DIR / 'logs' # /apps/ezid/logs
 
 ROOT_URLCONF = 'settings.urls'
 
@@ -123,7 +118,7 @@ STATICFILES_DIRS = [
 # - False: Daemons cannot run. They are disabled regardless of the DAEMONS_*_ENABLED
 #   settings listed below.
 # - 'auto': Set to True if EZID is running under Apache / mod_wsgi, False otherwise.
-DAEMONS_ENABLED = 'auto'
+DAEMONS_ENABLED = True
 
 assert DAEMONS_ENABLED in (True, False, 'auto')
 if DAEMONS_ENABLED == 'auto':
@@ -135,6 +130,7 @@ if DAEMONS_ENABLED == 'auto':
 # - See the DAEMONS_ENABLED setting above.
 DAEMONS_SEARCH_INDEXER_ENABLED = True
 DAEMONS_NEWSFEED_ENABLED = True
+DAEMONS_STATISTICS_ENABLED = True
 DAEMONS_STATUS_ENABLED = True
 DAEMONS_BINDER_ENABLED = True
 DAEMONS_DATACITE_ENABLED = True
@@ -147,14 +143,13 @@ DAEMONS_BACKGROUND_PROCESSING_IDLE_SLEEP = 5
 DAEMONS_STATUS_LOGGING_INTERVAL = 60
 DAEMONS_BINDER_PROCESSING_IDLE_SLEEP = 5
 DAEMONS_BINDER_PROCESSING_ERROR_SLEEP = 300
-DAEMONS_BINDER_NUM_WORKER_THREADS = 3
 DAEMONS_DATACITE_PROCESSING_IDLE_SLEEP = 5
 DAEMONS_DATACITE_PROCESSING_ERROR_SLEEP = 300
-DAEMONS_DATACITE_NUM_WORKER_THREADS = 3
 DAEMONS_CROSSREF_PROCESSING_IDLE_SLEEP = 60
 DAEMONS_DOWNLOAD_PROCESSING_IDLE_SLEEP = 10
 DAEMONS_STATISTICS_COMPUTE_CYCLE = 3600
 DAEMONS_STATISTICS_COMPUTE_SAME_TIME_OF_DAY = True
+DAEMONS_MATCH_BATCH_SIZE = 100
 
 MAX_CONCURRENT_OPERATIONS_PER_USER = 4
 MAX_THREADS_PER_USER = 16
@@ -215,16 +210,18 @@ logging.config.dictConfig(
             'simple': {'format': '%(asctime)s %(levelname)8s %(message)s'},
             'verbose': {
                 'format': (
-                    '%(levelname)8s %(name)8s %(module)s ' '%(process)d %(thread)s %(message)s'
+                    '%(levelname)8s %(name)8s %(module)s '
+                    '%(process)d %(thread)s %(message)s'
                 ),
             },
             'trace': {
                 'format': (
-                    '%(asctime)s %(levelname)s ' '%(module)s.%(funcName)s:%(lineno)s: %(message)s'
+                    '%(asctime)s %(levelname)s '
+                    '%(module)s.%(funcName)s:%(lineno)s: %(message)s'
                 )
             },
             'ecs_logging': {
-                'class': 'ecs_logging.StdlibFormatter',
+                 'class': 'ecs_logging.StdlibFormatter',
             },
         },
         'handlers': {
@@ -234,67 +231,58 @@ logging.config.dictConfig(
                 'formatter': 'verbose',
                 'stream': sys.stdout,
             },
-            # 'request_log': {
-            #     'level': 'DEBUG',
-            #     'class': 'logging.FileHandler',
-            #     'filename': LOG_DIR / 'request.log',
-            #     'formatter': 'simple',
-            # },
-            # 'trace_log': {
-            #     'level': 'DEBUG',
-            #     'class': 'logging.FileHandler',
-            #     'filename': LOG_DIR / 'trace.log',
-            #     'formatter': 'trace',
-            # },
-            # 'ecs_json': {
-            #     'level': 'DEBUG',
-            #     'class': 'logging.FileHandler',
-            #     'filename': LOG_DIR / 'ecs_json.log',
-            #     'formatter': "ecs_logging"
-            # },
+            'request_log': {
+                'level': 'DEBUG',
+                'class': 'logging.FileHandler',
+                'filename': LOG_DIR / 'request.log',
+                'formatter': 'simple',
+            },
+            'trace_log': {
+                'level': 'DEBUG',
+                'class': 'logging.FileHandler',
+                'filename': LOG_DIR / 'trace.log',
+                'formatter': 'trace',
+            },
+            'ecs_json': {
+                'level': 'DEBUG',
+                'class': 'logging.FileHandler',
+                'filename': LOG_DIR / 'ecs_json.log',
+                'formatter': "ecs_logging"
+            },
         },
         'loggers': {
             '': {
-                'handlers': [
-                    # 'request_log',
-                    # 'trace_log',
-                    # 'ecs_json',
-                ],
+                'handlers': ['request_log', 'trace_log', 'ecs_json'],
                 'propagate': True,
                 'level': 'DEBUG',
             },
             # Increase logging level on loggers that are noisy at debug level
             # Note: django.server logs at warning level for 404s.
             'django.server': {
-                'level': 'DEBUG',
-                # 'level': 'ERROR',
+                # 'level': 'DEBUG',
+                'level': 'ERROR',
             },
             'django.db': {
-                'level': 'DEBUG',
-                # 'level': 'ERROR',
+                # 'level': 'DEBUG',
+                'level': 'ERROR',
             },
             'django.request': {
-                'level': 'DEBUG',
-                # 'level': 'ERROR',
+                'level': 'ERROR',
             },
             # TODO: Look into messages about missing variables in templates
             'django.template': {
                 'level': 'INFO',
             },
             'filelock': {
-                'level': 'DEBUG',
-                # 'level': 'ERROR',
+                'level': 'ERROR',
             },
             'django.utils.autoreload': {
-                'level': 'DEBUG',
-                # 'level': 'ERROR',
+                'level': 'ERROR',
             },
             'botocore': {'level': 'ERROR'},
             # Suppress 'Using selector: EpollSelector'
             'asyncio': {
-                # 'level': 'DEBUG',
                 'level': 'WARNING',
-                # 'level': 'ERROR',
             },
         },
     }
@@ -341,29 +329,29 @@ SESSION_COOKIE_PATH = '/'
 ADMIN_USERNAME = 'admin'
 ADMIN_PASSWORD = 'admin'
 
-ADMIN_GROUPNAME = ''
+ADMIN_GROUPNAME = 'admin'
 ADMIN_NOTES = ''
-ADMIN_EMAIL = ''
-ADMIN_DISPLAY_NAME = ''
+ADMIN_EMAIL = 'ezid@ucop.edu'
+ADMIN_DISPLAY_NAME = 'EZID superuser'
 
-ADMIN_ORG_ACRONYM = ''
-ADMIN_ORG_NAME = ''
-ADMIN_ORG_URL = ''
+ADMIN_ORG_ACRONYM = 'CDL'
+ADMIN_ORG_NAME = 'EZID'
+ADMIN_ORG_URL = 'http://ezid.cdlib.org/'
 
 ADMIN_CROSSREF_EMAIL = ''
-ADMIN_CROSSREF_ENABLED = True
+ADMIN_CROSSREF_ENABLED = False
 
-ADMIN_PRIMARY_CONTACT_EMAIL = ''
-ADMIN_PRIMARY_CONTACT_NAME = ''
+ADMIN_PRIMARY_CONTACT_EMAIL = 'ezid@ucop.edu'
+ADMIN_PRIMARY_CONTACT_NAME = 'EZID superuser'
 ADMIN_PRIMARY_CONTACT_PHONE = ''
 
 ADMIN_SECONDARY_CONTACT_EMAIL = ''
 ADMIN_SECONDARY_CONTACT_NAME = ''
 ADMIN_SECONDARY_CONTACT_PHONE = ''
 
-ADMIN_REALM = ''
-ADMIN_USER_PID = ''
-ADMIN_GROUP_PID = ''
+ADMIN_REALM = 'CDL'
+ADMIN_USER_PID = 'ark:/99166/p9kw57h4w'
+ADMIN_GROUP_PID = 'ark:/99166/p9g44hq02'
 
 # Credentials
 
@@ -433,7 +421,7 @@ DEFAULT_ARK_PROFILE = 'erc'
 DEFAULT_DOI_PROFILE = 'datacite'
 DEFAULT_UUID_PROFILE = 'erc'
 
-PROFILES_KEYS = ['INTERNAL', 'DATACITE', 'DC', 'ERC', 'CROSSREF']
+PROFILES_KEYS = ['INTERNAL','DATACITE','DC','ERC','CROSSREF']
 
 # The INTERNAL profile is special and must be listed first.
 PROFILE_INTERNAL_NAME = 'internal'
@@ -554,21 +542,6 @@ TEMPLATES = [
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 QUERY_PAGE_SIZE = 10000
-
-BlobField = collections.namedtuple('BlobField', ['model', 'field', 'is_queue'])
-
-BLOB_FIELD_LIST = [
-    # metadata = Python or JSON, compound objects
-    BlobField('BinderQueue', 'metadata', True),
-    BlobField('CrossrefQueue', 'metadata', True),
-    BlobField('DataciteQueue', 'metadata', True),
-    # object = Identifier (Model)
-    BlobField('DownloadQueue', 'object', True),
-    # cm = CompressedJsonField (Field)
-    BlobField('Identifier', 'cm', False),
-    BlobField('Identifier', 'cm', False),
-]
-
 
 # print('Installing exception hook')
 # import impl.nog.tb

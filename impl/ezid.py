@@ -34,16 +34,6 @@ import impl.util2
 
 logger = logging.getLogger(__name__)
 
-# Simple locking mechanism to ensure that, in a multi-threaded
-# environment, no given identifier is operated on by two threads
-# simultaneously.  Additionally, we enforce a per-user throttle on
-# concurrent operations.  _activeUsers maps local usernames to the
-# number of operations currently being performed by that user.  For
-# status reporting purposes, _waitingUsers similarly maps local
-# usernames to numbers of waiting requests.  If _paused is true, no
-# new locks are granted, but the mechanism otherwise operates
-# normally.
-
 _lockedIdentifiers = set()
 _activeUsers = {}
 _waitingUsers = {}
