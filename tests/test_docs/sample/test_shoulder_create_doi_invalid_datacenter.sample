@@ -1,5 +1,11 @@
 ERROR impl.nog.shoulder shoulder Datacenter must be one of:
   CDL.CDL
+  CDL.CMU
+  CDL.INVEMAR
+  CDL.LCC
+  CDL.MITLCP
+  CDL.PITT
+  CDL.PQR
   CDL.UCB
   CDL.UCD
   CDL.UCI
@@ -10,3 +16,6 @@ ERROR impl.nog.shoulder shoulder Datacenter must be one of:
   CDL.UCSC
   CDL.UCSD
   CDL.UCSF
+  CDL.USFWS
+  CDL.UTAUSTIN
+  PURDUE.NUL
