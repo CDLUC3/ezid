@@ -4,10 +4,9 @@
 """Support for Electronic Resource Citation (ERC) or "kernel" metadata
 See <http://dublincore.org/groups/kernel/spec/>.
 
-The focus of this module is on basic structural parsing of ERC
-records, not parsing or processing of metadata values.  Thus, of the
-features listed in the ERC specification, only the following are
-supported:
+The focus of this module is on basic structural parsing of ERC records, not parsing or
+processing of metadata values.  Thus, of the features listed in the ERC specification,
+only the following are supported:
 
   basic ANVL/ERC syntax
   repeated values (they're concatenated or listed)
@@ -32,9 +31,9 @@ Extensions:
 
   The "erc:" header may be omitted.
 
-Ideally this module would use anvl.py for basic parsing, but there
-are too many differences between ANVL as EZID uses it and ANVL/ERC
-(e.g., in the percent encodings supported) for that to be possible.
+Ideally this module would use anvl.py for basic parsing, but there are too many
+differences between ANVL as EZID uses it and ANVL/ERC (e.g., in the percent encodings
+supported) for that to be possible.
 """
 
 import re

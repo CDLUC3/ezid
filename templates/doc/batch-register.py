@@ -3,206 +3,192 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-# Batch registers identifiers.  Reads an input CSV file containing
-# identifier metadata, one row per identifier; transforms the metadata
-# into EZID metadata as directed by a configuration file of mappings;
-# creates or mints identifiers, or updates existing identifiers; and
-# outputs a CSV file containing the created, minted, or updated
-# identifiers and other information.
-#
-# All input files are assumed to be UTF-8 encoded, and the output is
-# UTF-8 encoded.
-#
-# Usage: batch-register [options] operation mappings input.csv
-#
-#   operation: create, mint, or update
-#
-#   mappings: configuration file, described below
-#
-#   input.csv: input metadata in CSV form
-#
-#   options:
-#     -c CREDENTIALS  Either username:password, or just username
-#                     (password will be prompted for), or
-#                     sessionid=... (as obtained by using the EZID
-#                     client tool).
-#     -o COLUMNS      Comma-separated list of columns to output.
-#                     Defaults to _n,_id,_error.
-#     -p              Preview mode.  Don't register identifiers;
-#                     instead, write transformed metadata to standard
-#                     output.
-#     -r              Remove any mapping to _id; useful when
-#                     temporarily minting.
-#     -s SHOULDER     The shoulder to mint under, e.g.,
-#                     ark:/99999/fk4.
-#     -t              Tab mode.  The input metadata is tab-separated
-#                     (multiline values and tab characters in values
-#                     are not supported).
-#
-# The mappings file defines how input CSV columns are mapped to EZID
-# metadata elements.  Each line of the file should have the form:
-#
-#   destination = expression
-#
-# The destination in a mapping may be either an EZID element name
-# (erc.who, dc.title, _target, etc.) or an XPath absolute path of a
-# DataCite metadata schema element or attribute (e.g.,
-# /resource/titles/title for an element,
-# /resource/titles/title@titleType for an attribute).  If any XPaths
-# are present, a DataCite XML record is constructed and assigned as
-# the value of EZID element 'datacite'.  A special destination
-# element, _id, should be used to identify the identifier to create or
-# update when performing either of those operations.
-#
-# The expression in a mapping is a string in which zero or more column
-# values may be interpolated.  Columns are referenced using 1-based
-# indexing and may be referred to using the syntaxes "$n" or "${n}".
-# Use "$$" for a literal dollar sign.
-#
-# For example, given an input CSV file with six columns
-#
-#   title,author,orcid,publisher_name,publisher_place,url
-#
-# a complete mapping to mint DOI identifiers would be:
-#
-#   _profile = datacite
-#   /resource/titles/title = $1
-#   /resource/creators/creator/creatorName = $2
-#   /resource/creators/creator/nameIdentifier = $3
-#   /resource/creators/creator/nameIdentifier@nameIdentifierScheme = ORCID
-#   /resource/publisher = $4 ($5)
-#   /resource/publicationYear = 2018
-#   /resource/resourceType@resourceTypeGeneral = Dataset
-#   _target = $6
-#
-# For another example, to update the statuses of a batch of existing
-# identifiers to public, given an input file listing the identifiers
-# (i.e., a CSV file with just one column), a mapping file would be:
-#
-#   _id = $1
-#   _status = public
-#
-# A column may also be referenced as "${n:f}"; in this case the column
-# value will first be passed to a function "f" and the return value of
-# the function will be interpolated.  The referenced function should
-# be defined in a module "functions", which should be supplied by the
-# user of this script (the PYTHONPATH environment variable may need to
-# be set for the module to be found).  Multiple column values can be
-# passed to a function using the syntax "${n1,n2,n3,...:f}".
-#
-# For an example of using a user-supplied function, suppose that the
-# CSV file in the first example above has a seventh column,
-# publication_date, containing an ISO 8601 date.  Then a mapping for
-# the publication year would be
-#
-#   /resource/publicationYear = ${7:year_only}
-#
-# with, in functions.py:
-#
-#   def year_only(v):
-#     return v[:4]
-#
-# Limitations: It is not possible to update just a portion of existing
-# DataCite XML records.  The order of mappings determines the ordering
-# of XML elements.  When mapping to both a DataCite metadata schema
-# element and attribute of that element, the mapping to the element
-# must come first in the mappings file.
-#
-# Multiple mappings to EZID metadata elements and to DataCite metadata
-# schema attributes are not supported; the last mapping overwrites any
-# previous mappings.  But for DataCite metadata schema elements,
-# multiple mappings cause multiple XML elements to be created.
-# Specifically, given an XPath /resource/path/terminus, a new terminus
-# element is created for each mapping.  Continuing with our running
-# example, given eighth and ninth CSV columns
-#
-#   ...,subject1,subject2
-#
-# and additional mappings
-#
-#   /resource/subjects/subject = $8
-#   /resource/subjects/subject = $9
-#
-# then the following XML structure would be created:
-#
-#   <resource>
-#     ...
-#     <subjects>
-#       <subject>$8</subject>
-#       <subject>$9</subject>
-#     </subjects>
-#   </resource>
-#
-# User-supplied functions provide considerably more flexibility in
-# mapping, and are required in certain cases to create the necessary
-# hierarchical DataCite XML structure.  A user-supplied function may
-# return:
-#
-#   1. A string value, as illustrated previously.
-#
-#   2. A tuple (relpath, value) where relpath is an XPath relative
-#      path of a DataCite metadata schema element or attribute, and
-#      value is any valid return from a user-supplied function (i.e.,
-#      a string, tuple, or list).  The path is interpreted relative to
-#      the terminus element in the mapping or, in nested cases, to the
-#      previous contextual node; and the path establishes a new
-#      contextual node against which the value is processed.
-#
-#   3. A list of zero or more tuples.
-#
-# For example, suppose our CSV file has a tenth column containing zero
-# or more editor names separated by semicolons.  A mapping
-#
-#   /resource/contributors = ${10:split_editors}
-#
-# and a function
-#
-#   def split_editors(v):
-#     if v == "":
-#       return ""
-#     else:
-#       return [( "contributor",
-#                 [("contributorName", n), (".@contributorType", "Editor")] )\
-#               for n in v.split(";")]
-#
-# would create the XML structure DataCite requires, namely:
-#
-#   <resource>
-#     <contributors>
-#       <contributor contributorType="Editor">
-#         <contributorName>first editor</contributorName>
-#       </contributor>
-#       <contributor contributorType="Editor">
-#         <contributorName>second editor</contributorName>
-#       </contributor>
-#       ...
-#     </contributors>
-#   </resource>
-#
-# The output, written to standard output, is a CSV file whose columns
-# can be configured using the -o option.  An output column may be any
-# metadata element populated by the above mapping process (referenced by
-# element name) or any input column (referenced by simple integer).
-# Three additional columns may be specified: _n, the record number in
-# the input file; _id, the identifier created, minted, or updated; and
-# _error, the error message in case of registration failure.
-# Continuing the first example, to return three columns, identifier,
-# title, and url, specify
-#
-#   -o _id,1,6
-#
-# The default output is _n,_id,_error.
-#
-# The -p ("preview mode") option can be used to examine the metadata
-# that will be submitted, allowing confirmation that the
-# transformation is operating as expected.  Before running a batch
-# create or mint job it may also be helpful to first mint using a test
-# shoulder to ensure that all metadata is well-formed and accepted.
-# The test shoulders are ark:/99999/fk4 for ARK identifiers and
-# doi:10.5072/FK2 for DOI identifiers.
-#
-# Greg Janee <gjanee@ucop.edu>
-# November 2018
+"""Batch registers identifiers.
+
+Reads an input CSV file containing identifier metadata, one row per identifier;
+transforms the metadata into EZID metadata as directed by a configuration file of
+mappings; creates or mints identifiers, or updates existing identifiers; and outputs a
+CSV file containing the created, minted, or updated identifiers and other information.
+
+All input files are assumed to be UTF-8 encoded, and the output is UTF-8 encoded.
+
+Usage: batch-register [options] operation mappings input.csv
+
+  operation: create, mint, or update
+
+  mappings: configuration file, described below
+
+  input.csv: input metadata in CSV form
+
+
+  options:
+    -c CREDENTIALS  Either username:password, or just username
+                    (password will be prompted for), or
+                    sessionid=... (as obtained by using the EZID
+                    client tool).
+    -o COLUMNS      Comma-separated list of columns to output.
+                    Defaults to _n,_id,_error.
+    -p              Preview mode.  Don't register identifiers;
+                    instead, write transformed metadata to standard
+                    output.
+    -r              Remove any mapping to _id; useful when
+                    temporarily minting.
+    -s SHOULDER     The shoulder to mint under, e.g.,
+                    ark:/99999/fk4.
+    -t              Tab mode.  The input metadata is tab-separated
+                    (multiline values and tab characters in values
+                    are not supported).
+
+The mappings file defines how input CSV columns are mapped to EZID metadata elements.
+Each line of the file should have the form:
+
+  destination = expression
+
+The destination in a mapping may be either an EZID element name (erc.who, dc.title,
+_target, etc.) or an XPath absolute path of a DataCite metadata schema element or
+attribute (e.g., /resource/titles/title for an element, /resource/titles/title@titleType
+for an attribute).  If any XPaths are present, a DataCite XML record is constructed and
+assigned as the value of EZID element 'datacite'.  A special destination element, _id,
+should be used to identify the identifier to create or update when performing either of
+those operations.
+
+The expression in a mapping is a string in which zero or more column values may be
+interpolated.  Columns are referenced using 1-based indexing and may be referred to
+using the syntaxes "$n" or "${n}". Use "$$" for a literal dollar sign.
+
+For example, given an input CSV file with six columns
+
+  title,author,orcid,publisher_name,publisher_place,url
+
+a complete mapping to mint DOI identifiers would be:
+
+  _profile = datacite
+  /resource/titles/title = $1
+  /resource/creators/creator/creatorName = $2
+  /resource/creators/creator/nameIdentifier = $3
+  /resource/creators/creator/nameIdentifier@nameIdentifierScheme = ORCID
+  /resource/publisher = $4 ($5)
+  /resource/publicationYear = 2018
+  /resource/resourceType@resourceTypeGeneral = Dataset
+  _target = $6
+
+For another example, to update the statuses of a batch of existing identifiers to
+public, given an input file listing the identifiers (i.e., a CSV file with just one
+column), a mapping file would be:
+
+  _id = $1
+  _status = public
+
+A column may also be referenced as "${n:f}"; in this case the column value will first be
+passed to a function "f" and the return value of the function will be interpolated.  The
+referenced function should be defined in a module "functions", which should be supplied
+by the user of this script (the PYTHONPATH environment variable may need to be set for
+the module to be found).  Multiple column values can be passed to a function using the
+syntax "${n1,n2,n3,...:f}".
+
+For an example of using a user-supplied function, suppose that the CSV file in the first
+example above has a seventh column, publication_date, containing an ISO 8601 date.  Then
+a mapping for the publication year would be
+
+  /resource/publicationYear = ${7:year_only}
+
+with, in functions.py:
+
+  def year_only(v):
+    return v[:4]
+
+Limitations: It is not possible to update just a portion of existing DataCite XML
+records.  The order of mappings determines the ordering of XML elements.  When mapping
+to both a DataCite metadata schema element and attribute of that element, the mapping to
+the element must come first in the mappings file.
+
+Multiple mappings to EZID metadata elements and to DataCite metadata schema attributes
+are not supported; the last mapping overwrites any previous mappings.  But for DataCite
+metadata schema elements, multiple mappings cause multiple XML elements to be created.
+Specifically, given an XPath /resource/path/terminus, a new terminus element is created
+for each mapping.  Continuing with our running example, given eighth and ninth CSV
+columns
+
+  ...,subject1,subject2
+
+and additional mappings
+
+  /resource/subjects/subject = $8
+  /resource/subjects/subject = $9
+
+then the following XML structure would be created:
+
+  <resource>
+    ...
+    <subjects>
+      <subject>$8</subject>
+      <subject>$9</subject>
+    </subjects>
+  </resource>
+
+User-supplied functions provide considerably more flexibility in mapping, and are
+required in certain cases to create the necessary hierarchical DataCite XML structure.
+A user-supplied function may return:
+
+  1. A string value, as illustrated previously.
+
+  2. A tuple (relpath, value) where relpath is an XPath relative  path of a DataCite
+     metadata schema element or attribute, and value is any valid return from a
+     user-supplied function (i.e., a string, tuple, or list).  The path is interpreted
+     relative to the terminus element in the mapping or, in nested cases, to the
+     previous contextual node; and the path establishes a new contextual node against
+     which the value is processed.
+
+  3. A list of zero or more tuples.
+
+For example, suppose our CSV file has a tenth column containing zero or more editor
+names separated by semicolons.  A mapping
+
+  /resource/contributors = ${10:split_editors}
+
+and a function
+
+  def split_editors(v):
+    if v == "":
+      return ""
+    else:
+      return [( "contributor",
+                [("contributorName", n), (".@contributorType", "Editor")] )\
+              for n in v.split(";")]
+
+would create the XML structure DataCite requires, namely:
+
+  <resource>
+    <contributors>
+      <contributor contributorType="Editor">
+        <contributorName>first editor</contributorName>
+      </contributor>
+      <contributor contributorType="Editor">
+        <contributorName>second editor</contributorName>
+      </contributor>
+      ...
+    </contributors>
+  </resource>
+
+The output, written to standard output, is a CSV file whose columns can be configured
+using the -o option.  An output column may be any metadata element populated by the
+above mapping process (referenced by element name) or any input column (referenced by
+simple integer). Three additional columns may be specified: _n, the record number in the
+input file; _id, the identifier created, minted, or updated; and _error, the error
+message in case of registration failure. Continuing the first example, to return three
+columns, identifier, title, and url, specify
+
+  -o _id,1,6
+
+The default output is _n,_id,_error.
+
+The -p ("preview mode") option can be used to examine the metadata that will be
+submitted, allowing confirmation that the transformation is operating as expected.
+Before running a batch create or mint job it may also be helpful to first mint using a
+test shoulder to ensure that all metadata is well-formed and accepted. The test
+shoulders are ark:/99999/fk4 for ARK identifiers and doi:10.5072/FK2 for DOI
+identifiers.
+"""
 
 import argparse
 import base64
@@ -210,11 +196,10 @@ import csv
 import getpass
 import re
 import sys
-import urllib.request
-import urllib.parse
 import urllib.error
+import urllib.parse
+import urllib.request
 import urllib.response
-
 # We'd prefer to use LXML, but stick with the inferior built-in
 # library for better portability.
 import xml.etree.ElementTree

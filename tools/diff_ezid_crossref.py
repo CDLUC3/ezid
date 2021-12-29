@@ -3,43 +3,35 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-# Compares EZID DOI metadata (as obtained from an EZID raw dump) with
-# Crossref <https://crossref.org/> DOI metadata (as obtained from a
-# Crossref system query) and Handle System <https://dx.doi.org/>
-# target URLs.
-#
-# Usage: diff-ezid-crossref [options] dumpfile queryfile
-#
-# Options:
-#   -p   write progress records to stderr
-#   -s   skip target URL comparisons
-#   -r N restart from the Nth identifier (useful if interrupted)
-#
-# 'dumpfile' should be a raw EZID dump.  If the filename ends with
-# ".gz", the dump is assumed to be gzip-compressed.  'queryfile'
-# should be a CSV file obtained from running 'dump-crossref'.  Of
-# course, for the comparison to be meaningful the dumpfile and
-# queryfile must agree in scope and have been obtained
-# contemporaneously.
-#
-# Only metadata and target URLs for non-reserved, real identifiers are
-# compared.  (Only exported identifiers are compared, but then, all
-# Crossref identifiers are exported.)
-#
-# LIMITATION/TBD: this script does not properly handle unavailable
-# identifiers.  It should anticipate and check that unavailable
-# identifiers, as well as identifiers in Crossref but not in EZID,
-# have titles prepended with "WITHDRAWN:" and have the standard
-# invalid target URL.
-#
-# This script requires several EZID modules.  The PYTHONPATH
-# environment variable must include the .../SITE_ROOT/PROJECT_ROOT
-# directory; if it doesn't, we attempt to dynamically locate it and
-# add it.  The DJANGO_SETTINGS_MODULE environment variable must be
-# set.
-#
-# Greg Janee <gjanee@ucop.edu>
-# July 2019
+"""Compares EZID DOI metadata (as obtained from an EZID raw dump) with Crossref
+<https://crossref.org/> DOI metadata (as obtained from a Crossref system query) and
+Handle System <https://dx.doi.org/> target URLs.
+
+Usage: diff-ezid-crossref [options] dumpfile queryfile
+
+Options:
+  -p   write progress records to stderr
+  -s   skip target URL comparisons
+  -r N restart from the Nth identifier (useful if interrupted)
+
+'dumpfile' should be a raw EZID dump.  If the filename ends with ".gz", the dump is
+assumed to be gzip-compressed.  'queryfile' should be a CSV file obtained from running
+'dump-crossref'.  Of course, for the comparison to be meaningful the dumpfile and
+queryfile must agree in scope and have been obtained contemporaneously.
+
+Only metadata and target URLs for non-reserved, real identifiers are compared.  (Only
+exported identifiers are compared, but then, all Crossref identifiers are exported.)
+
+LIMITATION/TBD: this script does not properly handle unavailable identifiers.  It should
+anticipate and check that unavailable identifiers, as well as identifiers in Crossref
+but not in EZID, have titles prepended with "WITHDRAWN:" and have the standard invalid
+target URL.
+
+This script requires several EZID modules.  The PYTHONPATH environment variable must
+include the .../SITE_ROOT/PROJECT_ROOT directory; if it doesn't, we attempt to
+dynamically locate it and add it.  The DJANGO_SETTINGS_MODULE environment variable must
+be set.
+"""
 
 import base64
 import gzip

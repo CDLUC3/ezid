@@ -3,6 +3,13 @@
  * http://creativecommons.org/licenses/BSD
  */
 
+# Prepare database for capturing as a DB fixture.
+#
+# The large tables in the DB are trimmed down by randomly removing all but 0.1% of the rows.
+#
+# See README.md for how to use this file.
+
+# Run query in small batches to prevent transactions spilling to disk and slowing things down.
 # http://mysql.rjweb.org/doc.php/deletebig
 # https://stackoverflow.com/questions/14284238/how-can-i-improve-delete-from-performance-on-large-innodb-tables
 

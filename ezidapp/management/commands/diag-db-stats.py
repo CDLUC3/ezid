@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 """Display basic statistics for all registered models
 
 This command does not alter any information in the database, and should be safe to run at any time,

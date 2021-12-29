@@ -3,27 +3,22 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-# Dumps DOIs belonging to one or more DataCite datacenters to standard
-# output.
-#
-# Usage: dump-datacite datacenter...
-#
-# The output format is CSV with three columns: identifier (in
-# qualified, normalized form), datacenter symbol (e.g., "CDL.CDL"),
-# and Base64-encoded DataCite XML metadata.
-#
-# DataCite currently returns public, exported DOIs only.
-# Unavailable and unexported identifiers are marked as inactive in
-# DataCite, and as a result are not returned (and reserved identifiers
-# are not registered with DataCite at all).
-#
-# This script requires an EZID module.  The PYTHONPATH environment
-# variable must include the .../SITE_ROOT/PROJECT_ROOT/impl directory;
-# if it doesn't, we attempt to dynamically locate it and add it.
-#
-# Greg Janee <gjanee@ucop.edu>
-# February 2018
+"""
+Dumps DOIs belonging to one or more DataCite datacenters to standard output.
 
+Usage: dump-datacite datacenter...
+
+The output format is CSV with three columns: identifier (in qualified, normalized form),
+datacenter symbol (e.g., "CDL.CDL"), and Base64-encoded DataCite XML metadata.
+
+DataCite currently returns public, exported DOIs only. Unavailable and unexported
+identifiers are marked as inactive in DataCite, and as a result are not returned (and
+reserved identifiers are not registered with DataCite at all).
+
+This script requires an EZID module.  The PYTHONPATH environment variable must include
+the .../SITE_ROOT/PROJECT_ROOT/impl directory; if it doesn't, we attempt to dynamically
+locate it and add it.
+"""
 import csv
 import json
 import sys

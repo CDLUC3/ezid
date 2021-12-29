@@ -1,19 +1,20 @@
 #!/usr/bin/env python
 
-"""Test the path from an create/update/delete operation coming in from the API, through to tasks
-queued for the async processes, to final push of operation to N2T, Crossref and DataCite.
-"""
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-import ezidapp.models.util
+"""Test the path from an create/update/delete operation coming in from the API, through
+to tasks queued for the async processes, to final push of operation to N2T, Crossref and
+DataCite.
+"""
+
 import argparse
+import logging
 
 import django.core.management
-import logging
-import sys
 import requests
 
+import ezidapp.models.util
 import impl.nog.util
 
 log = logging.getLogger(__name__)

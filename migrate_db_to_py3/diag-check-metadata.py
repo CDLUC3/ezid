@@ -1,10 +1,15 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 """Check that metadata stored in compressed blobs is valid
 
-This performs basic integrity checks and calculates some statistics on the values of all compressed blobs stored in the database.
+This performs basic integrity checks and calculates some statistics on the values of all
+compressed blobs stored in the database.
 
 Integrity checks include:
 
-    - Check that the object can be successfully deserialized (uncompressed and parsed into a Python object)
+    - Check that the object can be successfully deserialized (uncompressed and parsed
+    into a Python object)
     - Check that the object deserializes into the expected type
 
 Statistics include:
@@ -26,13 +31,9 @@ There are three basic types of blobs:
 metadata: Compressed JSON that deserializes into a Python dict
 cm:       Compressed Python code that serializes into a Python dict
 object:   Compressed JSON that deserializes into a Identifier Model
-
 """
-#  Copyright©2021, Regents of the University of California
-#  http://creativecommons.org/licenses/BSD
 
 import contextlib
-import json
 import logging
 
 import django.apps
@@ -41,8 +42,6 @@ import django.contrib.auth.models
 import django.core.management
 import django.db.models
 import django.db.transaction
-
-import pymysql.cursors
 
 import impl.nog.counter
 import impl.nog.tb

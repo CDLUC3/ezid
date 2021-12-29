@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 """Create or update the EZID admin account, password and related details
 
 If the EZID admin account does not already exist, crate it. Then, both for existing and

@@ -3,30 +3,26 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-# Finds and counts all shoulderless identifiers, i.e., identifiers
-# that are not extensions of current shoulders.  The identifiers are
-# grouped by owner and shoulder (well, since the identifiers are
-# shoulderless, their former shoulders are inferred; see
-# util.inferredShoulder).  A CSV file with three columns is written to
-# standard output: owner, shoulder, and identifier count.
-#
-# This script requires several EZID modules.  The PYTHONPATH
-# environment variable must include the .../SITE_ROOT/PROJECT_ROOT
-# directory; if it doesn't, we attempt to dynamically locate it and
-# add it.  The DJANGO_SETTINGS_MODULE environment variable must be
-# set.
-#
-# Greg Janee <gjanee@ucop.edu>
-# June 2019
+"""Finds and counts all shoulderless identifiers, i.e., identifiers that are not
+extensions of current shoulders.
 
-# @executable
+The identifiers are grouped by owner and shoulder (well, since the identifiers are
+shoulderless, their former shoulders are inferred; see util.inferredShoulder).  A CSV
+file with three columns is written to standard output: owner, shoulder, and identifier
+count.
+
+This script requires several EZID modules.  The PYTHONPATH environment variable must
+include the .../SITE_ROOT/PROJECT_ROOT directory; if it doesn't, we attempt to
+dynamically locate it and add it.  The DJANGO_SETTINGS_MODULE environment variable must
+be set.
+"""
 
 import csv
 import sys
 
+import ezidapp.models.identifier
 # import ezidapp.models
 import ezidapp.models.shoulder
-import ezidapp.models.identifier
 from impl import util
 
 shoulders = [s.prefix for s in ezidapp.models.shoulder.Shoulder.objects.all()]

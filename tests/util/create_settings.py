@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 """Create test_settings.py from settings_template.py
 
 Run with CWD in root of a EZID worktree.

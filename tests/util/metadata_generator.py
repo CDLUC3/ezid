@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 """Generate Crossref, DataCite and DC metadata test objects
 
 The objects are based on samples from the EZID production database. The text nodes have

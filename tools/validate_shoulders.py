@@ -3,30 +3,27 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-# Validates a shoulder file.  The file should be UTF-8 encoded.
-# Usage:
-#
-#    validate-shoulders [options] file shoulders...
-#
-#       -m USERNAME:PASSWORD minter server credentials
-#
-# Any shoulders defined in the file that are also listed on the
-# command line are operationally tested.  Testing minters associated
-# with shoulders requires the credentials of the minter server, which
-# can be supplied with the -m option.
-#
-# See shoulder_parser.py for the format of a shoulder file.
-#
-# This script requires several standalone EZID modules
-# (noid_nog_standalone, shoulder_parser, and util).  If they're not
-# found in the current directory or in the default PYTHONPATH, we
-# attempt to load them from the lib and then the ../impl directories
-# relative to the directory containing this script.
-#
-# Greg Janee <gjanee@ucop.edu>
-# October 2013
+"""Validates a shoulder file.
 
-# @executable
+The file should be UTF-8 encoded.
+
+Usage:
+
+   validate-shoulders [options] file shoulders...
+
+      -m USERNAME:PASSWORD minter server credentials
+
+Any shoulders defined in the file that are also listed on the command line are
+operationally tested.  Testing minters associated with shoulders requires the
+credentials of the minter server, which can be supplied with the -m option.
+
+See shoulder_parser.py for the format of a shoulder file.
+
+This script requires several standalone EZID modules (noid_nog_standalone,
+shoulder_parser, and util).  If they're not found in the current directory or in the
+default PYTHONPATH, we attempt to load them from the lib and then the ../impl
+directories relative to the directory containing this script.
+"""
 
 import json
 import optparse
@@ -35,8 +32,9 @@ import re
 import sys
 import urllib.request
 
-import impl.noid_nog_standalone
 import impl.shoulder_parser
+
+import impl.noid_nog_standalone
 import impl.util
 
 thisDir = os.path.split(os.path.abspath(__file__))[0]

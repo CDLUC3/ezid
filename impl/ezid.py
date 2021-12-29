@@ -1,7 +1,13 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-"""Main functionality
+"""Simple locking mechanism to ensure that, in a multi-threaded environment, no given
+identifier is operated on by two threads simultaneously.  Additionally, we enforce a
+per-user throttle on concurrent operations.  _activeUsers maps local usernames to the
+number of operations currently being performed by that user.  For status reporting
+purposes, _waitingUsers similarly maps local usernames to numbers of waiting requests.
+If _paused is true, no new locks are granted, but the mechanism otherwise operates
+normally.
 """
 
 import logging

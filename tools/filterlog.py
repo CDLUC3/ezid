@@ -3,68 +3,64 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-# Reads EZID transaction log files, consolidates transaction BEGIN and
-# END records, and filters transactions as specified by command line
-# options.  If no files are specified, records are read from standard
-# input.
-#
-# Usage: filterlog [options] files...
-#
-# Options:
-#
-#     -v            print transaction IDs
-#     -w            print transaction progress records
-#     -x            print transaction elapsed times
-#
-#   User print options:
-#     -0            print no user information (default: print all)
-#     -1            print username
-#     -2            print user agent PID
-#     -3            print groupname
-#     -4            print group agent PID
-#
-#   Restrict range of transaction end times:
-#     -f TIMESTAMP  from (inclusive; any timestamp prefix)
-#     -t TIMESTAMP  to (exclusive)
-#
-#   Filter by user:
-#     -u USER       user
-#     -g GROUP      group
-#
-#   Filter by identifier type:
-#     -R            real identifier
-#     -T            test identifier
-#
-#   Filter by operation:
-#     -M            mint identifier
-#     -C            create identifier
-#     -G            get metadata
-#     -S            set metadata
-#     -D            delete identifier
-#     -X            search
-#
-#   Filter by operation status:
-#     -s            success
-#     -b            bad request or forbidden
-#     -e            internal server error (transactional or other)
-#     -p            partial transaction
-#
-# By default, all records are output.  Filter options are AND'd
-# together, but multiple options within an option group are OR'd.
-#
-# This script requires an EZID module.  The PYTHONPATH environment
-# variable must include the .../SITE_ROOT/PROJECT_ROOT directory; if
-# it doesn't, we attempt to dynamically locate it and add it.  The
-# DJANGO_SETTINGS_MODULE environment variable must be set.
-#
-# Implementation note: beyond the documentation in log.py, this
-# program relies on the fact that BEGIN records currently have the
-# following common structure (after the BEGIN keyword):
-#
-# function identifier username userPid groupname groupPid ...
-#
-# Greg Janee <gjanee@ucop.edu>
-# January 2012
+"""Reads EZID transaction log files, consolidates transaction BEGIN and END records, and
+filters transactions as specified by command line options.  If no files are specified,
+records are read from standard input.
+
+Usage: filterlog [options] files...
+
+Options:
+
+    -v            print transaction IDs
+    -w            print transaction progress records
+    -x            print transaction elapsed times
+
+  User print options:
+    -0            print no user information (default: print all)
+    -1            print username
+    -2            print user agent PID
+    -3            print groupname
+    -4            print group agent PID
+
+  Restrict range of transaction end times:
+    -f TIMESTAMP  from (inclusive; any timestamp prefix)
+    -t TIMESTAMP  to (exclusive)
+
+  Filter by user:
+    -u USER       user
+    -g GROUP      group
+
+  Filter by identifier type:
+    -R            real identifier
+    -T            test identifier
+
+  Filter by operation:
+    -M            mint identifier
+    -C            create identifier
+    -G            get metadata
+    -S            set metadata
+    -D            delete identifier
+    -X            search
+
+  Filter by operation status:
+    -s            success
+    -b            bad request or forbidden
+    -e            internal server error (transactional or other)
+    -p            partial transaction
+
+By default, all records are output.  Filter options are AND'd together, but multiple
+options within an option group are OR'd.
+
+This script requires an EZID module.  The PYTHONPATH environment variable must include
+the .../SITE_ROOT/PROJECT_ROOT directory; if it doesn't, we attempt to dynamically
+locate it and add it.  The DJANGO_SETTINGS_MODULE environment variable must be set.
+
+Implementation note: beyond the documentation in log.py, this program relies on the fact
+that BEGIN records currently have the following common structure (after the BEGIN
+keyword):
+
+function identifier username userPid groupname groupPid ...
+"""
 
 import calendar
 import optparse

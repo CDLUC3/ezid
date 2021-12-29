@@ -1,6 +1,8 @@
-"""Update the Datacenter for an existing DOI shoulder."""
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
+
+"""Update the Datacenter for an existing DOI shoulder
+"""
 
 import argparse
 import logging

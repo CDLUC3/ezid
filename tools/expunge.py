@@ -3,18 +3,16 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-# Expunges expired test identifiers.  Such identifiers are discovered
-# by querying the database directly, but expunged by requesting that
-# the (live) EZID server delete them.
-#
-# This script requires several EZID modules.  The PYTHONPATH
-# environment variable must include the .../SITE_ROOT/PROJECT_ROOT
-# directory; if it doesn't, we attempt to dynamically locate it and
-# add it.  The DJANGO_SETTINGS_MODULE environment variable must be
-# set.
-#
-# Greg Janee <gjanee@ucop.edu>
-# April 2011
+"""Expunges expired test identifiers
+
+Such identifiers are discovered by querying the database directly, but expunged by
+requesting that the (live) EZID server delete them.
+
+This script requires several EZID modules.  The PYTHONPATH environment variable must
+include the .../SITE_ROOT/PROJECT_ROOT directory; if it doesn't, we attempt to
+dynamically locate it and add it.  The DJANGO_SETTINGS_MODULE environment variable must
+be set.
+"""
 
 import sys
 import time
@@ -23,12 +21,11 @@ import urllib.parse
 import urllib.request
 import urllib.response
 
-import django.db
 import django.conf
+import django.db
 
-import ezidapp.models.shoulder
 import ezidapp.models.identifier
-from impl import config
+import ezidapp.models.shoulder
 
 # from impl # import ezidapp.models
 

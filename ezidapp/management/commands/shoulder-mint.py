@@ -1,6 +1,8 @@
-"""Mint one or more new identifiers on an existing shoulder."""
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
+
+"""Mint one or more new identifiers on an existing shoulder
+"""
 
 import argparse
 import logging

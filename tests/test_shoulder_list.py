@@ -1,6 +1,8 @@
-"""Test the shoulder-list management command."""
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
+
+"""Test the shoulder-list management command
+"""
 
 import logging
 

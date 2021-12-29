@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 
-"""Annotate a stream of identifiers with associated metadata and misc
-housekeeping information pulled from an EZID database.
-"""
-
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
+"""Annotate a stream of identifiers with associated metadata and misc housekeeping
+information pulled from an EZID database.
+"""
+
 import argparse
+import asyncio
 import collections
+import configparser
 import fileinput
 import json
 import logging
@@ -18,8 +20,6 @@ import time
 import zlib
 
 import aiomysql
-import asyncio
-import configparser
 import myloginpath
 
 log = logging.getLogger(__name__)

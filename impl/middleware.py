@@ -4,7 +4,8 @@
 """Request/response middleware
 """
 
-# TODO: We no longer import config here (as it no longer exists). Is the behavior described in this old comment still an issue?
+# TODO: We no longer import config here (as it no longer exists). Is the behavior
+# described in this old comment still an issue?
 #
 # Some things in life are just destined to remain a mystery.  If the
 # EZID administrator is logged in and viewing a Django admin page, and

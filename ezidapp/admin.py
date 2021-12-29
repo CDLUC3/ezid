@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 """Django admin configuration/customization
 
 Beware: there's some
@@ -7,8 +10,6 @@ related to this file are the PROJECT_ROOT/templates/admin and
 PROJECT_ROOT/static/admin directories.
 """
 
-#  Copyright©2021, Regents of the University of California
-#  http://creativecommons.org/licenses/BSD
 
 import copy
 
@@ -34,12 +35,9 @@ import ezidapp.models.util
 import impl.util
 from ezidapp.models.datacenter import Datacenter
 from ezidapp.models.group import Group
-from ezidapp.models.group import Group
 from ezidapp.models.new_account_worksheet import NewAccountWorksheet
 from ezidapp.models.realm import Realm
-from ezidapp.models.realm import Realm
 from ezidapp.models.shoulder import Shoulder
-from ezidapp.models.user import User
 from ezidapp.models.user import User
 
 

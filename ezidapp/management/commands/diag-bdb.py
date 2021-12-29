@@ -1,3 +1,6 @@
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 """BerkeleyDB utilities
 
 These utilities work directly with the BerkeleyDB (.bdb) files on disk. They do not

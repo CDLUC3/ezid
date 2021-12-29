@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
 """Bin metadata JSON strings by size and pick one metadata element per bin
 
 The selected metadata docs should be representative for what's in the database, and
-usable for tests.
+usable for tests
 """
 
 #  Copyright©2021, Regents of the University of California

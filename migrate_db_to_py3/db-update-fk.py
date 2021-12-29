@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 
-# Copyright©2021, Regents of the University of California
-# http://creativecommons.org/licenses/BSD
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
 
-"""\
-Translate the foreign keys in the ezidapp_searchidentifier to match those in
+"""Translate the foreign keys in the ezidapp_searchidentifier to match those in
 ezidapp_storeidentifier.
 
-Doing this in small batches is much faster than running a single query, probably because the
-smaller transactions fit in memory. Large transactions are spilled to disk.
+Doing this in small batches is much faster than running a single query, probably because
+the smaller transactions fit in memory. Large transactions are spilled to disk.
 """
 
 import contextlib

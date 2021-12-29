@@ -23,10 +23,9 @@ import django.core.management
 # import  django.db.models.options
 import filelock
 
-# import _pytest.config
-import pytest
-
 import impl.nog.filesystem
+
+# import _pytest.config
 
 MAX_LINE_WIDTH = 130
 DEFAULT_DIFF_COLUMN_WIDTH = 100
@@ -317,7 +316,7 @@ def _clobber_uncontrolled_volatiles(o_str):
     o_str = re.sub(r"tmp[\\w\\d]*\\.", "[TMP-PATH].", o_str)
     # Command run timer
     o_str = re.sub(r'(?<=Parse succeeded )\\(\\d+\\.\\d+\\)', '[RUN-TIMER]', o_str)
-    # Travis hostname
+    # Actions hostname
     o_str = re.sub(r'(?<=Hostname ).*', '[HOSTNAME]', o_str)
     return o_str
 

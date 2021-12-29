@@ -3,15 +3,14 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-# Decodes a hex-encoded file.  The file is overwritten.
-#
-# This script requires an EZID module.  The PYTHONPATH environment
-# variable must include the .../SITE_ROOT/PROJECT_ROOT/impl directory;
-# if it doesn't, we attempt to dynamically locate it and add it.
-#
-# Greg Janee <gjanee@ucop.edu>
-# May 2016
+"""Decodes a hex-encoded file.
 
+The file is overwritten.
+
+This script requires an EZID module.  The PYTHONPATH environment variable must include
+the .../SITE_ROOT/PROJECT_ROOT/impl directory; if it doesn't, we attempt to dynamically
+locate it and add it.
+"""
 import sys
 
 from impl import util
