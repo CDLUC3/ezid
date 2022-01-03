@@ -199,7 +199,6 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import urllib.response
-
 # We'd prefer to use lxml, but stick with the inferior built-in
 # library for better portability.
 import xml.etree.ElementTree

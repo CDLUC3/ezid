@@ -34,7 +34,6 @@ object:   Compressed JSON that deserializes into a Identifier Model
 """
 
 import contextlib
-import json
 import logging
 
 import django.apps
@@ -43,8 +42,6 @@ import django.contrib.auth.models
 import django.core.management
 import django.db.models
 import django.db.transaction
-
-import pymysql.cursors
 
 import impl.nog.counter
 import impl.nog.tb

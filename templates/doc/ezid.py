@@ -64,9 +64,9 @@ import re
 import sys
 import time
 import types
-import urllib.request
-import urllib.parse
 import urllib.error
+import urllib.parse
+import urllib.request
 import urllib.response
 
 KNOWN_SERVERS = {"p": "https://ezid.cdlib.org"}

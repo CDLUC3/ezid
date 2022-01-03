@@ -37,7 +37,6 @@ import datetime
 import re
 import sys
 import urllib.request
-
 # import urllib2
 import uuid
 

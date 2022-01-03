@@ -118,10 +118,20 @@ delete from django_session;
 # group_id
 # realm_id
 
+
+update ezidapp_realm set name = 'CDL';
+
+select * from ezidapp_searchrealm er;
+
+UPDATE ezid.ezidapp_user SET pid = 'ark:/99166/p9kw57h4w', username = 'admin', displayName = 'admin', accountEmail = '', primaryContactName = '', primaryContactEmail = '', primaryContactPhone = '', secondaryContactName = '', secondaryContactEmail = '', secondaryContactPhone = '', inheritGroupShoulders = 0, crossrefEnabled = 1, crossrefEmail = '', isGroupAdministrator = 0, isRealmAdministrator = 0, isSuperuser = 1, loginEnabled = 1, password = 'pbkdf2_sha256$260000$YAGoSpofqXbbXhr3CXcuZU$MbzIkg/YCikvKe7vYNkUFls3clXkHYUkBh54HdZMRRA=', notes = '', group_id = 309, realm_id = 1 WHERE id = 1;
+UPDATE ezid.ezidapp_user SET pid = 'ark:/99166/p9jq0st8j', username = 'apitest', displayName = 'EZID API test account', accountEmail = 'ezid@ucop.edu', primaryContactName = 'EZID administrator', primaryContactEmail = 'ezid@ucop.edu', primaryContactPhone = '(510) 987-0555', secondaryContactName = '', secondaryContactEmail = '', secondaryContactPhone = '', inheritGroupShoulders = 0, crossrefEnabled = 0, crossrefEmail = '', isGroupAdministrator = 0, isRealmAdministrator = 0, isSuperuser = 0, loginEnabled = 1, password = 'pbkdf2_sha256$20000$A7NrSMRv4gH8$2MwlthcX2Pljnzvgnnv4wUOjYKYXHg+lqN9D3dQ2Zfw=', notes = '', group_id = 2, realm_id = 1 WHERE id = 2;
+
+
 # User fields to randomize
 update ezidapp_user set
 username=substr(md5(rand()), 1, 10),
 displayname=substr(md5(rand()), 1, 10)
+where username <> 'admin' and user <> 'apitest'
 ;
 
 # User fields to clear
@@ -135,6 +145,7 @@ secondaryContactEmail='',
 secondaryContactPhone='',
 notes='',
 password=''
+where username <> 'admin' and user <> 'apitest'
 ;
 
 # Group fields to keep unchanged
@@ -161,6 +172,12 @@ notes = ''
 
 select * from ezidapp_realm;
 update ezidapp_realm set name = 'CDL' where id = 1;
+
+
+/*
+ * Copyright©2021, Regents of the University of California
+ * http://creativecommons.org/licenses/BSD
+ */
 
 
 ##############################################

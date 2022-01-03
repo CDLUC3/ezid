@@ -25,7 +25,6 @@ import zlib
 import mysql.connector
 import mysql.connector.cursor
 
-
 log = logging.getLogger(__name__)
 
 BATCH_SIZE = 100_000

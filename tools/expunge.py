@@ -21,12 +21,11 @@ import urllib.parse
 import urllib.request
 import urllib.response
 
-import django.db
 import django.conf
+import django.db
 
-import ezidapp.models.shoulder
 import ezidapp.models.identifier
-from impl import config
+import ezidapp.models.shoulder
 
 # from impl # import ezidapp.models
 

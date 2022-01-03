@@ -354,6 +354,11 @@ add key `ezidapp_searchidentifier_ownergroup_id_39b7cdc64bc267c3_idx`(`ownergrou
 # 3023677 | ezidapp_searchidentifier_owner_id_5b203a171bdbab38_idx
 alter table ezidapp_searchidentifier
 add key `ezidapp_searchidentifier_owner_id_5b203a171bdbab38_idx`(`owner_id`, `status`);
+/*
+ * Copyright©2021, Regents of the University of California
+ * http://creativecommons.org/licenses/BSD
+ */
+
 # 3001925 | ezidapp_searchidentifier_owner_id_58dfc6401ef0e359_idx
 alter table ezidapp_searchidentifier
 add key `ezidapp_searchidentifier_owner_id_58dfc6401ef0e359_idx`(`owner_id`, `crossrefStatus`);

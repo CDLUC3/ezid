@@ -8,14 +8,13 @@ to tasks queued for the async processes, to final push of operation to N2T, Cros
 DataCite.
 """
 
-import ezidapp.models.util
 import argparse
+import logging
 
 import django.core.management
-import logging
-import sys
 import requests
 
+import ezidapp.models.util
 import impl.nog.util
 
 log = logging.getLogger(__name__)

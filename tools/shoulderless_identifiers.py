@@ -20,9 +20,9 @@ be set.
 import csv
 import sys
 
+import ezidapp.models.identifier
 # import ezidapp.models
 import ezidapp.models.shoulder
-import ezidapp.models.identifier
 from impl import util
 
 shoulders = [s.prefix for s in ezidapp.models.shoulder.Shoulder.objects.all()]

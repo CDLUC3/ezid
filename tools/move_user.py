@@ -23,11 +23,8 @@ import argparse
 import sys
 
 import ezidapp.models.group
-import ezidapp.models.user
-import ezidapp.models.group
 import ezidapp.models.identifier
 import ezidapp.models.user
-import ezidapp.models.async_queue
 import ezidapp.models.util
 from impl import ezid
 

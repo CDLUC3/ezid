@@ -23,7 +23,6 @@ import argparse
 import sys
 
 import ezidapp.models.group
-import ezidapp.models.user
 import ezidapp.models.util
 from impl import ezid
 

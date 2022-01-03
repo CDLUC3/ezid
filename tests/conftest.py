@@ -168,17 +168,9 @@ METADATA_TUP = tuple(
 
 REL_DB_FIXTURE_PATH = ROOT_PATH / 'ezidapp/fixtures/db-fixture.json'
 
-# store-full: Complete snapshot of the combined store/search DB from stg, only the three
-# large tables holding the resolve metadata for the existing minters have been dropped.
-# It's pretty slow to load as a fixture, so not used by default.
-# REL_DB_FIXTURE_PATH = '../ezidapp/fixtures/store-full-pp.json'
-
-# store-test: Small DB with only a few shoulder records. Fast to load as a fixture.
-# REL_DB_FIXTURE_PATH = '../ezidapp/fixtures/store-test.json'
-
 # We use pytest's CLI logging, so can clear out the handlers created by Django here.
-if logging.getLogger().hasHandlers():
-    logging.getLogger().handlers.clear()
+# if logging.getLogger().hasHandlers():
+#     logging.getLogger().handlers.clear()
 
 log = logging.getLogger(__name__)
 
@@ -597,53 +589,6 @@ def dump_models():
     print('Registered models:')
     for k, v in sorted(model_dict.items()):
         print(f'  {k:<20} {v}')
-
-
-def create_fixtures():
-    """Queue tables:
-
-    ezidapp_binderqueue
-    ezidapp_crossrefqueue
-    ezidapp_datacitequeue
-    ezidapp_downloadqueue
-    ezidapp_updatequeue
-    """
-    dump_models()
-
-    fixture_dir_path = pathlib.Path(impl.nog.filesystem.abs_path('../ezidapp/fixtures'))
-
-    for model_label in (
-        'BinderQueue',
-        'CrossrefQueue',
-        'DataciteQueue',
-        'DownloadQueue',
-        # 'LinkChecker',
-    ):
-        log.info(f'Creating DB fixture for model: {model_label}')
-        table_name = model_label.lower()
-        fixture_file_path = (fixture_dir_path / table_name).with_suffix('.json')
-        log.info('Writing fixture. path="{}"'.format(fixture_file_path))
-        buf = io.StringIO()
-        # Example from Django source:
-        # call_command('loaddata', *cls.fixtures, **{'verbosity': 0, 'database': db_name})
-        django.core.management.call_command(
-            "dumpdata",
-            f'{APP_LABEL}.{model_label}',
-            # exclude=["auth.permission", "contenttypes"],
-            database=DEFAULT_DB_KEY,
-            stdout=buf,
-            indent=2,
-            verbosity=3,
-            traceback=True,
-            # xyz=43,
-            # skip_checks=True,
-        )
-        # with bz2.BZ2File(
-        #     fixture_file_path, "w", buffering=1024 ** 2, compresslevel=9
-        # ) as bz2_file:
-        #     bz2_file.write(buf.getvalue().encode("utf-8"))
-
-    django_load_db_fixture('ezidapp/fixtures/registration_queue.json')
 
 
 def dump_shoulder_table():

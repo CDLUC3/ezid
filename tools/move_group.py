@@ -25,9 +25,6 @@ import django.db.transaction
 
 import ezidapp.models.group
 import ezidapp.models.realm
-import ezidapp.models.group
-import ezidapp.models.realm
-
 import ezidapp.models.util
 
 STEPS = [

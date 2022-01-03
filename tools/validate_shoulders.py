@@ -32,8 +32,9 @@ import re
 import sys
 import urllib.request
 
-import impl.noid_nog_standalone
 import impl.shoulder_parser
+
+import impl.noid_nog_standalone
 import impl.util
 
 thisDir = os.path.split(os.path.abspath(__file__))[0]

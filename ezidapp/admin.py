@@ -35,12 +35,9 @@ import ezidapp.models.util
 import impl.util
 from ezidapp.models.datacenter import Datacenter
 from ezidapp.models.group import Group
-from ezidapp.models.group import Group
 from ezidapp.models.new_account_worksheet import NewAccountWorksheet
 from ezidapp.models.realm import Realm
-from ezidapp.models.realm import Realm
 from ezidapp.models.shoulder import Shoulder
-from ezidapp.models.user import User
 from ezidapp.models.user import User
 
 # Enable access to application logging

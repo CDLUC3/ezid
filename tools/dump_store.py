@@ -22,9 +22,8 @@ import gzip
 import optparse
 import sys
 
-import ezidapp.models.model_util
 import ezidapp.models.identifier
-
+import ezidapp.models.model_util
 # from impl import ezidapp.models
 from impl import util
 

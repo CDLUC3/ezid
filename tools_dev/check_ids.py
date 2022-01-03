@@ -8,7 +8,9 @@ information pulled from an EZID database.
 """
 
 import argparse
+import asyncio
 import collections
+import configparser
 import fileinput
 import json
 import logging
@@ -18,8 +20,6 @@ import time
 import zlib
 
 import aiomysql
-import asyncio
-import configparser
 import myloginpath
 
 log = logging.getLogger(__name__)

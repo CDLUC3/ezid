@@ -23,10 +23,9 @@ import django.core.management
 # import  django.db.models.options
 import filelock
 
-# import _pytest.config
-import pytest
-
 import impl.nog.filesystem
+
+# import _pytest.config
 
 MAX_LINE_WIDTH = 130
 DEFAULT_DIFF_COLUMN_WIDTH = 100
