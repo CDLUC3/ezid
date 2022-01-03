@@ -563,6 +563,7 @@ class UserInlineForGroup(django.contrib.admin.TabularInline):
     verbose_name_plural = "Users in this group"
 
     def userLink(self, obj):
+        logger.debug("get userLink for %s", obj)
         link = django.urls.reverse("admin:ezidapp_user_change", args=[obj.id])
         return django.utils.html.format_html('<a href="{}">{}</a>', link, obj.username)
 
