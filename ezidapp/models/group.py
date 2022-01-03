@@ -8,6 +8,7 @@ import re
 import django.apps
 import django.core.validators
 import django.db.models
+import ezidapp.models.shoulder
 
 import ezidapp.models.realm
 import ezidapp.models.validation
@@ -28,7 +29,8 @@ class Group(django.db.models.Model):
     def clean(self):
         if self.pid == "":
             try:
-                agent_model = django.apps.apps.get_model('ezidapp', 'getAgentShoulder')
+                #agent_model = django.apps.apps.get_model('ezidapp', 'getAgentShoulder')
+                agent_model = ezidapp.models.shoulder.getAgentShoulder()
                 assert agent_model.isArk, "Agent shoulder type must be ARK"
                 self.pid = "{}{}".format(agent_model.prefix, impl.nog.minter.mint_id(agent_model))
             except Exception as e:

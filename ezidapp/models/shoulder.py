@@ -155,19 +155,15 @@ class Shoulder(django.db.models.Model):
     registration_agency = django.db.models.ForeignKey(
         RegistrationAgency, on_delete=django.db.models.PROTECT, null=True
     )
-    prefix_shares_datacenter = django.db.models.BooleanField(
-        default=False, editable=False
-    )
-    manager = django.db.models.CharField(
-        max_length=32, null=True, blank=True, editable=False
-    )
+    prefix_shares_datacenter = django.db.models.BooleanField(default=False, editable=False)
+    manager = django.db.models.CharField(max_length=32, null=True, blank=True, editable=False)
     active = django.db.models.BooleanField(default=False, editable=False)
-    redirect = django.db.models.URLField(
-        max_length=255, null=True, blank=True, editable=False
-    )
+    redirect = django.db.models.URLField(max_length=255, null=True, blank=True, editable=False)
     date = django.db.models.DateField(null=True, blank=True, editable=False)
     isSupershoulder = django.db.models.BooleanField(default=False, editable=False)
 
+    def __str__(self):
+        return f"{self.name} ({self.prefix})"
 
 
 def getAllShoulders():
@@ -186,9 +182,7 @@ def getLongestShoulderMatch(identifier):
 
     for s in (
         Shoulder.objects.annotate(
-            identifier=django.db.models.Value(
-                identifier, output_field=django.db.models.CharField()
-            )
+            identifier=django.db.models.Value(identifier, output_field=django.db.models.CharField())
         )
         .select_related("datacenter")
         .filter(identifier__startswith=django.db.models.F('prefix'))
