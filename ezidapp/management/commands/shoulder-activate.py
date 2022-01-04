@@ -41,11 +41,13 @@ class Command(django.core.management.BaseCommand):
         impl.nog.util.log_setup(__name__, opt.debug)
 
         shoulder_str = opt.shoulder_str
+        log.debug("Getting shoulder %s", shoulder_str)
         try:
             shoulder_model = ezidapp.models.shoulder.Shoulder.objects.get(
                 prefix=shoulder_str
             )
         except ezidapp.models.shoulder.Shoulder.DoesNotExist:
+            log.debug("Shoulder string %s not found in Shoulder model", shoulder_str)
             raise django.core.management.CommandError(
                 'Invalid shoulder: {}'.format(shoulder_str)
             )

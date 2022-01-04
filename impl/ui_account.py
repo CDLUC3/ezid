@@ -52,7 +52,8 @@ def login(request):
     if request.method == "GET":
         if "next" in request.GET:
             try:
-                m = django.urls.resolvers.resolve(request.GET["next"])
+                #m = django.urls.resolvers.resolve(request.GET["next"])
+                m = django.urls.resolve(request.GET["next"])
                 if m.app_name == "admin":
                     django.contrib.messages.error(
                         request,
