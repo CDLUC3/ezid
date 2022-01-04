@@ -173,13 +173,6 @@ notes = ''
 select * from ezidapp_realm;
 update ezidapp_realm set name = 'CDL' where id = 1;
 
-
-/*
- * Copyright©2021, Regents of the University of California
- * http://creativecommons.org/licenses/BSD
- */
-
-
 ##############################################
 
 # Check remaining rows counts
