@@ -46,7 +46,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
     def run(self):
         if self.opt.pagesize <= 0:
-            self.opt.pagesize = Command._page_size
+            self.opt.pagesize = 1
         if not self.opt.debug:
             if self.resultsUploadSameTimeOfDay:
                 self.sleep(self._sameTimeOfDayDelta())
