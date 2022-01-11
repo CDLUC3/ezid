@@ -24,6 +24,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     help = __doc__
     display = 'LinkCheckerUpdate'
     setting = 'DAEMONS_LINKCHECK_UPDATE_ENABLED'
+    # Number of records retrieved per database call in _harvest, 100000 seems ok
+    # and balances time taken vs resource use
 
     def __init__(self):
         super().__init__()
@@ -33,7 +35,18 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         )
         self.notificationThreshold = django.conf.settings.LINKCHECKER_NOTIFICATION_THRESHOLD
 
+    def add_arguments(self, parser):
+        super().add_arguments(parser)
+        parser.add_argument(
+            '--pagesize',
+            help='Rows in each database page (100,000)',
+            type=int,
+            default=100000
+        )
+
     def run(self):
+        if self.opt.pagesize <= 0:
+            self.opt.pagesize = Command._page_size
         if not self.opt.debug:
             if self.resultsUploadSameTimeOfDay:
                 self.sleep(self._sameTimeOfDayDelta())
@@ -50,6 +63,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     ezidapp.models.identifier.SearchIdentifier,
                     ["identifier", "linkIsBroken"],
                 )
+
+                #Note: this call is extremely slow since the list is built by
+                # iterating over everything...
                 # noinspection PyTypeChecker
                 lcGenerator = self._harvest(
                     ezidapp.models.link_checker.LinkChecker,
@@ -58,8 +74,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 )
                 si = next(siGenerator)
                 lc = next(lcGenerator)
-
                 while si is not None:
+                    log.debug("Processing %s", si.identifier)
                     while lc is not None and lc.identifier < si.identifier:
                         lc = next(lcGenerator)
                     newValue = None
@@ -72,10 +88,11 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                         lc = next(lcGenerator)
 
                     if newValue is not None:
+                        log.debug("Updating %s", si.identifier)
                         # Before updating the Identifier, we carefully lock
                         # the table and ensure that the object still exists.
                         try:
-                            with django.db.transaction.atomic(using="search"):
+                            with django.db.transaction.atomic():
                                 si2 = ezidapp.models.identifier.SearchIdentifier.objects.get(
                                     identifier=si.identifier
                                 )
@@ -91,7 +108,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 log.exception('Exception')
                 impl.log.otherError("linkcheck_update._linkcheckUpdateDaemon", e)
 
-            _siGenerator = _lcGenerator = _si = _lc = _si2 = None
+            siGenerator = lcGenerator = si = lc = si2 = None
 
             if self.resultsUploadSameTimeOfDay:
                 self.sleep(self._sameTimeOfDayDelta())
@@ -112,7 +129,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             qs = model.objects.filter(identifier__gt=lastIdentifier).order_by("identifier")
             if only is not None:
                 qs = qs.only(*only)
-            qs = list(qs[:1000])
+            qs = list(qs[:self.opt.pagesize])
             if len(qs) == 0:
                 break
             for o in qs:
