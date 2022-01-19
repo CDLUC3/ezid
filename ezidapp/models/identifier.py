@@ -274,7 +274,7 @@ class IdentifierBase(django.db.models.Model):
 
     owner = django.db.models.ForeignKey(
         'ezidapp.User',
-        blank=False,
+        blank=True,
         null=True,
         default=None,
         on_delete=django.db.models.PROTECT,
