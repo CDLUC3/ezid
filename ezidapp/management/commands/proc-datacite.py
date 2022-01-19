@@ -13,6 +13,7 @@ import ezidapp.management.commands.proc_base
 import ezidapp.models.async_queue
 import impl.datacite
 import impl.nog.util
+import ezidapp.models.identifier
 
 log = logging.getLogger(__name__)
 
