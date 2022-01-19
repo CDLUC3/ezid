@@ -25,10 +25,12 @@ import zlib
 import mysql.connector
 import mysql.connector.cursor
 
+
 log = logging.getLogger(__name__)
 
 BATCH_SIZE = 100_000
 POOL_CHUNK_SIZE = 1000
+POOL_SIZE = 128 # 32 * multiprocessing.cpu_count()
 
 
 def main():
@@ -68,7 +70,7 @@ class MigrateBlobsToMetadata:
         self.table_str = table_str
 
     def run(self):
-        pool = multiprocessing.pool.Pool(8 * multiprocessing.cpu_count())
+        pool = multiprocessing.pool.Pool(POOL_SIZE)
 
         with connect(self.conn_args) as conn:
             cursor = conn.cursor()

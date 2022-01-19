@@ -48,10 +48,17 @@ def main():
     with connect(host_str, port_str, user_str, pw_str, name_str) as conn:
         cursor = conn.cursor()
 
-        owner_case_str = get_case_str(cursor, 'user', 'pid')
-        group_case_str = get_case_str(cursor, 'group', 'pid')
-        profile_case_str = get_case_str(cursor, 'profile', 'label')
-        datacenter_case_str = get_case_str(cursor, 'datacenter', 'symbol')
+        owner_case_str = get_case_str(cursor, 'user', 'pid', 'owner_id')
+        group_case_str = get_case_str(cursor, 'group', 'pid', 'ownergroup_id')
+        profile_case_str = get_case_str(cursor, 'profile', 'label', 'profile_id')
+        datacenter_case_str = get_case_str(cursor, 'datacenter', 'symbol', 'datacenter_id')
+
+        print(f'\nowner_case_str\n{owner_case_str}')
+        print(f'\ngroup_case_str\n{group_case_str}')
+        print(f'\nprofile_case_str\n{profile_case_str}')
+        print(f'\ndatacenter_case_str\n{datacenter_case_str}')
+
+        # sys.exit()
 
         last_id = 0
 
@@ -77,6 +84,7 @@ def main():
             """
             print(f'id > {last_id}')
             # print(q)
+            # sys.exit()
             cursor.execute(q, {})
 
             q = """
@@ -100,6 +108,11 @@ def main():
     print(f'Total {time.time() - start_ts:.2f}s')
 
 
+def get_case_str(cursor, table_name, col_name, id_name):
+    d = get_search_to_store_fk_map(cursor, table_name, col_name)
+    return 'case ' + ' '.join(f'when {id_name}={k} then {v}' for k, v in d.items()) + ' end'
+
+
 def get_search_to_store_fk_map(cursor, table_name, col_name):
     q = f"""
     select a.id, b.id
@@ -109,11 +122,6 @@ def get_search_to_store_fk_map(cursor, table_name, col_name):
     """
     cursor.execute(q, {})
     return {a: b for a, b in cursor.fetchall()}
-
-
-def get_case_str(cursor, table_name, col_name):
-    d = get_search_to_store_fk_map(cursor, table_name, col_name)
-    return 'case ' + ' '.join(f'when {k} then {v}' for k, v in d.items()) + ' end'
 
 
 @contextlib.contextmanager

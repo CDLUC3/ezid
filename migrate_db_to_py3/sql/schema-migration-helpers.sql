@@ -44,23 +44,6 @@ from ezidapp_storeidentifier es;
 # +-------------------------------------+----------------+
 # 10 rows in set (0.09 sec)
 
-
-#############
-
-create table ezidapp_refidentifier like ezidapp_identifier;
-
-alter table ezidapp_refidentifier
-change column identifier identifier varchar(255)
-character set ascii collate ascii_bin not null
-;
-
-
-#####
-
-
-
-
-
 # Check for invalid foreign keys.
 
 DROP PROCEDURE IF EXISTS ANALYZE_INVALID_FOREIGN_KEYS;
@@ -338,7 +321,341 @@ alter table ezidapp_storeuser_proxies drop foreign key ezidapp_to_storeuser_id_7
 alter table ezidapp_storeuser_shoulders drop foreign key ezidapp_st_storeuser_id_6730d06357e88738_fk_ezidapp_storeuser_id;
 alter table ezidapp_storeuser_shoulders drop foreign key ezidapp_stor_shoulder_id_760fcf030c9067e7_fk_ezidapp_shoulder_id;
 
-###########
+
+update ezidapp_searchidentifier si
+    join ezidapp_searchuser searchuser on searchuser.id = si.owner_id
+    join ezidapp_storeuser storeuser on storeuser.pid = searchuser.pid
+    left join ezidapp_searchgroup searchgroup on searchgroup.id = si.ownergroup_id
+    left join ezidapp_storegroup storegroup on storegroup.pid = searchgroup.pid
+    left join ezidapp_searchprofile searchprofile on searchprofile.id = si.profile_id
+    left join ezidapp_storeprofile storeprofile on storeprofile.label = searchprofile.label
+    left join ezidapp_searchdatacenter searchdatacenter on searchdatacenter.id = si.datacenter_id
+    left join ezidapp_storedatacenter storedatacenter on storedatacenter.symbol = searchdatacenter.symbol
+set si.owner_id      = storeuser.id,
+    si.ownergroup_id = storegroup.id,
+    si.profile_id    = storeprofile.id,
+    si.datacenter_id = storedatacenter.id
+where true
+;
+
+
+
+# alter table ezidapp_searchuser
+# drop foreign key ezidapp_sear_group_id_488efb1f64647b87_fk_ezidapp_searchgroup_id,
+# drop foreign key ezidapp_sear_realm_id_3d437af11e1add07_fk_ezidapp_searchrealm_id
+# ;
+#
+# alter table ezidapp_searchuser
+# drop key ezidapp_sear_group_id_488efb1f64647b87_fk_ezidapp_searchgroup_id
+# ;
+
+# Check FKs
+
+select count(*) from ezidapp_identifier;
+select * from ezidapp_user_shoulders order by user_id;
+select * from ezidapp_user order by id;
+
+select count(*) from ezidapp_user_shoulders;
+select count(*) from ezidapp_user_shoulders where user_id not in (select id from ezidapp_user);
+
+SELECT (`ezidapp_user_shoulders`.`user_id`) AS `_prefetch_related_val_user_id`,
+ `ezidapp_shoulder`.`id`,
+ `ezidapp_shoulder`.`prefix`,
+ `ezidapp_shoulder`.`type`,
+ `ezidapp_shoulder`.`name`,
+ `ezidapp_shoulder`.`minter`,
+ `ezidapp_shoulder`.`datacenter_id`,
+ `ezidapp_shoulder`.`crossrefEnabled`,
+ `ezidapp_shoulder`.`isTest`,
+ `ezidapp_shoulder`.`shoulder_type_id`,
+ `ezidapp_shoulder`.`registration_agency_id`,
+ `ezidapp_shoulder`.`prefix_shares_datacenter`,
+ `ezidapp_shoulder`.`manager`,
+ `ezidapp_shoulder`.`active`,
+ `ezidapp_shoulder`.`redirect`,
+ `ezidapp_shoulder`.`date`,
+ `ezidapp_shoulder`.`isSupershoulder`
+  FROM `ezidapp_shoulder`
+ INNER JOIN `ezidapp_user_shoulders`
+ ON (`ezidapp_shoulder`.`id` = `ezidapp_user_shoulders`.`shoulder_id`)
+ WHERE `ezidapp_user_shoulders`.`user_id` IN (1)
+ ;
+
+select * from auth_group_permissions;
+select * from auth_user_groups;
+select * from auth_group;
+select * from auth_user_user_permissions;
+select * from auth_permission;
+select * from django_admin_log;
+select * from django_content_type;
+select * from auth_user;
+select * from django_migrations;
+select * from django_session;
+
+update ezidapp_user set realm_id = 1;
+update ezidapp_group set realm_id = 1;
+delete from ezidapp_realm where id <> 1;
+update ezidapp_realm set name = 'CDL';
+
+select * from auth_permission ap;
+
+update ezidapp_searchidentifier set
+    owner_id = case when 1 then 1 when 2 then 2 when 10 then 75 when 13 then 243 when 14 then 248 when 21 then 186 when 26 then 223 when 28 then 65 when 30 then 240 when 31 then 202 when 39 then 66 when 40 then 87 when 48 then 184 when 52 then 152 when 53 then 242 when 69 then 247 when 75 then 44 when 80 then 182 when 89 then 111 when 93 then 233 when 96 then 212 when 99 then 230 when 101 then 185 when 102 then 57 when 104 then 110 when 108 then 214 when 111 then 163 when 114 then 207 when 116 then 228 when 117 then 275 when 118 then 60 when 119 then 208 when 120 then 213 when 123 then 198 when 124 then 209 when 126 then 179 when 130 then 22 when 131 then 59 when 135 then 204 when 136 then 289 when 137 then 39 when 139 then 134 when 140 then 172 when 145 then 180 when 152 then 26 when 159 then 9 when 160 then 234 when 166 then 238 when 171 then 15 when 173 then 220 when 175 then 201 when 180 then 244 when 186 then 237 when 187 then 139 when 188 then 210 when 191 then 211 when 192 then 232 when 193 then 130 when 195 then 245 when 199 then 226 when 204 then 56 when 206 then 100 when 207 then 227 when 210 then 23 when 211 then 268 when 213 then 49 when 214 then 235 when 216 then 98 when 219 then 181 when 222 then 195 when 225 then 231 when 227 then 216 when 228 then 52 when 229 then 25 when 230 then 124 when 232 then 217 when 235 then 170 when 236 then 219 when 237 then 241 when 239 then 67 when 241 then 206 when 244 then 225 when 245 then 196 when 246 then 205 when 249 then 99 when 252 then 70 when 261 then 183 when 268 then 108 when 269 then 203 when 271 then 246 when 272 then 229 when 276 then 109 when 277 then 10 when 279 then 292 when 281 then 105 when 282 then 11 when 284 then 222 when 285 then 221 when 286 then 224 when 287 then 200 when 290 then 107 when 292 then 290 when 297 then 295 when 298 then 296 when 300 then 298 when 307 then 305 when 308 then 306 when 309 then 307 when 310 then 308 when 311 then 309 when 316 then 314 when 320 then 318 when 323 then 321 when 324 then 322 when 326 then 324 when 327 then 325 when 328 then 326 when 333 then 331 when 334 then 332 when 337 then 335 when 338 then 336 when 340 then 338 when 342 then 340 when 344 then 342 when 345 then 343 when 349 then 347 when 350 then 348 when 351 then 349 when 354 then 352 when 358 then 356 when 359 then 357 when 361 then 359 when 362 then 360 when 363 then 361 when 365 then 363 when 366 then 364 when 371 then 369 when 372 then 370 when 375 then 373 when 378 then 376 when 379 then 377 when 386 then 384 when 387 then 385 when 388 then 386 when 389 then 387 when 390 then 388 when 391 then 389 when 392 then 390 when 393 then 391 when 394 then 392 when 395 then 393 when 396 then 394 when 397 then 395 when 398 then 396 when 399 then 397 when 400 then 398 when 401 then 399 when 402 then 400 when 403 then 401 when 404 then 402 when 406 then 404 when 407 then 405 when 408 then 406 when 409 then 407 when 410 then 408 when 411 then 409 when 415 then 413 when 416 then 414 when 417 then 415 when 418 then 416 when 419 then 417 when 420 then 418 when 422 then 420 when 423 then 421 when 424 then 422 when 426 then 424 when 427 then 425 when 428 then 426 when 429 then 427 when 430 then 428 when 431 then 429 when 432 then 430 when 433 then 431 when 434 then 432 when 435 then 433 when 436 then 434 when 437 then 435 when 438 then 437 when 439 then 438 when 440 then 439 when 441 then 440 when 443 then 442 when 444 then 443 when 445 then 444 when 446 then 445 when 447 then 446 when 448 then 447 when 449 then 448 when 450 then 449 when 451 then 450 when 452 then 451 when 453 then 452 when 454 then 453 when 455 then 454 when 456 then 455 when 457 then 456 when 458 then 457 when 459 then 458 when 460 then 459 when 461 then 460 when 462 then 461 when 463 then 462 when 464 then 463 when 465 then 464 when 466 then 465 when 468 then 467 when 469 then 468 when 470 then 469 when 471 then 470 when 472 then 471 when 473 then 472 when 474 then 473 when 475 then 474 when 476 then 475 when 477 then 476 when 478 then 477 end,
+    ownergroup_id = case when 1 then 1 when 2 then 2 when 3 then 223 when 7 then 28 when 10 then 21 when 13 then 263 when 22 then 196 when 27 then 84 when 35 then 172 when 38 then 23 when 39 then 145 when 50 then 186 when 53 then 57 when 55 then 121 when 75 then 112 when 94 then 202 when 108 then 247 when 110 then 187 when 117 then 190 when 125 then 203 when 137 then 14 when 147 then 199 when 153 then 51 when 158 then 106 when 161 then 171 when 176 then 159 when 177 then 22 when 185 then 47 when 200 then 224 when 206 then 116 when 211 then 242 when 215 then 192 when 220 then 92 when 235 then 39 when 251 then 10 when 265 then 264 when 275 then 273 when 283 then 281 when 288 then 286 when 292 then 290 when 296 then 294 when 297 then 295 when 299 then 297 when 301 then 299 when 303 then 301 when 304 then 302 when 305 then 303 when 306 then 304 when 307 then 305 when 308 then 306 when 309 then 307 when 310 then 308 end,
+    profile_id = case when 1 then 1 when 2 then 3 when 3 then 2 when 4 then 5 when 5 then 4 when 8 then 8 when 9 then 9 when 11 then 11 when 12 then 12 when 13 then 13 end,
+    datacenter_id = case when 1 then 268 when 7 then 1 when 9 then 207 when 15 then 9 when 24 then 181 when 27 then 205 when 29 then 158 when 47 then 182 when 56 then 208 when 97 then 274 when 111 then 271 when 124 then 275 when 139 then 273 when 174 then 270 when 180 then 184 when 196 then 269 when 200 then 272 when 209 then 276 when 223 then 266 when 224 then 267 end
+where id < 10000
+;
+
+start transaction;
+
+update ezidapp_searchidentifier set
+    ownergroup_id = ( case
+        when ownergroup_id = 7 then 28
+        when ownergroup_id = 38 then 23
+        when ownergroup_id = 110 then 187
+        when ownergroup_id = 177 then 190
+        when ownergroup_id = 200 then 224
+        else 1000
+    end )
+where id < 10000
+;
+
+select count(*), ownergroup_id
+from ezidapp_searchidentifier
+where id < 10000
+group by ownergroup_id
+;
+
+rollback;
+
+select ownergroup_id
+from ezidapp_searchidentifier
+where id < 10000
+;
+
+select case
+    when ownergroup_id = 177 then 190
+    when ownergroup_id = 7 then 28
+    when ownergroup_id = 38 then 23
+    when ownergroup_id = 110 then 187
+    when ownergroup_id = 200 then 224
+    else 1000
+end
+from ezidapp_searchidentifier
+where id < 10000
+;
+
+select count(*) from ezidapp_searchidentifier where ownergroup_id not in (
+    1,2,3,7,10,13,22,27,35,38,39,50,53,55,75,94,108,110,117,125,137,147,153,158,161,176,177,185,200,206,211,215,220,235,251,265,275,283,288,292,296,297,299,301,303,304,305,306,307,308,309,310
+)
+;
+
+SELECT COUNT(*)
+FROM `ezidapp_searchidentifier`
+INNER JOIN `ezidapp_group`  ON (`ezidapp_searchidentifier`.`ownergroup_id` = `ezidapp_group`.`id`)
+WHERE `ezidapp_group`.`groupname` = 'admin'
+;
+
+select * from ezidapp_group
+where `ezidapp_group`.`groupname` = 'admin'
+;
+
+select count(*), ownergroup_id
+from ezidapp_searchidentifier
+group by ownergroup_id
+;
+
+select count(*), owner_id
+from ezidapp_searchidentifier
+group by owner_id
+;
+
+where ownergroup_id = 1;
+
+update ezidapp_group set organizationname = 'EZID superuser' where groupname = 'admin';
+
+select * from ezidapp_group;
+
+INSERT INTO `ezidapp_storegroup`
+VALUES (1,'ark:/99166/p9g44hq02','admin','EZID superuser','','http://ezid.cdlib.org/','(:unap)',0,0,'',1,'')
+;
+
+select * from ezidapp_group eg;
+delete from ezidapp_group where id = 309;
+
+select * from ezidapp_identifier ei where ei.ownergroup_id = 309;
+delete from ezidapp_identifier where ownergroup_id = 309;
+
+select * from ezidapp_shoulder es where group_id = 309;
+
+SELECT *
+FROM `ezidapp_searchidentifier`
+INNER JOIN `ezidapp_user`
+ON (`ezidapp_searchidentifier`.`owner_id` = `ezidapp_user`.`id`)
+WHERE (`ezidapp_user`.`username` = 'all')
+;
+
+LEFT OUTER JOIN `ezidapp_group` ON (`ezidapp_searchidentifier`.`ownergroup_id` = `ezidapp_group`.`id`)
+WHERE (`ezidapp_user`.`username` = 'all'
+AND `ezidapp_searchidentifier`.`identifier` LIKE BINARY 'ark:/99166/p96m3392n%')
+ORDER BY `ezidapp_searchidentifier`.`updateTime` DESC LIMIT 10;
+
+
+select * from ezidapp_searchidentifier where identifier = 'ark:/99166/p96m3392n';
+
+show create table ezidapp_searchidentifier;
+CREATE TABLE `ezidapp_searchidentifier` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `identifier` varchar(255) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+  `createTime` int(11) NOT NULL,
+  `updateTime` int(11) NOT NULL,
+  `status` varchar(1) NOT NULL,
+  `unavailableReason` longtext CHARACTER SET utf8mb4 NOT NULL,
+  `exported` tinyint(1) NOT NULL,
+  `crossrefStatus` varchar(1) NOT NULL,
+  `crossrefMessage` longtext CHARACTER SET utf8mb4 NOT NULL,
+  `target` varchar(2000) NOT NULL,
+  `cm` longblob NOT NULL,
+  `agentRole` varchar(1) NOT NULL,
+  `isTest` tinyint(1) NOT NULL,
+  `owner_id` int(11) NOT NULL,
+  `ownergroup_id` int(11) NOT NULL,
+  `datacenter_id` int(11) DEFAULT NULL,
+  `profile_id` int(11) NOT NULL,
+  `searchableTarget` varchar(255) NOT NULL,
+  `resourceCreator` longtext CHARACTER SET utf8mb4 NOT NULL,
+  `resourceTitle` longtext CHARACTER SET utf8mb4 NOT NULL,
+  `resourcePublisher` longtext CHARACTER SET utf8mb4 NOT NULL,
+  `resourcePublicationDate` longtext CHARACTER SET utf8mb4 NOT NULL,
+  `searchablePublicationYear` int(11) DEFAULT NULL,
+  `resourceType` longtext CHARACTER SET utf8mb4 NOT NULL,
+  `searchableResourceType` varchar(2) NOT NULL,
+  `keywords` longtext CHARACTER SET utf8mb4 NOT NULL,
+  `resourceCreatorPrefix` varchar(50) CHARACTER SET utf8mb4 NOT NULL,
+  `resourceTitlePrefix` varchar(50) CHARACTER SET utf8mb4 NOT NULL,
+  `resourcePublisherPrefix` varchar(50) CHARACTER SET utf8mb4 NOT NULL,
+  `hasMetadata` tinyint(1) NOT NULL,
+  `publicSearchVisible` tinyint(1) NOT NULL,
+  `oaiVisible` tinyint(1) NOT NULL,
+  `hasIssues` tinyint(1) NOT NULL,
+  `linkIsBroken` tinyint(1) NOT NULL,
+  `metadata` json DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `identifier` (`identifier`),
+  KEY `ezidapp_searc_owner_id_17d8ce4cfb6b0401_fk_ezidapp_searchuser_id` (`owner_id`),
+  KEY `ezidapp_ownergroup_id_69f5065adf48f369_fk_ezidapp_searchgroup_id` (`ownergroup_id`),
+  KEY `ezidapp__profile_id_112e6b8634f63b63_fk_ezidapp_searchprofile_id` (`profile_id`),
+  KEY `ez_datacenter_id_2c99a133444936c8_fk_ezidapp_searchdatacenter_id` (`datacenter_id`),
+  FULLTEXT KEY `ezidapp_searchidentifier_keywords` (`keywords`),
+  FULLTEXT KEY `ezidapp_searchidentifier_resourcecreator` (`resourceCreator`),
+  FULLTEXT KEY `ezidapp_searchidentifier_resourcepublisher` (`resourcePublisher`),
+  FULLTEXT KEY `ezidapp_searchidentifier_resourcetitle` (`resourceTitle`),
+  CONSTRAINT `ez_datacenter_id_2c99a133444936c8_fk_ezidapp_searchdatacenter_id` FOREIGN KEY (`datacenter_id`) REFERENCES `ezidapp_storedatacenter` (`id`),
+  CONSTRAINT `ezidapp__profile_id_112e6b8634f63b63_fk_ezidapp_searchprofile_id` FOREIGN KEY (`profile_id`) REFERENCES `ezidapp_storeprofile` (`id`),
+  CONSTRAINT `ezidapp_ownergroup_id_69f5065adf48f369_fk_ezidapp_searchgroup_id` FOREIGN KEY (`ownergroup_id`) REFERENCES `ezidapp_storegroup` (`id`),
+  CONSTRAINT `ezidapp_searc_owner_id_17d8ce4cfb6b0401_fk_ezidapp_searchuser_id` FOREIGN KEY (`owner_id`) REFERENCES `ezidapp_storeuser` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=127562335 DEFAULT CHARSET=utf8 STATS_SAMPLE_PAGES=2000
+
+select count(*) from ezidapp_storeidentifier es;
+
+select * from ezidapp_shoulder;
+
+SELECT (`ezidapp_user_shoulders`.`user_id`) AS `_prefetch_related_val_user_id`, `ezidapp_shoulder`.`id`, `ezidapp_shoulder`.`prefix`, `ezidapp_shoulder`.`type`, `ezidapp_shoulder`.`name`, `ezidapp_shoulder`.`minter`, `ezidapp_shoulder`.`datacenter_id`, `ezidapp_shoulder`.`crossrefEnabled`, `ezidapp_shoulder`.`isTest`, `ezidapp_shoulder`.`shoulder_type_id`, `ezidapp_shoulder`.`registration_agency_id`, `ezidapp_shoulder`.`prefix_shares_datacenter`, `ezidapp_shoulder`.`manager`, `ezidapp_shoulder`.`active`, `ezidapp_shoulder`.`redirect`, `ezidapp_shoulder`.`date`, `ezidapp_shoulder`.`isSupershoulder` FROM `ezidapp_shoulder` INNER JOIN `ezidapp_user_shoulders` ON (`ezidapp_shoulder`.`id` = `ezidapp_user_shoulders`.`shoulder_id`) WHERE `ezidapp_user_shoulders`.`user_id` IN (1);
+SELECT (`ezidapp_user_shoulders`.`user_id`) AS `_prefetch_related_val_user_id`, `ezidapp_shoulder`.`id`, `ezidapp_shoulder`.`prefix`, `ezidapp_shoulder`.`type`, `ezidapp_shoulder`.`name`, `ezidapp_shoulder`.`minter`, `ezidapp_shoulder`.`datacenter_id`, `ezidapp_shoulder`.`crossrefEnabled`, `ezidapp_shoulder`.`isTest`, `ezidapp_shoulder`.`shoulder_type_id`, `ezidapp_shoulder`.`registration_agency_id`, `ezidapp_shoulder`.`prefix_shares_datacenter`, `ezidapp_shoulder`.`manager`, `ezidapp_shoulder`.`active`, `ezidapp_shoulder`.`redirect`, `ezidapp_shoulder`.`date`, `ezidapp_shoulder`.`isSupershoulder` FROM `ezidapp_shoulder` INNER JOIN `ezidapp_user_shoulders` ON (`ezidapp_shoulder`.`id` = `ezidapp_user_shoulders`.`shoulder_id`)
+WHERE `ezidapp_user_shoulders`.`user_id` IN (1);
+
+
+SELECT `ezidapp_user`.`id`, `ezidapp_user`.`pid`, `ezidapp_user`.`username`, `ezidapp_user`.`group_id`, `ezidapp_user`.`realm_id`, `ezidapp_user`.`displayName`, `ezidapp_user`.`accountEmail`, `ezidapp_user`.`primaryContactName`, `ezidapp_user`.`primaryContactEmail`, `ezidapp_user`.`primaryContactPhone`, `ezidapp_user`.`secondaryContactName`, `ezidapp_user`.`secondaryContactEmail`, `ezidapp_user`.`secondaryContactPhone`, `ezidapp_user`.`inheritGroupShoulders`, `ezidapp_user`.`crossrefEnabled`, `ezidapp_user`.`crossrefEmail`, `ezidapp_user`.`isGroupAdministrator`, `ezidapp_user`.`isRealmAdministrator`, `ezidapp_user`.`isSuperuser`, `ezidapp_user`.`loginEnabled`, `ezidapp_user`.`password`, `ezidapp_user`.`notes`, `ezidapp_group`.`id`, `ezidapp_group`.`pid`, `ezidapp_group`.`groupname`, `ezidapp_group`.`realm_id`, `ezidapp_group`.`organizationName`, `ezidapp_group`.`organizationAcronym`, `ezidapp_group`.`organizationUrl`, `ezidapp_group`.`organizationStreetAddress`, `ezidapp_group`.`accountType`, `ezidapp_group`.`agreementOnFile`, `ezidapp_group`.`crossrefEnabled`, `ezidapp_group`.`notes`, `ezidapp_realm`.`id`, `ezidapp_realm`.`name` FROM `ezidapp_user` INNER JOIN `ezidapp_group` ON (`ezidapp_user`.`group_id` = `ezidapp_group`.`id`) INNER JOIN `ezidapp_realm` ON (`ezidapp_user`.`realm_id` = `ezidapp_realm`.`id`) WHERE `ezidapp_user`.`id` = 1 LIMIT 21;
+
+SELECT `ezidapp_user`.`id`, `ezidapp_user`.`pid`, `ezidapp_user`.`username`, `ezidapp_user`.`group_id`, `ezidapp_user`.`realm_id`, `ezidapp_user`.`displayName`, `ezidapp_user`.`accountEmail`, `ezidapp_user`.`primaryContactName`, `ezidapp_user`.`primaryContactEmail`, `ezidapp_user`.`primaryContactPhone`, `ezidapp_user`.`secondaryContactName`, `ezidapp_user`.`secondaryContactEmail`, `ezidapp_user`.`secondaryContactPhone`, `ezidapp_user`.`inheritGroupShoulders`, `ezidapp_user`.`crossrefEnabled`, `ezidapp_user`.`crossrefEmail`, `ezidapp_user`.`isGroupAdministrator`, `ezidapp_user`.`isRealmAdministrator`, `ezidapp_user`.`isSuperuser`, `ezidapp_user`.`loginEnabled`, `ezidapp_user`.`password`, `ezidapp_user`.`notes`, `ezidapp_group`.`id`, `ezidapp_group`.`pid`, `ezidapp_group`.`groupname`, `ezidapp_group`.`realm_id`, `ezidapp_group`.`organizationName`, `ezidapp_group`.`organizationAcronym`, `ezidapp_group`.`organizationUrl`, `ezidapp_group`.`organizationStreetAddress`, `ezidapp_group`.`accountType`, `ezidapp_group`.`agreementOnFile`, `ezidapp_group`.`crossrefEnabled`, `ezidapp_group`.`notes`, `ezidapp_realm`.`id`, `ezidapp_realm`.`name` FROM `ezidapp_user` INNER JOIN `ezidapp_group` ON (`ezidapp_user`.`group_id` = `ezidapp_group`.`id`) INNER JOIN `ezidapp_realm` ON (`ezidapp_user`.`realm_id` = `ezidapp_realm`.`id`) WHERE `ezidapp_user`.`id` = 1 LIMIT 21;
+
+
+SELECT `ezidapp_user`.`id`, `ezidapp_user`.`pid`, `ezidapp_user`.`username`, `ezidapp_user`.`group_id`, `ezidapp_user`.`realm_id`, `ezidapp_user`.`displayName`, `ezidapp_user`.`accountEmail`, `ezidapp_user`.`primaryContactName`, `ezidapp_user`.`primaryContactEmail`, `ezidapp_user`.`primaryContactPhone`, `ezidapp_user`.`secondaryContactName`, `ezidapp_user`.`secondaryContactEmail`, `ezidapp_user`.`secondaryContactPhone`, `ezidapp_user`.`inheritGroupShoulders`, `ezidapp_user`.`crossrefEnabled`, `ezidapp_user`.`crossrefEmail`, `ezidapp_user`.`isGroupAdministrator`, `ezidapp_user`.`isRealmAdministrator`, `ezidapp_user`.`isSuperuser`, `ezidapp_user`.`loginEnabled`, `ezidapp_user`.`password`, `ezidapp_user`.`notes`, `ezidapp_group`.`id`, `ezidapp_group`.`pid`, `ezidapp_group`.`groupname`, `ezidapp_group`.`realm_id`, `ezidapp_group`.`organizationName`, `ezidapp_group`.`organizationAcronym`, `ezidapp_group`.`organizationUrl`, `ezidapp_group`.`organizationStreetAddress`, `ezidapp_group`.`accountType`, `ezidapp_group`.`agreementOnFile`, `ezidapp_group`.`crossrefEnabled`, `ezidapp_group`.`notes`, `ezidapp_realm`.`id`, `ezidapp_realm`.`name` FROM `ezidapp_user` INNER JOIN `ezidapp_group` ON (`ezidapp_user`.`group_id` = `ezidapp_group`.`id`) INNER JOIN `ezidapp_realm` ON (`ezidapp_user`.`realm_id` = `ezidapp_realm`.`id`) WHERE `ezidapp_user`.`id` = 1 LIMIT 21; args=(1,)
+SELECT `ezidapp_storeuser`.`id`, `ezidapp_storeuser`.`pid`, `ezidapp_storeuser`.`username`, `ezidapp_storeuser`.`group_id`, `ezidapp_storeuser`.`realm_id`, `ezidapp_storeuser`.`displayName`, `ezidapp_storeuser`.`accountEmail`, `ezidapp_storeuser`.`primaryContactName`, `ezidapp_storeuser`.`primaryContactEmail`, `ezidapp_storeuser`.`primaryContactPhone`, `ezidapp_storeuser`.`secondaryContactName`, `ezidapp_storeuser`.`secondaryContactEmail`, `ezidapp_storeuser`.`secondaryContactPhone`, `ezidapp_storeuser`.`inheritGroupShoulders`, `ezidapp_storeuser`.`crossrefEnabled`, `ezidapp_storeuser`.`crossrefEmail`, `ezidapp_storeuser`.`isGroupAdministrator`, `ezidapp_storeuser`.`isRealmAdministrator`, `ezidapp_storeuser`.`isSuperuser`, `ezidapp_storeuser`.`loginEnabled`, `ezidapp_storeuser`.`password`, `ezidapp_storeuser`.`notes`, `ezidapp_storegroup`.`id`, `ezidapp_storegroup`.`pid`, `ezidapp_storegroup`.`groupname`, `ezidapp_storegroup`.`realm_id`, `ezidapp_storegroup`.`organizationName`, `ezidapp_storegroup`.`organizationAcronym`, `ezidapp_storegroup`.`organizationUrl`, `ezidapp_storegroup`.`organizationStreetAddress`, `ezidapp_storegroup`.`accountType`, `ezidapp_storegroup`.`agreementOnFile`, `ezidapp_storegroup`.`crossrefEnabled`, `ezidapp_storegroup`.`notes`, `ezidapp_storerealm`.`id`, `ezidapp_storerealm`.`name` FROM `ezidapp_storeuser` INNER JOIN `ezidapp_storegroup` ON (`ezidapp_storeuser`.`group_id` = `ezidapp_storegroup`.`id`) INNER JOIN `ezidapp_storerealm` ON (`ezidapp_storeuser`.`realm_id` = `ezidapp_storerealm`.`id`) WHERE `ezidapp_storeuser`.`id` = 1 LIMIT 21;
+
+# admin Group: EZID superuser
+
+select * from ezidapp_group;
+
+
+SELECT `ezidapp_user`.`id`, `ezidapp_user`.`pid`, `ezidapp_user`.`username`, `ezidapp_user`.`group_id`, `ezidapp_user`.`realm_id`, `ezidapp_user`.`displayName`, `ezidapp_user`.`accountEmail`, `ezidapp_user`.`primaryContactName`, `ezidapp_user`.`primaryContactEmail`, `ezidapp_user`.`primaryContactPhone`, `ezidapp_user`.`secondaryContactName`, `ezidapp_user`.`secondaryContactEmail`, `ezidapp_user`.`secondaryContactPhone`, `ezidapp_user`.`inheritGroupShoulders`, `ezidapp_user`.`crossrefEnabled`, `ezidapp_user`.`crossrefEmail`, `ezidapp_user`.`isGroupAdministrator`, `ezidapp_user`.`isRealmAdministrator`, `ezidapp_user`.`isSuperuser`, `ezidapp_user`.`loginEnabled`, `ezidapp_user`.`password`, `ezidapp_user`.`notes`, `ezidapp_group`.`id`, `ezidapp_group`.`pid`, `ezidapp_group`.`groupname`, `ezidapp_group`.`realm_id`, `ezidapp_group`.`organizationName`, `ezidapp_group`.`organizationAcronym`, `ezidapp_group`.`organizationUrl`, `ezidapp_group`.`organizationStreetAddress`, `ezidapp_group`.`accountType`, `ezidapp_group`.`agreementOnFile`, `ezidapp_group`.`crossrefEnabled`, `ezidapp_group`.`notes`, `ezidapp_realm`.`id`, `ezidapp_realm`.`name` FROM `ezidapp_user` INNER JOIN `ezidapp_group` ON (`ezidapp_user`.`group_id` = `ezidapp_group`.`id`) INNER JOIN `ezidapp_realm` ON (`ezidapp_user`.`realm_id` = `ezidapp_realm`.`id`) WHERE `ezidapp_user`.`id` = 1 LIMIT 21;
+SELECT (`ezidapp_user_shoulders`.`user_id`) AS `_prefetch_related_val_user_id`, `ezidapp_shoulder`.`id`, `ezidapp_shoulder`.`prefix`, `ezidapp_shoulder`.`type`, `ezidapp_shoulder`.`name`, `ezidapp_shoulder`.`minter`, `ezidapp_shoulder`.`datacenter_id`, `ezidapp_shoulder`.`crossrefEnabled`, `ezidapp_shoulder`.`isTest`, `ezidapp_shoulder`.`shoulder_type_id`, `ezidapp_shoulder`.`registration_agency_id`, `ezidapp_shoulder`.`prefix_shares_datacenter`, `ezidapp_shoulder`.`manager`, `ezidapp_shoulder`.`active`, `ezidapp_shoulder`.`redirect`, `ezidapp_shoulder`.`date`, `ezidapp_shoulder`.`isSupershoulder` FROM `ezidapp_shoulder` INNER JOIN `ezidapp_user_shoulders` ON (`ezidapp_shoulder`.`id` = `ezidapp_user_shoulders`.`shoulder_id`) WHERE `ezidapp_user_shoulders`.`user_id` IN (1);
+SELECT (`ezidapp_user_shoulders`.`user_id`) AS `_prefetch_related_val_user_id`, `ezidapp_shoulder`.`id`, `ezidapp_shoulder`.`prefix`, `ezidapp_shoulder`.`type`, `ezidapp_shoulder`.`name`, `ezidapp_shoulder`.`minter`, `ezidapp_shoulder`.`datacenter_id`, `ezidapp_shoulder`.`crossrefEnabled`, `ezidapp_shoulder`.`isTest`, `ezidapp_shoulder`.`shoulder_type_id`, `ezidapp_shoulder`.`registration_agency_id`, `ezidapp_shoulder`.`prefix_shares_datacenter`, `ezidapp_shoulder`.`manager`, `ezidapp_shoulder`.`active`, `ezidapp_shoulder`.`redirect`, `ezidapp_shoulder`.`date`, `ezidapp_shoulder`.`isSupershoulder`
+FROM `ezidapp_shoulder`
+INNER JOIN `ezidapp_user_shoulders`
+ON (`ezidapp_shoulder`.`id` = `ezidapp_user_shoulders`.`shoulder_id`)
+WHERE `ezidapp_user_shoulders`.`user_id` IN (1);
+
+select * from ezidapp_user_shoulders order by user_id;
+
+
+# Orig:
+select id from ezidapp_searchuser es order by id;
+# -> 1,2,10,13,14,21,26,28,30,31,39,40,48,52,53,69,75,80,89,93,96,99,101,102,104,108,111,114,116,117,118,119,120,123,124,126,130,131,135,136,137,139,140,145,152,159,160,166,171,173,175,180,186,187,188,191,192,193,195,199,204,206,207,210,211,213,214,216,219,222,225,227,228,229,230,232,235,236,237,239,241,244,245,246,249,252,261,268,269,271,272,276,277,279,281,282,284,285,286,287,290,292,297,298,300,307,308,309,310,311,316,320,323,324,326,327,328,333,334,337,338,340,342,344,345,349,350,351,354,358,359,361,362,363,365,366,371,372,375,378,379,386,387,388,389,390,391,392,393,394,395,396,397,398,399,400,401,402,403,404,406,407,408,409,410,411,415,416,417,418,419,420,422,423,424,426,427,428,429,430,431,432,433,434,435,436,437,438,439,440,441,443,444,445,446,447,448,449,450,451,452,453,454,455,456,457,458,459,460,461,462,463,464,465,466,468,469,470,471,472,473,474,475,476,477,478
+select id from ezidapp_storeuser e order by id;
+# -> 1,2,9,10,11,15,22,23,25,26,39,44,49,52,56,57,59,60,65,66,67,70,75,87,98,99,100,105,107,108,109,110,111,124,130,134,139,152,163,170,172,179,180,181,182,183,184,185,186,195,196,198,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,216,217,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,237,238,240,241,242,243,244,245,246,247,248,268,275,289,290,292,295,296,298,305,306,307,308,309,314,318,321,322,324,325,326,331,332,335,336,338,340,342,343,347,348,349,352,356,357,359,360,361,363,364,369,370,373,376,377,384,385,386,387,388,389,390,391,392,393,394,395,396,397,398,399,400,401,402,404,405,406,407,408,409,413,414,415,416,417,418,420,421,422,424,425,426,427,428,429,430,431,432,433,434,435,437,438,439,440,442,443,444,445,446,447,448,449,450,451,452,453,454,455,456,457,458,459,460,461,462,463,464,465,467,468,469,470,471,472,473,474,475,476,477
+
+select count(*) from ezidapp_user_proxies eup where eup.from_user_id not in (1,2,9,10,11,15,22,23,25,26,39,44,49,52,56,57,59,60,65,66,67,70,75,87,98,99,100,105,107,108,109,110,111,124,130,134,139,152,163,170,172,179,180,181,182,183,184,185,186,195,196,198,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,216,217,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,237,238,240,241,242,243,244,245,246,247,248,268,275,289,290,292,295,296,298,305,306,307,308,309,314,318,321,322,324,325,326,331,332,335,336,338,340,342,343,347,348,349,352,356,357,359,360,361,363,364,369,370,373,376,377,384,385,386,387,388,389,390,391,392,393,394,395,396,397,398,399,400,401,402,404,405,406,407,408,409,413,414,415,416,417,418,420,421,422,424,425,426,427,428,429,430,431,432,433,434,435,437,438,439,440,442,443,444,445,446,447,448,449,450,451,452,453,454,455,456,457,458,459,460,461,462,463,464,465,467,468,469,470,471,472,473,474,475,476,477)
+;
+select count(*) from ezidapp_user_proxies eup where eup.to_user_id not in (1,2,9,10,11,15,22,23,25,26,39,44,49,52,56,57,59,60,65,66,67,70,75,87,98,99,100,105,107,108,109,110,111,124,130,134,139,152,163,170,172,179,180,181,182,183,184,185,186,195,196,198,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,216,217,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,237,238,240,241,242,243,244,245,246,247,248,268,275,289,290,292,295,296,298,305,306,307,308,309,314,318,321,322,324,325,326,331,332,335,336,338,340,342,343,347,348,349,352,356,357,359,360,361,363,364,369,370,373,376,377,384,385,386,387,388,389,390,391,392,393,394,395,396,397,398,399,400,401,402,404,405,406,407,408,409,413,414,415,416,417,418,420,421,422,424,425,426,427,428,429,430,431,432,433,434,435,437,438,439,440,442,443,444,445,446,447,448,449,450,451,452,453,454,455,456,457,458,459,460,461,462,463,464,465,467,468,469,470,471,472,473,474,475,476,477)
+;
+
+select count(*) from ezidapp_user_shoulders where user_id not in (select id from ezidapp_user eu);
+select count(*) from ezidapp_user_shoulders where shoulder_id not in (select id from ezidapp_shoulder es);
+
+show create table ezidapp_user_shoulders;
+CREATE TABLE `ezidapp_user_shoulders` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `shoulder_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `storeuser_id` (`user_id`,`shoulder_id`),
+  KEY `ezidapp_stor_shoulder_id_760fcf030c9067e7_fk_ezidapp_shoulder_id` (`shoulder_id`),
+  CONSTRAINT `ezidapp_st_storeuser_id_6730d06357e88738_fk_ezidapp_storeuser_id` FOREIGN KEY (`user_id`) REFERENCES `ezidapp_user` (`id`),
+  CONSTRAINT `ezidapp_stor_shoulder_id_760fcf030c9067e7_fk_ezidapp_shoulder_id` FOREIGN KEY (`shoulder_id`) REFERENCES `ezidapp_shoulder` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9514 DEFAULT CHARSET=utf8
+
+
+select count(*) from ezidapp_user_proxies eup where eup.to_user_id not in (select id from ezidapp_user eu);
+select * from ezidapp_user_proxies;
+select * from ezidapp_user_proxies eup where eup.from_user_id not in (1,2,10,13,14,21,26,28,30,31,39,40,48,52,53,69,75,80,89,93,96,99,101,102,104,108,111,114,116,117,118,119,120,123,124,126,130,131,135,136,137,139,140,145,152,159,160,166,171,173,175,180,186,187,188,191,192,193,195,199,204,206,207,210,211,213,214,216,219,222,225,227,228,229,230,232,235,236,237,239,241,244,245,246,249,252,261,268,269,271,272,276,277,279,281,282,284,285,286,287,290,292,297,298,300,307,308,309,310,311,316,320,323,324,326,327,328,333,334,337,338,340,342,344,345,349,350,351,354,358,359,361,362,363,365,366,371,372,375,378,379,386,387,388,389,390,391,392,393,394,395,396,397,398,399,400,401,402,403,404,406,407,408,409,410,411,415,416,417,418,419,420,422,423,424,426,427,428,429,430,431,432,433,434,435,436,437,438,439,440,441,443,444,445,446,447,448,449,450,451,452,453,454,455,456,457,458,459,460,461,462,463,464,465,466,468,469,470,471,472,473,474,475,476,477,478);
+update ezidapp_user_proxies set
+    from_user_id = case when 1 then 1 when 2 then 2 when 10 then 75 when 13 then 243 when 14 then 248 when 21 then 186 when 26 then 223 when 28 then 65 when 30 then 240 when 31 then 202 when 39 then 66 when 40 then 87 when 48 then 184 when 52 then 152 when 53 then 242 when 69 then 247 when 75 then 44 when 80 then 182 when 89 then 111 when 93 then 233 when 96 then 212 when 99 then 230 when 101 then 185 when 102 then 57 when 104 then 110 when 108 then 214 when 111 then 163 when 114 then 207 when 116 then 228 when 117 then 275 when 118 then 60 when 119 then 208 when 120 then 213 when 123 then 198 when 124 then 209 when 126 then 179 when 130 then 22 when 131 then 59 when 135 then 204 when 136 then 289 when 137 then 39 when 139 then 134 when 140 then 172 when 145 then 180 when 152 then 26 when 159 then 9 when 160 then 234 when 166 then 238 when 171 then 15 when 173 then 220 when 175 then 201 when 180 then 244 when 186 then 237 when 187 then 139 when 188 then 210 when 191 then 211 when 192 then 232 when 193 then 130 when 195 then 245 when 199 then 226 when 204 then 56 when 206 then 100 when 207 then 227 when 210 then 23 when 211 then 268 when 213 then 49 when 214 then 235 when 216 then 98 when 219 then 181 when 222 then 195 when 225 then 231 when 227 then 216 when 228 then 52 when 229 then 25 when 230 then 124 when 232 then 217 when 235 then 170 when 236 then 219 when 237 then 241 when 239 then 67 when 241 then 206 when 244 then 225 when 245 then 196 when 246 then 205 when 249 then 99 when 252 then 70 when 261 then 183 when 268 then 108 when 269 then 203 when 271 then 246 when 272 then 229 when 276 then 109 when 277 then 10 when 279 then 292 when 281 then 105 when 282 then 11 when 284 then 222 when 285 then 221 when 286 then 224 when 287 then 200 when 290 then 107 when 292 then 290 when 297 then 295 when 298 then 296 when 300 then 298 when 307 then 305 when 308 then 306 when 309 then 307 when 310 then 308 when 311 then 309 when 316 then 314 when 320 then 318 when 323 then 321 when 324 then 322 when 326 then 324 when 327 then 325 when 328 then 326 when 333 then 331 when 334 then 332 when 337 then 335 when 338 then 336 when 340 then 338 when 342 then 340 when 344 then 342 when 345 then 343 when 349 then 347 when 350 then 348 when 351 then 349 when 354 then 352 when 358 then 356 when 359 then 357 when 361 then 359 when 362 then 360 when 363 then 361 when 365 then 363 when 366 then 364 when 371 then 369 when 372 then 370 when 375 then 373 when 378 then 376 when 379 then 377 when 386 then 384 when 387 then 385 when 388 then 386 when 389 then 387 when 390 then 388 when 391 then 389 when 392 then 390 when 393 then 391 when 394 then 392 when 395 then 393 when 396 then 394 when 397 then 395 when 398 then 396 when 399 then 397 when 400 then 398 when 401 then 399 when 402 then 400 when 403 then 401 when 404 then 402 when 406 then 404 when 407 then 405 when 408 then 406 when 409 then 407 when 410 then 408 when 411 then 409 when 415 then 413 when 416 then 414 when 417 then 415 when 418 then 416 when 419 then 417 when 420 then 418 when 422 then 420 when 423 then 421 when 424 then 422 when 426 then 424 when 427 then 425 when 428 then 426 when 429 then 427 when 430 then 428 when 431 then 429 when 432 then 430 when 433 then 431 when 434 then 432 when 435 then 433 when 436 then 434 when 437 then 435 when 438 then 437 when 439 then 438 when 440 then 439 when 441 then 440 when 443 then 442 when 444 then 443 when 445 then 444 when 446 then 445 when 447 then 446 when 448 then 447 when 449 then 448 when 450 then 449 when 451 then 450 when 452 then 451 when 453 then 452 when 454 then 453 when 455 then 454 when 456 then 455 when 457 then 456 when 458 then 457 when 459 then 458 when 460 then 459 when 461 then 460 when 462 then 461 when 463 then 462 when 464 then 463 when 465 then 464 when 466 then 465 when 468 then 467 when 469 then 468 when 470 then 469 when 471 then 470 when 472 then 471 when 473 then 472 when 474 then 473 when 475 then 474 when 476 then 475 when 477 then 476 when 478 then 477 end,
+    to_user_id =   case when 1 then 1 when 2 then 2 when 10 then 75 when 13 then 243 when 14 then 248 when 21 then 186 when 26 then 223 when 28 then 65 when 30 then 240 when 31 then 202 when 39 then 66 when 40 then 87 when 48 then 184 when 52 then 152 when 53 then 242 when 69 then 247 when 75 then 44 when 80 then 182 when 89 then 111 when 93 then 233 when 96 then 212 when 99 then 230 when 101 then 185 when 102 then 57 when 104 then 110 when 108 then 214 when 111 then 163 when 114 then 207 when 116 then 228 when 117 then 275 when 118 then 60 when 119 then 208 when 120 then 213 when 123 then 198 when 124 then 209 when 126 then 179 when 130 then 22 when 131 then 59 when 135 then 204 when 136 then 289 when 137 then 39 when 139 then 134 when 140 then 172 when 145 then 180 when 152 then 26 when 159 then 9 when 160 then 234 when 166 then 238 when 171 then 15 when 173 then 220 when 175 then 201 when 180 then 244 when 186 then 237 when 187 then 139 when 188 then 210 when 191 then 211 when 192 then 232 when 193 then 130 when 195 then 245 when 199 then 226 when 204 then 56 when 206 then 100 when 207 then 227 when 210 then 23 when 211 then 268 when 213 then 49 when 214 then 235 when 216 then 98 when 219 then 181 when 222 then 195 when 225 then 231 when 227 then 216 when 228 then 52 when 229 then 25 when 230 then 124 when 232 then 217 when 235 then 170 when 236 then 219 when 237 then 241 when 239 then 67 when 241 then 206 when 244 then 225 when 245 then 196 when 246 then 205 when 249 then 99 when 252 then 70 when 261 then 183 when 268 then 108 when 269 then 203 when 271 then 246 when 272 then 229 when 276 then 109 when 277 then 10 when 279 then 292 when 281 then 105 when 282 then 11 when 284 then 222 when 285 then 221 when 286 then 224 when 287 then 200 when 290 then 107 when 292 then 290 when 297 then 295 when 298 then 296 when 300 then 298 when 307 then 305 when 308 then 306 when 309 then 307 when 310 then 308 when 311 then 309 when 316 then 314 when 320 then 318 when 323 then 321 when 324 then 322 when 326 then 324 when 327 then 325 when 328 then 326 when 333 then 331 when 334 then 332 when 337 then 335 when 338 then 336 when 340 then 338 when 342 then 340 when 344 then 342 when 345 then 343 when 349 then 347 when 350 then 348 when 351 then 349 when 354 then 352 when 358 then 356 when 359 then 357 when 361 then 359 when 362 then 360 when 363 then 361 when 365 then 363 when 366 then 364 when 371 then 369 when 372 then 370 when 375 then 373 when 378 then 376 when 379 then 377 when 386 then 384 when 387 then 385 when 388 then 386 when 389 then 387 when 390 then 388 when 391 then 389 when 392 then 390 when 393 then 391 when 394 then 392 when 395 then 393 when 396 then 394 when 397 then 395 when 398 then 396 when 399 then 397 when 400 then 398 when 401 then 399 when 402 then 400 when 403 then 401 when 404 then 402 when 406 then 404 when 407 then 405 when 408 then 406 when 409 then 407 when 410 then 408 when 411 then 409 when 415 then 413 when 416 then 414 when 417 then 415 when 418 then 416 when 419 then 417 when 420 then 418 when 422 then 420 when 423 then 421 when 424 then 422 when 426 then 424 when 427 then 425 when 428 then 426 when 429 then 427 when 430 then 428 when 431 then 429 when 432 then 430 when 433 then 431 when 434 then 432 when 435 then 433 when 436 then 434 when 437 then 435 when 438 then 437 when 439 then 438 when 440 then 439 when 441 then 440 when 443 then 442 when 444 then 443 when 445 then 444 when 446 then 445 when 447 then 446 when 448 then 447 when 449 then 448 when 450 then 449 when 451 then 450 when 452 then 451 when 453 then 452 when 454 then 453 when 455 then 454 when 456 then 455 when 457 then 456 when 458 then 457 when 459 then 458 when 460 then 459 when 461 then 460 when 462 then 461 when 463 then 462 when 464 then 463 when 465 then 464 when 466 then 465 when 468 then 467 when 469 then 468 when 470 then 469 when 471 then 470 when 472 then 471 when 473 then 472 when 474 then 473 when 475 then 474 when 476 then 475 when 477 then 476 when 478 then 477 end
+;
+alter table ezidapp_user_proxies
+drop foreign key `ezidapp_to_storeuser_id_74856b12f826a792_fk_ezidapp_storeuser_id`
+;
+
+alter table ezidapp_user_proxies
+drop foreign key `ezida_from_storeuser_id_199e0c23a1cd56a7_fk_ezidapp_storeuser_id`
+;
+
+alter table ezidapp_user_proxies
+drop key from_storeuser_id
+;
+
+# alter table ezidapp_user_proxies
+# add UNIQUE KEY `from_storeuser_id` (`from_user_id`, `to_user_id`)
+# ;
+
+select * from ezidapp_user_proxies;
+
+drop table ezidapp_user_proxies;
+
+CREATE TABLE `ezidapp_user_proxies` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `from_user_id` int(11) DEFAULT NULL,
+  `to_user_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `from_storeuser_id` (`from_user_id`,`to_user_id`),
+  KEY `ezidapp_to_storeuser_id_74856b12f826a792_fk_ezidapp_storeuser_id` (`to_user_id`),
+  CONSTRAINT `ezida_from_storeuser_id_199e0c23a1cd56a7_fk_ezidapp_storeuser_id` FOREIGN KEY (`from_user_id`) REFERENCES `ezidapp_user` (`id`),
+  CONSTRAINT `ezidapp_to_storeuser_id_74856b12f826a792_fk_ezidapp_storeuser_id` FOREIGN KEY (`to_user_id`) REFERENCES `ezidapp_user` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=487 DEFAULT CHARSET=utf8
+;
+
 
 # Replace
 # ((when \d+ then \d+ ){10})
@@ -350,28 +667,28 @@ select concat(' when ', a.id, ' then ', b.id)
 from ezidapp_searchuser a join ezidapp_storeuser b on a.pid = b.pid
 order by a.id
 ;
-
-# Only works in MyISAM
-# alter table ezidapp_searchidentifier disable keys;
+# ->  when 1 then 1 when 2 then 2 when 10 then 75 when 13 then 243 when 14 then 248 when 21 then 186 when 26 then 223 when 28 then 65 when 30 then 240 when 31 then 202 when 39 then 66 when 40 then 87 when 48 then 184 when 52 then 152 when 53 then 242 when 69 then 247 when 75 then 44 when 80 then 182 when 89 then 111 when 93 then 233 when 96 then 212 when 99 then 230 when 101 then 185 when 102 then 57 when 104 then 110 when 108 then 214 when 111 then 163 when 114 then 207 when 116 then 228 when 117 then 275 when 118 then 60 when 119 then 208 when 120 then 213 when 123 then 198 when 124 then 209 when 126 then 179 when 130 then 22 when 131 then 59 when 135 then 204 when 136 then 289 when 137 then 39 when 139 then 134 when 140 then 172 when 145 then 180 when 152 then 26 when 159 then 9 when 160 then 234 when 166 then 238 when 171 then 15 when 173 then 220 when 175 then 201 when 180 then 244 when 186 then 237 when 187 then 139 when 188 then 210 when 191 then 211 when 192 then 232 when 193 then 130 when 195 then 245 when 199 then 226 when 204 then 56 when 206 then 100 when 207 then 227 when 210 then 23 when 211 then 268 when 213 then 49 when 214 then 235 when 216 then 98 when 219 then 181 when 222 then 195 when 225 then 231 when 227 then 216 when 228 then 52 when 229 then 25 when 230 then 124 when 232 then 217 when 235 then 170 when 236 then 219 when 237 then 241 when 239 then 67 when 241 then 206 when 244 then 225 when 245 then 196 when 246 then 205 when 249 then 99 when 252 then 70 when 261 then 183 when 268 then 108 when 269 then 203 when 271 then 246 when 272 then 229 when 276 then 109 when 277 then 10 when 279 then 292 when 281 then 105 when 282 then 11 when 284 then 222 when 285 then 221 when 286 then 224 when 287 then 200 when 290 then 107 when 292 then 290 when 297 then 295 when 298 then 296 when 300 then 298 when 307 then 305 when 308 then 306 when 309 then 307 when 310 then 308 when 311 then 309 when 316 then 314 when 320 then 318 when 323 then 321 when 324 then 322 when 326 then 324 when 327 then 325 when 328 then 326 when 333 then 331 when 334 then 332 when 337 then 335 when 338 then 336 when 340 then 338 when 342 then 340 when 344 then 342 when 345 then 343 when 349 then 347 when 350 then 348 when 351 then 349 when 354 then 352 when 358 then 356 when 359 then 357 when 361 then 359 when 362 then 360 when 363 then 361 when 365 then 363 when 366 then 364 when 371 then 369 when 372 then 370 when 375 then 373 when 378 then 376 when 379 then 377 when 386 then 384 when 387 then 385 when 388 then 386 when 389 then 387 when 390 then 388 when 391 then 389 when 392 then 390 when 393 then 391 when 394 then 392 when 395 then 393 when 396 then 394 when 397 then 395 when 398 then 396 when 399 then 397 when 400 then 398 when 401 then 399 when 402 then 400 when 403 then 401 when 404 then 402 when 406 then 404 when 407 then 405 when 408 then 406 when 409 then 407 when 410 then 408 when 411 then 409 when 415 then 413 when 416 then 414 when 417 then 415 when 418 then 416 when 419 then 417 when 420 then 418 when 422 then 420 when 423 then 421 when 424 then 422 when 426 then 424 when 427 then 425 when 428 then 426 when 429 then 427 when 430 then 428 when 431 then 429 when 432 then 430 when 433 then 431 when 434 then 432 when 435 then 433 when 436 then 434 when 437 then 435 when 438 then 437 when 439 then 438 when 440 then 439 when 441 then 440 when 443 then 442 when 444 then 443 when 445 then 444 when 446 then 445 when 447 then 446 when 448 then 447 when 449 then 448 when 450 then 449 when 451 then 450 when 452 then 451 when 453 then 452 when 454 then 453 when 455 then 454 when 456 then 455 when 457 then 456 when 458 then 457 when 459 then 458 when 460 then 459 when 461 then 460 when 462 then 461 when 463 then 462 when 464 then 463 when 465 then 464 when 466 then 465 when 468 then 467 when 469 then 468 when 470 then 469 when 471 then 470 when 472 then 471 when 473 then 472 when 474 then 473 when 475 then 474 when 476 then 475 when 477 then 476 when 478 then 477
 
 # group
-select now();
 select concat(' when ', a.id, ' then ', b.id)
 from ezidapp_searchgroup a join ezidapp_storegroup b on a.pid = b.pid
 order by a.id
 ;
+# -> when 1 then 1 when 2 then 2 when 3 then 223 when 7 then 28 when 10 then 21 when 13 then 263 when 22 then 196 when 27 then 84 when 35 then 172 when 38 then 23 when 39 then 145 when 50 then 186 when 53 then 57 when 55 then 121 when 75 then 112 when 94 then 202 when 108 then 247 when 110 then 187 when 117 then 190 when 125 then 203 when 137 then 14 when 147 then 199 when 153 then 51 when 158 then 106 when 161 then 171 when 176 then 159 when 177 then 22 when 185 then 47 when 200 then 224 when 206 then 116 when 211 then 242 when 215 then 192 when 220 then 92 when 235 then 39 when 251 then 10 when 265 then 264 when 275 then 273 when 283 then 281 when 288 then 286 when 292 then 290 when 296 then 294 when 297 then 295 when 299 then 297 when 301 then 299 when 303 then 301 when 304 then 302 when 305 then 303 when 306 then 304 when 307 then 305 when 308 then 306 when 309 then 307 when 310 then 308
 
 # profile
 select concat(' when ', a.id, ' then ', b.id)
 from ezidapp_searchprofile a join ezidapp_storeprofile b on a.label = b.label
 order by a.id
 ;
+# ->  when 1 then 1 when 2 then 3 when 3 then 2 when 4 then 5 when 5 then 4 when 8 then 8 when 9 then 9 when 11 then 11 when 12 then 12 when 13 then 13
 
-#
+# datacenter
 select concat(' when ', a.id, ' then ', b.id)
 from ezidapp_searchdatacenter a join ezidapp_storedatacenter b on a.symbol = b.symbol
 order by a.id
 ;
+# -> when 7 then 1 when 9 then 207 when 15 then 9 when 24 then 181 when 27 then 205 when 29 then 158 when 47 then 182 when 56 then 208 when 180 then 184 when 223 then 266 when 224 then 267
 
 # Check integrity of the search/store fields on which we'll be joining
 # All counts should be 0.
@@ -413,23 +730,6 @@ select
     (select count(*) from ezidapp_searchidentifier si where si.profile_id not in (select id from ezidapp_storeprofile )) as label,
     (select count(*) from ezidapp_searchidentifier si where si.datacenter_id not in (select id from ezidapp_storedatacenter )) as symbol
 ;
-
-# update ezidapp_searchidentifier si
-#     join ezidapp_searchuser searchuser on searchuser.id = si.owner_id
-#     join ezidapp_storeuser storeuser on storeuser.pid = searchuser.pid
-#     left join ezidapp_searchgroup searchgroup on searchgroup.id = si.ownergroup_id
-#     left join ezidapp_storegroup storegroup on storegroup.pid = searchgroup.pid
-#     left join ezidapp_searchprofile searchprofile on searchprofile.id = si.profile_id
-#     left join ezidapp_storeprofile storeprofile on storeprofile.label = searchprofile.label
-#     left join ezidapp_searchdatacenter searchdatacenter on searchdatacenter.id = si.datacenter_id
-#     left join ezidapp_storedatacenter storedatacenter on storedatacenter.symbol = searchdatacenter.symbol
-# set si.owner_id      = storeuser.id
-#     si.ownergroup_id = storegroup.id,
-#     si.profile_id    = storeprofile.id,
-#     si.datacenter_id = storedatacenter.id
-# where true
-# ;
-
 
 # Set up a fresh ezid_test_db
 
@@ -2289,3 +2589,17 @@ modify `profile_id` integer not null;
 # |          0 | ezidapp_searchidentifier_ownergroup_id_3ac1ed25c2bfbb2d_idx      |
 # +------------+------------------------------------------------------------------+
 # 51 rows in set (0.00 sec)
+
+-- Unused keys
+-- add key `ezidapp_searchidentifier_owner_id_52f3896c5fc67016_idx`(`owner_id`, `isTest`),
+-- add key `ezidapp_searchidentifier_owner_id_263dc1dd7d2fd3ef_idx`(`owner_id`, `resourcePublisherPrefix`),
+-- add key `ezidapp_searchidentifier_ownergroup_id_1d431d7513ab02ec_idx`(`ownergroup_id`, `status`),
+-- add key `ezidapp_searchidentifier_ownergroup_id_54e4e22002a54d2_idx`(`ownergroup_id`, `searchableResourceType`),
+-- add key `ezidapp_searchidentifier_ownergroup_id_65871830cd29aaf0_idx`(`ownergroup_id`, `hasMetadata`),
+-- add key `ezidapp_searchidentifier_ownergroup_id_3ac1ed25c2bfbb2d_idx`(`ownergroup_id`, `resourceCreatorPrefix`),
+-- add key `ezidapp_searchidentifier_ownergroup_id_2388bfe261a735c5_idx`(`ownergroup_id`, `resourcePublisherPrefix`),
+-- add key `ezidapp_searchidentifie_publicSearchVisible_47b0a294295f5ef5_idx`(`publicSearchVisible`, `updateTime`),
+-- add key `ezidapp_searchidentifie_publicSearchVisible_117042133b78a88e_idx`(`publicSearchVisible`, `resourceCreatorPrefix`),
+-- add key `ezidapp_searchidentifier_publicSearchVisible_6807647c6d8cb52_idx`(`publicSearchVisible`, `resourceTitlePrefix`),
+-- add key `ezidapp_searchidentifie_publicSearchVisible_2e067bd0a9494a38_idx`(`publicSearchVisible`, `resourcePublisherPrefix`),
+-- add key `ezidapp_searchidentifier_searchableTarget_24d34538786996df_idx`(`searchableTarget`),
