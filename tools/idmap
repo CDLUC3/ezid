@@ -33,7 +33,7 @@ fi
 
 $cat $infile |\
   fgrep _ezid_role |\
-  $tooldir/select _fields contains _ezid_role |\
+  $tooldir/ezid_select _fields contains _ezid_role |\
   $tooldir/project -d -s \| _id ezid.group.groupname ezid.user.username\
     _ezid_role |\
   awk -F \| '{ print $1, ($4 == "user"? $3 : $2), "(" $4 ")" }' |\
