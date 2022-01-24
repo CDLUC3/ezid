@@ -33,8 +33,8 @@ fi
 
 $cat $infile |\
   fgrep _ezid_role |\
-  $tooldir/ezid_select _fields contains _ezid_role |\
-  $tooldir/project -d -s \| _id ezid.group.groupname ezid.user.username\
+  $tooldir/ezid_select.py _fields contains _ezid_role |\
+  $tooldir/project.py -d -s \| _id ezid.group.groupname ezid.user.username\
     _ezid_role |\
   awk -F \| '{ print $1, ($4 == "user"? $3 : $2), "(" $4 ")" }' |\
   sort -k 2,2 -k 3,3r
