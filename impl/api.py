@@ -465,11 +465,12 @@ def _statusLineGenerator(includeSuccessLine):
         activeUsers, waitingUsers, isPaused = impl.ezid.getStatus()
         s = (
             f"STATUS {'paused' if isPaused else 'running'} "
-            f"activeOperations={sum(activeUsers.values())}"
-            f"waitingRequests={sum(waitingUsers.values())}"
+            f"activeOperations={sum(activeUsers.values())} "
+            f"waitingRequests={sum(waitingUsers.values())} "
             f"activeDataciteOperations={impl.datacite.numActiveOperations()} "
             f"binderQueueLength={impl.statistics.getBinderQueueLength()} "
-            f"dataciteQueueLength={impl.statistics.getDataCiteQueueLength()}"
+            f"dataciteQueueLength={impl.statistics.getDataCiteQueueLength()} "
+            "\n"
         )
         yield s.encode("utf-8")
         time.sleep(3)
