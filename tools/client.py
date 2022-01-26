@@ -147,7 +147,7 @@ USAGE_TEXT = """Usage: client [options] server credentials operation...
 # Global variables that are initialized farther down.
 
 _options = None
-django.conf.settings.BINDER_URL = None
+_binder_url = None
 _opener = None
 _cookie = None
 
@@ -173,7 +173,8 @@ class MyHTTPErrorProcessor(urllib.request.HTTPErrorProcessor):
 def formatAnvlRequest(args):
     request = []
     for i in range(0, len(args), 2):
-        k = args[i].decode(_options.encoding)
+        #k = args[i].decode(_options.encoding)
+        k = args[i]
         if k == "@":
             f = codecs.open(args[i + 1], encoding=_options.encoding)
             request += [l.strip("\r\n") for l in f.readlines()]
@@ -183,7 +184,8 @@ def formatAnvlRequest(args):
                 k = "@"
             else:
                 k = re.sub("[%:\r\n]", lambda c: "%%%02X" % ord(c.group(0)), k)
-            v = args[i + 1].decode(_options.encoding)
+            #v = args[i + 1].decode(_options.encoding)
+            v = args[i + 1]
             if v.startswith("@@"):
                 v = v[1:]
             elif v.startswith("@") and len(v) > 1:
@@ -198,9 +200,19 @@ def formatAnvlRequest(args):
 def encode(id_str):
     return urllib.parse.quote(id_str, ":/")
 
+def streamOutout(src, dst):
+    buffer = ""
+    while True:
+        buffer += src.read(1).decode(encoding="utf-8")
+        status_pos = buffer.rfind("STATUS")
+        if status_pos > 0:
+            dst.write(f"{buffer[:status_pos]}\n")
+            dst.flush()
+            buffer = buffer[status_pos:]
+
 
 def issueRequest(path, method, data=None, returnHeaders=False, streamOutput=False):
-    request = urllib.request.Request("%s/%s" % (django.conf.settings.BINDER_URL, path))
+    request = urllib.request.Request("%s/%s" % (_binder_url, path))
     request.get_method = lambda: method
     if data:
         request.add_header("Content-Type", "text/plain; charset=UTF-8")
@@ -210,9 +222,10 @@ def issueRequest(path, method, data=None, returnHeaders=False, streamOutput=Fals
     try:
         connection = _opener.open(request)
         if streamOutput:
-            while True:
-                sys.stdout.write(connection.read(1))
-                sys.stdout.flush()
+            streamOutout(connection, sys.stdout)
+            #while True:
+            #    sys.stdout.write(connection.read(1).decode(encoding="utf-8"))
+            #    sys.stdout.flush()
         else:
             response = connection.read()
             if returnHeaders:
@@ -222,7 +235,7 @@ def issueRequest(path, method, data=None, returnHeaders=False, streamOutput=Fals
     except urllib.error.HTTPError as e:
         sys.stderr.write(f"{e.code:d} {str(e)}\n")
         if e.fp:
-            shutil.copyfileobj(e.fp, sys.stderr)
+            sys.stderr.write(e.fp.read().decode(encoding="utf-8"))
         sys.exit(1)
 
 
@@ -249,7 +262,8 @@ def printAnvlResponse(response, sortLines=False):
             )
         if _options.oneLine:
             line = line.replace("\n", " ").replace("\r", " ")
-        print(line.encode(_options.encoding))
+        #print(line.encode(_options.encoding))
+        print(line)
 
 
 # Process command line arguments.
@@ -278,7 +292,7 @@ if _options.disableCertificateChecking:
     except AttributeError:
         pass
 
-django.conf.settings.BINDER_URL = KNOWN_SERVERS.get(args[0], args[0])
+_binder_url = KNOWN_SERVERS.get(args[0], args[0])
 
 _opener = urllib.request.build_opener(MyHTTPErrorProcessor())
 if args[1].startswith("sessionid="):
@@ -290,8 +304,7 @@ elif args[1] != "-":
         username = args[1]
         password = getpass.getpass()
     h = urllib.request.HTTPBasicAuthHandler()
-    # noinspection PyUnresolvedReferences
-    h.add_password("EZID", django.conf.settings.BINDER_URL, username, password)
+    h.add_password("EZID", _binder_url, username, password)
     _opener.add_handler(h)
 
 if args[2].endswith("!"):
