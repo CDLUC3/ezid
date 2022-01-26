@@ -12,62 +12,72 @@ import os.path
 import re
 import threading
 import time
+import typing
 import urllib.error
 import urllib.parse
 import urllib.request
 import urllib.response
-from typing import Pattern
 
 import django.conf
 import lxml.etree
 
+import ezidapp.models.shoulder
 import ezidapp.models.validation
 import impl.mapping
 import impl.util
 
-_lock = threading.Lock()
+ALLOCATOR_DICT = {
+    a: getattr(django.conf.settings, f"ALLOCATOR_{a}_PASSWORD")
+    for a in django.conf.settings.DATACITE_ALLOCATORS.split(",")
+}
 
-
-_numActiveOperations = 0
-
-_allocators = {}
-for a in django.conf.settings.DATACITE_ALLOCATORS.split(","):
-    _allocators[a] = getattr(django.conf.settings, f"ALLOCATOR_{a}_PASSWORD")
-
-schemas = {}
+SCHEMA_DICT = {}
 for f in os.listdir(os.path.join(django.conf.settings.PROJECT_ROOT, "xsd")):
     m = re.match("datacite-kernel-(.*)", f)
     if m:
-        schemas[m.group(1)] = (
+        SCHEMA_DICT[m.group(1)] = (
             lxml.etree.XMLSchema(
                 lxml.etree.parse(
-                    os.path.join(
-                        django.conf.settings.PROJECT_ROOT, "xsd", f, "metadata.xsd"
-                    )
+                    os.path.join(django.conf.settings.PROJECT_ROOT, "xsd", f, "metadata.xsd")
                 )
             ),
             threading.Lock(),
         )
-_schemas = schemas
 
+_SCHEMAS_DICT = SCHEMA_DICT
 
-def _modifyActiveCount(delta):
-    global _numActiveOperations
-    _lock.acquire()
-    try:
-        _numActiveOperations += delta
-    finally:
-        _lock.release()
+_SCHEMA_VERSION_RE = re.compile("{http://datacite\\.org/schema/kernel-([^}]*)}resource$")
 
+PROLOG_RE: typing.Pattern[str] = re.compile(
+    '(<\\?xml\\s+version\\s*=\\s*[\'"]([-\\w.:]+)["\'])'
+    '(\\s+encoding\\s*=\\s*[\'"]([-\\w.]+)["\'])?'
+)
+UTF8_RE = re.compile("UTF-?8$", re.I)
+ROOT_TAG_RE = re.compile("{(http://datacite\\.org/schema/kernel-([^}]*))}resource$")
 
-def numActiveOperations():
-    """Return the number of active operations
-    """
-    _lock.acquire()
-    try:
-        return _numActiveOperations
-    finally:
-        _lock.release()
+METADATA_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
+<resource xmlns="http://datacite.org/schema/kernel-4"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://datacite.org/schema/kernel-4
+    http://schema.datacite.org/meta/kernel-4/metadata.xsd">
+  <identifier identifierType="{}">{}</identifier>
+  <creators>
+    <creator>
+      <creatorName>{}</creatorName>
+    </creator>
+  </creators>
+  <titles>
+    <title>{}</title>
+  </titles>
+  <publisher>{}</publisher>
+  <publicationYear>{}</publicationYear>
+"""
+
+RESOURCE_TYPE_TEMPLATE_1 = """  <resourceType resourceTypeGeneral="%s"/>
+"""
+
+RESOURCE_TYPE_TEMPLATE_2 = """  <resourceType resourceTypeGeneral="%s">%s</resourceType>
+"""
 
 
 class _HTTPErrorProcessor(urllib.request.HTTPErrorProcessor):
@@ -82,34 +92,19 @@ class _HTTPErrorProcessor(urllib.request.HTTPErrorProcessor):
     https_response = http_response
 
 
-# def impl.util.basic_auth(django.conf.settings.BINDER_USERNAME,
-# django.conf.settings.BINDER_PASSWORD,)(doi, datacenter=None):
-
-
-def _authorization(doi, datacenter=None):
-    if datacenter is None:
-        import ezidapp.models.shoulder
-
-        s = ezidapp.models.shoulder.getLongestShoulderMatch("doi:" + doi)
-        # Should never happen.
-        assert s is not None, "shoulder not found"
-        datacenter = s.datacenter.symbol
-    a = datacenter.split(".")[0]
-    # noinspection PyUnresolvedReferences,PyUnresolvedReferences
-    p = _allocators.get(a, None)
-    assert p is not None, "no such allocator: " + a
-    return impl.util.basic_auth(datacenter, p)
-
-
-# noinspection PyTypeChecker
 def registerIdentifier(doi, targetUrl, datacenter=None):
     """Register a scheme-less DOI identifier (e.g., "10.5060/FOO") and target
     URL (e.g., "http://whatever...") with DataCite
 
-    'datacenter', if specified, should be the identifier's datacenter,
-    e.g., "CDL.BUL".  There are three possible returns: None on success;
-    a string error message if the target URL was not accepted by
-    DataCite; or a thrown exception on other error.
+    Args:
+        doi:
+        targetUrl:
+        datacenter: If specified, should be the identifier's datacenter, e.g.,
+            "CDL.BUL".
+
+    Returns:
+        There are three possible returns: None on success; a string error message if the
+        target URL was not accepted by DataCite; or a thrown exception on other error.
     """
     if not django.conf.settings.DATACITE_ENABLED:
         return None
@@ -121,13 +116,7 @@ def registerIdentifier(doi, targetUrl, datacenter=None):
         # We manually supply the HTTP Basic authorization header to avoid
         # the doubling of the number of HTTP transactions caused by the
         # challenge/response model.
-        r.add_header(
-            "Authorization",
-            impl.util.basic_auth(
-                django.conf.settings.BINDER_USERNAME,
-                django.conf.settings.BINDER_PASSWORD,
-            )(doi, datacenter),
-        )
+        r.add_header("Authorization", _authorization(doi, datacenter))
         r.add_header("Content-Type", "text/plain; charset=utf-8")
 
         r.data = "doi={}\nurl={}".format(
@@ -137,19 +126,13 @@ def registerIdentifier(doi, targetUrl, datacenter=None):
 
         c = None
         try:
-            _modifyActiveCount(1)
             c = o.open(r, timeout=django.conf.settings.DATACITE_TIMEOUT)
-            assert (
-                c.read() == "OK"
-            ), "unexpected return from DataCite register DOI operation"
+            assert c.read() == "OK", "Unexpected return from DataCite register DOI operation"
         except urllib.error.HTTPError as e:
             message = e.fp.read()
             if e.code == 400 and message.startswith(b"[url]"):
                 return message
-            if (
-                e.code != 500
-                or i == django.conf.settings.DATACITE_NUM_ATTEMPTS - 1
-            ):
+            if e.code != 500 or i == django.conf.settings.DATACITE_NUM_ATTEMPTS - 1:
                 raise e
         except Exception:
             if i == django.conf.settings.DATACITE_NUM_ATTEMPTS - 1:
@@ -157,7 +140,6 @@ def registerIdentifier(doi, targetUrl, datacenter=None):
         else:
             break
         finally:
-            _modifyActiveCount(-1)
             if c:
                 c.close()
         time.sleep(django.conf.settings.DATACITE_REATTEMPT_DELAY)
@@ -168,97 +150,84 @@ def setTargetUrl(doi, targetUrl, datacenter=None):
     """Set the target URL of an existing scheme-less DOI identifier (e.g.,
     "10.5060/FOO")
 
-    'datacenter', if specified, should be the
-    identifier's datacenter, e.g., "CDL.BUL".  There are three possible
-    returns: None on success; a string error message if the target URL
-    was not accepted by DataCite; or a thrown exception on other error.
+    Args:
+        doi:
+        targetUrl:
+        datacenter: If specified, should be the identifier's datacenter, e.g.,
+            "CDL.BUL".
+
+    Returns:
+        There are three possible returns: None on success; a string error message if the
+        target URL was not accepted by DataCite; or a thrown exception on other error.
     """
     return registerIdentifier(doi, targetUrl, datacenter)
 
 
 def getTargetUrl(doi, datacenter=None):
-    """Return the target URL of a scheme-less DOI identifier (e.g.,
-    "10.5060/FOO") as registered with DataCite, or None if the identifier is
-    not registered
+    """
+    Args:
+        doi:
+        datacenter: If specified, should be the identifier's datacenter, e.g.,
+        "CDL.BUL".
 
-    'datacenter', if specified, should be the identifier's datacenter,
-    e.g., "CDL.BUL".
+    Returns:
+        The target URL of a scheme-less DOI identifier (e.g., "10.5060/FOO") as
+        registered with DataCite, or None if the identifier is not registered.
     """
     # To hide transient network errors, we make multiple attempts.
-    # noinspection PyTypeChecker
     for i in range(django.conf.settings.DATACITE_NUM_ATTEMPTS):
         o = urllib.request.build_opener(_HTTPErrorProcessor)
-        # noinspection PyUnresolvedReferences,PyUnresolvedReferences
         r = urllib.request.Request(
             django.conf.settings.DATACITE_DOI_URL + "/" + urllib.parse.quote(doi)
         )
         # We manually supply the HTTP Basic authorization header to avoid
         # the doubling of the number of HTTP transactions caused by the
         # challenge/response model.
-        r.add_header(
-            "Authorization",
-            impl.util.basic_auth(
-                django.conf.settings.BINDER_USERNAME,
-                django.conf.settings.BINDER_PASSWORD,
-            )(doi, datacenter),
-        )
+        r.add_header("Authorization", _authorization(doi, datacenter))
         c = None
         try:
-            _modifyActiveCount(1)
             c = o.open(r, timeout=django.conf.settings.DATACITE_TIMEOUT)
             return c.read()
         except urllib.error.HTTPError as e:
             if e.code == 404:
                 return None
-            # noinspection PyTypeChecker
-            if (
-                e.code != 500
-                or i == django.conf.settings.DATACITE_NUM_ATTEMPTS - 1
-            ):
+            if e.code != 500 or i == django.conf.settings.DATACITE_NUM_ATTEMPTS - 1:
                 raise e
         except Exception:
-            # noinspection PyTypeChecker
             if i == django.conf.settings.DATACITE_NUM_ATTEMPTS - 1:
                 raise
         finally:
-            _modifyActiveCount(-1)
             if c:
                 c.close()
-        # noinspection PyTypeChecker
         time.sleep(django.conf.settings.DATACITE_REATTEMPT_DELAY)
-
-
-_prologRE: Pattern[str] = re.compile(
-    '(<\\?xml\\s+version\\s*=\\s*[\'"]([-\\w.:]+)["\'])'
-    '(\\s+encoding\\s*=\\s*[\'"]([-\\w.]+)["\'])?'
-)
-_utf8RE = re.compile("UTF-?8$", re.I)
-_rootTagRE = re.compile("{(http://datacite\\.org/schema/kernel-([^}]*))}resource$")
 
 
 def validateDcmsRecord(identifier, record, schemaValidate=True):
     """Validate and normalize a DataCite Metadata Scheme
 
-    <http://schema.datacite.org/> record for a qualified identifier
-    (e.g., "doi:10.5060/FOO").  The record should be unencoded.  Either
-    the normalized record is returned or an assertion error is raised.
-    If 'schemaValidate' is true, the record is validated against the
-    appropriate XML schema; otherwise, only a more forgiving well-
-    formedness check is performed.  (In an extension to DCMS, we allow
-    the identifier to be something other than a DOI, for example, an
-    ARK.)  The record is normalized by removing any encoding
-    declaration; by converting from deprecated schema versions if
-    necessary; and by inserting an appropriate 'schemaLocation'
-    attribute.  Also, 'identifier' is inserted in the returned record.
+    Args:
+        identifier: <http://schema.datacite.org/> record for a qualified identifier
+            (e.g., "doi:10.5060/FOO").
+        record:
+            The record should be unencoded. The record is normalized by removing any
+            encoding declaration; by converting from deprecated schema versions if
+            necessary; and by inserting an appropriate 'schemaLocation' attribute.
+            Also, 'identifier' is inserted in the returned record.
+        schemaValidate:
+            If true, the record is validated against the appropriate XML schema;
+            otherwise, only a more forgiving well- formedness check is performed.  (In
+            an extension to DCMS, we allow the identifier to be something other than a
+            DOI, for example, an ARK.)
+
+    Returns:
+        Either the normalized record is returned or an assertion error is raised.
     """
-    m = _prologRE.match(record)
+    m = PROLOG_RE.match(record)
     if m:
-        assert m.group(2) == "1.0", "unsupported XML version"
+        assert m.group(2) == "1.0", "Unsupported XML version"
         if m.group(3) is not None:
-            assert _utf8RE.match(m.group(4)), "XML encoding must be UTF-8"
-            record = (
-                record[: len(m.group(1))] + record[len(m.group(1)) + len(m.group(3)) :]
-            )
+            assert UTF8_RE.match(m.group(4)), "XML encoding must be UTF-8"
+            record = record[: len(m.group(1))] + record[len(m.group(1)) + len(m.group(3)) :]
     else:
         record = '<?xml version="1.0"?>\n' + record
     # We first do an initial parsing of the record to check
@@ -269,21 +238,20 @@ def validateDcmsRecord(identifier, record, schemaValidate=True):
         root = lxml.etree.XML(record)
     except Exception as e:
         assert False, "XML parse error: " + str(e)
-    m = _rootTagRE.match(root.tag)
-    assert m, "not a DataCite record"
+    m = ROOT_TAG_RE.match(root.tag)
+    assert m, "Not a DataCite record"
     version = m.group(2)
     # Upgrade schema versions that have been deprecated by DataCite.
     if version == "2.1" or version == "2.2":
         root = upgradeDcmsRecord(root, parseString=False, returnString=False)
-        m = _rootTagRE.match(root.tag)
+        m = ROOT_TAG_RE.match(root.tag)
         version = m.group(2)
-    # noinspection PyUnresolvedReferences
-    schema = _schemas.get(version, None)
-    assert schema is not None, "unsupported DataCite record version"
+    schema = _SCHEMAS_DICT.get(version, None)
+    assert schema is not None, "Unsupported DataCite record version"
     i = root.xpath("N:identifier", namespaces={"N": m.group(1)})
     assert (
         len(i) == 1 and "identifierType" in i[0].attrib
-    ), "malformed DataCite record: no <identifier> element"
+    ), "Malformed DataCite record: no <identifier> element"
     i = i[0]
     if identifier.startswith("doi:"):
         type = "DOI"
@@ -295,10 +263,10 @@ def validateDcmsRecord(identifier, record, schemaValidate=True):
         type = "UUID"
         identifier = identifier[5:]
     else:
-        assert False, "unrecognized identifier scheme"
+        assert False, "Unrecognized identifier scheme"
     assert (
         i.attrib["identifierType"] == type
-    ), "mismatch between identifier type and <identifier> element"
+    ), "Mismatch between identifier type and <identifier> element"
     if schemaValidate:
         # We temporarily replace the identifier with something innocuous
         # that will pass the schema's validation check, then change it
@@ -321,7 +289,6 @@ def validateDcmsRecord(identifier, record, schemaValidate=True):
             # exceptions and so replace them.  Too, the presence of such
             # characters can be the source of the problem, so explicitly
             # exposing them can be a help.
-            # noinspection PyUnresolvedReferences
             raise AssertionError(repr(e))
         finally:
             schema[1].release()
@@ -329,9 +296,7 @@ def validateDcmsRecord(identifier, record, schemaValidate=True):
     i.text = identifier
     root.attrib["{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"] = (
         "http://datacite.org/schema/kernel-%s "
-        "http://schema.datacite.org/meta/kernel-{}/metadata.xsd".format(
-            version, version
-        )
+        "http://schema.datacite.org/meta/kernel-{}/metadata.xsd".format(version, version)
     )
     try:
         # We re-sanitize the document because unacceptable characters can
@@ -343,50 +308,29 @@ def validateDcmsRecord(identifier, record, schemaValidate=True):
         assert False, "XML serialization error: " + str(e)
 
 
-def _interpolate(template, *args):
-    return template.format(*tuple(impl.util.xmlEscape(a) for a in args))
-
-
-_metadataTemplate = """<?xml version="1.0" encoding="UTF-8"?>
-<resource xmlns="http://datacite.org/schema/kernel-4"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://datacite.org/schema/kernel-4
-    http://schema.datacite.org/meta/kernel-4/metadata.xsd">
-  <identifier identifierType="{}">{}</identifier>
-  <creators>
-    <creator>
-      <creatorName>{}</creatorName>
-    </creator>
-  </creators>
-  <titles>
-    <title>{}</title>
-  </titles>
-  <publisher>{}</publisher>
-  <publicationYear>{}</publicationYear>
-"""
-
-_resourceTypeTemplate1 = """  <resourceType resourceTypeGeneral="%s"/>
-"""
-
-_resourceTypeTemplate2 = """  <resourceType resourceTypeGeneral="%s">%s</resourceType>
-"""
-
-
 def formRecord(identifier, metadata, supplyMissing=False, profile=None):
-    """Form an XML record for upload to DataCite, employing metadata mapping
-    if necessary
+    """Form an XML record for upload to DataCite, employing metadata mapping if
+    necessary
 
-    'identifier' should be a qualified identifier (e.g.,
-    "doi:10.5060/FOO").  'metadata' should be the identifier's metadata
-    as a dictionary of (name, value) pairs.  Returns an XML document as
-    a Unicode string.  The document contains a UTF-8 encoding
-    declaration, but is not in fact encoded.  If 'supplyMissing' is
-    true, the "(:unav)" code is supplied for missing required metadata
-    fields; otherwise, missing metadata results in an assertion error
-    being raised.  'profile' is the metadata profile to use for the
-    mapping; if None, the profile is determined from any _profile or _p
-    field in the metadata dictionary and otherwise defaults to "erc".
+    Args:
+        identifier: should be a qualified identifier (e.g., "doi:10.5060/FOO").
+        metadata: should be the identifier's metadata as a dictionary of (name, value)
+            pairs.
+        supplyMissing: If True, the "(:unav)" code is supplied for missing required
+            metadata fields; otherwise, missing metadata results in an assertion error
+            being raised.
+        profile: The metadata profile to use for the mapping; if None, the profile is
+            determined from any _profile or _p field in the metadata dictionary and
+            otherwise defaults to "erc".
+
+    Returns:
+        Returns an XML document as a Unicode string. The document contains a UTF-8
+        encoding declaration, but is not in fact encoded.
     """
+
+    def _interpolate(template, *args):
+        return template.format(*tuple(impl.util.xmlEscape(a) for a in args))
+
     if identifier.startswith("doi:"):
         idType = "DOI"
         idBody = identifier[4:]
@@ -412,13 +356,9 @@ def formRecord(identifier, metadata, supplyMissing=False, profile=None):
                 overrides["datacite." + e] = metadata["datacite." + e].strip()
         if "datacite.publicationyear" in overrides:
             try:
-                overrides[
-                    "datacite.publicationyear"
-                ] = ezidapp.models.validation.publicationDate(
+                overrides["datacite.publicationyear"] = ezidapp.models.validation.publicationDate(
                     overrides["datacite.publicationyear"]
-                )[
-                    :4
-                ]
+                )[:4]
             except Exception:
                 overrides["datacite.publicationyear"] = "0000"
         try:
@@ -437,7 +377,7 @@ def formRecord(identifier, metadata, supplyMissing=False, profile=None):
                     assert False, "no " + ("publication date" if a == "date" else a)
         d = km.validatedDate
         r = _interpolate(
-            _metadataTemplate,
+            METADATA_TEMPLATE,
             idType,
             idBody,
             km.creator,
@@ -453,28 +393,39 @@ def formRecord(identifier, metadata, supplyMissing=False, profile=None):
                 t = "Other/(:unav)"
         if "/" in t:
             gt, st = t.split("/", 1)
-            r += _interpolate(_resourceTypeTemplate2, gt, st)
+            r += _interpolate(RESOURCE_TYPE_TEMPLATE_2, gt, st)
         else:
-            r += _interpolate(_resourceTypeTemplate1, t)
+            r += _interpolate(RESOURCE_TYPE_TEMPLATE_1, t)
         r += "</resource>\n"
         return r
 
 
 def uploadMetadata(doi, current, delta, forceUpload=False, datacenter=None):
-    """Upload citation metadata for the resource identified by an existing
-    scheme-less DOI identifier (e.g., "10.5060/FOO") to DataCite
+    """Upload citation metadata for the resource identified by an existing scheme-less
+    DOI identifier (e.g., "10.5060/FOO") to DataCite.
 
-    This same function can be used to overwrite previously-uploaded
-    metadata. 'current' and 'delta' should be dictionaries mapping
-    metadata element names (e.g., "Title") to values.  'current+delta'
-    is uploaded, but only if there is at least one DataCite-relevant
-    difference between it and 'current' alone (unless 'forceUpload' is
-    true).  'datacenter', if specified, should be the identifier's
-    datacenter, e.g., "CDL.BUL".  There are three possible returns: None
-    on success; a string error message if the uploaded DataCite Metadata
-    Scheme record was not accepted by DataCite (due to an XML-related
-    problem); or a thrown exception on other error.  No error checking
-    is done on the inputs.
+    This same function can be used to overwrite previously-uploaded metadata.
+
+    Args:
+        doi:
+
+        current:
+        delta:
+            Should be dictionaries mapping metadata element names (e.g.,
+            "Title") to values. 'current+delta' is uploaded, but only if there is at
+            least one DataCite-relevant difference between it and 'current' alone
+            (unless 'forceUpload' is true).
+
+        forceUpload:
+        datacenter: If specified, should be the identifier's datacenter, e.g.,
+            "CDL.BUL".
+
+    Returns:
+        There are three possible returns:
+            - None on success
+            - A string error message if the uploaded DataCite Metadata Scheme record was
+              not accepted by DataCite (due to an XML-related problem)
+            - A thrown exception on other error. No error checking is done on the inputs.
     """
     try:
         oldRecord = formRecord("doi:" + doi, current)
@@ -491,26 +442,17 @@ def uploadMetadata(doi, current, delta, forceUpload=False, datacenter=None):
     if not django.conf.settings.DATACITE_ENABLED:
         return None
     # To hide transient network errors, we make multiple attempts.
-    # noinspection PyTypeChecker
     for i in range(django.conf.settings.DATACITE_NUM_ATTEMPTS):
         o = urllib.request.build_opener(_HTTPErrorProcessor)
-        # noinspection PyTypeChecker
         r = urllib.request.Request(django.conf.settings.DATACITE_METADATA_URL)
         # We manually supply the HTTP Basic authorization header to avoid
         # the doubling of the number of HTTP transactions caused by the
         # challenge/response model.
-        r.add_header(
-            "Authorization",
-            impl.util.basic_auth(
-                django.conf.settings.BINDER_USERNAME,
-                django.conf.settings.BINDER_PASSWORD,
-            )(doi, datacenter),
-        )
+        r.add_header("Authorization", _authorization(doi, datacenter))
         r.add_header("Content-Type", "application/xml; charset=utf-8")
         r.data = newRecord.encode("utf-8")
         c = None
         try:
-            _modifyActiveCount(1)
             c = o.open(r, timeout=django.conf.settings.DATACITE_TIMEOUT)
             s = c.read()
             assert s.startswith("OK"), (
@@ -520,85 +462,35 @@ def uploadMetadata(doi, current, delta, forceUpload=False, datacenter=None):
             message = e.fp.read()
             if e.code in (400, 422):
                 return "element 'datacite': " + message.decode('utf-8')
-            # noinspection PyTypeChecker
-            if (
-                e.code != 500
-                or i == django.conf.settings.DATACITE_NUM_ATTEMPTS - 1
-            ):
+            if e.code != 500 or i == django.conf.settings.DATACITE_NUM_ATTEMPTS - 1:
                 raise e
         except Exception:
-            # noinspection PyTypeChecker
             if i == django.conf.settings.DATACITE_NUM_ATTEMPTS - 1:
                 raise
         else:
             return None
         finally:
-            _modifyActiveCount(-1)
             if c:
                 c.close()
-        # noinspection PyTypeChecker
         time.sleep(django.conf.settings.DATACITE_REATTEMPT_DELAY)
 
 
-def _deactivate(doi, datacenter):
-    # To hide transient network errors, we make multiple attempts.
-    # noinspection PyTypeChecker
-    for i in range(django.conf.settings.DATACITE_NUM_ATTEMPTS):
-        o = urllib.request.build_opener(_HTTPErrorProcessor)
-        # noinspection PyUnresolvedReferences
-        r = urllib.request.Request(
-            django.conf.settings.DATACITE_METADATA_URL + "/" + urllib.parse.quote(doi)
-        )
-        # We manually supply the HTTP Basic authorization header to avoid
-        # the doubling of the number of HTTP transactions caused by the
-        # challenge/response model.
-        r.add_header(
-            "Authorization",
-            impl.util.basic_auth(
-                django.conf.settings.BINDER_USERNAME,
-                django.conf.settings.BINDER_PASSWORD,
-            )(doi, datacenter),
-        )
-        r.get_method = lambda: "DELETE"
-        c = None
-        try:
-            _modifyActiveCount(1)
-            c = o.open(r, timeout=django.conf.settings.DATACITE_TIMEOUT)
-            assert (
-                c.read() == "OK"
-            ), "unexpected return from DataCite deactivate DOI operation"
-        except urllib.error.HTTPError as e:
-            # noinspection PyTypeChecker
-            if (
-                e.code != 500
-                or i == django.conf.settings.DATACITE_NUM_ATTEMPTS - 1
-            ):
-                raise e
-        except Exception:
-            # noinspection PyTypeChecker
-            if i == django.conf.settings.DATACITE_NUM_ATTEMPTS - 1:
-                raise
-        else:
-            break
-        finally:
-            _modifyActiveCount(-1)
-            if c:
-                c.close()
-        # noinspection PyTypeChecker
-        time.sleep(django.conf.settings.DATACITE_REATTEMPT_DELAY)
+def deactivateIdentifier(doi, datacenter=None):
+    """Deactivate an existing, scheme-less DOI identifier (e.g., "10.5060/FOO") in
+    DataCite.
 
+    Args:
+        doi:
+        datacenter: 'datacenter', if specified, should be the identifier's datacenter,
+            e.g., "CDL.BUL".
 
-def deactivate(doi, datacenter=None):
-    """Deactivate an existing, scheme-less DOI identifier (e.g.,
-    "10.5060/FOO") in DataCite
+    Returns:
+        Returns None; raises an exception on error.
 
-    This removes the identifier from dataCite's search index, but has no
-    effect on the identifier's existence in the Handle system or on the
-    ability to change the identifier's target URL.  The identifier can
-    and will be reactivated by uploading new metadata to it (cf.
-    uploadMetadata in this module). 'datacenter', if specified, should
-    be the identifier's datacenter, e.g., "CDL.BUL".  Returns None;
-    raises an exception on error.
+    This removes the identifier from dataCite's search index, but has no effect on the
+    identifier's existence in the Handle system or on the ability to change the
+    identifier's target URL. The identifier can and will be reactivated by uploading
+    new metadata to it (cf. uploadMetadata in this module).
     """
     if not django.conf.settings.DATACITE_ENABLED:
         return
@@ -621,7 +513,7 @@ def deactivate(doi, datacenter=None):
                 datacenter=datacenter,
             )
             assert message is None, (
-                "unexpected return from DataCite store metadata operation: " + message
+                "Unexpected return from DataCite store metadata operation: " + message
             )
             _deactivate(doi, datacenter)
         else:
@@ -630,12 +522,14 @@ def deactivate(doi, datacenter=None):
 
 
 def ping():
-    """Test the DataCite API (as well as the underlying Handle System),
-    returning "up" or "down"."""
+    """Test the DataCite API (as well as the underlying Handle System)
+
+    Returns:
+        "up" or "down".
+    """
     if not django.conf.settings.DATACITE_ENABLED:
         return "up"
     try:
-        # noinspection PyTypeChecker
         r = setTargetUrl(
             django.conf.settings.DATACITE_PING_DOI,
             django.conf.settings.DATACITE_PING_TARGET,
@@ -649,49 +543,41 @@ def ping():
 
 
 def pingDataciteOnly():
-    """Test the DataCite API (only), returning "up" or "down"
+    """Test the DataCite API (only)
+
+    Returns:
+        "up" or "down".
     """
     if not django.conf.settings.DATACITE_ENABLED:
         return "up"
     # To hide transient network errors, we make multiple attempts.
-    # noinspection PyTypeChecker
     for i in range(django.conf.settings.DATACITE_NUM_ATTEMPTS):
         o = urllib.request.build_opener(_HTTPErrorProcessor)
-        # noinspection PyUnresolvedReferences
         r = urllib.request.Request(
-            django.conf.settings.DATACITE_DOI_URL
-            + "/"
-            + django.conf.settings.DATACITE_PING_DOI
+            django.conf.settings.DATACITE_DOI_URL + "/" + django.conf.settings.DATACITE_PING_DOI
         )
         # We manually supply the HTTP Basic authorization header to avoid
         # the doubling of the number of HTTP transactions caused by the
         # challenge/response model.
         r.add_header(
             "Authorization",
-            impl.util.basic_auth(
-                django.conf.settings.BINDER_USERNAME,
-                django.conf.settings.BINDER_PASSWORD,
-            )(
+            _authorization(
                 django.conf.settings.DATACITE_PING_DOI,
                 django.conf.settings.DATACITE_PING_DATACENTER,
             ),
         )
         c = None
         try:
-            _modifyActiveCount(1)
             c = o.open(r, timeout=django.conf.settings.DATACITE_TIMEOUT)
             assert c.read() == django.conf.settings.DATACITE_PING_TARGET
         except Exception:
-            # noinspection PyTypeChecker
             if i == django.conf.settings.DATACITE_NUM_ATTEMPTS - 1:
                 return "down"
         else:
             return "up"
         finally:
-            _modifyActiveCount(-1)
             if c:
                 c.close()
-        # noinspection PyTypeChecker
         time.sleep(django.conf.settings.DATACITE_REATTEMPT_DELAY)
 
 
@@ -699,16 +585,17 @@ def dcmsRecordToHtml(record):
     """Convert a DataCite Metadata Scheme <http://schema.datacite.org/> record
     to an XHTML table
 
-    The record should be unencoded.  Returns None on error.
+    Args:
+        record: The record should be unencoded.
+
+    Returns:
+        XHTML table or None on error.
     """
     try:
-        # noinspection PyCallingNonCallable
         r = lxml.etree.tostring(
             lxml.etree.XSLT(
                 lxml.etree.parse(
-                    os.path.join(
-                        django.conf.settings.PROJECT_ROOT, "profiles", "datacite.xsl"
-                    )
+                    os.path.join(django.conf.settings.PROJECT_ROOT, "profiles", "datacite.xsl")
                 )
             )(impl.util.parseXmlString(record)),
             encoding=str,
@@ -719,22 +606,26 @@ def dcmsRecordToHtml(record):
         return None
 
 
-# noinspection PyDefaultArgument
-def crossrefToDatacite(record, overrides={}):
-    """Convert a Crossref Deposit Schema
+def crossrefToDatacite(record, overrides=None):
+    """Convert a Crossref Deposit Schema <http://help.crossref.org/deposit_schema>
+    document to DataCite
 
-    <http://help.crossref.org/deposit_schema> document to a DataCite
-    Metadata Scheme <http://schema.datacite.org/> record.  'overrides'
-    is a dictionary of individual metadata element names (e.g.,
-    "datacite.title") and values that override the conversion values
-    that would normally be drawn from the input document.  Throws an
-    exception on error.
+    Args:
+        record:
+            Metadata Scheme <http://schema.datacite.org/> record.
+        overrides:
+            Dictionary of individual metadata element names (e.g., "datacite.title") and
+            values that override the conversion values that would normally be drawn from
+            the input document.
+
+    Returns:
+        Throws an exception on error.
     """
+    overrides = overrides or {}
     d = {}
     for k, v in list(overrides.items()):
         # noinspection PyArgumentList
         d[k] = lxml.etree.XSLT.strparam(v)
-    # noinspection PyCallingNonCallable
     return lxml.etree.tostring(
         lxml.etree.XSLT(
             lxml.etree.parse(
@@ -749,19 +640,20 @@ def crossrefToDatacite(record, overrides={}):
     )
 
 
-_schemaVersionRE = re.compile("{http://datacite\\.org/schema/kernel-([^}]*)}resource$")
-
-
 def upgradeDcmsRecord(record, parseString=True, returnString=True):
-    """Convert a DataCite Metadata Scheme <http://schema.datacite.org/> record to the latest version
-    of the schema (currently, version 4).
+    """Convert a DataCite Metadata Scheme <http://schema.datacite.org/> record to the
+    latest version of the schema (currently, version 4)
 
-    The record must be supplied as an unencoded Unicode string if 'parseString' is true, or a root
-    lxml.etree.Element object if not.
-
-    If 'returnString' is true, the record is returned as an unencoded Unicode string, in which case
-    the record has no XML declaration. Otherwise, an lxml.etree.Element object is returned.  In both
-    cases, the root element's xsi:schemaLocation attribute is set or added as necessary.
+    Args:
+        record:
+        parseString:
+            The record must be supplied as an unencoded Unicode string if 'parseString'
+            is true, or a root lxml.etree.Element object if not.
+        returnString:
+            If true, the record is returned as an unencoded Unicode string, in which
+            case the record has no XML declaration. Otherwise, an lxml.etree.Element
+            object is returned.  In both cases, the root element's xsi:schemaLocation
+            attribute is set or added as necessary.
     """
     if parseString:
         root = impl.util.parseXmlString(record)
@@ -771,7 +663,7 @@ def upgradeDcmsRecord(record, parseString=True, returnString=True):
         "http://datacite.org/schema/kernel-4 "
         + "http://schema.datacite.org/meta/kernel-4/metadata.xsd"
     )
-    m = _schemaVersionRE.match(root.tag)
+    m = _SCHEMA_VERSION_RE.match(root.tag)
     if m.group(1) == "4":
         # Nothing to do.
         if returnString:
@@ -852,3 +744,44 @@ def upgradeDcmsRecord(record, parseString=True, returnString=True):
         return lxml.etree.tostring(root, encoding=str)
     else:
         return root
+
+
+def _deactivate(doi, datacenter):
+    # To hide transient network errors, we make multiple attempts.
+    for i in range(django.conf.settings.DATACITE_NUM_ATTEMPTS):
+        o = urllib.request.build_opener(_HTTPErrorProcessor)
+        r = urllib.request.Request(
+            django.conf.settings.DATACITE_METADATA_URL + "/" + urllib.parse.quote(doi)
+        )
+        # We manually supply the HTTP Basic authorization header to avoid the doubling
+        # of the number of HTTP transactions caused by the challenge/response model.
+        r.add_header("Authorization", _authorization(doi, datacenter))
+        r.get_method = lambda: "DELETE"
+        c = None
+        try:
+            c = o.open(r, timeout=django.conf.settings.DATACITE_TIMEOUT)
+            assert c.read() == "OK", "Unexpected return from DataCite deactivate DOI operation"
+        except urllib.error.HTTPError as e:
+            if e.code != 500 or i == django.conf.settings.DATACITE_NUM_ATTEMPTS - 1:
+                raise e
+        except Exception:
+            if i == django.conf.settings.DATACITE_NUM_ATTEMPTS - 1:
+                raise
+        else:
+            break
+        finally:
+            if c:
+                c.close()
+        time.sleep(django.conf.settings.DATACITE_REATTEMPT_DELAY)
+
+
+def _authorization(doi, datacenter=None):
+    if datacenter is None:
+        s = ezidapp.models.shoulder.getLongestShoulderMatch("doi:" + doi)
+        # Should never happen.
+        assert s is not None, "Shoulder not found"
+        datacenter = s.datacenter.symbol
+    a = datacenter.split(".")[0]
+    p = ALLOCATOR_DICT.get(a, None)
+    assert p is not None, "No such allocator: " + a
+    return impl.util.basic_auth(datacenter, p)
