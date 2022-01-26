@@ -30,9 +30,10 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     def delete(self, task_model):
         # We can't actually delete a DOI, so we do the next best thing...
         ref_id = task_model.refIdentifier
+        doi = ref_id.identifier[4:]
         datacenter = ref_id.datacenter
-        impl.datacite.setTargetUrl(ref_id.identifier, "http://datacite.org/invalidDOI", datacenter)
-        impl.datacite.deactivateIdentifier(ref_id.identifier[4:], datacenter)
+        impl.datacite.setTargetUrl(doi, "http://datacite.org/invalidDOI", datacenter)
+        impl.datacite.deactivateIdentifier(doi, datacenter)
 
     def _overwrite(self, task_model):
         ref_id = task_model.refIdentifier
