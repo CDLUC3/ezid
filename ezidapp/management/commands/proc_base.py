@@ -86,7 +86,7 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
                 status=ezidapp.models.async_queue.AsyncQueueBase.UNSUBMITTED,
             ).order_by("seq")[: django.conf.settings.DAEMONS_MATCH_BATCH_SIZE]
             if not qs:
-                self.sleep(django.conf.settings.DAEMONS_BINDER_PROCESSING_IDLE_SLEEP)
+                self.sleep(django.conf.settings.DAEMONS_IDLE_SLEEP)
                 continue
 
             for task_model in qs:
@@ -105,6 +105,8 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
                     task_model.submitTime = self.now_int()
 
                 task_model.save()
+
+            self.sleep(django.conf.settings.DAEMONS_BATCH_SLEEP)
 
             # The previous version of the Crossref process had the following logic,
             # which would delete earlier tasks from the queue if the queue had multiple
@@ -192,9 +194,9 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         """Close DB connections and go to sleep"""
         # The Py2 version frequently closed the database connections, which Django will
         # automatically reopen as required. This instead closes the connection only if
-        # there are no tasks in the queue, and we are about to go to sleep. Not holding
-        # on to connections during sleep reduces the number of concurrent connection at
-        # the cost of having to reestablish the connection when returning from sleep.
+        # we are about to go to sleep. Not holding on to connections during sleep
+        # reduces the number of concurrent connection at the cost of having to
+        # reestablish the connection when returning from sleep.
         log.debug(f'Closing DB connections and sleeping for {duration_sec:.2f}s...')
         django.db.connections["default"].close()
         time.sleep(duration_sec)
