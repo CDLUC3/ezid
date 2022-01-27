@@ -98,10 +98,7 @@ class Command(django.core.management.BaseCommand):
 
         with django.db.transaction.atomic():
             if not user_model.objects.filter(username=django.conf.settings.ADMIN_USERNAME).exists():
-                user_model.objects.create_superuser(
-                    **SETTINGS_DICT['auth.user'],
-                    username=django.conf.settings.ADMIN_USERNAME,
-                )
+                user_model.objects.create_superuser(**SETTINGS_DICT['auth.user'])
 
         user = user_model.objects.get(
             username=django.conf.settings.ADMIN_USERNAME,
