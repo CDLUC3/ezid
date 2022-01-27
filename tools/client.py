@@ -163,9 +163,7 @@ class MyHTTPErrorProcessor(urllib.request.HTTPErrorProcessor):
         if response.status == 201:
             return response
         else:
-            return urllib.request.HTTPErrorProcessor.http_response(
-                self, request, response
-            )
+            return urllib.request.HTTPErrorProcessor.http_response(self, request, response)
 
     https_response = http_response
 
@@ -173,7 +171,7 @@ class MyHTTPErrorProcessor(urllib.request.HTTPErrorProcessor):
 def formatAnvlRequest(args):
     request = []
     for i in range(0, len(args), 2):
-        #k = args[i].decode(_options.encoding)
+        # k = args[i].decode(_options.encoding)
         k = args[i]
         if k == "@":
             f = codecs.open(args[i + 1], encoding=_options.encoding)
@@ -184,7 +182,7 @@ def formatAnvlRequest(args):
                 k = "@"
             else:
                 k = re.sub("[%:\r\n]", lambda c: "%%%02X" % ord(c.group(0)), k)
-            #v = args[i + 1].decode(_options.encoding)
+            # v = args[i + 1].decode(_options.encoding)
             v = args[i + 1]
             if v.startswith("@@"):
                 v = v[1:]
@@ -200,13 +198,14 @@ def formatAnvlRequest(args):
 def encode(id_str):
     return urllib.parse.quote(id_str, ":/")
 
+
 def streamOutout(src, dst):
     buffer = ""
     while True:
         buffer += src.read(1).decode(encoding="utf-8")
         status_pos = buffer.rfind("STATUS")
         if status_pos > 0:
-            dst.write(f"{buffer[:status_pos]}\n")
+            dst.write(f"{buffer[:status_pos].strip()}\n")
             dst.flush()
             buffer = buffer[status_pos:]
 
@@ -223,7 +222,7 @@ def issueRequest(path, method, data=None, returnHeaders=False, streamOutput=Fals
         connection = _opener.open(request)
         if streamOutput:
             streamOutout(connection, sys.stdout)
-            #while True:
+            # while True:
             #    sys.stdout.write(connection.read(1).decode(encoding="utf-8"))
             #    sys.stdout.flush()
         else:
@@ -251,18 +250,12 @@ def printAnvlResponse(response, sortLines=False):
             line.startswith("_created:") or line.startswith("_updated:")
         ):
             ls = line.split(":")
-            line = (
-                ls[0]
-                + ": "
-                + time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(int(ls[1])))
-            )
+            line = ls[0] + ": " + time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(int(ls[1])))
         if _options.decode:
-            line = re.sub(
-                "%([0-9a-fA-F][0-9a-fA-F])", lambda m: chr(int(m.group(1), 16)), line
-            )
+            line = re.sub("%([0-9a-fA-F][0-9a-fA-F])", lambda m: chr(int(m.group(1), 16)), line)
         if _options.oneLine:
             line = line.replace("\n", " ").replace("\r", " ")
-        #print(line.encode(_options.encoding))
+        # print(line.encode(_options.encoding))
         print(line)
 
 
@@ -271,12 +264,8 @@ def printAnvlResponse(response, sortLines=False):
 parser = optparse.OptionParser(formatter=MyHelpFormatter())
 parser.add_option("-d", action="store_true", dest="decode", default=False)
 parser.add_option("-e", action="store", dest="encoding", default="UTF-8")
-parser.add_option(
-    "-k", action="store_true", dest="disableCertificateChecking", default=False
-)
-parser.add_option(
-    "-l", action="store_true", dest="disableExternalUpdates", default=False
-)
+parser.add_option("-k", action="store_true", dest="disableCertificateChecking", default=False)
+parser.add_option("-l", action="store_true", dest="disableExternalUpdates", default=False)
 parser.add_option("-o", action="store_true", dest="oneLine", default=False)
 parser.add_option("-t", action="store_true", dest="formatTimestamps", default=False)
 
@@ -322,11 +311,8 @@ if bang and not OPERATIONS[operation][1]:
 
 args = args[3:]
 
-if (
-    type(OPERATIONS[operation][0]) is int and len(args) != OPERATIONS[operation][0]
-) or (
-    type(OPERATIONS[operation][0]) is types.LambdaType
-    and not OPERATIONS[operation][0](len(args))
+if (type(OPERATIONS[operation][0]) is int and len(args) != OPERATIONS[operation][0]) or (
+    type(OPERATIONS[operation][0]) is types.LambdaType and not OPERATIONS[operation][0](len(args))
 ):
     parser.error("incorrect number of arguments for operation")
 
