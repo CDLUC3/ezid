@@ -1,9 +1,7 @@
-#! /bin/bash
+#! /usr/bin/env bash
 
-#
 # Copyright©2021, Regents of the University of California
 # http://creativecommons.org/licenses/BSD
-#
 
 # Strips dated (i.e., already rolled over) EZID transaction log files,
 # retaining just BEGIN records for those transactions that
@@ -12,11 +10,6 @@
 # log, and deletes the dated transaction logs.  The latter steps are
 # performed only after a sanity check is performed and user
 # confirmation.
-#
-# Greg Janee <gjanee@ucop.edu>
-# January 2012
-
-# @executable
 
 shopt -s nullglob
 

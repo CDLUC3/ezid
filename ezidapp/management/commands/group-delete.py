@@ -24,7 +24,7 @@ import sys
 
 import ezidapp.models.group
 import ezidapp.models.util
-from impl import ezid
+import impl
 
 STEPS = [
     "1) Delete the group's users and remove the group's shoulders.",
@@ -66,7 +66,7 @@ searchGroup = ezidapp.models.group.Group.objects.get(groupname=group.groupname)
 group.delete()
 searchGroup.delete()
 
-s = ezid.deleteIdentifier(group.pid, ezidapp.models.util.getAdminUser())
+s = impl.ezid.deleteIdentifier(group.pid, ezidapp.models.util.getAdminUser())
 if not s.startswith("success"):
     print(f'delete-group: agent PID deletion failed: {s}')
 

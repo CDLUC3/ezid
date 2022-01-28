@@ -1,16 +1,11 @@
-#! /bin/bash
+#! /usr/bin/env bash
 
-#
 # Copyright©2021, Regents of the University of California
 # http://creativecommons.org/licenses/BSD
-#
 
 # Extracts all agent identifiers from an EZID dump file
 # (gzip-compressed or not) and prints a mapping of agent identifiers
 # to local names.
-#
-# Greg Janee <gjanee@ucop.edu>
-# September 2012
 
 tooldir=`dirname $0`
 

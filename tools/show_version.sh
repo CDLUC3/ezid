@@ -1,14 +1,9 @@
-#!/bin/bash
-#
+#! /usr/bin/env bash
+
 # Copyright©2021, Regents of the University of California
 # http://creativecommons.org/licenses/BSD
-#
 
-#
-# emulates "hg identify -inb -R path"
-#
-
-# @executable
+# Emulates "hg identify -inb -R path" after move from hg to git
 
 target_path='.'
 if [ ! -z "${1}" ]; then

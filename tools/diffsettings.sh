@@ -1,15 +1,12 @@
 #!/usr/bin/env bash
 
-#
 # Copyright©2021, Regents of the University of California
 # http://creativecommons.org/licenses/BSD
+
+# Format the output of `./manage diffsettings` for readability.
 #
-# ./manage diffsettings formatted for readability.
-#
-# '###', which is added to diffsettings to denote settings that are custom or modified from the Django defaults, is not
-# accurate, and not that helpful anyway, so we strip it out.
-#
-#
+# '###', which is added to diffsettings to denote settings that are custom or modified from the
+# Django defaults, is not accurate, and not that helpful anyway, so we strip it out.
 
 split_sections() {
   # language=perl
