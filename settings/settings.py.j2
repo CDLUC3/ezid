@@ -5,7 +5,6 @@
 {# Jinja template for EZID settings #}
 """
 
-import collections
 import logging.config
 import os
 import pathlib
@@ -23,6 +22,10 @@ DEBUG = True
 # When STANDALONE == True, Django handles serving of static files. Should only be used
 # for development.
 STANDALONE = False
+
+# Semantic versioning (SemVer) string that is returned by the getVersion API call.
+# TODO: Show this in the UI as well
+EZID_VERSION = '{{ ezid_version }}'
 
 # Database
 
@@ -89,14 +92,6 @@ LOG_DIR = HOME_DIR / 'logs' # /apps/ezid/logs
 
 ROOT_URLCONF = 'settings.urls'
 
-# Download
-# URL paths
-DOWNLOAD_WORK_URL = '/static/download/'
-DOWNLOAD_PUBLIC_URL = '/static/download/public'
-# Filesystem paths
-DOWNLOAD_WORK_DIR = HOME_DIR / 'download'  # /apps/ezid/download
-DOWNLOAD_PUBLIC_DIR = DOWNLOAD_WORK_DIR / 'public'  # /apps/ezid/download/public
-
 # URL path to root of static files.
 STATIC_URL = '/static/'
 # Filesystem path to root of static files.
@@ -149,6 +144,10 @@ DAEMONS_MATCH_BATCH_SIZE = 100
 
 # Daemons: Individual settings
 DAEMONS_DOWNLOAD_PROCESSING_IDLE_SLEEP = 10
+DAEMONS_DOWNLOAD_WORK_DIR = HOME_DIR / 'download'  # /apps/ezid/download
+DAEMONS_DOWNLOAD_PUBLIC_DIR = DAEMONS_DOWNLOAD_WORK_DIR / 'public'  # /apps/ezid/download/public
+DAEMONS_DOWNLOAD_FILE_LIFETIME = 60 * 60 * 24 * 7
+
 DAEMONS_STATISTICS_COMPUTE_CYCLE = 3600
 DAEMONS_STATISTICS_COMPUTE_SAME_TIME_OF_DAY = True
 

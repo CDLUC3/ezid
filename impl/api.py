@@ -145,9 +145,8 @@ def _validateOptions(request, options):
                         "'%s'".format(k.encode("utf-8"))
                     )
         else:
-            return (
-                "error: bad request - unrecognized URL query parameter '%s'"
-                % impl.util.oneLine(k.encode("ASCII", "xmlcharrefreplace"))
+            return "error: bad request - unrecognized URL query parameter '%s'" % impl.util.oneLine(
+                k.encode("ASCII", "xmlcharrefreplace")
             )
     return d
 
@@ -200,8 +199,7 @@ def _methodNotAllowed():
 
 
 def mintIdentifier(request):
-    """Mint an identifier; interface to ezid.mintIdentifier
-    """
+    """Mint an identifier; interface to ezid.mintIdentifier"""
     if request.method != "POST":
         return _methodNotAllowed()
     user = impl.userauth.authenticateRequest(request)
@@ -217,14 +215,11 @@ def mintIdentifier(request):
         return _response(options)
     assert request.path_info.startswith("/shoulder/")
     shoulder = request.path_info[10:]
-    return _response(
-        impl.ezid.mintIdentifier(shoulder, user, metadata), createRequest=True
-    )
+    return _response(impl.ezid.mintIdentifier(shoulder, user, metadata), createRequest=True)
 
 
 def identifierDispatcher(request):
-    """Dispatch an identifier request depending on the HTTP method
-    """
+    """Dispatch an identifier request depending on the HTTP method"""
     if request.method == "GET":
         return _getMetadata(request)
     elif request.method == "POST":
@@ -242,9 +237,7 @@ def _getMetadata(request):
     user = impl.userauth.authenticateRequest(request)
     if type(user) is str:
         return _response(user)
-    options = _validateOptions(
-        request, {"prefix_match": [("yes", True), ("no", False)]}
-    )
+    options = _validateOptions(request, {"prefix_match": [("yes", True), ("no", False)]})
     if type(options) is str:
         return _response(options)
     if user is not None:
@@ -279,9 +272,7 @@ def _setMetadata(request):
     # Easter egg.
     options = _validateOptions(
         request,
-        {"update_external_services": [("yes", True), ("no", False)]}
-        if user.isSuperuser
-        else {},
+        {"update_external_services": [("yes", True), ("no", False)]} if user.isSuperuser else {},
     )
     if type(options) is str:
         return _response(options)
@@ -306,9 +297,7 @@ def _createIdentifier(request):
     metadata = _readInput(request)
     if type(metadata) is str:
         return _response(metadata)
-    options = _validateOptions(
-        request, {"update_if_exists": [("yes", True), ("no", False)]}
-    )
+    options = _validateOptions(request, {"update_if_exists": [("yes", True), ("no", False)]})
     if type(options) is str:
         return _response(options)
     assert request.path_info.startswith("/id/")
@@ -333,9 +322,7 @@ def _deleteIdentifier(request):
     # Easter egg.
     options = _validateOptions(
         request,
-        {"update_external_services": [("yes", True), ("no", False)]}
-        if user.isSuperuser
-        else {},
+        {"update_external_services": [("yes", True), ("no", False)]} if user.isSuperuser else {},
     )
     if type(options) is str:
         return _response(options)
@@ -351,8 +338,7 @@ def _deleteIdentifier(request):
 
 
 def login(request):
-    """Log in a user
-    """
+    """Log in a user"""
     if request.method != "GET":
         return _methodNotAllowed()
     options = _validateOptions(request, {})
@@ -368,8 +354,7 @@ def login(request):
 
 
 def logout(request):
-    """Log a user out
-    """
+    """Log a user out"""
     if request.method != "GET":
         return _methodNotAllowed()
     options = _validateOptions(request, {})
@@ -380,8 +365,7 @@ def logout(request):
 
 
 def getStatus(request):
-    """Return EZID's status
-    """
+    """Return EZID's status"""
     if request.method != "GET":
         return _methodNotAllowed()
     options = _validateOptions(
@@ -411,31 +395,17 @@ def getStatus(request):
 
 
 def getVersion(request):
-    """Return EZID's version
-    """
+    """Return EZID's version as a semantic versioning (SemVer) string"""
     if request.method != "GET":
         return _methodNotAllowed()
-
-    # TODO: This is currently disabled as it relies on Mercurial.
     return django.http.HttpResponse(
-        'version currently not available',
+        django.conf.settings.EZID_VERSION,
         content_type="text/plain; charset=utf-8",
     )
 
-    options = _validateOptions(request, {})
-    if type(options) is str:
-        return _response(options)
-    # In theory the following body should be encoded, but no percent
-    # signs should appear anywhere.
-    body = (
-        "startup.time: {}\n" "startup.ezid_version: {}\n" "startup.info_version: {}\n"
-    )
-    return _response("success: version information follows", anvlBody=body)
-
 
 def batchDownloadRequest(request):
-    """Enqueue a batch download request
-    """
+    """Enqueue a batch download request"""
     if request.method != "POST":
         return _methodNotAllowed()
     options = _validateOptions(request, {})
