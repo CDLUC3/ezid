@@ -10,13 +10,13 @@ Usage:
 
    convert-dump [-m IDMAP] [-z]
 
-If the -z option is specified, both the input and output are gzip-compressed.  The -m
+If the -z option is specified, both the input and output are gzip-compressed. The -m
 option uses IDMAP instead of the instance database for conversion of agent identifiers;
 the specified IDMAP mapping file must be one produced by the 'idmap' script.
 
-This script requires several EZID modules.  The PYTHONPATH environment variable must
+This script requires several EZID modules. The PYTHONPATH environment variable must
 include the .../SITE_ROOT/PROJECT_ROOT directory; if it doesn't, we attempt to
-dynamically locate it and add it.  The DJANGO_SETTINGS_MODULE environment variable must
+dynamically locate it and add it. The DJANGO_SETTINGS_MODULE environment variable must
 be set.
 """
 

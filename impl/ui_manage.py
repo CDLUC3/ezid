@@ -31,7 +31,7 @@ import impl.ui_search
 import impl.userauth
 import impl.util2
 
-FORM_VALIDATION_ERROR_ON_LOAD = _("One or more fields do not validate.  ") + _(
+FORM_VALIDATION_ERROR_ON_LOAD = _("One or more fields do not validate. ") + _(
     "Please check the highlighted fields below for details."
 )
 
@@ -182,7 +182,7 @@ def edit(request, identifier):
         django.contrib.messages.error(
             request,
             _(
-                "You are not allowed to edit this identifier.  "
+                "You are not allowed to edit this identifier. "
                 + "If this ID belongs to you and you'd like to edit, please log in."
             ),
         )

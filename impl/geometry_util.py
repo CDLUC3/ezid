@@ -28,11 +28,11 @@ def kmlPolygonToDatacite(kml):
     """Convert a polygon defined in a KML
 
     <http://www.opengeospatial.org/standards/kml> version 2.2 or 2.3
-    document to a DataCite 4.0 <geoLocationPolygon> element.  The return
+    document to a DataCite 4.0 <geoLocationPolygon> element. The return
     is a pair (lxml.etree.Element, [warning, ...]) if successful or a
-    string error message if not.  The conversion fails for the usual
+    string error message if not. The conversion fails for the usual
     reasons (malformed KML, etc.) but also if the document defines more
-    than one geometry or does not define a polygon.  Polygon holes and
+    than one geometry or does not define a polygon. Polygon holes and
     non-zero altitude coordinates are ignored and result in warnings.
     """
     try:
@@ -130,11 +130,11 @@ def geojsonPolygonToDatacite(geojson):
     """Convert a polygon defined in a GeoJSON <RFC 7946,
     https://tools.ietf.org/html/rfc7946> document to a DataCite 4.0.
 
-    <geoLocationPolygon> element.  The return is a pair
+    <geoLocationPolygon> element. The return is a pair
     (lxml.etree.Element, [warning, ...]) if successful or a string error
-    message if not.  The conversion fails for the usual reasons
+    message if not. The conversion fails for the usual reasons
     (malformed JSON, etc.) but also if the document defines more than
-    one geometry or does not define a polygon.  Polygon holes and non-
+    one geometry or does not define a polygon. Polygon holes and non-
     zero altitude coordinates are ignored and result in warnings.
     """
     objects = []
@@ -206,7 +206,7 @@ def geojsonPolygonToDatacite(geojson):
 def internalPolygonToDatacite(s):
     """Convert an internal polygon description to a DataCite 4.0
 
-    <geoLocationPolygon> element.  An internal description is a string
+    <geoLocationPolygon> element. An internal description is a string
     of the form
 
        polygon ((lon, lat), (lon, lat), ...)
@@ -255,7 +255,7 @@ def internalPolygonToDatacite(s):
 def polygonToDatacite(s):
     """Convert a polygon defined in any supported format to a DataCite 4.0
 
-    <geoLocationPolygon> element.  The return is a pair
+    <geoLocationPolygon> element. The return is a pair
     (lxml.etree.Element, [warning, ...]) if successful or a string error
     message if not.
     """

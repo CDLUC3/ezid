@@ -5,7 +5,7 @@
 See <http://dublincore.org/groups/kernel/spec/>.
 
 The focus of this module is on basic structural parsing of ERC records, not parsing or
-processing of metadata values.  Thus, of the features listed in the ERC specification,
+processing of metadata values. Thus, of the features listed in the ERC specification,
 only the following are supported:
 
   basic ANVL/ERC syntax
@@ -118,8 +118,8 @@ def parse(s, concatenateValues=True):
 
     If 'concatenateValues' is true, repeated values for a given element
     are concatenated into a single string; otherwise, they're left as a
-    list.  If the input contains multiple records, only the first is
-    processed.  Raises ErcParseException (defined in this module).
+    list. If the input contains multiple records, only the first is
+    processed. Raises ErcParseException (defined in this module).
     """
     d = {}
     k = None

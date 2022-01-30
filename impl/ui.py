@@ -44,7 +44,7 @@ def contact(request):
         if (not 'url' in P or ('url' in P and P['url'] != '')) or (
             P['question'] and not re.match("(2|two)", P['question'])
         ):
-            # url is hidden.  If it's filled in then probably a spam bot
+            # url is hidden. If it's filled in then probably a spam bot
             pass
         elif d['form'].is_valid():
             emails = __emails(request)
@@ -97,7 +97,7 @@ def contact(request):
                 )
         elif not d['form'].is_valid():
             err = _(
-                "Form could not be sent.  Please check the highlighted field(s) below for details."
+                "Form could not be sent. Please check the highlighted field(s) below for details."
             )
             django.contrib.messages.error(request, err)
             # fall through to re-render page; form already contains error info

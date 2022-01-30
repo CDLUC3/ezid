@@ -7,8 +7,8 @@
 dashboard service.
 
 The statistics consist of cumulative identifier counts aggregated by month and broken
-down by identifier type (UUIDs are not currently included).  The counts do not include
-test identifiers, but do include reserved identifiers.  Example data:
+down by identifier type (UUIDs are not currently included). The counts do not include
+test identifiers, but do include reserved identifiers. Example data:
 
   YYYY-MM,DOI,ARK
   2010-06,1,0
@@ -27,9 +27,9 @@ Usage:
 
     dashurl: dashboard base URL (http[s]://host:port)
 
-This script requires several EZID modules.  The PYTHONPATH environment variable must
+This script requires several EZID modules. The PYTHONPATH environment variable must
 include the .../SITE_ROOT/PROJECT_ROOT directory; if it doesn't, we attempt to
-dynamically locate it and add it.  The DJANGO_SETTINGS_MODULE environment variable must
+dynamically locate it and add it. The DJANGO_SETTINGS_MODULE environment variable must
 be set.
 """
 

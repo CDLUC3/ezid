@@ -28,14 +28,14 @@ Usage: batch-register [options] operation mappings input.csv
                     client tool).
     -o COLUMNS      Comma-separated list of columns to output.
                     Defaults to _n,_id,_error.
-    -p              Preview mode.  Don't register identifiers;
+    -p              Preview mode. Don't register identifiers;
                     instead, write transformed metadata to standard
                     output.
     -r              Remove any mapping to _id; useful when
                     temporarily minting.
     -s SHOULDER     The shoulder to mint under, e.g.,
                     ark:/99999/fk4.
-    -t              Tab mode.  The input metadata is tab-separated
+    -t              Tab mode. The input metadata is tab-separated
                     (multiline values and tab characters in values
                     are not supported).
 
@@ -47,13 +47,13 @@ Each line of the file should have the form:
 The destination in a mapping may be either an EZID element name (erc.who, dc.title,
 _target, etc.) or an XPath absolute path of a DataCite metadata schema element or
 attribute (e.g., /resource/titles/title for an element, /resource/titles/title@titleType
-for an attribute).  If any XPaths are present, a DataCite XML record is constructed and
-assigned as the value of EZID element 'datacite'.  A special destination element, _id,
+for an attribute). If any XPaths are present, a DataCite XML record is constructed and
+assigned as the value of EZID element 'datacite'. A special destination element, _id,
 should be used to identify the identifier to create or update when performing either of
 those operations.
 
 The expression in a mapping is a string in which zero or more column values may be
-interpolated.  Columns are referenced using 1-based indexing and may be referred to
+interpolated. Columns are referenced using 1-based indexing and may be referred to
 using the syntaxes "$n" or "${n}". Use "$$" for a literal dollar sign.
 
 For example, given an input CSV file with six columns
@@ -80,14 +80,14 @@ column), a mapping file would be:
   _status = public
 
 A column may also be referenced as "${n:f}"; in this case the column value will first be
-passed to a function "f" and the return value of the function will be interpolated.  The
+passed to a function "f" and the return value of the function will be interpolated. The
 referenced function should be defined in a module "functions", which should be supplied
 by the user of this script (the PYTHONPATH environment variable may need to be set for
-the module to be found).  Multiple column values can be passed to a function using the
+the module to be found). Multiple column values can be passed to a function using the
 syntax "${n1,n2,n3,...:f}".
 
 For an example of using a user-supplied function, suppose that the CSV file in the first
-example above has a seventh column, publication_date, containing an ISO 8601 date.  Then
+example above has a seventh column, publication_date, containing an ISO 8601 date. Then
 a mapping for the publication year would be
 
   /resource/publicationYear = ${7:year_only}
@@ -98,15 +98,15 @@ with, in functions.py:
     return v[:4]
 
 Limitations: It is not possible to update just a portion of existing DataCite XML
-records.  The order of mappings determines the ordering of XML elements.  When mapping
+records. The order of mappings determines the ordering of XML elements. When mapping
 to both a DataCite metadata schema element and attribute of that element, the mapping to
 the element must come first in the mappings file.
 
 Multiple mappings to EZID metadata elements and to DataCite metadata schema attributes
-are not supported; the last mapping overwrites any previous mappings.  But for DataCite
+are not supported; the last mapping overwrites any previous mappings. But for DataCite
 metadata schema elements, multiple mappings cause multiple XML elements to be created.
 Specifically, given an XPath /resource/path/terminus, a new terminus element is created
-for each mapping.  Continuing with our running example, given eighth and ninth CSV
+for each mapping. Continuing with our running example, given eighth and ninth CSV
 columns
 
   ...,subject1,subject2
@@ -134,7 +134,7 @@ A user-supplied function may return:
 
   2. A tuple (relpath, value) where relpath is an XPath relative path of a DataCite
      metadata schema element or attribute, and value is any valid return from a
-     user-supplied function (i.e., a string, tuple, or list).  The path is interpreted
+     user-supplied function (i.e., a string, tuple, or list). The path is interpreted
      relative to the terminus element in the mapping or, in nested cases, to the
      previous contextual node; and the path establishes a new contextual node against
      which the value is processed.
@@ -142,7 +142,7 @@ A user-supplied function may return:
   3. A list of zero or more tuples.
 
 For example, suppose our CSV file has a tenth column containing zero or more editor
-names separated by semicolons.  A mapping
+names separated by semicolons. A mapping
 
   /resource/contributors = ${10:split_editors}
 
@@ -171,7 +171,7 @@ would create the XML structure DataCite requires, namely:
   </resource>
 
 The output, written to standard output, is a CSV file whose columns can be configured
-using the -o option.  An output column may be any metadata element populated by the
+using the -o option. An output column may be any metadata element populated by the
 above mapping process (referenced by element name) or any input column (referenced by
 simple integer). Three additional columns may be specified: _n, the record number in the
 input file; _id, the identifier created, minted, or updated; and _error, the error

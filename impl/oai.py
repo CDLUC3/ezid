@@ -125,7 +125,7 @@ def _buildRequest(request):
 
 def _buildResumptionToken(from_, until, prefix, cursor, total):
     # The semantics of a resumption token: return identifiers whose
-    # update times are in the range (from_, until].  'until' may be None.
+    # update times are in the range (from_, until]. 'until' may be None.
     if until is not None:
         until = str(until)
     else:
@@ -289,26 +289,26 @@ def _doHarvest(oaiRequest, batchSize, includeMetadata):
     # Note a bug in the protocol itself: if a resumption token was
     # supplied, we are required to return a (possibly empty) token, but
     # the only way to return a resumption token is to return at least
-    # one record.  By design, if we receive a resumption token there
-    # should be at least one record remaining, no problemo.  But interim
+    # one record. By design, if we receive a resumption token there
+    # should be at least one record remaining, no problemo. But interim
     # database modifications can cause there to be none, in which case
     # we are left with no legal response.
     if len(ids) == 0:
         return _error(oaiRequest, "noRecordsMatch")
-    # Our algorithm is as follows.  If we received fewer records than we
-    # requested, then the harvest must be complete.  Otherwise, there
-    # may be more records.  In that case, let T be the update time of
+    # Our algorithm is as follows. If we received fewer records than we
+    # requested, then the harvest must be complete. Otherwise, there
+    # may be more records. In that case, let T be the update time of
     # the last identifier received, and let I be the last identifier
-    # received whose update time strictly precedes T.  Then in this
+    # received whose update time strictly precedes T. Then in this
     # batch we return identifiers up through and including I, and use
     # I's update time as the exclusive lower bound in the new resumption
-    # token.  Identifier update times in EZID are almost (but not quite)
+    # token. Identifier update times in EZID are almost (but not quite)
     # unique, and hence if the batch size is 100 we will typically
     # return 99 identifiers; the 100th identifier will be returned as
-    # the first identifier in the next request.  What if every
+    # the first identifier in the next request. What if every
     # identifier in the batch has update time T?  Realistically that has
     # no chance of happening, but for theoretical purity we repeat the
-    # process using a larger batch size.  In the limiting case the batch
+    # process using a larger batch size. In the limiting case the batch
     # size would get so large that it would encompass every remaining
     # identifier.
     if len(ids) == batchSize:

@@ -6,7 +6,7 @@
 """Creates a link checker summary report in the form of a CSV file
 
 The report lists broken target URL counts broken down by identifier
-owner and by when the target URL was first detected broken.  The
+owner and by when the target URL was first detected broken. The
 report is either emailed, written to a named file, or written to
 standard output.
 
@@ -47,7 +47,7 @@ identifier owner and by when the target URL was first detected broken.
 Best,
 EZID Team
 
-This is an automated email.  Please do not reply.
+This is an automated email. Please do not reply.
 
 """
 

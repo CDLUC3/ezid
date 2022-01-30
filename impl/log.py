@@ -4,7 +4,7 @@
 """Logging functions
 
 What gets logged, where it gets logged, and how log records are formatted is all
-determined by the configuration file.  There are eight record types:
+determined by the configuration file. There are eight record types:
 
   level  message
   -----  -------
@@ -173,9 +173,9 @@ def forbidden(transactionId):
 
 def _extractRaiser(tbList):
     # Given a list of traceback frames, returns the qualified name of
-    # the EZID function that raised the exception.  We try to identify
-    # the "best" function to return.  Let F be the most recent function
-    # in the traceback that is in EZID's code base.  We return F unless
+    # the EZID function that raised the exception. We try to identify
+    # the "best" function to return. Let F be the most recent function
+    # in the traceback that is in EZID's code base. We return F unless
     # F is an internal function (begins with an underscore), in which
     # case we return the next most recent function that is public and in
     # the same module as F.
@@ -309,7 +309,7 @@ def otherError(caller, exception):
     """Log an internal error.
 
     Also, if the Django DEBUG flag is false, mails a traceback to the
-    Django administrator list.  Must be called from an exception
+    Django administrator list. Must be called from an exception
     handler.
     """
     m = str(exception)

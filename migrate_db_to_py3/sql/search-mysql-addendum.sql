@@ -1,7 +1,7 @@
 -- We assume that the database's default collation is case-insensitive
--- (e.g., utf8_general_ci).  This is desirable for ordering purposes,
+-- (e.g., utf8_general_ci). This is desirable for ordering purposes,
 -- and it will also force usernames and such to be case-insensitively
--- unique.  But identifiers are case-sensitive.  Additionally, the
+-- unique. But identifiers are case-sensitive. Additionally, the
 -- restricted character set of identifiers allows us to use ASCII
 -- instead of UTF-8, which decreases index size.
 
@@ -42,9 +42,9 @@ ALTER TABLE ezidapp_searchidentifier MODIFY resourceTitlePrefix VARCHAR(50)
 ALTER TABLE ezidapp_searchidentifier MODIFY resourcePublisherPrefix VARCHAR(50)
   NOT NULL COLLATE 'utf8mb4_general_ci';
 
--- Fixups.  A couple columns are not required within Django, but
+-- Fixups. A couple columns are not required within Django, but
 -- because EZID always supplies defaults, they can be declared NOT
--- NULL in the database.  Note the unfortunate necessity of referring
+-- NULL in the database. Note the unfortunate necessity of referring
 -- to Django-generated index names.
 
 ALTER TABLE ezidapp_searchidentifier DROP FOREIGN KEY

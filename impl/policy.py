@@ -19,7 +19,7 @@ def authorizeView(user, identifier):
     """Return True if a request to view identifier metadata is authorized
 
     'user' is the requestor and should be an authenticated User
-    object.  'identifier' is the identifier in question; it should be a
+    object. 'identifier' is the identifier in question; it should be a
     Identifier object.
     """
     # In EZID, essentially all identifier metadata is public.
@@ -33,7 +33,7 @@ def authorizeCreate(user, prefix):
     """Return True if a request to mint or create an identifier is authorized
 
     'user' is the requestor and should be an authenticated User
-    object.  'prefix' may be a complete identifier or just an identifier
+    object. 'prefix' may be a complete identifier or just an identifier
     prefix corresponding to a shoulder; in either case it must be
     qualified, e.g., "doi:10.5060/".
     """
@@ -64,7 +64,7 @@ def authorizeUpdate(user, identifier):
     (not including ownership changes; see authorizeOwnershipChange below).
 
     'user' is the requestor and should be an authenticated User
-    object.  'identifier' is the identifier in question; it should be a
+    object. 'identifier' is the identifier in question; it should be a
     Identifier object.
     """
     logger.debug(
@@ -102,7 +102,7 @@ def authorizeUpdateLegacy(user, owner, ownergroup):
     """Legacy version of the above function needed by the UI, which currently
     does not utilize Identifier objects.
 
-    'user' is as above.  'owner' and 'ownergroup' describe the ownership
+    'user' is as above. 'owner' and 'ownergroup' describe the ownership
     of the identifier in question; each should be a local name, e.g.,
     "dryad".
     """
@@ -131,7 +131,7 @@ def authorizeOwnershipChange(user, currentOwner, newOwner):
     identifier is authorized.
 
     'user' is the requestor and should be an authenticated User
-    object.  'currentOwner' and 'newOwner' should also be User
+    object. 'currentOwner' and 'newOwner' should also be User
     objects; they may be None to indicate anonymous ownership.
     """
     logging.debug(
@@ -176,7 +176,7 @@ def authorizeDownload(user, owner=None, ownergroup=None):
     object) is authorized.
 
     'user' is the requestor and should be an authenticated User
-    object.  Only one of 'owner' and 'ownergroup' should be specified.
+    object. Only one of 'owner' and 'ownergroup' should be specified.
     """
     logging.debug(
         f'Checking if user can download all identifiers owned by owner. '

@@ -24,7 +24,7 @@ def convertLegacyToExternal(d, convertAgents=True):
     stored in the Noid "egg" binder) to external form (i.e., as returned to
     clients).
 
-    The dictionary is modified in place.  N.B.: if the dictionary is for
+    The dictionary is modified in place. N.B.: if the dictionary is for
     a DOI identifier, this function does *not* add the _shadowedby
     element.
     """

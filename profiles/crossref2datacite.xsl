@@ -8,19 +8,19 @@ Schema record <http://schema.datacite.org/>.
 
 This transform focuses on populating just the required DataCite
 elements (creator, title, publisher, publication year) and the
-resource type element.  It makes the same assumption that EZID makes
+resource type element. It makes the same assumption that EZID makes
 in general: that there is exactly one <doi_data> element in the input
-document.  It attempts to always generate a valid output record; where
+document. It attempts to always generate a valid output record; where
 suitable conversion values aren't found, the (:unav) code is inserted
 instead.
 
 A general limitation of this transform is that it does not look higher
 in the document tree for conversion values that are inherited by lower
-levels.  For example, a <content_item> within a <book> does not
+levels. For example, a <content_item> within a <book> does not
 inherit the book's publisher or publication date, though it probably
-should.  In defense of this limitation, the higher-level inherited
+should. In defense of this limitation, the higher-level inherited
 values need not always be specified, and may be completely absent such
-as in the case of a <sa_component>.  In short, this transform simply
+as in the case of a <sa_component>. In short, this transform simply
 does not have the benefit of the backing of Crossref's database.
 
 This transform accepts the following optional external parameters:
@@ -34,9 +34,9 @@ This transform accepts the following optional external parameters:
   datacite.resourcetype
 
 If a parameter is supplied, it overrides the conversion value(s) that
-would otherwise be used.  Note that parameter values must be quoted so
+would otherwise be used. Note that parameter values must be quoted so
 that they are valid XPath string literals, e.g., a value "foo" must be
-supplied as "'foo'".  Sadly, there is no mechanism for escaping
+supplied as "'foo'". Sadly, there is no mechanism for escaping
 internal quotes.
 
 The conversion is based on Crossref version 4.3.4 and DataCite version

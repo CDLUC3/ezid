@@ -239,7 +239,7 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
             q2 = {}
             for k, v in list(q.items()):
                 q2[k] = q[k].strip() if isinstance(v, str) else q[k]
-            # Move searches for IDs in keyword field to identifier field.  I wanted to put this in
+            # Move searches for IDs in keyword field to identifier field. I wanted to put this in
             # form's clean() function but unable to modify field values that route. I think I need to
             # explicitly override the form's __init__ method
             if 'keywords' in q2:
@@ -372,7 +372,7 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
             )
         else:
             err = _(
-                "Could not complete search.  Please check the highlighted fields below for details."
+                "Could not complete search. Please check the highlighted fields below for details."
             )
             django.contrib.messages.error(request, err)
         d['search_success'] = False

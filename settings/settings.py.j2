@@ -54,7 +54,7 @@ DATABASES = {
 DATABASES_RECONNECT_DELAY = 60
 
 # The options in this section are used only if fulltext search is supported by the
-# search database.  The following two options could be obtained from MySQL directly, but
+# search database. The following two options could be obtained from MySQL directly, but
 # we put them here to avoid any overt dependencies on MySQL.
 SEARCH_MINIMUM_WORD_LENGTH = 3
 
@@ -157,7 +157,7 @@ MAX_THREADS_PER_USER = 16
 DATABASES_RECONNECT_DELAY = 60
 
 # The options in this section are used only if fulltext search is supported by the
-# search database.  The following two options could be obtained from MySQL directly, but
+# search database. The following two options could be obtained from MySQL directly, but
 # we put them here to avoid any overt dependencies on MySQL.
 SEARCH_MINIMUM_WORD_LENGTH = 3
 SEARCH_STOPWORDS = (
@@ -183,7 +183,7 @@ EMAIL_NEW_ACCOUNT_EMAIL = '{{ email_new_account }}'
 
 # Error notification emails sufficiently similar to previously-sent
 # emails are suppressed for 'error_suppression_window' seconds; the
-# timer is completely reset after 'error_lifetime' seconds.  Two
+# timer is completely reset after 'error_lifetime' seconds. Two
 # emails are sufficiently similar if their similarity ratio is greater
 # than or equal to 'error_similarity_threshold'.
 EMAIL_ERROR_SUPPRESSION_WINDOW = 3600
@@ -403,7 +403,7 @@ ALLOCATOR_PURDUE_PASSWORD = '{{ allocator_purdue_password  }}'
 # Crossref
 
 # The 'daemons.crossref_enabled' flag governs whether the Crossref
-# daemon thread runs.  The flag below governs if the daemon actually
+# daemon thread runs. The flag below governs if the daemon actually
 # contacts Crossref, or if Crossref calls are simply short-circuited.
 CROSSREF_ENABLED = False
 CROSSREF_DEPOSITOR_NAME = 'EZID'
@@ -485,7 +485,7 @@ LINKCHECKER_WORKSET_OWNER_MAX_LINKS = 500
 LINKCHECKER_CHECK_TIMEOUT = 30
 LINKCHECKER_USER_AGENT = 'EZID (EZID link checker; https://ezid.cdlib.org/)'
 # The following governs the number of bytes to read from any given
-# link.  Set to a negative value to make unlimited.
+# link. Set to a negative value to make unlimited.
 LINKCHECKER_MAX_READ = 104_857_600
 
 # Internal settings

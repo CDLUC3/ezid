@@ -4,7 +4,7 @@
 """Identifier statistics
 
 To avoid burdening online identifier processing, statistics are computed periodically by
-a daemon thread.  We eschew a synchronous, inline approach to maintaining statistics
+a daemon thread. We eschew a synchronous, inline approach to maintaining statistics
 because identifier changes can be complex (creation times can change, ownership can
 change, even users and groups can change) and tracking the effects of those changes on
 statistics would require knowledge of an identifier's pre-change state, which is not

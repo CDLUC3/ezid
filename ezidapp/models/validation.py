@@ -35,7 +35,7 @@ def anyIdentifier(identifier):
 def agentPid(pid):
     # Validates an agent (i.e., user or group) persistent identifier.
     # This function does not check that the identifier actually exists;
-    # that's left to the calling code.  In practice agent identifiers
+    # that's left to the calling code. In practice agent identifiers
     # will all fall under a particular shoulder, but for validation
     # purposes we require only that they be ARKs.
     if not pid.startswith("ark:/") or impl.util.validateArk(pid[5:]) != pid[5:]:
@@ -96,7 +96,7 @@ _timespecs = [
 
 def publicationDate(date):
     # Validates a publication date, which may be specified in a number
-    # of formats (see above).  Returns just the date portion of the
+    # of formats (see above). Returns just the date portion of the
     # date, i.e., YYYY, YYYY-MM, or YYYY-MM-DD.
     for length, regexp, pattern, numComponents in _timespecs:
         if type(length) is tuple:
@@ -125,10 +125,10 @@ def publicationDate(date):
 # EZID borrows its resource type vocabulary from DataCite, and extends
 # that vocabulary by allowing a "specific type" (in DataCite parlance)
 # to follow a "general type" (or type proper) separated by a slash, as
-# in "Image/Photograph".  The following dictionary lists the allowable
+# in "Image/Photograph". The following dictionary lists the allowable
 # resource types (these are from version 4 of the DataCite Metadata
 # Schema <http://schema.datacite.org/meta/kernel-4/>) and maps them to
-# mnemonic codes for database storage purposes.  (N.B.: the codes are
+# mnemonic codes for database storage purposes. (N.B.: the codes are
 # used for ordering, so their order should match the order of the full
 # terms.)
 
@@ -152,7 +152,7 @@ resourceTypes = {
 
 def resourceType(descriptor):
     # Validates a resource type that is possibly extended with a
-    # specific type as described above.  Returns a normalized
+    # specific type as described above. Returns a normalized
     # descriptor.
     descriptor = descriptor.strip()
     if "/" in descriptor:

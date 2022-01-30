@@ -3,10 +3,12 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
+# noinspection SpellCheckingInspection
+
 """EZID command line client
 
 Input metadata (from command line parameters and files) is assumed to be UTF-8 encoded,
-and output metadata is UTF-8 encoded, unless overriden by the -e option.  By default,
+and output metadata is UTF-8 encoded, unless overridden by the -e option. By default,
 ANVL responses (currently, that's all responses) are left in %-encoded form.
 
 Usage: client [options] server credentials operation...
@@ -47,7 +49,7 @@ Usage: client [options] server credentials operation...
     r[eload]
 
 In the above, if an element is "@", the subsequent value is treated as a filename and
-metadata elements are read from the named ANVL-formatted file.  For example, if file
+metadata elements are read from the named ANVL-formatted file. For example, if file
 metadata.txt contains:
 
   erc.who: Proust, Marcel
@@ -59,7 +61,7 @@ then an identifier with that metadata can be minted by invoking:
   client p username:password mint ark:/99999/fk4 @ metadata.txt
 
 Otherwise, if a value has the form "@filename", a (single) value is read from the named
-file.  For example, if file metadata.xml contains a DataCite XML record, then an
+file. For example, if file metadata.xml contains a DataCite XML record, then an
 identifier with that record as the value of the 'datacite' element can be minted by
 invoking:
 

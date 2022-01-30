@@ -56,7 +56,7 @@ class LinkChecker(django.db.models.Model):
 
     # Stores all public, real (non-test) identifiers that have
     # non-default target URLs; their target URLs; and link checker
-    # results.  This table is updated from the primary EZID tables, but
+    # results. This table is updated from the primary EZID tables, but
     # always lags behind; it is not synchronized.
 
     # The identifier in qualified, normalized form, e.g.,
@@ -65,9 +65,9 @@ class LinkChecker(django.db.models.Model):
         max_length=impl.util.maxIdentifierLength, unique=True
     )
 
-    # The identifier's owner.  As this table is populated from the
+    # The identifier's owner. As this table is populated from the
     # Identifier table (not ideal, but currently necessary), this
-    # field is a foreign key into the User table.  But it is not
+    # field is a foreign key into the User table. But it is not
     # expressed as an actual foreign key in order to avoid a hard
     # database dependency.
     owner_id = django.db.models.IntegerField(db_index=True)
@@ -100,7 +100,7 @@ class LinkChecker(django.db.models.Model):
         db_index=True,
     )
 
-    # Computed value for indexing purposes.  True if the number of
+    # Computed value for indexing purposes. True if the number of
     # failures is positive.
     isBad = django.db.models.BooleanField(default=False, editable=False)
 
@@ -111,7 +111,7 @@ class LinkChecker(django.db.models.Model):
 
     # The HTTP return code from the last check; or a negative value if
     # an I/O error occurred; or None if the target URL hasn't been
-    # checked yet.  For link checker purposes, a return code of 200 is
+    # checked yet. For link checker purposes, a return code of 200 is
     # synonymous with success.
     returnCode = django.db.models.IntegerField(blank=True, null=True)
 

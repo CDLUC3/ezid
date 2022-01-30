@@ -7,8 +7,8 @@
 
 The dump files must be comparable: they
 must both be raw dumps or both be normal dumps, must have the same
-scope, etc.  In both files the records must be ordered by
-identifier, as they are when produced by 'dump-store'.  (Dump files
+scope, etc. In both files the records must be ordered by
+identifier, as they are when produced by 'dump-store'. (Dump files
 produced by 'dump-binder' must be sorted first.
 
 Reserved identifiers are not stored in the binder.
@@ -20,7 +20,7 @@ Usage:
 If a filename ends with ".gz", the dump is assumed to be
 gzip-compressed.
 
-This script requires an EZID module.  The PYTHONPATH environment
+This script requires an EZID module. The PYTHONPATH environment
 variable must include the .../SITE_ROOT/PROJECT_ROOT/impl directory;
 if it doesn't, we attempt to dynamically locate it and add it.
 """

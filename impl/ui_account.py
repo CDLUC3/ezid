@@ -44,7 +44,7 @@ proxies_default = _("None chosen")
 
 def login(request):
     """Render the login page (GET) or processes a login form submission
-    (POST).  A successful login redirects to the URL specified by.
+    (POST). A successful login redirects to the URL specified by.
 
     ?next=... or, failing that, the home page.
     """
@@ -183,11 +183,11 @@ def edit(request):
                 for e in errors:
                     all_errors += e
                 django.contrib.messages.error(
-                    request, _("Change(s) could not be made.   ") + all_errors
+                    request, _("Change(s) could not be made. ") + all_errors
                 )
             else:
                 err = _(
-                    "Change(s) could not be made.  Please check the highlighted field(s) below for details."
+                    "Change(s) could not be made. Please check the highlighted field(s) below for details."
                 )
                 django.contrib.messages.error(request, err)
     else:
@@ -378,7 +378,7 @@ def pwreset(request, pwrr):
             )
             if not d['form'].is_valid():
                 err = _(
-                    "Changes could not be made.  Please check the highlighted field(s) below for details."
+                    "Changes could not be made. Please check the highlighted field(s) below for details."
                 )
                 django.contrib.messages.error(request, err)
             else:

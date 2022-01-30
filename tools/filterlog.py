@@ -4,7 +4,7 @@
 #  http://creativecommons.org/licenses/BSD
 
 """Reads EZID transaction log files, consolidates transaction BEGIN and END records, and
-filters transactions as specified by command line options.  If no files are specified,
+filters transactions as specified by command line options. If no files are specified,
 records are read from standard input.
 
 Usage: filterlog [options] files...
@@ -48,12 +48,12 @@ Options:
     -e            internal server error (transactional or other)
     -p            partial transaction
 
-By default, all records are output.  Filter options are AND'd together, but multiple
+By default, all records are output. Filter options are AND'd together, but multiple
 options within an option group are OR'd.
 
-This script requires an EZID module.  The PYTHONPATH environment variable must include
+This script requires an EZID module. The PYTHONPATH environment variable must include
 the .../SITE_ROOT/PROJECT_ROOT directory; if it doesn't, we attempt to dynamically
-locate it and add it.  The DJANGO_SETTINGS_MODULE environment variable must be set.
+locate it and add it. The DJANGO_SETTINGS_MODULE environment variable must be set.
 
 Implementation note: beyond the documentation in log.py, this program relies on the fact
 that BEGIN records currently have the following common structure (after the BEGIN
@@ -335,12 +335,12 @@ pattern = re.compile(
 
 # Below, 'records' holds Record objects which are complete (i.e.,
 # their END records have been encountered) and which pass the display
-# filters.  'tidMap' maps transaction IDs to Record objects, both
+# filters. 'tidMap' maps transaction IDs to Record objects, both
 # those in 'records' and those for which END records have not yet been
-# encountered.  When an END record is encountered and the Record
+# encountered. When an END record is encountered and the Record
 # object is completed, if the transaction is not selected for display,
 # the transaction's ID is retained in 'tidMap' but the Record object
-# is discarded to save memory.  (Memory consumption has been a problem
+# is discarded to save memory. (Memory consumption has been a problem
 # running this script on large log files.)
 
 records = []

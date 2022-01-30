@@ -61,11 +61,11 @@ def validateBody(body):
     """Validate and normalize an immediate child element of a <body> element of
     a Crossref metadata submission document
 
-    'body' should be a Unicode string.  Either a normalized XML document
-    is returned or an assertion error is raised.  Validation is limited to
+    'body' should be a Unicode string. Either a normalized XML document
+    is returned or an assertion error is raised. Validation is limited to
     checking that 'body' is well-formed XML, that it appears to be a
     <body> child element, and that the elements that EZID cares about are
-    present and well-formed.  Normalization includes stripping off any
+    present and well-formed. Normalization includes stripping off any
     <doi_batch> or <body> elements enclosing the child element, and
     normalizing the one and only <doi_data> element.
     """
@@ -139,7 +139,7 @@ def validateBody(body):
 
 
 # In the Crossref deposit schema, version 4.3.4, the <doi_data>
-# element can occur in 20 different places.  An analysis shows that
+# element can occur in 20 different places. An analysis shows that
 # the resource title corresponding to the DOI being defined can be
 # found by one or more of the following XPaths relative to the
 # <doi_data> element.
@@ -151,8 +151,8 @@ def replaceTbas(body, doi, targetUrl):
 
     'body' should be a Crossref <body> child element as a Unicode string,
     and is assumed to have been validated and normalized per validateBody
-    above.  'doi' should be a scheme-less DOI identifier (e.g.,
-    "10.5060/FOO").  The return is a Unicode string.
+    above. 'doi' should be a scheme-less DOI identifier (e.g.,
+    "10.5060/FOO"). The return is a Unicode string.
     """
     return _buildDeposit(body, None, doi, targetUrl, bodyOnly=True)
 
@@ -163,15 +163,15 @@ def _buildDeposit(body, registrant, doi, targetUrl, withdrawTitles=False, bodyOn
     'body' should be a
     Crossref <body> child element as a Unicode string, and is assumed to
     have been validated and normalized per validateBody above.
-    'registrant' is inserted in the header.  'doi' should be a
-    scheme-less DOI identifier (e.g., "10.5060/FOO").  The return is a
+    'registrant' is inserted in the header. 'doi' should be a
+    scheme-less DOI identifier (e.g., "10.5060/FOO"). The return is a
     tuple (document, body, batchId) where 'document' is the entire
     submission document as a serialized Unicode string (with the DOI and
     target URL inserted), 'body' is the same but just the <body> child
     element, and 'batchId' is the submission batch identifier.
     Options: if 'withdrawTitles' is true, the title(s) corresponding to
     the DOI being defined are prepended with "WITHDRAWN:" (in 'document'
-    only).  If 'bodyOnly' is true, only the body is returned.
+    only). If 'bodyOnly' is true, only the body is returned.
     """
     body = lxml.etree.XML(body)
     m = TAG_REGEX.match(body.tag)

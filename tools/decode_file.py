@@ -7,7 +7,7 @@
 
 The file is overwritten.
 
-This script requires an EZID module.  The PYTHONPATH environment variable must include
+This script requires an EZID module. The PYTHONPATH environment variable must include
 the .../SITE_ROOT/PROJECT_ROOT/impl directory; if it doesn't, we attempt to dynamically
 locate it and add it.
 """

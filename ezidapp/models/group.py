@@ -55,7 +55,7 @@ class Group(django.db.models.Model):
         # group.
         return self.user_set
 
-    # The group's persistent identifier, e.g., "ark:/99166/foo".  The field will in practice never
+    # The group's persistent identifier, e.g., "ark:/99166/foo". The field will in practice never
     # be empty; rather, if empty, a new persistent identifier is minted (but not created).
     #
     # The uniqueness requirement is actually stronger than indicated here: it is expected that all
@@ -118,13 +118,13 @@ class Group(django.db.models.Model):
     )
     agreementOnFile = django.db.models.BooleanField("agreement on file", default=False)
 
-    # Deprecated and not used at present.  (Former usage: Determines if users in the group may
+    # Deprecated and not used at present. (Former usage: Determines if users in the group may
     # register identifiers with Crossref.
     #
     # Crossref registration requires the enablement of both the user and the shoulder.)
     crossrefEnabled = django.db.models.BooleanField("Crossref enabled", default=False)
 
-    # The shoulders to which users in the group have access.  The test
+    # The shoulders to which users in the group have access. The test
     # shoulders are not included in this relation.
     shoulders = django.db.models.ManyToManyField('ezidapp.Shoulder', blank=True)
 

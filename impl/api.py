@@ -4,12 +4,12 @@
 """RESTful API to EZID services
 
 In the methods listed below, both request bodies and response bodies have content type
-text/plain and are formatted as ANVL.  Response character encoding is always UTF-8;
+text/plain and are formatted as ANVL. Response character encoding is always UTF-8;
 request character encoding must be UTF-8, and if not stated, is assumed to be UTF-8.
-See anvl.parse and anvl.format for additional percent-encoding.  In responses, the first
-line is always a status line.  For those methods requiring authentication, credentials
+See anvl.parse and anvl.format for additional percent-encoding. In responses, the first
+line is always a status line. For those methods requiring authentication, credentials
 may be supplied using HTTP Basic authentication; thereafter, session cookies may be
-used.  Methods provided:
+used. Methods provided:
 
 Mint an identifier:
   POST /shoulder/{shoulder}   [authentication required]
@@ -105,10 +105,10 @@ def _readInput(request):
     try:
         # We'd like to call sanitizeXmlSafeCharset just once, before the ANVL parsing, but the
         # problem is that hex-percent-encoded characters, when decoded, can result in additional
-        # disallowed characters appearing.  So we sanitize after ANVL parsing.
+        # disallowed characters appearing. So we sanitize after ANVL parsing.
         #
         # It is possible here that two different labels, that differ in only disallowed characters,
-        # will be silently collapsed into one instead of resulting in an error.  But that's a real
+        # will be silently collapsed into one instead of resulting in an error. But that's a real
         # edge case, so we don't worry about it.
         return {
             impl.util.sanitizeXmlSafeCharset(k): impl.util.sanitizeXmlSafeCharset(v)

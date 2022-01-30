@@ -228,7 +228,7 @@ def populate_async_queue():
 #     """Add an identifier to the binder asynchronous processing queue
 #
 #     'identifier' should be the normalized, qualified identifier, e.g.,
-#     "doi:10.5060/FOO".  'operation' is the identifier operation and
+#     "doi:10.5060/FOO". 'operation' is the identifier operation and
 #     should be one of the strings "create", "update", or "delete". 'blob'
 #     is the identifier's metadata dictionary in blob form.
 #     """
@@ -242,7 +242,7 @@ def populate_async_queue():
 #
 #     'identifier' should be the normalized, qualified identifier, e.g.,
 #     "doi:10.5060/FOO". 'operation' is the identifier operation and should
-#     be one of the strings "create", "update", or "delete".  'metadata' is
+#     be one of the strings "create", "update", or "delete". 'metadata' is
 #     the identifier's metadata dictionary; 'blob' is the same in blob form.
 #     """
 #     e = ezidapp.models.registration_queue.CrossrefQueue(
@@ -260,7 +260,7 @@ def populate_async_queue():
 #     """Add an identifier to the DataCite asynchronous processing queue
 #
 #     'identifier' should be the normalized, qualified identifier, e.g.,
-#     "doi:10.5060/FOO".  'operation' is the identifier operation and
+#     "doi:10.5060/FOO". 'operation' is the identifier operation and
 #     should be one of the strings "create", "update", or "delete". 'blob'
 #     is the identifier's metadata dictionary in blob form.
 #     """
@@ -274,7 +274,7 @@ def populate_async_queue():
 #     'model'.
 #
 #     'identifier' should be the normalized, qualified identifier, e.g.,
-#     "doi:10.5060/FOO".  'operation' is the identifier operation and
+#     "doi:10.5060/FOO". 'operation' is the identifier operation and
 #     should be one of the strings "create", "update", or "delete".
 #     'blob' is the identifier's metadata dictionary in blob form.
 #     """

@@ -18,9 +18,9 @@ def getTable(owner=None, ownergroup=None, realm=None):
 
     In dictionaries zero counts are not represented, and thus
     dictionaries will not necessarily be complete with respect to the
-    Cartesian product of identifier type and hasMetadata.  The range of
+    Cartesian product of identifier type and hasMetadata. The range of
     months returned is determined by the range of nonzero counts, but
-    within that range months are guaranteed to be consecutive.  Empty
+    within that range months are guaranteed to be consecutive. Empty
     entries will resemble:
 
        ("2016-02", {})

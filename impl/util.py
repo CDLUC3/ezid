@@ -35,11 +35,11 @@ def validateDoi(doi):
     """
     # Our validation is generally more restrictive than what is allowed
     # by the DOI Handbook <doi:10.1000/186>, though not in any way that
-    # should be limiting in practice.  The Handbook allows virtually any
-    # prefix; we allow only 4 or 5 digits.  The Handbook allows all
+    # should be limiting in practice. The Handbook allows virtually any
+    # prefix; we allow only 4 or 5 digits. The Handbook allows all
     # printable Unicode characters in the suffix; we allow all graphic
-    # ASCII characters except (#) and (?).  (Hash marks may be confused
-    # with fragment identifiers.  Question marks are excluded to
+    # ASCII characters except (#) and (?). (Hash marks may be confused
+    # with fragment identifiers. Question marks are excluded to
     # eliminate any possible confusion over whether a dx.doi.org-style
     # "urlappend" argument is part of the identifier or not; our
     # position is that it is not.)  But our validation is also more
@@ -102,13 +102,13 @@ def validateArk(ark):
     # restrictive: we allow all graphic ASCII characters; our length
     # upper bound is more permissive; we allow the first character to be
     # alphabetic; and we allow variant paths to be intermixed with
-    # component paths.  All these relaxations are intended to support
+    # component paths. All these relaxations are intended to support
     # shadow ARKs and relatively direct transformation of DOIs into
-    # shadow ARKs.  The normalizations performed here follow the rules
+    # shadow ARKs. The normalizations performed here follow the rules
     # given in the specification except that we don't re-order variant
     # paths, which would conflict with transformation of DOIs into
     # shadow ARKs (since order of period-delimited components in DOIs is
-    # significant).  Also, hash marks (#) are percent encoded to avoid
+    # significant). Also, hash marks (#) are percent encoded to avoid
     # confusion with their interpretation as fragment identifiers.
 
     assert isinstance(ark, str)
@@ -149,7 +149,7 @@ def validateUuid(id_str):
     a syntactically valid scheme-less UUID identifier as defined by RFC 4122.
 
     <http://www.ietf.org/rfc/rfc4122.txt>, returns the canonical form of
-    the identifier (namely, lowercased).  Otherwise, returns None.
+    the identifier (namely, lowercased). Otherwise, returns None.
     """
     logger.debug('validateUuid(): {}'.format(id_str))
 
@@ -255,17 +255,17 @@ def doi2shadow(doi):
     """
     # The conversion of DOIs to ARKs is a little tricky because ARKs
     # place semantics on certain characters in suffixes while DOIs do
-    # not, and because ARKs use a restricted character set.  Our
+    # not, and because ARKs use a restricted character set. Our
     # conversion here is essentially direct mapping, on the assumption
     # that DOI identifiers will tend to more or less follow ARK
-    # practices anyway.  Character conversion is handled by using
+    # practices anyway. Character conversion is handled by using
     # percent-encoding as specified in ARK normalization rules, but note
     # that we escape percent signs here because in DOIs percent signs do
-    # *not* signify percent-encoding.  In addition, DOIs are lowercased
+    # *not* signify percent-encoding. In addition, DOIs are lowercased
     # to match ARKs minted by noid, which are always lowercase (that is,
     # minted DOIs are formed from minted ARKs; to preserve the
     # programmatic conversion of DOIs to shadow ARKs for all DOIs, the
-    # mapping to lowercase must be uniform).  It is possible for the
+    # mapping to lowercase must be uniform). It is possible for the
     # conversion to fail, but this should occur only in pathological
     # cases.
     # Update: to prevent different DOIs from mapping to the same shadow
@@ -324,7 +324,7 @@ def normalizeIdentifier(id_str):
     the identifier.
 
     However, if the identifier is a shadow ARK, this function instead
-    returns (the canonical form of) the shadowed identifier.  On any
+    returns (the canonical form of) the shadowed identifier. On any
     kind of error, returns None.
     """
     logger.debug('normalizeIdentifier(): {}'.format(id_str))
@@ -465,7 +465,7 @@ def toExchange(metadata, identifier=None):
     single spaces.
 
     Labels and values are stripped before being encoded; empty labels
-    are not permitted and labels with empty values are discarded.  If
+    are not permitted and labels with empty values are discarded. If
     'identifier' is not None, it is inserted as the first token in the
     string; it is not encoded.
     """
@@ -489,7 +489,7 @@ def fromExchange(line, identifierEmbedded=False):
 
     If 'identifierEmbedded' is True, the first token is assumed to be an
     identifier, and the return is a tuple (identifier, dictionary).
-    Otherwise, the return is simply a dictionary.  N.B.: this function
+    Otherwise, the return is simply a dictionary. N.B.: this function
     only partially checks the input.
     """
     if len(line) > 0 and line[-1] == "\n":
@@ -602,13 +602,13 @@ def validateAsciiSafeCharset(s):
 # The following definitions are taken from the XML 1.1 specification.
 # The characters we consider illegal include restricted and
 # discouraged characters, but compatibility characters are still
-# allowed.  Python's implementation of Unicode is significant here.
+# allowed. Python's implementation of Unicode is significant here.
 # If Unicode is stored as UCS-2 (which is the case on every platform
 # encountered to date), then it's not possible to use regular
 # expressions to check for characters higher than 0xFFFF, and we
 # necessarily allow surrogate characters (though we don't check that
 # surrogates come in pairs and are properly ordered, nor do we check
-# for discouraged characters higher than 0xFFFF).  If Python stores
+# for discouraged characters higher than 0xFFFF). If Python stores
 # Unicode as UCS-4, then surrogate characters are not allowed, and we
 # check for discouraged characters in all planes.
 
@@ -778,7 +778,7 @@ def extractXmlContent(document):
     textual element content) and returns it as a single Unicode string in which
     individual fragments are separated by " ; ".
 
-    Whitespace is normalized throughout per XPath.  The input document
+    Whitespace is normalized throughout per XPath. The input document
     may be a string or an already-parsed document tree.
     """
     assert isinstance(document, str)

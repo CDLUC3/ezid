@@ -14,22 +14,22 @@ Options:
   -s   skip target URL comparisons
   -r N restart from the Nth identifier (useful if interrupted)
 
-'dumpfile' should be a raw EZID dump.  If the filename ends with ".gz", the dump is
-assumed to be gzip-compressed.  'queryfile' should be a CSV file obtained from running
-'dump-crossref'.  Of course, for the comparison to be meaningful the dumpfile and
+'dumpfile' should be a raw EZID dump. If the filename ends with ".gz", the dump is
+assumed to be gzip-compressed. 'queryfile' should be a CSV file obtained from running
+'dump-crossref'. Of course, for the comparison to be meaningful the dumpfile and
 queryfile must agree in scope and have been obtained contemporaneously.
 
-Only metadata and target URLs for non-reserved, real identifiers are compared.  (Only
+Only metadata and target URLs for non-reserved, real identifiers are compared. (Only
 exported identifiers are compared, but then, all Crossref identifiers are exported.)
 
-LIMITATION/TBD: this script does not properly handle unavailable identifiers.  It should
+LIMITATION/TBD: this script does not properly handle unavailable identifiers. It should
 anticipate and check that unavailable identifiers, as well as identifiers in Crossref
 but not in EZID, have titles prepended with "WITHDRAWN:" and have the standard invalid
 target URL.
 
-This script requires several EZID modules.  The PYTHONPATH environment variable must
+This script requires several EZID modules. The PYTHONPATH environment variable must
 include the .../SITE_ROOT/PROJECT_ROOT directory; if it doesn't, we attempt to
-dynamically locate it and add it.  The DJANGO_SETTINGS_MODULE environment variable must
+dynamically locate it and add it. The DJANGO_SETTINGS_MODULE environment variable must
 be set.
 """
 
@@ -87,7 +87,7 @@ def formatTimestamp(t):
 def unpackCrossrefRow(row):
     assert row[-1] == "\n", "queryfile error: no newline"
     # We don't use Python's 'csv' module since we're going to want to
-    # track file seek positions below.  There can't be a comma in base64
+    # track file seek positions below. There can't be a comma in base64
     # encoding, ergo...
     doi, metadata = row.strip().rsplit(",", 1)
     if doi.startswith('"'):
@@ -106,7 +106,7 @@ def progress(s):
         sys.stdout.flush()
 
 
-# Pass 1.  Index the Crossref queryfile.
+# Pass 1. Index the Crossref queryfile.
 
 progress("pass 1")
 
@@ -120,7 +120,7 @@ for row in crossrefFile:
         crossrefDois[doi] = seekPosition
     seekPosition += len(row)
 
-# Pass 2.  Compare.  After identifiers are processed they are removed
+# Pass 2. Compare. After identifiers are processed they are removed
 # from 'crossrefDois'.
 
 progress("pass 2")
@@ -129,7 +129,7 @@ progress("pass 2")
 def compareXml(node1, node2, mismatches):
     # Returns True if two XML element trees have the same structure and
     # same element order; the same attributes and attribute values; and
-    # the same textual content.  Element namespace, attribute order, and
+    # the same textual content. Element namespace, attribute order, and
     # surrounding and interstitial whitespace are allowed to differ.
     # Mismatch pairs (value1, value2) are appended to list 'mismatches'.
     def localName(tag):
@@ -221,7 +221,7 @@ def doComparison(doi, metadata):
         crossrefFile.seek(crossrefDois[doi])
         crMetadata = util.parseXmlString(unpackCrossrefRow(crossrefFile.readline())[1])
         # The metadata comparison is complicated by the fact that Crossref
-        # mucks with schema versions and normalizes whitespace.  So, we do
+        # mucks with schema versions and normalizes whitespace. So, we do
         # a structural comparison.
         del ezidMetadata.attrib[
             "{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"
@@ -287,7 +287,7 @@ for record in ezidFile:
         print("exception while processing %s: %s" % (id, util.formatException(e)))
         raise
 
-# Pass 3.  There shouldn't be any identifiers remaining in
+# Pass 3. There shouldn't be any identifiers remaining in
 # 'crossrefDois'.
 
 progress("pass 3")

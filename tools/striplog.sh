@@ -7,7 +7,7 @@
 # retaining just BEGIN records for those transactions that
 # successfully created, updated, or deleted a non-test identifier.
 # Appends the resulting records to the master historical transaction
-# log, and deletes the dated transaction logs.  The latter steps are
+# log, and deletes the dated transaction logs. The latter steps are
 # performed only after a sanity check is performed and user
 # confirmation.
 

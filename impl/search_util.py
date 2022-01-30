@@ -35,7 +35,7 @@ def withAutoReconnect(functionName, function, continuationCheck=None):
     connection), the call is repeated until it succeeds.
     'continuationCheck', if not None, should be another function that
     signals when the attempts should cease by raising an exception or
-    returning False.  If 'continuationCheck' returns False, this
+    returning False. If 'continuationCheck' returns False, this
     function raises AbortException (defined in this module).
     'functionName' is the name of 'function' for logging purposes.
     """
@@ -53,7 +53,7 @@ def withAutoReconnect(functionName, function, continuationCheck=None):
             if continuationCheck is not None and not continuationCheck():
                 raise AbortException()
             # In some cases a lost connection causes the thread's database connection object to be
-            # permanently screwed up.  The following call solves the problem.
+            # permanently screwed up. The following call solves the problem.
             #
             # Django's database connection objects are indexed generically, but are stored
             # thread-local.
@@ -83,13 +83,13 @@ def _processFulltextConstraint(constraint):
     # Quoted phrases are treated like atomic terms and are left as is.
     # Additionally, this function implements an explicit OR operator.
     # An "OR" placed between two terms has the effect of making those
-    # terms optional.  Thus, "foo bar OR baz" becomes "+foo bar baz".
+    # terms optional. Thus, "foo bar OR baz" becomes "+foo bar baz".
     # Finally, stopwords are removed.
     #
-    # Step 1: Parse the constraint into words and quoted phrases.  MySQL
+    # Step 1: Parse the constraint into words and quoted phrases. MySQL
     # interprets some characters as operators, and will return an error
     # if a query is malformed according to its less-than-well-defined
-    # rules.  For safety we remove all operators that are outside double
+    # rules. For safety we remove all operators that are outside double
     # quotes (i.e., quotes are the only MySQL operator we retain).
 
     inQuote = False
@@ -139,7 +139,7 @@ def _processFulltextConstraint(constraint):
 
     # Remove all stopwords.
     # We can't leave MySQL's default stopwords in because a plus sign in front of a stopword will
-    # cause zero results to be returned.  Also, we need to remove our own stopwords anyway.
+    # cause zero results to be returned. Also, we need to remove our own stopwords anyway.
 
     i = 0
 
@@ -180,14 +180,14 @@ def formulateQuery(
 ):
     """
     Formulates a search database query and returns an unevaluated
-    QuerySet that can then be evaluated, indexed, etc.  'constraints'
+    QuerySet that can then be evaluated, indexed, etc. 'constraints'
     should be a dictionary mapping search columns to constraint values.
     The accepted search columns (most of which correspond to fields in
     the Identifier and Identifier models) and associated
     constraint Python types and descriptions are listed in the table
-    below.  The 'R' flag indicates if multiple constraints may be placed
+    below. The 'R' flag indicates if multiple constraints may be placed
     against the column; if yes, multiple constraint values should be
-    expressed as a list, and the constraints will be OR'd together.  The
+    expressed as a list, and the constraints will be OR'd together. The
     'O' flag indicates if the column may be used for ordering results.
     Descending ordering is achieved, Django-style, by prefixing the
     column name with a minus sign.
@@ -238,7 +238,7 @@ def formulateQuery(
 
     'constraints' must include one or more of: an owner constraint, an
     ownergroup constraint, or a publicSearchVisible=True constraint; if
-    not, an assertion error is raised.  Otherwise, this function is
+    not, an assertion error is raised. Otherwise, this function is
     forgiving, and will produce a QuerySet even if constraint values are
     nonsensical.
     """
@@ -339,7 +339,7 @@ def formulateQuery(
         elif column == "target":
             # Unfortunately we don't store URLs in any kind of normalized
             # form, so we have no real means to take URL equivalence into
-            # account.  The one thing we give flexibility on in matching is
+            # account. The one thing we give flexibility on in matching is
             # the presence or absence of a trailing slash (well, that and
             # case-insensitivity.)
             values = [value]
@@ -465,7 +465,7 @@ def executeSearchCountOnly(
     """Execute a search database query, returning just the number of results
 
     'user' is the requestor, and should be an authenticated User
-    object or AnonymousUser.  'constraints', 'selectRelated', and
+    object or AnonymousUser. 'constraints', 'selectRelated', and
     'defer' are as in formulateQuery above.
     """
     tid = uuid.uuid1()
@@ -488,10 +488,10 @@ def executeSearchCountOnly(
     except Exception as e:
         # MySQL's FULLTEXT engine chokes on a too-frequently-occurring
         # word (call it a "bad" word) that is not on its own stopword
-        # list.  We weed out bad words using our own stopword list, but
+        # list. We weed out bad words using our own stopword list, but
         # not if they're quoted, and unfortunately MySQL chokes on bad
-        # words quoted or not.  Furthermore, we are unable to add to
-        # MySQL's stopword list.  If MySQL chokes, we retry the query
+        # words quoted or not. Furthermore, we are unable to add to
+        # MySQL's stopword list. If MySQL chokes, we retry the query
         # without any quotes in the hopes that any quoted bad words will
         # be removed by our own processing.
         if _isMysqlFulltextError(e) and any('"' in constraints.get(f, "") for f in _fulltextFields):
@@ -522,8 +522,8 @@ def executeSearch(
     """Execute a search database query, returning an evaluated QuerySet
 
     'user' is the requestor, and should be an authenticated User
-    object or AnonymousUser.  'from_' and 'to' are range bounds, and
-    must be supplied.  'constraints', 'orderBy', 'selectRelated', and
+    object or AnonymousUser. 'from_' and 'to' are range bounds, and
+    must be supplied. 'constraints', 'orderBy', 'selectRelated', and
     'defer' are as in formulateQuery above.
     """
     tid = uuid.uuid1()
@@ -549,9 +549,9 @@ def executeSearch(
         c = len(qs)
     except Exception as e:
         # MySQL's FULLTEXT engine chokes on a too-frequently-occurring word (call it a "bad" word)
-        # that is not on its own stopword list.  We weed out bad words using our own stopword list,
+        # that is not on its own stopword list. We weed out bad words using our own stopword list,
         # but not if they're quoted, and unfortunately MySQL chokes on bad words quoted or not.
-        # Furthermore, we are unable to add to MySQL's stopword list.  If MySQL chokes, we retry the
+        # Furthermore, we are unable to add to MySQL's stopword list. If MySQL chokes, we retry the
         # query without any quotes in the hopes that any quoted bad words will be removed by our own
         # processing.
         if _isMysqlFulltextError(e) and any('"' in constraints.get(f, "") for f in _fulltextFields):

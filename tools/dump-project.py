@@ -31,13 +31,13 @@ If the -a option is given, any fields specified on the command line are ignored 
 neither the order nor the presence of fields will be consistent from identifier to
 identifier.
 
-If values are decoded, they are re-UTF-8-encoded when output.  Note that identifiers
+If values are decoded, they are re-UTF-8-encoded when output. Note that identifiers
 themselves are never encoded.
 
 The -m option is useful when reading records in which agent identifiers have *not* been
 converted; the specified IDMAP mapping file must be one produced by the 'idmap' script.
 
-This script requires an EZID module.  The PYTHONPATH environment variable must include
+This script requires an EZID module. The PYTHONPATH environment variable must include
 the .../SITE_ROOT/PROJECT_ROOT/impl directory; if it doesn't, we attempt to dynamically
 locate it and add it.
 """

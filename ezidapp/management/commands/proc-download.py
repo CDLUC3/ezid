@@ -3,11 +3,11 @@
 
 """Batch download
 
-Downloads are created by a single daemon thread.  The download
+Downloads are created by a single daemon thread. The download
 creation process is designed to be restartable at any point: if the
 server is restarted, the current download resumes where it left off.
 
-When the server is reloaded, a new daemon thread gets created.  Race
+When the server is reloaded, a new daemon thread gets created. Race
 conditions exist between the old and new threads while the old
 thread still exists, but actual conflicts should be very unlikely.
 """
@@ -419,13 +419,13 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 salutation = ""
             message = (
                 "%sThank you for using EZID to easily create and manage "
-                "your identifiers.  The batch download you requested is available "
+                "your identifiers. The batch download you requested is available "
                 "at:\n\n"
                 "%s/download/%s.%s\n\n"
                 "The download will be deleted in 1 week.\n\n"
                 "Best,\n"
                 "EZID Team\n\n"
-                "This is an automated email.  Please do not reply.\n".format(
+                "This is an automated email. Please do not reply.\n".format(
                     salutation,
                     django.conf.settings.EZID_BASE_URL,
                     r.filename,

@@ -43,7 +43,7 @@ _maxNumberedElements = 2
 
 def dataciteXmlToFormElements(document):
     """Convert a DataCite XML record to a dictionary of form elements. All
-    non-content (comments, etc.) is discarded.  Whitespace is processed and
+    non-content (comments, etc.) is discarded. Whitespace is processed and
     empty element and attribute values are discarded. Dictionary keys follow
     the pattern of element and attribute XPaths, e.g., the schemeURI attribute
     in the following XML fragment:
@@ -60,9 +60,9 @@ def dataciteXmlToFormElements(document):
 
     Repeatable elements are indexed at the top level only; lower-level
     repeatable elements (e.g., contributor affiliations) are
-    concatenated.  However, certain repeatable elements (see
+    concatenated. However, certain repeatable elements (see
     _numberedElementContainers), such as nameIdentifier in the example
-    above, are indexed, but with underscores.  An additional tweak to
+    above, are indexed, but with underscores. An additional tweak to
     the naming pattern is that the key for the content of a top-level
     repeatable element carries an extra component that echoes the
     element name, as in:

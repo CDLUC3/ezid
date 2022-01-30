@@ -1,7 +1,7 @@
 -- We assume that the database's default collation is case-insensitive
--- (e.g., utf8_general_ci).  This is desirable for ordering purposes,
+-- (e.g., utf8_general_ci). This is desirable for ordering purposes,
 -- and it will also force usernames and such to be case-insensitively
--- unique.  But identifiers are case-sensitive.  Additionally, the
+-- unique. But identifiers are case-sensitive. Additionally, the
 -- restricted character set of identifiers allows us to use ASCII
 -- instead of UTF-8.
 
@@ -77,9 +77,9 @@ ALTER TABLE ezidapp_storeuser MODIFY secondaryContactPhone VARCHAR(255)
  * http://creativecommons.org/licenses/BSD
  */
 
--- Fixups.  Columns which are not required within Django, but for
+-- Fixups. Columns which are not required within Django, but for
 -- which EZID always supplies defaults, can be declared NOT NULL in
--- the database.  Note the unfortunate necessity of referring to
+-- the database. Note the unfortunate necessity of referring to
 -- Django-generated index names.
 
 ALTER TABLE ezidapp_storeidentifier DROP FOREIGN KEY

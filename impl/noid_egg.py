@@ -3,17 +3,17 @@
 
 """Interface to the "egg" (binder) portion of noid
 
-A note on encodings.  Identifiers and metadata elements (both names and values) are sent
+A note on encodings. Identifiers and metadata elements (both names and values) are sent
 to noid in encoded form; see util.encode{3,4}. Metadata elements received from void are
-UTF-8-encoded and utilize percent-encoding.  Though this received encoding does not
+UTF-8-encoded and utilize percent-encoding. Though this received encoding does not
 exactly match the transmitted encoding, the decoding performed by util.decode is
 nevertheless compatible and so we use it. (Consider a Python Unicode value
-u"Greg%Jan\xe9e".  This is sent as "Greg%25Jan%C3%A9e" but received back as
+u"Greg%Jan\xe9e". This is sent as "Greg%25Jan%C3%A9e" but received back as
 "Greg%25Jan\xc3\xa9e", which, when percent- and UTF-8-decoded, yields the original
 value.)
 
-This module performs whitespace processing.  Leading and trailing whitespace is stripped
-from both element names and values.  Empty names are not allowed.  Setting an empty
+This module performs whitespace processing. Leading and trailing whitespace is stripped
+from both element names and values. Empty names are not allowed. Setting an empty
 value causes the element to be deleted; as a consequence, empty values are never
 returned.
 """
@@ -96,10 +96,10 @@ def identifierExists(id_str):
 
     Raises an exception on error.
     """
-    # The question of whether an identifier exists or not is surprisingly elusive.  Noid will return
-    # information for any identifier string, so we can't use that as a test.  Instead, we test for
-    # the presence of metadata.  EZID populates a newly-created identifier with multiple metadata
-    # fields.  (Noid adds its own internal metadata fields, but only in response to EZID adding
+    # The question of whether an identifier exists or not is surprisingly elusive. Noid will return
+    # information for any identifier string, so we can't use that as a test. Instead, we test for
+    # the presence of metadata. EZID populates a newly-created identifier with multiple metadata
+    # fields. (Noid adds its own internal metadata fields, but only in response to EZID adding
     # fields.)
     #
     # The 'getElements' and 'deleteIdentifier' functions below work to maintain the invariant
@@ -122,7 +122,7 @@ def setElements(id_str, d):
     form, e.g., "doi:10.1234/FOO").
 
     The elements should be given in a dictionary that maps names to
-    values.  Raises an exception on error.
+    values. Raises an exception on error.
     """
     batchSetElements([(id_str, d)])
 
@@ -189,9 +189,9 @@ def deleteIdentifier(identifier):
 
     After calling this function, the identifier is deleted in the sense
     that identifierExists(identifier) will return False and
-    getElements(identifier) will return None.  As far as noid is
+    getElements(identifier) will return None. As far as noid is
     concerned, however, the identifier still exists and metadata
-    elements can be re-bound to it in the future.  Raises an exception
+    elements can be re-bound to it in the future. Raises an exception
     on error.
     """
     s = _issue("POST", [(identifier, "purge")])
@@ -206,7 +206,7 @@ def batchDeleteIdentifier(batch):
     """Similar to 'deleteIdentifier' above, but deletes a list of identifiers
     in one request."""
     # The following code does not verify that all bindings have been
-    # removed as 'deleteIdentifier' does above.  But that code is just a
+    # removed as 'deleteIdentifier' does above. But that code is just a
     # guard against noid API changes, and having it in one place is
     # sufficient.
     s = _issue("POST", [(identifier, "purge") for identifier in batch])

@@ -13,9 +13,9 @@ Options:
 
 Note: identifiers are NOT written in lexicographic order.
 
-This script requires several EZID modules.  The PYTHONPATH environment variable must
+This script requires several EZID modules. The PYTHONPATH environment variable must
 include the .../SITE_ROOT/PROJECT_ROOT directory; if it doesn't, we attempt to
-dynamically locate it and add it.  The DJANGO_SETTINGS_MODULE environment variable must
+dynamically locate it and add it. The DJANGO_SETTINGS_MODULE environment variable must
 be set.
 """
 
@@ -82,7 +82,7 @@ while entry is not None:
         ):
             # The fundamental assumption of this loop is that bindings
             # (binding = identifier + "|" + label) are stored in
-            # lexicographic order.  But that doesn't imply that identifiers
+            # lexicographic order. But that doesn't imply that identifiers
             # themselves are returned in lexicographic order.
             if id != lastId:
                 if lastId is not None:

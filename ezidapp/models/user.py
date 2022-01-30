@@ -47,7 +47,7 @@ class User(django.db.models.Model):
         # here.
         #
         # Moreover, because users are displayed inline in group change pages, they get validated
-        # along with groups, before GroupAdmin.save_model is called.  Therefore we can't check
+        # along with groups, before GroupAdmin.save_model is called. Therefore we can't check
         # group-user Crossref-enabled consistency here.
         if self.username == "anonymous":
             raise django.core.validators.ValidationError(
@@ -65,7 +65,7 @@ class User(django.db.models.Model):
 
         # The following two statements are here just to support the Django
         # admin app, which has its own rules about how model objects are
-        # constructed.  If no group has been assigned, we can return
+        # constructed. If no group has been assigned, we can return
         # immediately because a validation error will already have been
         # triggered.
         if not hasattr(self, "group"):
@@ -94,9 +94,9 @@ class User(django.db.models.Model):
         'password' should be a bare password.
 
         Caution: this method sets the password in the object, but does
-        not save the object to the database.  However, if there is a
+        not save the object to the database. However, if there is a
         corresponding user in the Django auth app, that user's password
-        is both set and saved.  Thus calls to this method should
+        is both set and saved. Thus calls to this method should
         generally be wrapped in a transaction.
 
         Django's standard password hasher is used. Currently, this is PBKDF
@@ -174,7 +174,7 @@ class User(django.db.models.Model):
     # See below.
     isAnonymous = False
 
-    # The user's persistent identifier, e.g., "ark:/99166/bar".  Note
+    # The user's persistent identifier, e.g., "ark:/99166/bar". Note
     # that the uniqueness requirement is actually stronger than
     # indicated here: it is expected that all agent (i.e., all user and
     # group) persistent identifiers are unique.
@@ -204,7 +204,7 @@ class User(django.db.models.Model):
     )
 
     # The user's display name, e.g., "Brown University Library", which
-    # is displayed in the UI wherever the username is.  Editable by the
+    # is displayed in the UI wherever the username is. Editable by the
     # user.
     displayName = django.db.models.CharField(
         "display name", max_length=255, validators=[ezidapp.models.validation.nonEmpty]
@@ -218,7 +218,7 @@ class User(django.db.models.Model):
         + "are sent other than Crossref notifications.",
     )
 
-    # Primary contact info, which is required.  Editable by the user.
+    # Primary contact info, which is required. Editable by the user.
     primaryContactName = django.db.models.CharField(
         "name", max_length=255, validators=[ezidapp.models.validation.nonEmpty]
     )
@@ -227,7 +227,7 @@ class User(django.db.models.Model):
         "phone", max_length=255, validators=[ezidapp.models.validation.nonEmpty]
     )
 
-    # Secondary contact info, which is optional.  Editable by the user.
+    # Secondary contact info, which is optional. Editable by the user.
     secondaryContactName = django.db.models.CharField(
         "name", max_length=255, blank=True
     )
@@ -250,29 +250,29 @@ class User(django.db.models.Model):
     )
     shoulder_model = django.apps.apps.get_model('ezidapp', 'Shoulder')
 
-    # The shoulders to which the user has access.  If
+    # The shoulders to which the user has access. If
     # inheritGroupShoulders is True, the set matches the group's set; if
     # inheritGroupShoulders if False, the user's set may be a proper
-    # subset of the group's set.  Test shoulders are not included in
+    # subset of the group's set. Test shoulders are not included in
     # this relation.
     shoulders = django.db.models.ManyToManyField(shoulder_model, blank=True)
 
-    # Deprecated and not used at present.  (Former usage:
+    # Deprecated and not used at present. (Former usage:
     # If the user's group is Crossref-enabled, determines if the user
-    # may register identifiers with Crossref; otherwise, False.  Note
+    # may register identifiers with Crossref; otherwise, False. Note
     # that Crossref registration requires the enablement of both the
     # user and the shoulder.)
     crossrefEnabled = django.db.models.BooleanField("Crossref enabled", default=False)
 
     # If the user is Crossref-enabled, the optional email address to
-    # which Crossref notifications are sent; otherwise, empty.  If there
+    # which Crossref notifications are sent; otherwise, empty. If there
     # is no email address, notifications are simply not sent.
     crossrefEmail = django.db.models.EmailField(
         "Crossref email", max_length=255, blank=True
     )
 
-    # Other users that may act as a proxy for this user.  Editable by
-    # the user.  Self-referential proxies are disallowed.  Privileged
+    # Other users that may act as a proxy for this user. Editable by
+    # the user. Self-referential proxies are disallowed. Privileged
     # users (group and realm administrators, superusers) are not allowed
     # to have proxies.
     proxies = django.db.models.ManyToManyField(
@@ -288,7 +288,7 @@ class User(django.db.models.Model):
         # is a proxy for.
         return self.user_set
 
-    # True if the user is an administrator of its group.  A group
+    # True if the user is an administrator of its group. A group
     # administrator may act on behalf of any user in the group (i.e., is
     # effectively a proxy for every group member); may perform
     # group-level operations; and may change identifier ownership within
@@ -297,7 +297,7 @@ class User(django.db.models.Model):
         "group administrator", default=False
     )
 
-    # True if the user is an administrator of its realm.  A realm
+    # True if the user is an administrator of its realm. A realm
     # administrator is effectively an administrator of every group in
     # the realm, and may change identifier ownership within the realm.
     # A realm administrator has no special privileges regarding
@@ -317,9 +317,9 @@ class User(django.db.models.Model):
     # Determines if the user may login.
     loginEnabled = django.db.models.BooleanField("login enabled", default=True)
 
-    # The user's password in salted/hashed/encoded form.  Despite the
-    # declaration, this field will never actually be empty.  It is
-    # initially given an unusable value.  Editable by the user.
+    # The user's password in salted/hashed/encoded form. Despite the
+    # declaration, this field will never actually be empty. It is
+    # initially given an unusable value. Editable by the user.
     password = django.db.models.CharField("set password", max_length=128, blank=True)
 
     # Any additional notes.
@@ -328,7 +328,7 @@ class User(django.db.models.Model):
 
 
 # The following caches are only added to or replaced entirely;
-# existing entries are never modified.  Thus, with appropriate coding
+# existing entries are never modified. Thus, with appropriate coding
 # below, they are threadsafe without needing locking.
 
 # _caches = None  # (pidCache, usernameCache, idCache)

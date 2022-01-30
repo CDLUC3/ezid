@@ -7,13 +7,13 @@
 extensions of current shoulders.
 
 The identifiers are grouped by owner and shoulder (well, since the identifiers are
-shoulderless, their former shoulders are inferred; see util.inferredShoulder).  A CSV
+shoulderless, their former shoulders are inferred; see util.inferredShoulder). A CSV
 file with three columns is written to standard output: owner, shoulder, and identifier
 count.
 
-This script requires several EZID modules.  The PYTHONPATH environment variable must
+This script requires several EZID modules. The PYTHONPATH environment variable must
 include the .../SITE_ROOT/PROJECT_ROOT directory; if it doesn't, we attempt to
-dynamically locate it and add it.  The DJANGO_SETTINGS_MODULE environment variable must
+dynamically locate it and add it. The DJANGO_SETTINGS_MODULE environment variable must
 be set.
 """
 

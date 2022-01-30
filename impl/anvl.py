@@ -58,7 +58,7 @@ def format(d):
 def parse(s):
     """Parse an ANVL string and returns a dictionary
 
-    Labels and values are percent-decoded.  Raises AnvlParseException
+    Labels and values are percent-decoded. Raises AnvlParseException
     (defined in this module).
     """
     d = {}
@@ -93,7 +93,7 @@ def parse(s):
 
 def parseConcatenate(s):
     """Alternate version of 'parse' that concatenates repeated label values and
-    separates them by semicolons.  For example, the input string:
+    separates them by semicolons. For example, the input string:
 
       a: b
       a: c

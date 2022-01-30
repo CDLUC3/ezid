@@ -119,7 +119,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         start = self.now()
         self.updateDatabaseTable()
         # The following flag is used to ensure at least one round gets
-        # fully processed.  In general rounds may be interrupted.
+        # fully processed. In general rounds may be interrupted.
         firstRound = True
         while (
             firstRound
@@ -139,12 +139,12 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     # The first component in the computation of the timeout
                     # below causes table updates to occur at regular, specific
                     # times (admittedly, there's no real reason for that goal,
-                    # but that's its purpose anyway).  The second component
+                    # but that's its purpose anyway). The second component
                     # addresses the situation that some owners may push every
                     # check to the timeout limit, which causes the link checker
                     # to be idle for all other owners for long periods of time.
                     # By shortening the timeout we force worksets to be loaded
-                    # more frequently.  We allot enough time for a nominal
+                    # more frequently. We allot enough time for a nominal
                     # workset to be processed, i.e., an owner's maximum number
                     # of links, each of which is assumed to be checkable in
                     # 1 second.
@@ -506,21 +506,21 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             _lock.release()
 
     # We're a little conflicted as to how to deal with 401 (unauthorized)
-    # and 403 (forbidden) errors.  On the one hand, an error was returned
+    # and 403 (forbidden) errors. On the one hand, an error was returned
     # instead of the identified object, so the check was a failure; on the
     # other, *something* was at the URL, and presumably with appropriate
-    # credentials the identified object would have been returned.  Since
+    # credentials the identified object would have been returned. Since
     # this script is doing simple link checking, and not landing page
     # analysis, we don't have a way of verifying that an option to
-    # authenticate is being provided.  So for now we consider 401 and 403
+    # authenticate is being provided. So for now we consider 401 and 403
     # errors to be successes.
 
 
 class OwnerWorkset(Command):
     # Stores primarily a list of links to check that belong to a single
-    # owner.  'nextIndex' points to the next unchecked link in the list;
-    # if equal to the list length, all links have been checked.  While a
-    # link is being checked, 'isLocked' is set to True.  'lastCheckTime'
+    # owner. 'nextIndex' points to the next unchecked link in the list;
+    # if equal to the list length, all links have been checked. While a
+    # link is being checked, 'isLocked' is set to True. 'lastCheckTime'
     # is the last time a link from this owner was checked.
     def __init__(self, owner_id, workList):
         super().__init__()
@@ -533,7 +533,7 @@ class OwnerWorkset(Command):
     def isFinished(self):
         # An excluded owner is detected when the link checker's table is
         # updated (in the case of permanent exclusions) and when a workset
-        # is loaded (in the case of temporary exclusions).  But so that
+        # is loaded (in the case of temporary exclusions). But so that
         # exclusions take more immediate effect when added, we add the
         # check below.
         if not self.isLocked and (
@@ -583,7 +583,7 @@ class Worker(Command):
                 mimeType = "unknown"
                 try:
                     # This should probably be considered a Python bug, but urllib2
-                    # fails if the URL contains Unicode characters.  Encoding the
+                    # fails if the URL contains Unicode characters. Encoding the
                     # URL as UTF-8 is sufficient.
                     # Another gotcha: some websites require an Accept header.
                     r = urllib.request.Request(
@@ -601,7 +601,7 @@ class Worker(Command):
                     # Some servers deliver a complete HTML document, but,
                     # apparently expecting further requests from a web browser
                     # that never arrive, hold the connection open and ultimately
-                    # deliver a read failure.  We consider these cases successes.
+                    # deliver a read failure. We consider these cases successes.
                     # noinspection PyUnresolvedReferences
                     if mimeType.startswith("text/html") and re.search(
                         "</\s*html\s*>\s*$", e.partial, re.I

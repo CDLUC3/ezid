@@ -32,7 +32,7 @@ def getUserById(id_str):
 
 def getUserByPid(pid):
     # Returns the user identified by persistent identifier 'pid', or
-    # None if there is no such user.  AnonymousUser is returned in
+    # None if there is no such user. AnonymousUser is returned in
     # response to "anonymous".
     if pid == "anonymous":
         return ezidapp.models.user.AnonymousUser
@@ -43,7 +43,7 @@ def getUserByPid(pid):
 
 def getUserByUsername(username):
     # Returns the user identified by local name 'username', or None if
-    # there is no such user.  AnonymousUser is returned in response to
+    # there is no such user. AnonymousUser is returned in response to
     # "anonymous".
     if username == "anonymous":
         return ezidapp.models.user.AnonymousUser
@@ -56,7 +56,7 @@ def getAdminUser():
 
 
 def getProfileByLabel(label):
-    # Returns the profile having the given label.  If there's no such
+    # Returns the profile having the given label. If there's no such
     # profile, a new profile is created and inserted in the database.
     profile_model = django.apps.apps.get_model('ezidapp', 'Profile')
     p, is_created = profile_model.objects.get_or_create(label=label)
@@ -84,7 +84,7 @@ def _getGroupPrefetch(**get_kwargs):
 
 def getGroupByPid(pid):
     # Returns the group identified by persistent identifier 'pid', or
-    # None if there is no such group.  AnonymousGroup is returned in
+    # None if there is no such group. AnonymousGroup is returned in
     # response to "anonymous".
     if pid == "anonymous":
         return ezidapp.models.group.AnonymousGroup
@@ -93,7 +93,7 @@ def getGroupByPid(pid):
 
 def getGroupByGroupname(groupname):
     # Returns the group identified by local name 'groupname', or None if
-    # there is no such group.  AnonymousGroup is returned in response to
+    # there is no such group. AnonymousGroup is returned in response to
     # "anonymous".
     if groupname == "anonymous":
         return ezidapp.models.group.AnonymousGroup

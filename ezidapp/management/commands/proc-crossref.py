@@ -65,13 +65,13 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
         'body' should be a Crossref <body> child element as a Unicode string, and is
         assumed to have been validated and normalized per validateBody above.
-        'registrant' is inserted in the header.  'doi' should be a scheme-less DOI
-        identifier (e.g., "10.5060/FOO").  The return is a tuple (document, body,
+        'registrant' is inserted in the header. 'doi' should be a scheme-less DOI
+        identifier (e.g., "10.5060/FOO"). The return is a tuple (document, body,
         batchId) where 'document' is the entire submission document as a serialized
         Unicode string (with the DOI and target URL inserted), 'body' is the same but
         just the <body> child element, and 'batchId' is the submission batch identifier.
         Options: if 'withdrawTitles' is true, the title(s) corresponding to the DOI
-        being defined are prepended with "WITHDRAWN:" (in 'document' only).  If
+        being defined are prepended with "WITHDRAWN:" (in 'document' only). If
         'bodyOnly' is true, only the body is returned.
         """
         body = lxml.etree.XML(body)
@@ -123,7 +123,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         constituent parts.
 
         Each part is either a 2-tuple (name, value) or a 4-tuple (name,
-        filename, contentType, value).  Returns a tuple (document, boundary).
+        filename, contentType, value). Returns a tuple (document, boundary).
         """
         while True:
             boundary = f"BOUNDARY_{uuid.uuid1().hex}"
@@ -159,7 +159,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         """Submit a Crossref metadata submission document as built by _buildDeposit
         above.
 
-        Returns True on success, False on (internal) error.  'doi' is the
+        Returns True on success, False on (internal) error. 'doi' is the
         identifier in question.
         """
         if not django.conf.settings.CROSSREF_ENABLED:
@@ -220,12 +220,12 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     def _pollDepositStatus(self, batchId, doi):
         """
         Poll the status of the metadata submission identified by 'batchId'.
-        'doi' is the identifier in question.  The return is one of the
+        'doi' is the identifier in question. The return is one of the
         tuples:
 
           ("submitted", message)
             'message' further indicates the status within Crossref, e.g.,
-            "in_process".  The status may also be, somewhat confusingly,
+            "in_process". The status may also be, somewhat confusingly,
             "unknown_submission", even though the submission has taken
             place.
           ("completed successfully", None)
@@ -234,7 +234,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
           ("unknown", None)
             An error occurred retrieving the status.
 
-        In each case, 'message' may be a multi-line string.  In the case of
+        In each case, 'message' may be a multi-line string. In the case of
         a conflict warning, 'message' has the form:
 
           Crossref message
@@ -344,7 +344,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         )
         if self._submitDeposit(submission, batchId, r.identifier[4:]):
             if r.operation == ezidapp.models.async_queue.CrossrefQueue.DELETE:
-                # Well this is awkward.  If the identifier was deleted, there's no point
+                # Well this is awkward. If the identifier was deleted, there's no point
                 # in polling for the status... if anything goes wrong, there's no
                 # correction that could possibly be made, as the identifier no longer
                 # exists as far as EZID is concerned.
@@ -370,7 +370,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             "The identifier can be viewed in EZID at:\n"
             "{}\n\n"
             "You are receiving this message because your account is configured to "
-            "receive Crossref errors and warnings.  This is an automated email.  "
+            "receive Crossref errors and warnings. This is an automated email. "
             "Please do not reply.\n".format(
                 "n" if s == "error" else "",
                 s,

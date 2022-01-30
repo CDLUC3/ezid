@@ -4,7 +4,7 @@
 #  http://creativecommons.org/licenses/BSD
 
 """Dumps all DOIs under one or more Crossref prefixes to standard
-output.  10.20354 is an example of a prefix.
+output. 10.20354 is an example of a prefix.
 
 Usage: dump-crossref prefix...
 
@@ -13,7 +13,7 @@ and Base64-encoded Crossref deposit XML metadata.
 
 Reserved identifiers are not registered with Crossref, and hence will not be returned.
 
-This script requires an EZID module.  The PYTHONPATH environment variable must include
+This script requires an EZID module. The PYTHONPATH environment variable must include
 the .../SITE_ROOT/PROJECT_ROOT/impl directory; if it doesn't, we attempt to dynamically
 locate it and add it.
 """

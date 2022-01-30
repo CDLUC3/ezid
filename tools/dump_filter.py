@@ -11,7 +11,7 @@ The general usage is:
    dump-* | select constraint... | project fields...
 
 This script reads a dump file (normal or raw) from standard input, applies a constraint
-expression to each record, and writes the successful records to standard output.  The
+expression to each record, and writes the successful records to standard output. The
 input may be gzip-compressed, but the output is never compressed.
 
 Usage: select [options] constraint...
@@ -36,10 +36,10 @@ e.g.,
 An identifier record satisfies a basic constraint if the record has a non-empty value
 for the field and if the record value has the relationship to the constraint value as
 indicated by the operator. The relational operators (<, <=, =, >=, >) and regular
-expression match operator (=~) are supported.  In the latter case, the constraint value
+expression match operator (=~) are supported. In the latter case, the constraint value
 must be a regular expression expressed using the Perl-like syntax /regexp/ or
-/regexp/flags.  A forward slash (/) can be placed in the regular expression by preceding
-it with a backward slash (\).  The i, m, and s flags have their usual interpretations.
+/regexp/flags. A forward slash (/) can be placed in the regular expression by preceding
+it with a backward slash (\). The i, m, and s flags have their usual interpretations.
 
 For example:
 
@@ -47,33 +47,33 @@ For example:
 
 There's no fancy parser here, so operators and other syntactic tokens must appear as
 separate command line arguments. Furthermore, operators such as < must be quoted to
-avoid interpretation by the shell.  To prevent interpretation of a field or value as a
+avoid interpretation by the shell. To prevent interpretation of a field or value as a
 reserved word or punctuation or operator, quote it. But quotes themselves must be quoted
 to avoid interpretation by the shell, so, sadly, quotes will resemble:
 
    datacite.title = "'and'"
 
 A basic constraint can be negated by placing "not" before it, and constraints can be
-combined using "and" and "or".  Boolean expressions can be grouped using both
-parentheses and curly braces (curly braces don't require shell quoting).  Example of a
+combined using "and" and "or". Boolean expressions can be grouped using both
+parentheses and curly braces (curly braces don't require shell quoting). Example of a
 boolean expression:
 
    _owner = gjanee or { _ownergroup = cdl and not _owner = jak }
 
-There are some special fields.  The _id field holds the identifier. The _fields field is
+There are some special fields. The _id field holds the identifier. The _fields field is
 an array of all metadata fields present in the identifier record and can be used in
 conjunction with the "contains" operator, as in:
 
    _fields contains erc.what
 
 The timestamp fields _created and _updated can be compared against dates or times
-specified in ISO YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS syntaxes.  Times are interpreted
-relative to the local timezone.  If only a date is specified in the constraint,
+specified in ISO YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS syntaxes. Times are interpreted
+relative to the local timezone. If only a date is specified in the constraint,
 comparisons are performed on dates only.
 
 The _numFields field is a slight syntactic exception in that it must be followed by a
 regular expression; it is the number of non-internal fields in the record whose names
-match the regular expression.  For example, to select identifiers having at least one
+match the regular expression. For example, to select identifiers having at least one
 field beginning with "erc.":
 
    _numFields /erc\./ > 0
@@ -109,7 +109,7 @@ Example of macro use:
 
    _owner = gjanee and _ark and _real and not _exported
 
-This script requires an EZID module.  The PYTHONPATH environment variable must include
+This script requires an EZID module. The PYTHONPATH environment variable must include
 the .../SITE_ROOT/PROJECT_ROOT/impl directory; if it doesn't, we attempt to dynamically
 locate it and add it.
 """

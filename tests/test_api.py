@@ -81,15 +81,15 @@ class TestAPI:
     #
     # EZID :: api.py
     #
-    # RESTful API to EZID services.  In the methods listed below, both
+    # RESTful API to EZID services. In the methods listed below, both
     # request bodies and response bodies have content type text/plain and
-    # are formatted as ANVL.  Response character encoding is always UTF-8;
+    # are formatted as ANVL. Response character encoding is always UTF-8;
     # request character encoding must be UTF-8, and if not stated, is
-    # assumed to be UTF-8.  See anvl.parse and anvl.format for additional
-    # percent-encoding.  In responses, the first line is always a status
-    # line.  For those methods requiring authentication, credentials may
+    # assumed to be UTF-8. See anvl.parse and anvl.format for additional
+    # percent-encoding. In responses, the first line is always a status
+    # line. For those methods requiring authentication, credentials may
     # be supplied using HTTP Basic authentication; thereafter, session
-    # cookies may be used.  Methods provided:
+    # cookies may be used. Methods provided:
     #
     # Login to obtain session cookie, nothing else:
     #   GET /login   [authentication required]

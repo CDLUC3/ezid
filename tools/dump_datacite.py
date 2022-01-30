@@ -15,7 +15,7 @@ DataCite currently returns public, exported DOIs only. Unavailable and unexporte
 identifiers are marked as inactive in DataCite, and as a result are not returned (and
 reserved identifiers are not registered with DataCite at all).
 
-This script requires an EZID module.  The PYTHONPATH environment variable must include
+This script requires an EZID module. The PYTHONPATH environment variable must include
 the .../SITE_ROOT/PROJECT_ROOT/impl directory; if it doesn't, we attempt to dynamically
 locate it and add it.
 """

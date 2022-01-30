@@ -215,7 +215,7 @@ def validateDcmsRecord(identifier, record, schemaValidate=True):
             Also, 'identifier' is inserted in the returned record.
         schemaValidate:
             If true, the record is validated against the appropriate XML schema;
-            otherwise, only a more forgiving well- formedness check is performed.  (In
+            otherwise, only a more forgiving well- formedness check is performed. (In
             an extension to DCMS, we allow the identifier to be something other than a
             DOI, for example, an ARK.)
 
@@ -270,7 +270,7 @@ def validateDcmsRecord(identifier, record, schemaValidate=True):
     if schemaValidate:
         # We temporarily replace the identifier with something innocuous
         # that will pass the schema's validation check, then change it
-        # back.  Locking lameness: despite its claims, XMLSchema objects
+        # back. Locking lameness: despite its claims, XMLSchema objects
         # are in fact not threadsafe.
         i.attrib["identifierType"] = "DOI"
         i.text = "10.1234/X"
@@ -278,15 +278,15 @@ def validateDcmsRecord(identifier, record, schemaValidate=True):
         try:
             schema[0].assertValid(root)
         except Exception as e:
-            # Ouch.  On some LXML installations, but not all, an error is
+            # Ouch. On some LXML installations, but not all, an error is
             # "sticky" and, unless it is cleared out, will be returned
             # repeatedly regardless of what new error is encountered.
             # noinspection PyProtectedMember
             schema[0]._clear_error_log()
             # LXML error messages may contain snippets from the source
-            # document, and hence may contain Unicode characters.  We're
+            # document, and hence may contain Unicode characters. We're
             # really not set up to propagate such characters through
-            # exceptions and so replace them.  Too, the presence of such
+            # exceptions and so replace them. Too, the presence of such
             # characters can be the source of the problem, so explicitly
             # exposing them can be a help.
             raise AssertionError(repr(e))
@@ -652,7 +652,7 @@ def upgradeDcmsRecord(record, parseString=True, returnString=True):
         returnString:
             If true, the record is returned as an unencoded Unicode string, in which
             case the record has no XML declaration. Otherwise, an lxml.etree.Element
-            object is returned.  In both cases, the root element's xsi:schemaLocation
+            object is returned. In both cases, the root element's xsi:schemaLocation
             attribute is set or added as necessary.
     """
     if parseString:

@@ -294,7 +294,7 @@ class Minter(impl.nog.bdb_wrapper.BdbWrapper):
         #
         # prime, a little more than 29*10. Using a prime under the theory (unverified)
         # that it may help even out distribution across the more significant digits of
-        # generated strings.  In this way, for example, a method for mapping an string
+        # generated strings. In this way, for example, a method for mapping an string
         # to a pathname (eg, fk9tmb35x -> fk/9t/mb/35/x/, which could be a directory
         # holding all files related to the named object), would result in a reasonably
         # balanced filesystem tree -- no subdirectories too unevenly loaded. That's the

@@ -1,8 +1,8 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-"""Database model for new account worksheets.  Worksheets can be
-created and viewed through the admin interface (only).  EZID doesn't
+"""Database model for new account worksheets. Worksheets can be
+created and viewed through the admin interface (only). EZID doesn't
 really do anything with them, just stores them indefinitely.
 """
 
@@ -18,7 +18,7 @@ class NewAccountWorksheet(django.db.models.Model):
     # A worksheet that supports the process of creating an EZID user
     # account, and which contains requestor and contact information,
     # account configuration and setup information, and status
-    # information.  As the name suggests, a worksheet is a kind of
+    # information. As the name suggests, a worksheet is a kind of
     # working document, and as such does little in the way of
     # validation.
 

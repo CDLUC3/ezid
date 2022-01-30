@@ -38,7 +38,7 @@ def enqueueRequest(state, user, request):
     The request must be authenticated; 'user' should be a User object.
 
     'request' should be a django.http.QueryDict object (from a POST request or manually created) containing the parameters
-    of the request.  The available parameters are described in the API documentation.  One feature
+    of the request. The available parameters are described in the API documentation. One feature
     not mentioned in the documentation: for the 'notify' parameter, an email address may be a
     straight address ("fred@slate.com") or may include an addressee name ("Fred Flintstone
     <fred@slate.com>"); in the latter case a salutation line will be added to the email message.
@@ -256,7 +256,7 @@ def _generateFilename(requestor):
 
 
 # A simple encoding mechanism for storing Python objects as strings
-# follows.  We could use pickling, but this technique makes debugging
+# follows. We could use pickling, but this technique makes debugging
 # a little easier.
 
 

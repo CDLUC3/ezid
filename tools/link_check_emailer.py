@@ -128,23 +128,23 @@ template = """Dear EZID user "%s",
 
 You are receiving this message because the EZID link checker has
 discovered that %d of your identifiers have broken target URLs
-(also referred to as object locations).  A broken target URL is
-one that has failed to load for at least two weeks.  Attached to
+(also referred to as object locations). A broken target URL is
+one that has failed to load for at least two weeks. Attached to
 this message is a ZIP-compressed, Excel-compatible CSV file
 listing the identifiers in question, their target URLs, and
 other pertinent information.
 
-There are many reasons a target URL may be broken.  The
+There are many reasons a target URL may be broken. The
 identified object may have moved, in which case the identifier
-needs to be updated.  Or there may be a problem with the server
-hosting the URL.  If an object is no longer available, the
+needs to be updated. Or there may be a problem with the server
+hosting the URL. If an object is no longer available, the
 identifier's status can and should be set to "unavailable" using
 EZID's UI or API.
 
 Best,
 EZID Team
 
-This is an automated email.  Please do not reply.
+This is an automated email. Please do not reply.
 
 """
 
@@ -163,7 +163,7 @@ def emailReport(username, numFailures, accountEmail, bccEmails, zipFilename):
 
 def process1(username, owner_id, accountEmail, bccEmails, threshold, filename):
     # If a filename is supplied, no email is sent and that file is
-    # written, even if there are no failures to report.  Otherwise, an
+    # written, even if there are no failures to report. Otherwise, an
     # email is sent only if there are failures to report.
     lcList = gatherFailures(owner_id, threshold)
     if filename is not None:

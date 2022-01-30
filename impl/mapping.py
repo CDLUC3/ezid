@@ -6,15 +6,15 @@
 This module effectively defines a citation metadata standard, which we refer to as
 "kernel" metadata.
 
-Subtle point: there are two slightly different mappings.  The default mapping (used to
+Subtle point: there are two slightly different mappings. The default mapping (used to
 support everything except DataCite requirements) treats the identifier's preferred
-metadata profile as gospel: no field not in the profile is examined.  The intention of
+metadata profile as gospel: no field not in the profile is examined. The intention of
 this mapping is to support a unified view of identifier native metadata.
 
 The other mapping (triggered by datacitePriority=True) is used to satisfy DataCite
 metadata requirements, and it examines and gives preference to the DataCite fields
 (primarily the 'datacite' XML field and secondarily the datacite.* itemized fields)
-regardless of the profile.  The intention of this mapping is to allow an identifier to
+regardless of the profile. The intention of this mapping is to allow an identifier to
 retain its native metadata, and to augment or override that metadata just for the
 purposes of satisfying requirements.
 """
@@ -29,7 +29,7 @@ import impl.util
 
 class KernelMetadata(object):
     # Holds kernel citation metadata in attributes 'creator', 'title',
-    # 'publisher', 'date', and 'type'.  Each attribute either has a
+    # 'publisher', 'date', and 'type'. Each attribute either has a
     # nonempty value or is None.
 
     def __init__(
@@ -234,7 +234,7 @@ def map(metadata, profile=None, datacitePriority=False):
 
     If 'profile' is None, the metadata profile to use is determined from
     any _profile or _p field in the metadata dictionary; the profile
-    defaults to "erc".  If datacitePriority is True, the DataCite fields
+    defaults to "erc". If datacitePriority is True, the DataCite fields
     (the 'datacite' XML field and the datacite.* itemized fields) are
     examined and take precedence regardless of the profile.
 

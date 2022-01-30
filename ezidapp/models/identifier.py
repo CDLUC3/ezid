@@ -138,10 +138,10 @@ class IdentifierBase(django.db.models.Model):
         Identifier(identifier=..., owner=...) (but note that the
         owner may be None to signify an anonymously-owned identifier).
         If 'allowRestrictedSettings' is True, fields and values that are
-        not ordinarily settable by clients may be set.  Throws
+        not ordinarily settable by clients may be set. Throws
         django.core.exceptions.ValidationError on all errors.
         my_full_clean should be called after this method to fully fill
-        out and validate the object.  This method checks for state
+        out and validate the object. This method checks for state
         transition violations and DOI registration agency changes, but
         does no permissions checking, and in particular, does not check
         if ownership changes are allowed.
@@ -376,7 +376,7 @@ class IdentifierBase(django.db.models.Model):
     # For DOI identifiers, the preceding two fields both indirectly
     # indicate the DOI registration agency: a DataCite DOI has a
     # datacenter and an empty crossrefStatus, while a Crossref DOI has
-    # no datacenter and a nonempty crossrefStatus.  Someday, a true
+    # no datacenter and a nonempty crossrefStatus. Someday, a true
     # registration agency field should be added.
 
     @property
@@ -407,7 +407,7 @@ class IdentifierBase(django.db.models.Model):
     # registered with resolvers depends on the identifier's status.)
     #
     # EZID supplies a default target URL that incorporates the identifier in it, so this field will
-    # in practice never be empty.  The length limit of 2000 characters is not arbitrary, but is the
+    # in practice never be empty. The length limit of 2000 characters is not arbitrary, but is the
     # de facto limit accepted by most web browsers.
     target = django.db.models.URLField(
         max_length=2000,
@@ -439,7 +439,7 @@ class IdentifierBase(django.db.models.Model):
         """The identifier's preferred metadata profile.
 
         There is currently no constraint on profile labels, or on use of metadata fields corresponding
-        to profiles.  Note that EZID supplies a default profile that depends on the identifier type,
+        to profiles. Note that EZID supplies a default profile that depends on the identifier type,
         so this field will in practice never be None.
         """
         profile_label = getDefaultProfileLabel(self.identifier)
@@ -475,14 +475,14 @@ class IdentifierBase(django.db.models.Model):
     def kernelMetadata(self):
         # Returns citation metadata as a mapping.KernelMetadata object.
         # The mapping is based on the identifier's preferred metadata
-        # profile.  Missing attributes will be None.
+        # profile. Missing attributes will be None.
         return impl.mapping.map(self.metadata, profile=self.profile.label)
 
     def dataciteMetadata(self):
-        # Returns citation metadata as a DataCite XML record.  (The record
+        # Returns citation metadata as a DataCite XML record. (The record
         # includes an encoding declaration, but is not actually encoded.)
         # This method does not check metadata requirements, and always
-        # returns a record; missing attributes will be "(:unav)".  The
+        # returns a record; missing attributes will be "(:unav)". The
         # mapping is based on the identifier's preferred metadata profile
         # but with priority given to the DataCite fields.
         import impl.datacite as datacite
@@ -713,7 +713,7 @@ class IdentifierBase(django.db.models.Model):
         if "crossref" in self.metadata:
             try:
                 # Our validation of Crossref XML records is incomplete (the
-                # schema is way too complicated).  As with DataCite XML
+                # schema is way too complicated). As with DataCite XML
                 # records, we simply require that they be well-formed and that
                 # the parts that EZID cares about are present and sufficiently
                 # correct to support our processing.
@@ -806,9 +806,9 @@ class IdentifierBase(django.db.models.Model):
 
         This method should be called after the
         concrete subclass instance has been created with the identifier
-        set as in, for example, Identifier(identifier=...).  All
+        set as in, for example, Identifier(identifier=...). All
         foreign key values (owner, ownergroup, datacenter, profile) must
-        be set externally to this method.  Finally,
+        be set externally to this method. Finally,
         computeComputedValues should be called after this method to fill
         out the rest of the object.
         """
@@ -1014,7 +1014,7 @@ class SearchIdentifier(IdentifierBase):
         self.computeHasIssues()
 
     # def fromLegacy(self, d):
-    #     # See Identifier.fromLegacy.  N.B.: computeComputedValues should
+    #     # See Identifier.fromLegacy. N.B.: computeComputedValues should
     #     # be called after this method to fill out the rest of the object.
     #     super(Identifier, self).fromLegacy(d)
     #     self.owner = _getUser(d["_o"])
@@ -1023,7 +1023,7 @@ class SearchIdentifier(IdentifierBase):
     #     if self.isDatacite:
     #         self.datacenter = _getDatacenter(d["_d"])
 
-    # Computed value.  To support searching over target URLs (which are
+    # Computed value. To support searching over target URLs (which are
     # too long to be fully indexed), this field is the last 255
     # characters of the target URL in reverse order.
     searchableTarget = django.db.models.CharField(
@@ -1031,7 +1031,7 @@ class SearchIdentifier(IdentifierBase):
         editable=False,
     )
 
-    # Citation metadata follows.  Which is to say, the following
+    # Citation metadata follows. Which is to say, the following
     # metadata refers to the resource identified by the identifier, not
     # the identifier itself.
 
@@ -1120,7 +1120,7 @@ class SearchIdentifier(IdentifierBase):
     # target URL.
     oaiVisible = django.db.models.BooleanField(editable=False)
 
-    # Computed value: True if the target URL is broken.  This field is
+    # Computed value: True if the target URL is broken. This field is
     # set only by the link checker update daemon.
     # N.B.: see note under updateFromLegacy below regarding this field.
     linkIsBroken = django.db.models.BooleanField(editable=False, default=False)
@@ -1133,7 +1133,7 @@ class SearchIdentifier(IdentifierBase):
 # def _getFromCache(cache, model, attribute, key, insertOnMissing=True):
 #     # Generic caching function supporting the caches in this module.
 #     # Returns (I, cache) where I is the instance of 'model' for which
-#     # I.'attribute' = 'key'.  'cache' may be None on input, and it is
+#     # I.'attribute' = 'key'. 'cache' may be None on input, and it is
 #     # possibly set and/or augmented on return.
 #     if cache is None:
 #         cache = dict((getattr(i, attribute), i) for i in model.objects.all())

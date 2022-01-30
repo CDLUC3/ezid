@@ -5,12 +5,12 @@
 
 """Queue administration tool
 
-Currently works with the binder and DataCite queues only.  Run with the '-h' option for
+Currently works with the binder and DataCite queues only. Run with the '-h' option for
 usage.
 
-This script requires several EZID modules.  The PYTHONPATH environment variable must
+This script requires several EZID modules. The PYTHONPATH environment variable must
 include the .../SITE_ROOT/PROJECT_ROOT directory; if it doesn't, we attempt to
-dynamically locate it and add it.  The DJANGO_SETTINGS_MODULE environment variable must
+dynamically locate it and add it. The DJANGO_SETTINGS_MODULE environment variable must
 be set.
 """
 

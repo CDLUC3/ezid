@@ -7,17 +7,17 @@
 system is down.
 
 Specifically, all UI requests, regardless of HTTP method, return a 200 OK status and an
-HTML page containing the message "EZID is down for maintenance".  All API requests,
+HTML page containing the message "EZID is down for maintenance". All API requests,
 regardless of HTTP method, return a 503 Service Unavailable status and the plain text
 response "error: EZID is down for maintenance". Additionally, API requests return a
-Retry-After header.  In all cases, a different message may be specified on the command
+Retry-After header. In all cases, a different message may be specified on the command
 line. Usage:
 
    downserver [-ssl keyfile certfile] host port downtime [message]
 
 'host' and 'port' are the hostname (or IP address) and port the server should listen on.
 'downtime' is the number of seconds it is anticipated that EZID will be down; it is used
-to compute Retry-After headers.  If the '-ssl' option is given, an https server is
+to compute Retry-After headers. If the '-ssl' option is given, an https server is
 created.
 
 If a file logo.png is found in the same directory as this script, the image is inserted

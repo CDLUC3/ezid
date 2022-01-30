@@ -27,7 +27,7 @@ def _validationErr(action):
     return (
         _("Identifier could not be ")
         + action
-        + _(" as submitted.  Please check the highlighted fields below for details.")
+        + _(" as submitted. Please check the highlighted fields below for details.")
     )
 
 
@@ -142,7 +142,7 @@ def simple_form(request, d):
 
 def adv_form(request, d):
     """Like simple_form. Takes request and context object. d['prefixes'] should
-    be set before calling.  Includes addtn'l features:
+    be set before calling. Includes addtn'l features:
 
     custom remainder - optional
     manual_profile - If true, use custom Datacite XML template

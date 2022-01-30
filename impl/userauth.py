@@ -167,11 +167,11 @@ class LdapSha1PasswordHasher(django.contrib.auth.hashers.SHA1PasswordHasher):
     """Password hasher for legacy LDAP-encoded passwords
 
     File this
-    under So Close, Yet So Far.  LDAP uses salted SHA-1 hashing, and
-    Django supports exactly that scheme.  With some syntactic
+    under So Close, Yet So Far. LDAP uses salted SHA-1 hashing, and
+    Django supports exactly that scheme. With some syntactic
     shuffling it would be possible for Django to work with
     LDAP-encoded passwords directly, except: LDAP uses binary salts,
-    whereas Django requires salts to be text.  Ergo, this custom
+    whereas Django requires salts to be text. Ergo, this custom
     hasher.
     """
     algorithm = "ldap_sha1"
@@ -187,7 +187,7 @@ class LdapSha1PasswordHasher(django.contrib.auth.hashers.SHA1PasswordHasher):
 
     # TODO: Commented out for now, but as far as I can tell, this is unused.
     # def convertLegacyRepresentation(self, legacy):
-    #     # Converts a legacy LDAP-encoded password to Django syntax.  In
+    #     # Converts a legacy LDAP-encoded password to Django syntax. In
     #     # LDAP encoding, a 20-byte binary SHA-1 hash and an 8-byte binary
     #     # salt are concatenated, Base64-encoded, and prepended with
     #     # "{SSHA}".

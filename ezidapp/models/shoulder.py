@@ -53,12 +53,12 @@ class RegistrationAgency(django.db.models.Model):
 
 
 class Shoulder(django.db.models.Model):
-    # Describes a "shoulder," or identifier namespace.  As a namespace,
+    # Describes a "shoulder," or identifier namespace. As a namespace,
     # one shoulder may be a subset of (or contained within) another; in
     # contexts where multiple shoulders apply, the longest (i.e., most
-    # precise) match is used.  In practice shoulders have owners (which
+    # precise) match is used. In practice shoulders have owners (which
     # can be inferred from their names), but there is no formal notion
-    # of ownership.  Shoulders play a limited role within EZID: they're
+    # of ownership. Shoulders play a limited role within EZID: they're
     # used only as an access mechanism (governing who can create which
     # identifiers) and to provide creation-time configuration defaults.
     # But once created, an identifier stands alone; it has no
@@ -102,7 +102,7 @@ class Shoulder(django.db.models.Model):
 
     type = django.db.models.CharField(max_length=32, editable=False)
 
-    # Computed value: the shoulder's identifier type, e.g., "ARK".  Used
+    # Computed value: the shoulder's identifier type, e.g., "ARK". Used
     # only to implement the uniqueness constraint below.
 
     @property
@@ -145,7 +145,7 @@ class Shoulder(django.db.models.Model):
     def isDatacite(self):
         return self.isDoi and not self.crossrefEnabled
 
-    # Computed value.  True if the shoulder is a test shoulder.
+    # Computed value. True if the shoulder is a test shoulder.
     isTest = django.db.models.BooleanField(editable=False)
 
     # Fields previously only in master_shoulders.txt

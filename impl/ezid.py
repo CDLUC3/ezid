@@ -2,9 +2,9 @@
 #  http://creativecommons.org/licenses/BSD
 
 """Simple locking mechanism to ensure that, in a multi-threaded environment, no given
-identifier is operated on by two threads simultaneously.  Additionally, we enforce a
-per-user throttle on concurrent operations.  _activeUsers maps local usernames to the
-number of operations currently being performed by that user.  For status reporting
+identifier is operated on by two threads simultaneously. Additionally, we enforce a
+per-user throttle on concurrent operations. _activeUsers maps local usernames to the
+number of operations currently being performed by that user. For status reporting
 purposes, _waitingUsers similarly maps local usernames to numbers of waiting requests.
 If _paused is true, no new locks are granted, but the mechanism otherwise operates
 normally.
@@ -89,8 +89,8 @@ def getStatus():
     The first dictionary maps local usernames to the number of
     operations currently being performed by that user; the sum of the
     dictionary values is the total number of operations currently being
-    performed.  The second dictionary similarly maps local usernames to
-    numbers of waiting requests.  The boolean flag indicates if the
+    performed. The second dictionary similarly maps local usernames to
+    numbers of waiting requests. The boolean flag indicates if the
     server is currently paused.
     """
     _lock.acquire()
@@ -131,9 +131,9 @@ def mintIdentifier(shoulder, user, metadata={}):
 # noinspection PyDefaultArgument
 def _mintIdentifier(shoulder, user, metadata={}):
     """Mint an identifier under the given qualified shoulder, e.g.,
-    "doi:10.5060/".  'user' is the requestor and should be an authenticated
-    User object.  'metadata' should be a dictionary of element (name,
-    value) pairs.  If an initial target URL is not supplied, the identifier is
+    "doi:10.5060/". 'user' is the requestor and should be an authenticated
+    User object. 'metadata' should be a dictionary of element (name,
+    value) pairs. If an initial target URL is not supplied, the identifier is
     given a self-referential target URL. The successful return is a string that
     includes the canonical, qualified form of the new identifier, as in:
 
@@ -202,9 +202,9 @@ def _mintIdentifier(shoulder, user, metadata={}):
 
 def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
     """Create an identifier having the given qualified name, e.g.,
-    "doi:10.5060/FOO".  'user' is the requestor and should be an authenticated
-    User object.  'metadata' should be a dictionary of element (name,
-    value) pairs.  If an initial target URL is not supplied, the identifier is
+    "doi:10.5060/FOO". 'user' is the requestor and should be an authenticated
+    User object. 'metadata' should be a dictionary of element (name,
+    value) pairs. If an initial target URL is not supplied, the identifier is
     given a self-referential target URL. The successful return is a string that
     includes the canonical, qualified form of the new identifier, as in:
 
@@ -311,14 +311,14 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
 
 def getMetadata(identifier, user=ezidapp.models.user.AnonymousUser, prefixMatch=False):
     """Return all metadata for a given qualified identifier, e.g.,
-    "doi:10.5060/FOO".  'user' is the requestor and should be an authenticated
-    User object.  The successful return is a pair (status, dictionary)
+    "doi:10.5060/FOO". 'user' is the requestor and should be an authenticated
+    User object. The successful return is a pair (status, dictionary)
     where 'status' is a string that includes the canonical, qualified form of
     the identifier, as in:
 
       success: doi:10.5060/FOO
 
-    and 'dictionary' contains element (name, value) pairs.  Unsuccessful
+    and 'dictionary' contains element (name, value) pairs. Unsuccessful
     returns include the strings:
 
       error: forbidden
@@ -328,7 +328,7 @@ def getMetadata(identifier, user=ezidapp.models.user.AnonymousUser, prefixMatch=
 
     If 'prefixMatch' is true, prefix matching is enabled and the
     returned identifier is the longest identifier that matches a
-    (possibly proper) prefix of the requested identifier.  In such a
+    (possibly proper) prefix of the requested identifier. In such a
     case, the status string resembles:
 
       success: doi:10.5060/FOO in_lieu_of doi:10.5060/FOOBAR
@@ -377,14 +377,14 @@ def getMetadata(identifier, user=ezidapp.models.user.AnonymousUser, prefixMatch=
 
 def setMetadata(identifier, user, metadata, updateExternalServices=True, internalCall=False):
     """Set metadata elements of a given qualified identifier, e.g.,
-    "doi:10.5060/FOO".  'user' is the requestor and should be an authenticated
-    User object.  'metadata' should be a dictionary of element (name,
-    value) pairs.  If an element being set already exists, it is overwritten,
-    if not, it is created; existing elements not set are left unchanged.  Of
+    "doi:10.5060/FOO". 'user' is the requestor and should be an authenticated
+    User object. 'metadata' should be a dictionary of element (name,
+    value) pairs. If an element being set already exists, it is overwritten,
+    if not, it is created; existing elements not set are left unchanged. Of
     the reserved metadata elements, only "_owner", "_target", "_profile",
     "_status", and "_export" may be set (unless the user is the EZID
-    administrator).  The "_crossref" element may be set only in certain
-    situations.  The successful return is a string that includes the canonical,
+    administrator). The "_crossref" element may be set only in certain
+    situations. The successful return is a string that includes the canonical,
     qualified form of the identifier, as in:
 
       success: doi:10.5060/FOO
@@ -462,8 +462,8 @@ def setMetadata(identifier, user, metadata, updateExternalServices=True, interna
 
 def deleteIdentifier(identifier, user, updateExternalServices=True):
     """Delete an identifier having the given qualified name, e.g.,
-    "doi:10.5060/FOO".  'user' is the requestor and should be an authenticated
-    User object.  The successful return is a string that includes the
+    "doi:10.5060/FOO". 'user' is the requestor and should be an authenticated
+    User object. The successful return is a string that includes the
     canonical, qualified form of the now-nonexistent identifier, as in:
 
       success: doi:/10.5060/FOO

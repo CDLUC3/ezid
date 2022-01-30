@@ -182,12 +182,12 @@ def _computeTotals(table):
 
 def csvStats(request):
     """Return all statistics to which a user is entitled as a CSV file
-    'requestor' is the user, and should be a User object.  The statistics
+    'requestor' is the user, and should be a User object. The statistics
     include those for the requestor; and all users (if the requestor is a
     superuser) or all users in the requestor's realm (if the requestor is a
     realm administrator) or all users in the requestor's group (if the
     requestor is a group administrator); plus any users the requestor is a
-    proxy for.  The CSV file is returned as a single string.  The columns are:
+    proxy for. The CSV file is returned as a single string. The columns are:
 
     owner
     ownergroup
@@ -200,7 +200,7 @@ def csvStats(request):
     total DOIs
 
     Rows are grouped by user; the order of users in the CSV file is
-    undefined.  For a given user, rows are ordered by month, and the
+    undefined. For a given user, rows are ordered by month, and the
     rows are complete with respect to the range of months, as described
     in stats.Stats.getTable().
     """

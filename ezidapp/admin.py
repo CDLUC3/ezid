@@ -5,7 +5,7 @@
 
 Beware: there's some
 seriously occult stuff in here, and there are dependencies on the
-specific version of Django used in development (1.8.1).  Intimately
+specific version of Django used in development (1.8.1). Intimately
 related to this file are the PROJECT_ROOT/templates/admin and
 PROJECT_ROOT/static/admin directories.
 """
@@ -426,7 +426,7 @@ class NewAccountWorksheetAdmin(django.contrib.admin.ModelAdmin):
                     "New status: {}\n\n"
                     "View the account's worksheet at:\n\n"
                     "{}{}\n\n"
-                    "This is an automated email.  Please do not reply.\n\n"
+                    "This is an automated email. Please do not reply.\n\n"
                     "::\n"
                     "organization_name: {}\n"
                     "organization_acronym: {}\n"
@@ -653,15 +653,15 @@ def updateUserPids(request, users):
 
 
 def onCommitWithSqliteHack(onCommitFunction):
-    # Oy vay, this has been so difficult to make work.  Our recursive
+    # Oy vay, this has been so difficult to make work. Our recursive
     # calls to EZID to create and update agent PIDs must occur in
     # on_commit hooks because the Django admin, in its infinite wisdom,
-    # delays updating many-to-many relationships.  This is not a problem
+    # delays updating many-to-many relationships. This is not a problem
     # for MySQL, but SQLite doesn't support starting a new transaction
     # in an on_commit hook... something about the autocommit setting.
     # As a hack, we force the operation to go through by setting an
-    # internal Django flag.  The flag is reset afterwards for good
-    # measure, though it's not clear this is necessary.  The effect of
+    # internal Django flag. The flag is reset afterwards for good
+    # measure, though it's not clear this is necessary. The effect of
     # this hack is probably to break transaction rollback.
     if "sqlite3" in django.conf.settings.DATABASES["default"]["ENGINE"]:
         c = django.db.connection
@@ -771,8 +771,8 @@ class GroupAdmin(django.contrib.admin.ModelAdmin):
             # sg.save()
         # Our actions won't take effect until the Django admin's
         # transaction commits sometime in the future, so we defer clearing
-        # the relevant caches.  While not obvious, the following calls
-        # rely on the django-transaction-hooks 3rd party package.  (Django
+        # the relevant caches. While not obvious, the following calls
+        # rely on the django-transaction-hooks 3rd party package. (Django
         # 1.9 incorporates this functionality directly.)
         onCommitWithSqliteHack(lambda: createOrUpdateGroupPid(request, obj, change))
         # Changes to shoulders and Crossref enablement may trigger
