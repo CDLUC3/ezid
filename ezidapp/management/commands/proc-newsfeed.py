@@ -37,7 +37,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                         ezidapp.models.news_feed.NewsFeed(
                             feed_id=entry.id,
                             published=datetime.datetime.fromtimestamp(
-                                time.mktime(entry.published_parsed)),
+                                time.mktime(entry.published_parsed)
+                            ),
                             title=entry.title,
                             link=entry.link,
                         ).save()

@@ -10,7 +10,6 @@ import logging
 import django.core.management
 
 import ezidapp.models.shoulder
-# import impl.nog.reload
 import impl.nog.util
 
 log = logging.getLogger(__name__)
@@ -65,13 +64,9 @@ class Command(django.core.management.BaseCommand):
         namespace_str = '{}:{}'.format(scheme_str, full_shoulder.upper())
 
         try:
-            shoulder_model = ezidapp.models.shoulder.Shoulder.objects.get(
-                prefix=namespace_str
-            )
+            shoulder_model = ezidapp.models.shoulder.Shoulder.objects.get(prefix=namespace_str)
         except ezidapp.models.shoulder.Shoulder.DoesNotExist:
-            raise django.core.management.CommandError(
-                'Invalid shoulder: {}'.format(namespace_str)
-            )
+            raise django.core.management.CommandError('Invalid shoulder: {}'.format(namespace_str))
 
         old_org_str = shoulder_model.name
         if opt.new_org_name == old_org_str:

@@ -3,13 +3,13 @@
 
 """Display basic statistics for all registered models
 
-This command does not alter any information in the database, and should be safe to run at any time,
-including a running production instance.
+This command does not alter any information in the database, and should be safe to run
+at any time, including a running production instance.
 
-This command works through the Django ORM and is useful for checking the current state of the
-database as seen by the ORM. Information is printed for all models that were discovered in the
-model search that Django performs at startup. If any models are missing, it indicates an issue with
-the model search.
+This command works through the Django ORM and is useful for checking the current state
+of the database as seen by the ORM. Information is printed for all models that were
+discovered in the model search that Django performs at startup. If any models are
+missing, it indicates an issue with the model search.
 """
 
 import contextlib
@@ -39,6 +39,11 @@ class Command(django.core.management.BaseCommand):
         super(Command, self).__init__()
         self.opt = None
 
+    def create_parser(self, *args, **kwargs):
+        parser = super(Command, self).create_parser(*args, **kwargs)
+        parser.formatter_class = argparse.RawTextHelpFormatter
+        return parser
+
     def add_arguments(self, parser):
         parser.add_argument(
             '--debug',
@@ -54,15 +59,13 @@ class Command(django.core.management.BaseCommand):
 
 
 class ORMStats:
-
     def __init__(self):
         self.exit_stack = contextlib.ExitStack()
         self.counter = self.exit_stack.enter_context(impl.nog.counter.Counter())
         self.page_size = django.conf.settings.QUERY_PAGE_SIZE
 
     def print_identifier(self, identifier):
-        id_model = ezidapp.models.identifier.Identifier.objects.filter(
-            identifier=identifier).get()
+        id_model = ezidapp.models.identifier.Identifier.objects.filter(identifier=identifier).get()
         # print(id_model)
         # pprint.pp(id_model.cm)
 
@@ -79,9 +82,7 @@ class ORMStats:
     def print_all(self):
         # row_list = []
         row_list = [('MODEL', 'TABLE', 'ROWS')]
-        for m in django.apps.apps.get_models(
-                include_auto_created=True, include_swapped=True
-        ):
+        for m in django.apps.apps.get_models(include_auto_created=True, include_swapped=True):
             row_list.append(
                 (
                     m._meta.label,

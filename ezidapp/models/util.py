@@ -7,17 +7,18 @@ import django.apps
 import django.conf
 
 import ezidapp.models.user
-
-from ezidapp.models.group import AnonymousGroup, Group
+import ezidapp.models.group
 
 logger = logging.getLogger(__name__)
 
 
-def _databaseQueryUser():
+def _getUserPrefetch(**get_args):
     user_model = django.apps.apps.get_model('ezidapp', 'User')
     try:
-        return user_model.objects.select_related("group", "realm").prefetch_related(
-            "shoulders", "proxies"
+        return (
+            user_model.objects.select_related("group", "realm")
+            .prefetch_related("shoulders", "proxies")
+            .get(**get_args)
         )
     except user_model.DoesNotExist:
         return None
@@ -26,22 +27,18 @@ def _databaseQueryUser():
 def getUserById(id_str):
     # Returns the user identified by internal identifier 'id', or None
     # if there is no such user.
-    # pidCache, usernameCache, idCache = _getCaches()
-    # if id_str not in idCache:
-    logger.debug(f'getUserById: {id_str}')
-    return _databaseQueryUser().get(id=id_str)
+    return _getUserPrefetch(id=id_str)
 
 
 def getUserByPid(pid):
     # Returns the user identified by persistent identifier 'pid', or
     # None if there is no such user.  AnonymousUser is returned in
     # response to "anonymous".
-    logger.error(f'getUserByPid: {pid}')  # TODO: lower level
     if pid == "anonymous":
         return ezidapp.models.user.AnonymousUser
         # anon_user_model = django.apps.apps.get_model('ezidapp', 'AnonymousUser')
         # return anon_user_model
-    return _databaseQueryUser().get(pid=pid)
+    return _getUserPrefetch(pid=pid)
 
 
 def getUserByUsername(username):
@@ -50,7 +47,7 @@ def getUserByUsername(username):
     # "anonymous".
     if username == "anonymous":
         return ezidapp.models.user.AnonymousUser
-    return _databaseQueryUser().get(username=username)
+    return _getUserPrefetch(username=username)
 
 
 def getAdminUser():
@@ -69,21 +66,20 @@ def getProfileByLabel(label):
     return p
 
 
-
 # Group
 
 
-def _databaseQueryGroup():
+def _getGroupPrefetch(**get_kwargs):
     group_model = django.apps.apps.get_model('ezidapp', 'Group')
     try:
-        return group_model.objects.select_related("realm").prefetch_related("shoulders")
+        return (
+            group_model.objects.select_related("realm")
+            .prefetch_related("shoulders")
+            .get(**get_kwargs)
+        )
         # return store_group_model.objects.select_related("group", "realm").prefetch_related("shoulders", "proxies")
     except group_model.DoesNotExist:
         return None
-
-
-# def _databaseQueryGroup():
-#     return Group.objects.select_related("realm").prefetch_related("shoulders")
 
 
 def getGroupByPid(pid):
@@ -91,8 +87,8 @@ def getGroupByPid(pid):
     # None if there is no such group.  AnonymousGroup is returned in
     # response to "anonymous".
     if pid == "anonymous":
-        return AnonymousGroup
-    return _databaseQueryGroup().get(pid=pid)
+        return ezidapp.models.group.AnonymousGroup
+    return _getGroupPrefetch(pid=pid)
 
 
 def getGroupByGroupname(groupname):
@@ -100,37 +96,11 @@ def getGroupByGroupname(groupname):
     # there is no such group.  AnonymousGroup is returned in response to
     # "anonymous".
     if groupname == "anonymous":
-        return AnonymousGroup
-    return _databaseQueryGroup().get(groupname=groupname)
-
-
-# Profile
-
-
-def _databaseQueryProfile():
-    return Group.objects.select_related("realm").prefetch_related("shoulders")
-
-
-def getProfileById(id_str):
-    # Returns the group identified by internal identifier 'id', or None
-    # if there is no such group.
-    return _databaseQueryProfile().get(id=id_str)
+        return ezidapp.models.group.AnonymousGroup
+    return _getGroupPrefetch(groupname=groupname)
 
 
 # Datacenter
-
-
-def _databaseQueryDatacenter():
-    datacenter_model = django.apps.apps.get_model('ezidapp', 'Datacenter')
-    try:
-        return datacenter_model.objects
-    except datacenter_model.DoesNotExist:
-        pass
-
-
-def getDatacenterById(id_str):
-    # Returns the datacenter identified by internal identifier 'id'.
-    return django.apps.apps.get_model('ezidapp', 'Datacenter').get(id=id_str)
 
 
 def getDatacenterBySymbol(symbol):

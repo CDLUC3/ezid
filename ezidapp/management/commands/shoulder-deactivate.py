@@ -12,7 +12,6 @@ import django.core.management
 import django.db.transaction
 
 import ezidapp.models.shoulder
-# import impl.nog.reload
 import impl.nog.util
 
 log = logging.getLogger(__name__)
@@ -43,13 +42,9 @@ class Command(django.core.management.BaseCommand):
 
         shoulder_str = opt.shoulder_str
         try:
-            shoulder_model = ezidapp.models.shoulder.Shoulder.objects.get(
-                prefix=shoulder_str
-            )
+            shoulder_model = ezidapp.models.shoulder.Shoulder.objects.get(prefix=shoulder_str)
         except ezidapp.models.shoulder.Shoulder.DoesNotExist:
-            raise django.core.management.CommandError(
-                'Invalid shoulder: {}'.format(shoulder_str)
-            )
+            raise django.core.management.CommandError('Invalid shoulder: {}'.format(shoulder_str))
         if not shoulder_model.active:
             raise django.core.management.CommandError(
                 'Shoulder already deactivated: {}'.format(shoulder_str)

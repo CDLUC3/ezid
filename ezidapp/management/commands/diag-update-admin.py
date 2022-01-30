@@ -90,6 +90,11 @@ SETTINGS_DICT = {
 class Command(django.core.management.BaseCommand):
     help = "Create or update the EZID admin account, password and related details"
 
+    def create_parser(self, *args, **kwargs):
+        parser = super(Command, self).create_parser(*args, **kwargs)
+        parser.formatter_class = argparse.RawTextHelpFormatter
+        return parser
+
     def handle(self, *args, **options):
         # Django auth
 

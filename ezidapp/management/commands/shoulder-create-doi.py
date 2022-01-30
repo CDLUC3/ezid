@@ -12,7 +12,6 @@ import django.core.management
 import ezidapp.models.datacenter
 import impl.nog.exc
 import impl.nog.id_ns
-# import impl.nog.reload
 import impl.nog.shoulder
 import impl.nog.util
 
@@ -32,9 +31,7 @@ class Command(django.core.management.BaseCommand):
             metavar="shoulder-doi",
             help='Full DOI of new shoulder. E.g., doi:10.12345/',
         )
-        parser.add_argument(
-            'org_name_str', metavar='org-name', help='Name of organization'
-        )
+        parser.add_argument('org_name_str', metavar='org-name', help='Name of organization')
         ex_group = parser.add_mutually_exclusive_group(required=True)
         ex_group.add_argument(
             '--crossref,-c',

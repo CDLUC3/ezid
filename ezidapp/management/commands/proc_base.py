@@ -1,6 +1,6 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
-
+import argparse
 import http.client
 import logging
 import os
@@ -36,6 +36,11 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         assert self.setting is not None
         super().__init__()
         self.opt = None
+
+    def create_parser(self, *args, **kwargs):
+        parser = super().create_parser(*args, **kwargs)
+        parser.formatter_class = argparse.RawTextHelpFormatter
+        return parser
 
     def add_arguments(self, parser):
         parser.add_argument(

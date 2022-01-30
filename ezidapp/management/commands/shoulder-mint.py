@@ -56,9 +56,7 @@ class Command(django.core.management.BaseCommand):
         impl.nog.util.log_setup(__name__, opt.debug)
 
         try:
-            shoulder_model = ezidapp.models.shoulder.Shoulder.objects.get(
-                prefix=opt.shoulder_str
-            )
+            shoulder_model = ezidapp.models.shoulder.Shoulder.objects.get(prefix=opt.shoulder_str)
         except ezidapp.models.shoulder.Shoulder.DoesNotExist:
             raise django.core.management.CommandError(
                 'Invalid shoulder: {}'.format(opt.shoulder_str)

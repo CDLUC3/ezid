@@ -60,9 +60,7 @@ class Command(django.core.management.BaseCommand):
             error_dict.setdefault(s, 0)
             error_dict[s] += 1
 
-        for shoulder_model in ezidapp.models.shoulder.Shoulder.objects.all().order_by(
-            'prefix'
-        ):
+        for shoulder_model in ezidapp.models.shoulder.Shoulder.objects.all().order_by('prefix'):
             total_count += 1
 
             try:
@@ -70,9 +68,7 @@ class Command(django.core.management.BaseCommand):
             except CheckError as e:
                 tags_str = ', '.join(
                     [
-                        '{}={}'.format(
-                            k, 'yes' if v is True else 'no' if v is False else v
-                        )
+                        '{}={}'.format(k, 'yes' if v is True else 'no' if v is False else v)
                         for k, v in (
                             ('active', shoulder_model.active),
                             ('supershoulder', shoulder_model.isSupershoulder),
@@ -157,9 +153,7 @@ class Command(django.core.management.BaseCommand):
         try:
             minted_id = impl.nog.minter.mint_id(shoulder_model, dry_run=True)
         except impl.nog.exc.MinterError as e:
-            raise CheckError(
-                'Minting test identifier failed', 'Error: {}'.format(str(e))
-            )
+            raise CheckError('Minting test identifier failed', 'Error: {}'.format(str(e)))
 
         if shoulder_model.prefix.startswith('doi:'):
             id_ns = shoulder_model.prefix + minted_id.upper()
@@ -171,9 +165,7 @@ class Command(django.core.management.BaseCommand):
                 'Bad prefix: "{}"'.format(shoulder_model.prefix),
             )
 
-        is_in_store = ezidapp.models.identifier.Identifier.objects.filter(
-            identifier=id_ns
-        ).exists()
+        is_in_store = ezidapp.models.identifier.Identifier.objects.filter(identifier=id_ns).exists()
         is_in_search = ezidapp.models.identifier.SearchIdentifier.objects.filter(
             identifier=id_ns
         ).exists()
@@ -185,9 +177,7 @@ class Command(django.core.management.BaseCommand):
                     ' and '.join(
                         [
                             ('is in {}' if f else 'is not in {}').format(n)
-                            for n, f in zip(
-                                ('Store', 'Search'), (is_in_store, is_in_search)
-                            )
+                            for n, f in zip(('Store', 'Search'), (is_in_store, is_in_search))
                         ]
                     ),
                 ),

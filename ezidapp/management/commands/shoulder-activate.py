@@ -43,14 +43,10 @@ class Command(django.core.management.BaseCommand):
         shoulder_str = opt.shoulder_str
         log.debug("Getting shoulder %s", shoulder_str)
         try:
-            shoulder_model = ezidapp.models.shoulder.Shoulder.objects.get(
-                prefix=shoulder_str
-            )
+            shoulder_model = ezidapp.models.shoulder.Shoulder.objects.get(prefix=shoulder_str)
         except ezidapp.models.shoulder.Shoulder.DoesNotExist:
             log.debug("Shoulder string %s not found in Shoulder model", shoulder_str)
-            raise django.core.management.CommandError(
-                'Invalid shoulder: {}'.format(shoulder_str)
-            )
+            raise django.core.management.CommandError('Invalid shoulder: {}'.format(shoulder_str))
         if shoulder_model.active:
             raise django.core.management.CommandError(
                 'Shoulder already activated: {}'.format(shoulder_str)

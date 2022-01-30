@@ -30,6 +30,11 @@ class Command(django.core.management.BaseCommand):
         super(Command, self).__init__()
         self.opt = None
 
+    def create_parser(self, *args, **kwargs):
+        parser = super(Command, self).create_parser(*args, **kwargs)
+        parser.formatter_class = argparse.RawTextHelpFormatter
+        return parser
+
     def add_arguments(self, parser):
         parser.add_argument(
             '--dry-run,d',
@@ -89,17 +94,11 @@ class Command(django.core.management.BaseCommand):
 
             naan_str, shoulder_str = re.split(r'[/:.]', s.minter)[-2:]
             # noinspection PyProtectedMember
-            bdb_path = impl.nog.bdb._get_bdb_path(
-                naan_str, shoulder_str, root_path=None
-            )
+            bdb_path = impl.nog.bdb._get_bdb_path(naan_str, shoulder_str, root_path=None)
             if pathlib.Path(bdb_path).exists():
                 continue
 
-            log.info(
-                'Creating missing minter. prefix="{}" name="{}"'.format(
-                    s.prefix, s.name
-                )
-            )
+            log.info('Creating missing minter. prefix="{}" name="{}"'.format(s.prefix, s.name))
 
             missing_count += 1
 

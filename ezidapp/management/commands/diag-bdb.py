@@ -89,8 +89,12 @@ class Command(django.core.management.BaseCommand):
         self.bdb_path = None
         self.opt = None
 
+    def create_parser(self, *args, **kwargs):
+        parser = super(Command, self).create_parser(*args, **kwargs)
+        parser.formatter_class = argparse.RawTextHelpFormatter
+        return parser
+
     def add_arguments(self, parser):
-        parser.formatter_class = argparse.RawDescriptionHelpFormatter
         parser.add_argument(
             "action_str",
             choices=(
@@ -237,9 +241,7 @@ class Command(django.core.management.BaseCommand):
 
         for field_str, count_int in sorted(count_dict.items(), key=lambda x: x[1]):
             log.info(
-                'Number of minters with this value: {:<6,d} value: {}'.format(
-                    count_int, field_str
-                )
+                'Number of minters with this value: {:<6,d} value: {}'.format(count_int, field_str)
             )
 
     def backup(self):
@@ -281,18 +283,14 @@ class Command(django.core.management.BaseCommand):
             log.info('Overwriting existing file')
             self.bdb_path.unlink()
         # full_shoulder_str = '/'.join([self.opt.ns_str.naan_prefix, self.opt.ns_str.shoulder])
-        bdb_path = impl.nog.minter.create_minter_database(
-            self.opt.ns_str, self.opt.root_path
-        )
+        bdb_path = impl.nog.minter.create_minter_database(self.opt.ns_str, self.opt.root_path)
         log.info('Created minter for: {}'.format(bdb_path))
 
     def slice(self):
         case_fn = str.upper if self.opt.ns_str.startswith('doi:') else str.lower
         dir_path = pathlib.Path(tempfile.mkdtemp())
         try:
-            bdb_path = impl.nog.minter.create_minter_database(
-                self.opt.ns_str, dir_path.as_posix()
-            )
+            bdb_path = impl.nog.minter.create_minter_database(self.opt.ns_str, dir_path.as_posix())
             for i, id_str in enumerate(
                 impl.nog.minter.mint_by_bdb_path(
                     bdb_path,
@@ -309,8 +307,7 @@ class Command(django.core.management.BaseCommand):
     def _assert_bdb_path(self, exists=None):
         if not self.bdb_path:
             raise django.core.management.CommandError(
-                'NAAN/Prefix and Shoulder, OR path to a BDB file is required for this '
-                'command'
+                'NAAN/Prefix and Shoulder, OR path to a BDB file is required for this ' 'command'
             )
         if exists is None:
             return
@@ -320,20 +317,14 @@ class Command(django.core.management.BaseCommand):
             )
         elif exists is False and self.bdb_path.exists():
             raise django.core.management.base.CommandError(
-                'Path already exists. Use --clobber to overwrite: {}'.format(
-                    self.bdb_path
-                )
+                'Path already exists. Use --clobber to overwrite: {}'.format(self.bdb_path)
             )
 
     def _get_dbd_path(self, is_new):
         try:
             ns = impl.nog.id_ns.IdNamespace.from_str(self.opt.ns_str)
         except impl.nog.exc.MinterError:
-            log.info(
-                'Argument is not a DOI or ARK. Using it as path: {}'.format(
-                    self.opt.ns_str
-                )
-            )
+            log.info('Argument is not a DOI or ARK. Using it as path: {}'.format(self.opt.ns_str))
             return pathlib.Path(self.opt.ns_str)
         else:
             p = impl.nog.bdb.get_path(ns, self.opt.root_path, is_new)

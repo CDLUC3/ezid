@@ -11,7 +11,6 @@ import django.core.management
 
 import impl.nog.exc
 import impl.nog.id_ns
-# import impl.nog.reload
 import impl.nog.shoulder
 import impl.nog.util
 
@@ -31,9 +30,7 @@ class Command(django.core.management.BaseCommand):
             metavar="shoulder-ark",
             help='Full ARK of new shoulder. E.g., ark:/12345/',
         )
-        parser.add_argument(
-            'org_name_str', metavar='org-name', help='Name of organization'
-        )
+        parser.add_argument('org_name_str', metavar='org-name', help='Name of organization')
         parser.add_argument(
             '--super-shoulder,s',
             dest='is_super_shoulder',

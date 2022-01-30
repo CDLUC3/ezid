@@ -82,6 +82,7 @@ import django.core.management
 import ezidapp.management.commands.proc_base
 import ezidapp.models.async_queue
 import ezidapp.models.identifier
+
 # import ezidapp.models.link_checker
 import ezidapp.models.user
 import impl
@@ -121,11 +122,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         # fully processed.  In general rounds may be interrupted.
         firstRound = True
         while (
-                firstRound
-                or self.remaining(
-            start, django.conf.settings.LINKCHECKER_TABLE_UPDATE_CYCLE
-        )
-                > 0
+            firstRound
+            or self.remaining(start, django.conf.settings.LINKCHECKER_TABLE_UPDATE_CYCLE) > 0
         ):
             self.loadWorkset()
             log.info("begin processing")
@@ -151,14 +149,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     # of links, each of which is assumed to be checkable in
                     # 1 second.
                     timeout = min(
-                        self.remaining(
-                            start, django.conf.settings.LINKCHECKER_TABLE_UPDATE_CYCLE
-                        ),
+                        self.remaining(start, django.conf.settings.LINKCHECKER_TABLE_UPDATE_CYCLE),
                         django.conf.settings.LINKCHECKER_WORKSET_OWNER_MAX_LINKS
-                        * (
-                                1
-                                + django.conf.settings.LINKCHECKER_OWNER_REVISIT_MIN_INTERVAL
-                        ),
+                        * (1 + django.conf.settings.LINKCHECKER_OWNER_REVISIT_MIN_INTERVAL),
                     )
                 threads = []
                 for i in range(django.conf.settings.LINKCHECKER_NUM_WORKERS):
@@ -265,9 +258,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     def harvest(self, model, only=None, filter=None):
         lastIdentifier = ""
         while True:
-            qs = model.objects.filter(identifier__gt=lastIdentifier).order_by(
-                "identifier"
-            )
+            qs = model.objects.filter(identifier__gt=lastIdentifier).order_by("identifier")
             if only is not None:
                 qs = qs.only(*only)
             qs = list(qs[:1000])
@@ -299,9 +290,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             search_identifier_model,
             ["identifier", "owner", "status", "target", "isTest"],
             lambda si: si.isPublic
-                       and not si.isTest
-                       and si.target != si.defaultTarget
-                       and si.owner_id not in self._permanentExcludes,
+            and not si.isTest
+            and si.target != si.defaultTarget
+            and si.owner_id not in self._permanentExcludes,
         )
 
         lc = next(lcGenerator)
@@ -352,9 +343,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                             good[0] += 1
                             # noinspection PyUnresolvedReferences
                             if (
-                                    lc.lastCheckTime
-                                    < self.now_int()
-                                    - django.conf.settings.LINKCHECKER_GOOD_RECHECK_MIN_INTERVAL
+                                lc.lastCheckTime
+                                < self.now_int()
+                                - django.conf.settings.LINKCHECKER_GOOD_RECHECK_MIN_INTERVAL
                             ):
                                 good[1] += 1
                             # noinspection PyUnresolvedReferences
@@ -363,9 +354,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                             bad[0] += 1
                             # noinspection PyUnresolvedReferences
                             if (
-                                    lc.lastCheckTime
-                                    < self.now_int()
-                                    - django.conf.settings.LINKCHECKER_BAD_RECHECK_MIN_INTERVAL
+                                lc.lastCheckTime
+                                < self.now_int()
+                                - django.conf.settings.LINKCHECKER_BAD_RECHECK_MIN_INTERVAL
                             ):
                                 bad[1] += 1
                             # noinspection PyUnresolvedReferences
@@ -374,10 +365,10 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 si = next(siGenerator)
         log.info(
             (
-                    "end update table, %d identifier%s, %d addition%s, "
-                    + "%d deletion%s, %d update%s, %d unvisited link%s, "
-                    + "%d good link%s (%d to check, oldest=%dd), "
-                    + "%d bad link%s (%d to check, oldest=%dd)"
+                "end update table, %d identifier%s, %d addition%s, "
+                + "%d deletion%s, %d update%s, %d unvisited link%s, "
+                + "%d good link%s (%d to check, oldest=%dd), "
+                + "%d bad link%s (%d to check, oldest=%dd)"
             )
             % (
                 numIdentifiers,
@@ -418,16 +409,12 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 continue
 
             def query(isBad, timeBound, limit):
-                link_checker_model = django.apps.apps.get_model(
-                    'ezidapp', 'LinkChecker'
-                )
+                link_checker_model = django.apps.apps.get_model('ezidapp', 'LinkChecker')
                 return list(
-                    ezidapp.models.link_checker.objects.filter(
-                        owner_id=user.id
-                    )
-                        .filter(isBad=isBad)
-                        .filter(lastCheckTime__lt=timeBound)
-                        .order_by("lastCheckTime")[:limit]
+                    ezidapp.models.link_checker.objects.filter(owner_id=user.id)
+                    .filter(isBad=isBad)
+                    .filter(lastCheckTime__lt=timeBound)
+                    .order_by("lastCheckTime")[:limit]
                 )
 
             qs = query(
@@ -441,8 +428,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             if django.conf.settings.LINKCHECKER_WORKSET_OWNER_MAX_LINKS - len(qs) > 0:
                 q = query(
                     False,
-                    self.now_int()
-                    - django.conf.settings.LINKCHECKER_GOOD_RECHECK_MIN_INTERVAL,
+                    self.now_int() - django.conf.settings.LINKCHECKER_GOOD_RECHECK_MIN_INTERVAL,
                     django.conf.settings.LINKCHECKER_WORKSET_OWNER_MAX_LINKS - len(qs),
                 )
                 if len(q) > 0:
@@ -460,9 +446,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         numLinks = numUnvisited + good[0] + bad[0]
         log.info(
             (
-                    "end load workset, %d owner%s (%d capped), %d link%s, "
-                    + "%d unvisited link%s, %d good link%s (oldest=%dd), "
-                    + "%d bad link%s (oldest=%dd)"
+                "end load workset, %d owner%s (%d capped), %d link%s, "
+                + "%d unvisited link%s, %d good link%s (oldest=%dd), "
+                + "%d bad link%s (oldest=%dd)"
             )
             % (
                 numOwners,
@@ -493,10 +479,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 ow = _workset[self._index]
                 if not ow.isFinished():
                     if (
-                            not ow.isLocked
-                            and ow.lastCheckTime
-                            < t
-                            - django.conf.settings.LINKCHECKER_OWNER_REVISIT_MIN_INTERVAL
+                        not ow.isLocked
+                        and ow.lastCheckTime
+                        < t - django.conf.settings.LINKCHECKER_OWNER_REVISIT_MIN_INTERVAL
                     ):
                         ow.isLocked = True
                         return self._index, ow.list[ow.nextIndex]
@@ -552,8 +537,7 @@ class OwnerWorkset(Command):
         # exclusions take more immediate effect when added, we add the
         # check below.
         if not self.isLocked and (
-                self.owner_id in self._permanentExcludes
-                or self.owner_id in self._temporaryExcludes
+            self.owner_id in self._permanentExcludes or self.owner_id in self._temporaryExcludes
         ):
             self.nextIndex = len(self.list)
         return self.nextIndex >= len(self.list)
@@ -564,9 +548,7 @@ class MyHTTPErrorProcessor(urllib.request.HTTPErrorProcessor):
         if response.status in [401, 403]:
             return response
         else:
-            return urllib.request.HTTPErrorProcessor.http_response(
-                self, request, response
-            )
+            return urllib.request.HTTPErrorProcessor.http_response(self, request, response)
 
     https_response = http_response
 
@@ -611,9 +593,7 @@ class Worker(Command):
                             "Accept": "*/*",
                         },
                     )
-                    c = o.open(
-                        r, timeout=django.conf.settings.LINKCHECKER_CHECK_TIMEOUT
-                    )
+                    c = o.open(r, timeout=django.conf.settings.LINKCHECKER_CHECK_TIMEOUT)
                     mimeType = c.info().get("Content-Type", "unknown")
                     content = c.read(django.conf.settings.LINKCHECKER_MAX_READ)
                 except http.client.IncompleteRead as e:
@@ -624,7 +604,7 @@ class Worker(Command):
                     # deliver a read failure.  We consider these cases successes.
                     # noinspection PyUnresolvedReferences
                     if mimeType.startswith("text/html") and re.search(
-                            "</\s*html\s*>\s*$", e.partial, re.I
+                        "</\s*html\s*>\s*$", e.partial, re.I
                     ):
                         success = True
                         # noinspection PyUnresolvedReferences

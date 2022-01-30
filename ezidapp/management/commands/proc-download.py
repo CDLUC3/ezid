@@ -17,6 +17,7 @@ import csv
 import logging
 import os
 import os.path
+import pathlib
 import re
 import subprocess
 import time
@@ -49,14 +50,65 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     setting = 'DAEMONS_DOWNLOAD_ENABLED'
     queue = ezidapp.models.async_queue.DownloadQueue
 
-    def create(self, task_model):
-        pass
+    def run(self):
+        """Run async processing loop forever.
 
-    def update(self, task_model):
-        pass
+        This command implements its own run loop.
+        """
+        doSleep = True
+        while True:
+            if doSleep:
+                self.sleep(django.conf.settings.DAEMONS_DOWNLOAD_PROCESSING_IDLE_SLEEP)
+            try:
+                r = ezidapp.models.async_queue.DownloadQueue.objects.all().order_by("seq")[:1]
+                if len(r) == 0:
+                    doSleep = True
+                    continue
+                self._proc_stage(r)
+                self._remove_expired_files()
+                doSleep = False
+            except Exception as e:
+                log.exception('Exception')
+                impl.log.otherError("download.run", e)
+                doSleep = True
 
-    def delete(self, task_model):
-        pass
+    def _proc_stage(self, r):
+        r = r[0]
+        if r.stage == ezidapp.models.async_queue.DownloadQueue.CREATE:
+            self._createFile(r)
+        elif r.stage == ezidapp.models.async_queue.DownloadQueue.HARVEST:
+            self._harvest(r)
+        elif r.stage == ezidapp.models.async_queue.DownloadQueue.COMPRESS:
+            self._compressFile(r)
+        elif r.stage == ezidapp.models.async_queue.DownloadQueue.DELETE:
+            self._deleteUncompressedFile(r)
+        elif r.stage == ezidapp.models.async_queue.DownloadQueue.MOVE:
+            self._moveCompressedFile(r)
+        elif r.stage == ezidapp.models.async_queue.DownloadQueue.NOTIFY:
+            self._notifyRequestor(r)
+        else:
+            assert False, "unhandled case"
+
+    def _remove_expired_files(self):
+        """Generated files are available for download for a specific time period, after
+        which they are deleted here.
+
+        To reduce the chance of recursively wiping out an entire filesystem in case of
+        bad settings or broken code, we are conservative here and only delete regular
+        files that are direct children of the provided dirs.
+        """
+        now_ts = time.time()
+        for download_dir_path in (
+            django.conf.settings.DAEMONS_DOWNLOAD_WORK_DIR,
+            django.conf.settings.DAEMONS_DOWNLOAD_PUBLIC_DIR,
+        ):
+            for p in list(pathlib.Path(download_dir_path).glob('*')):
+                if (
+                    p.is_file()
+                    and p.stat().st_mtime
+                    < now_ts - django.conf.settings.DAEMONS_DOWNLOAD_FILE_LIFETIME
+                ):
+                    p.unlink()
 
     def _wrapException(self, context, exception):
         m = str(exception)
@@ -70,9 +122,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         # i=3: compressed delivery file
         # i=4: request sidecar file
         if i in [1, 2]:
-            d = django.conf.settings.DOWNLOAD_WORK_DIR
+            d = django.conf.settings.DAEMONS_DOWNLOAD_WORK_DIR
         else:
-            d = django.conf.settings.DOWNLOAD_PUBLIC_DIR
+            d = django.conf.settings.DAEMONS_DOWNLOAD_PUBLIC_DIR
         if i == 1:
             s = self.SUFFIX_FORMAT_DICT[r.format]
         elif i in [2, 3]:
@@ -392,36 +444,3 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 log.exception('Exception')
                 raise self._wrapException("error sending email", e)
         r.delete()
-
-    def run(
-        self,
-    ):
-        doSleep = True
-        while True:
-            if doSleep:
-                self.sleep(django.conf.settings.DAEMONS_DOWNLOAD_PROCESSING_IDLE_SLEEP)
-            try:
-                r = ezidapp.models.async_queue.DownloadQueue.objects.all().order_by("seq")[:1]
-                if len(r) == 0:
-                    doSleep = True
-                    continue
-                r = r[0]
-                if r.stage == ezidapp.models.async_queue.DownloadQueue.CREATE:
-                    self._createFile(r)
-                elif r.stage == ezidapp.models.async_queue.DownloadQueue.HARVEST:
-                    self._harvest(r)
-                elif r.stage == ezidapp.models.async_queue.DownloadQueue.COMPRESS:
-                    self._compressFile(r)
-                elif r.stage == ezidapp.models.async_queue.DownloadQueue.DELETE:
-                    self._deleteUncompressedFile(r)
-                elif r.stage == ezidapp.models.async_queue.DownloadQueue.MOVE:
-                    self._moveCompressedFile(r)
-                elif r.stage == ezidapp.models.async_queue.DownloadQueue.NOTIFY:
-                    self._notifyRequestor(r)
-                else:
-                    assert False, "unhandled case"
-                doSleep = False
-            except Exception as e:
-                log.exception('Exception')
-                impl.log.otherError("download.run", e)
-                doSleep = True

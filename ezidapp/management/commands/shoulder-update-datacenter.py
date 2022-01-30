@@ -11,7 +11,6 @@ import django.core.management
 
 import ezidapp.models.datacenter
 import ezidapp.models.shoulder
-# import impl.nog.reload
 import impl.nog.shoulder
 import impl.nog.util
 
@@ -54,25 +53,17 @@ class Command(django.core.management.BaseCommand):
             )
         except ValueError:
             raise django.core.management.CommandError(
-                'Full DOI shoulder required. E.g., doi:10.9111/FK4": {}'.format(
-                    opt.shoulder_str
-                )
+                'Full DOI shoulder required. E.g., doi:10.9111/FK4": {}'.format(opt.shoulder_str)
             )
 
         if scheme_str != 'doi':
-            raise django.core.management.CommandError(
-                'Scheme must be "doi": {}'.format(scheme_str)
-            )
+            raise django.core.management.CommandError('Scheme must be "doi": {}'.format(scheme_str))
         namespace_str = '{}:{}'.format(scheme_str, full_shoulder.upper())
 
         try:
-            shoulder_model = ezidapp.models.shoulder.Shoulder.objects.get(
-                prefix=namespace_str
-            )
+            shoulder_model = ezidapp.models.shoulder.Shoulder.objects.get(prefix=namespace_str)
         except ezidapp.models.shoulder.Shoulder.DoesNotExist:
-            raise django.core.management.CommandError(
-                'Invalid shoulder: {}'.format(namespace_str)
-            )
+            raise django.core.management.CommandError('Invalid shoulder: {}'.format(namespace_str))
 
         if shoulder_model.datacenter is None:
             raise django.core.management.CommandError(
@@ -87,9 +78,7 @@ class Command(django.core.management.BaseCommand):
         old_datacenter_model = shoulder_model.datacenter
         if new_datacenter_model.symbol == old_datacenter_model.symbol:
             raise django.core.management.CommandError(
-                'Datacenter is already {} for {}'.format(
-                    new_datacenter_model.symbol, namespace_str
-                )
+                'Datacenter is already {} for {}'.format(new_datacenter_model.symbol, namespace_str)
             )
 
         shoulder_model.datacenter = new_datacenter_model
