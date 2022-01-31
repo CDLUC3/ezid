@@ -12,7 +12,7 @@ pyenv_root: "{{ app_dir }}/.pyenv"
 pyenv_global: ezid-py27
 
 ezid_repo: https://github.com/CDLUC3/ezid.git
-ezid_branch: master
+ezid_version: master
 ezid_info_pages_repo: https://github.com/CDLUC3/ezid-info-pages.git
 ezid_info_pages_branch: master
 
