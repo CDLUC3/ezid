@@ -16,14 +16,16 @@
 | reload                        | No longer needed. Use systemd to restart EZID after changing settings                                                   |
 | reload_all                    | "                                                                                                                       |
 | validate_shoulders.py         | This validated the master shoulders text file, which we no longer use                                                   |
-| show_version.sh               | TODO: Need to implement this in impl.api.getVersion       Emulates "hg identify -inb -R path" after move from hg to git |
+| show_version.sh               | EZID called out to this in order to get the git version, but we now get that from settings |
+
+# Updated and verified working
+| client.py                     | EZID command line client                                                                                              |
 
 # Unchanged
 ## Many of these would be better as management commands
 |||
 | --- | --- |
 | batch_register.py             | Batch registers identifiers                                                                                           |
-| client.py                     | EZID command line client                                                                                              |
 | dashboard.py                  | Computes cumulative EZID statistics and uploads them to the CDL dashboard service                                     |
 | decode_file.py                | Decodes a hex-encoded file                                                                                            |
 | downserver.py                 | Standalone server that mimics EZID, but only indicates that the system is down                                        |
