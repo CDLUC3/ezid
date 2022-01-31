@@ -498,7 +498,7 @@ def deleteIdentifier(identifier, user, updateExternalServices=True):
         return "error: bad request - no such identifier"
     except Exception as e:
         impl.log.error(tid, e)
-        if sys.is_running_under_pytest:
+        if hasattr(sys, 'is_running_under_pytest'):
             raise
         return "error: internal server error"
     else:
