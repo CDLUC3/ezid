@@ -4,7 +4,7 @@
   git:
     repo: "{{ ezid_repo }}"
     dest: "{{ app_dir }}/ezid/"
-    version: "{{ ezid_branch }}"
+    version: "{{ ezid_version }}"
     force: yes
 - name: Clone ezid-info-pages repo
   git:

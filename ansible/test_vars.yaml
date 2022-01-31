@@ -11,8 +11,8 @@
     debug: msg="{{ group }}"
   - name: report app_dir
     debug: msg="{{ app_dir }}"
-  - name: report ezid_branch
-    debug: msg="{{ ezid_branch }}"
+  - name: report ezid_version
+    debug: msg="{{ ezid_version }}"
   - name: report pyenv_global
     debug: msg="{{ pyenv_global }}"
   - name: report virtual_environments

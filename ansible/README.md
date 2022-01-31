@@ -127,7 +127,7 @@ ezid-ansible$ cat ansible_extra_vars.yaml
 user: ezid
 group: ezid
 app_dir: /ezid
-ezid_branch: 3.0.0-0.0.0
+ezid_version: 3.0.0-0.0.0
 pyenv_global: ezid-py38
 virtual_environments:
 - python_version: 2.7.18
