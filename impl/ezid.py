@@ -169,7 +169,7 @@ def _mintIdentifier(shoulder, user, metadata={}):
         user.group.pid,
     )
 
-    shoulder_model = ezidapp.models.shoulder.getExactShoulderMatch(shoulder)
+    shoulder_model = ezidapp.models.shoulder.getShoulder(shoulder)
 
     if shoulder_model is None:
         impl.log.badRequest(tid)
@@ -274,15 +274,9 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
                 impl.log.badRequest(tid)
                 return "error: bad request - ownership change prohibited"
 
-
-
         with django.db.transaction.atomic():
             si.save()
-            # ri = impl.enqueue.create_ref_identifier(si)
             impl.enqueue.enqueue(si, "create")
-            # ezidapp.models.async_queue.enqueue(ri, "create")
-
-
 
     except django.core.exceptions.ValidationError as e:
         impl.log.badRequest(tid)
@@ -432,14 +426,9 @@ def setMetadata(identifier, user, metadata, updateExternalServices=True, interna
                 impl.log.badRequest(tid)
                 return "error: bad request - ownership change prohibited"
 
-
         with django.db.transaction.atomic():
             si.save()
             impl.enqueue.enqueue(si, "update")
-            # ri = impl.enqueue.create_ref_identifier(si)
-            # ezidapp.enq.enqueue(si, "update", updateExternalServices)
-
-
 
     except ezidapp.models.identifier.Identifier.DoesNotExist:
         impl.log.badRequest(tid)
@@ -500,13 +489,9 @@ def deleteIdentifier(identifier, user, updateExternalServices=True):
             impl.log.badRequest(tid)
             return "error: bad request - identifier status does not support deletion"
 
-
         with django.db.transaction.atomic():
-            # ri = impl.enqueue.create_ref_identifier(si)
             impl.enqueue.enqueue(si, "delete", updateExternalServices)
             si.delete()
-
-
 
     except ezidapp.models.identifier.Identifier.DoesNotExist:
         impl.log.badRequest(tid)

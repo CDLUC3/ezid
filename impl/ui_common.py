@@ -281,11 +281,12 @@ def owner_names(user, page):
             r += _getUsersInGroup(user, 1, user.group.groupname)
         else:
             r += my_proxies
+
     import pprint
     import logging
-
     logging.info('-' * 100)
     logging.info(pprint.pformat(r))
+
     return r
 
 
@@ -294,7 +295,7 @@ def _indent_str(size):
 
 
 def _getGroupsUsers(me, indent, groups):
-    """Return heirarchical list of all groups and their constituent users."""
+    """Return hierarchical list of all groups and their constituent users."""
     r = []
     for g in groups:
         n = g.groupname

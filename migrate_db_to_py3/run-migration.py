@@ -68,13 +68,21 @@ def run_sql(sql_str):
     with connect() as cursor:
         cursor.execute('set unique_checks = 0', {})
         cursor.execute('set foreign_key_checks = 0', {})
-        cursor.execute(sql_str, {})
+        try:
+            cursor.execute(sql_str, {})
+        except Exception as e:
+            raise
+            print(str(e), file=sys.stderr)
 
 
 def run_cmd(cmd_str):
     # print('run_cmd')
     # return
-    subprocess.check_call(cmd_str.split(' '))
+    try:
+        subprocess.check_call(cmd_str.split(' '))
+    except Exception as e:
+        raise
+        print(str(e), file=sys.stderr)
 
 
 @contextlib.contextmanager

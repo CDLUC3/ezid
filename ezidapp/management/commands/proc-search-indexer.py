@@ -47,7 +47,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     def delete(self, task_model):
         if not self._is_anonymous(task_model):
             ezidapp.models.identifier.SearchIdentifier.objects.filter(
-                identifier=task_model.identifier,
+                identifier=task_model.refIdentifier.identifier,
             ).delete()
 
     def _is_anonymous(self, task_model):

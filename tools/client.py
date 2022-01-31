@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
@@ -7,19 +7,7 @@
 
 """EZID command line client
 
-Input metadata (from command line parameters and files) is assumed to be UTF-8 encoded,
-and output metadata is UTF-8 encoded, unless overridden by the -e option. By default,
-ANVL responses (currently, that's all responses) are left in %-encoded form.
-
-Usage: client [options] server credentials operation...
-
-  options:
-    -d          decode ANVL responses
-    -e ENCODING character encoding; defaults to UTF-8
-    -k          disable SSL certificate checking
-    -l          disable external service updates
-    -o          one line per ANVL value: convert newlines to spaces
-    -t          format timestamps
+Positional arguments:
 
   server:
     l (local server, no https)
@@ -67,15 +55,16 @@ invoking:
 
   client p username:password mint doi:10.5072/FK2 datacite @metadata.xml
 
-In both of the above cases, the interpretation of @ can be defeated
-by doubling it.
-"""
+In both of the above cases, the interpretation of @ can be defeated by doubling it.
 
+Input metadata (from command line parameters and files) is assumed to be UTF-8 encoded,
+and output metadata is UTF-8 encoded, unless overridden by the -e option. By default,
+ANVL responses (currently, that's all responses) are left in %-encoded form.
+"""
+import argparse
 import codecs
 import getpass
-import optparse
 import re
-import shutil
 import signal
 import ssl
 import sys
@@ -85,313 +74,378 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
+# Suppress KeyboardInterrupt exception traceback if exited with Ctrl-C
 signal.signal(signal.SIGINT, lambda signal, frame: sys.exit())
 
 KNOWN_SERVERS = {
-    "l": "http://localhost:8000",
-    "s": "https://uc3-ezidx2-stg.cdlib.org",
-    "p": "https://ezid.cdlib.org",
+    'l': 'http://localhost:8000',
+    's': 'https://uc3-ezidx2-stg.cdlib.org',
+    'p': 'https://ezid.cdlib.org',
 }
 
-OPERATIONS = {
-    # operation: (number of arguments, accepts bang)
-    "mint": (lambda l: l % 2 == 1, False),
-    "create": (lambda l: l % 2 == 1, True),
-    "view": (1, True),
-    "update": (lambda l: l % 2 == 1, False),
-    "delete": (1, False),
-    "login": (0, False),
-    "logout": (0, False),
-    "status": (lambda l: l in [0, 1, 2], False),
-    "Version": (0, False),
-    "pause": (1, False),
-    # "reload": (0, False),
-}
 
-USAGE_TEXT = """Usage: client [options] server credentials operation...
-
-  options:
-    -d          decode ANVL responses
-    -e ENCODING character encoding; defaults to UTF-8
-    -k          disable SSL certificate checking
-    -l          disable external service updates
-    -o          one line per ANVL value: convert newlines to spaces
-    -t          format timestamps
-
-  server:
-    l (local server, no https)
-    s (staging)
-    p (production)
-    http[s]://...
-
-  credentials:
-    username:password
-    username (password will be prompted for)
-    sessionid=... (as returned by previous login)
-    - (none)
-
-  operation:
-    m[int] shoulder [element value ...]
-    c[reate][!] identifier [element value ...]
-      create! = create or update
-    v[iew][!] identifier
-      view! = match longest identifier prefix
-    u[pdate] identifier [element value ...]
-    d[elete] identifier
-    login
-    logout
-    s[tatus] [detailed] [*|subsystemlist]
-    V[ersion]
-    p[ause] {on|off|idlewait|monitor}
-    r[eload]
-"""
-
-# Global variables that are initialized farther down.
-
-_options = None
-_binder_url = None
-_opener = None
-_cookie = None
+CMD_TUP = (
+    'mint',
+    'create',
+    'view',
+    'update',
+    'delete',
+    'login',
+    'logout',
+    'status',
+    'Version',
+)
 
 
-class MyHelpFormatter(optparse.IndentedHelpFormatter):
-    def format_usage(self, usage):
-        return USAGE_TEXT
+def main():
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
+    parser.add_argument(
+        'server',
+        help='EZID server to access. l=local (no https), s=staging, p=production, http[s]://...',
+    )
+    parser.add_argument(
+        'credentials',
+        help='username:password, username (will prompt for password), sessionid=... (as returned by previous login), - (none)',
+    )
+    parser.add_argument(
+        'operation',
+        nargs='+',
+        help='m[int], c[reate], create!, v[iew], view!, u[pdate], d[elete], login, logout, s[tatus], V[ersion]',
+    )
+
+    parser.add_argument(
+        '-d',
+        action='store_true',
+        dest='decode',
+        default=False,
+        help='Decode ANVL responses',
+    )
+    parser.add_argument(
+        '-e',
+        action='store',
+        dest='encoding',
+        default='UTF-8',
+        help='Character encoding; defaults to UTF-8',
+    )
+    parser.add_argument(
+        '-k',
+        action='store_true',
+        dest='disableCertificateChecking',
+        default=False,
+        help='Disable SSL certificate checking',
+    )
+    parser.add_argument(
+        '-l',
+        action='store_true',
+        dest='disableExternalUpdates',
+        default=False,
+        help='Disable external service updates',
+    )
+    parser.add_argument(
+        '-o',
+        action='store_true',
+        dest='oneLine',
+        default=False,
+        help='One line per ANVL value: convert newlines to spaces',
+    )
+    parser.add_argument(
+        '-t',
+        action='store_true',
+        dest='formatTimestamps',
+        default=False,
+        help='Format timestamps',
+    )
+    parser.add_argument("--debug", action="store_true", help="Debug level logging")
+
+    args = parser.parse_args()
+    client = Client(args)
+    try:
+        client.operation()
+    except ClientError as e:
+        print(f'Error: {str(e)}')
 
 
-class MyHTTPErrorProcessor(urllib.request.HTTPErrorProcessor):
-    def http_response(self, request, response):
-        # Bizarre that Python leaves this out.
-        if response.status == 201:
-            return response
-        else:
-            return urllib.request.HTTPErrorProcessor.http_response(self, request, response)
+class Client:
+    def __init__(self, args):
+        self.args = args
+        self.opener = None
+        self.ezid_url = None
+        self.cookie = None
 
-    https_response = http_response
+    def operation(self):
+        args = self.args
 
+        if args.disableCertificateChecking:
+            try:
+                # noinspection PyUnresolvedReferences,PyProtectedMember
+                ssl._create_default_https_context = ssl._create_unverified_context
+            except AttributeError:
+                pass
 
-def formatAnvlRequest(args):
-    request = []
-    for i in range(0, len(args), 2):
-        # k = args[i].decode(_options.encoding)
-        k = args[i]
-        if k == "@":
-            f = codecs.open(args[i + 1], encoding=_options.encoding)
-            request += [l.strip("\r\n") for l in f.readlines()]
-            f.close()
-        else:
-            if k == "@@":
-                k = "@"
-            else:
-                k = re.sub("[%:\r\n]", lambda c: "%%%02X" % ord(c.group(0)), k)
-            # v = args[i + 1].decode(_options.encoding)
-            v = args[i + 1]
-            if v.startswith("@@"):
-                v = v[1:]
-            elif v.startswith("@") and len(v) > 1:
-                f = codecs.open(v[1:], encoding=_options.encoding)
-                v = f.read()
+        self.ezid_url = KNOWN_SERVERS.get(args.server, args.server)
+
+        print(f'Using EZID URL: {self.ezid_url}', file=sys.stderr)
+
+        self.opener = self.create_opener(args.credentials)
+
+        op_cmd = args.operation[0]
+        op_args = args.operation[1:]
+
+        has_bang = op_cmd.endswith('!')
+        if has_bang:
+            op_cmd = op_cmd[:-1]
+
+        cmd_candidate_list = [s for s in CMD_TUP if s.startswith(op_cmd)]
+        if not cmd_candidate_list:
+            raise ClientError(f'Unknown operation: {op_cmd}')
+        if len(cmd_candidate_list) > 1:
+            raise ClientError(
+                f'Ambiguous operation "{op_cmd}". Could be: {", ".join(cmd_candidate_list)}'
+            )
+
+        op_cmd = cmd_candidate_list[0]
+
+        try:
+            op_fn = getattr(self, f'op_{op_cmd}')
+        except AttributeError:
+            raise ClientError(f'Unknown operation: {op_cmd}')
+
+        try:
+            op_fn(has_bang, op_args)
+        except Exception as e:
+            if self.args.debug:
+                raise
+            raise ClientError(str(e))
+
+    def op_mint(self, has_bang, op_args):
+        """m[int] shoulder [element value ...]"""
+        self.assert_not_has_bang(has_bang)
+        self.assert_at_least_one_arg(op_args)
+        shoulder_str = op_args.pop(0)
+        self.assert_key_value_args(op_args)
+        data = self.format_anvl_request(op_args)
+        r = self.issue_request('shoulder/' + self.encode(shoulder_str), 'POST', data)
+        self.print_anvl_response(r)
+
+    def op_create(self, has_bang, op_args):
+        """c[reate][!] identifier [element value ...]
+        create! = create or update
+        """
+        self.assert_at_least_one_arg(op_args)
+        id_str = op_args.pop(0)
+        self.assert_key_value_args(op_args)
+        data = self.format_anvl_request(op_args)
+        path = 'id/' + self.encode(id_str)
+        if has_bang:
+            path += '?update_if_exists=yes'
+        r = self.issue_request(path, 'PUT', data)
+        self.print_anvl_response(r)
+
+    def op_view(self, has_bang, op_args):
+        """v[iew][!] identifier
+        view! = match longest identifier prefix
+        """
+        self.assert_single_arg(op_args)
+        id_str = op_args.pop(0)
+        path = 'id/' + self.encode(id_str)
+        if has_bang:
+            path += '?prefix_match=yes'
+        r = self.issue_request(path, 'GET')
+        self.print_anvl_response(r, sortLines=True)
+
+    def op_update(self, has_bang, op_args):
+        """u[pdate] identifier [element value ...]"""
+        self.assert_not_has_bang(has_bang)
+        self.assert_at_least_one_arg(op_args)
+        id_str = op_args.pop(0)
+        self.assert_key_value_args(op_args)
+        data = self.format_anvl_request(op_args)
+        path = 'id/' + self.encode(id_str)
+        if self.args.disableExternalUpdates:
+            path += '?update_external_services=no'
+        r = self.issue_request(path, 'POST', data)
+        self.print_anvl_response(r)
+
+    def op_delete(self, has_bang, op_args):
+        """d[elete] identifier"""
+        self.assert_not_has_bang(has_bang)
+        self.assert_single_arg(op_args)
+        id_str = op_args.pop(0)
+        path = 'id/' + self.encode(id_str)
+        if self.args.disableExternalUpdates:
+            path += '?update_external_services=no'
+        r = self.issue_request(path, 'DELETE')
+        self.print_anvl_response(r)
+
+    def op_login(self, has_bang, op_args):
+        """login"""
+        self.assert_not_has_bang(has_bang)
+        self.assert_no_args(op_args)
+        response, headers = self.issue_request('login', 'GET', returnHeaders=True)
+        session_id = headers['set-cookie'].split(';')[0].split('=')[1]
+        response += f'\nsessionid={session_id}\n'
+        self.print_anvl_response(response)
+
+    def op_logout(self, has_bang, op_args):
+        """logout"""
+        self.assert_not_has_bang(has_bang)
+        self.assert_no_args(op_args)
+        r = self.issue_request('logout', 'GET')
+        self.print_anvl_response(r)
+
+    def op_status(self, has_bang, op_args):
+        """s[tatus] [detailed] [*|subsystemlist]"""
+        self.assert_not_has_bang(has_bang)
+        query_dict = {}
+        if 'detailed' in op_args:
+            query_dict['detailed'] = 'yes'
+            op_args.remove('detailed')
+        if len(op_args) > 1:
+            raise ClientError('Incorrect number of arguments for operation')
+        if len(op_args):
+            query_dict['subsystems'] = op_args[0]
+        r = self.issue_request('status?' + urllib.parse.urlencode(query_dict), 'GET')
+        self.print_anvl_response(r)
+
+    def op_Version(self, has_bang, op_args):
+        """V[ersion]"""
+        self.assert_not_has_bang(has_bang)
+        self.assert_no_args(op_args)
+        r = self.issue_request('version', 'GET')
+        self.print_anvl_response(r)
+
+    def format_anvl_request(self, op_list):
+        if not op_list:
+            return None
+        request = []
+        for i in range(0, len(op_list), 2):
+            # k = op_list[i].decode(_options.encoding)
+            k = op_list[i]
+            if k == '@':
+                f = codecs.open(op_list[i + 1], encoding=self.args.encoding)
+                request += [l.strip('\r\n') for l in f.readlines()]
                 f.close()
-            v = re.sub("[%\r\n]", lambda c: "%%%02X" % ord(c.group(0)), v)
-            request.append("%s: %s" % (k, v))
-    return "\n".join(request)
-
-
-def encode(id_str):
-    return urllib.parse.quote(id_str, ":/")
-
-
-def streamOutout(src, dst):
-    buffer = ""
-    while True:
-        buffer += src.read(1).decode(encoding="utf-8")
-        status_pos = buffer.rfind("STATUS")
-        if status_pos > 0:
-            dst.write(f"{buffer[:status_pos].strip()}\n")
-            dst.flush()
-            buffer = buffer[status_pos:]
-
-
-def issueRequest(path, method, data=None, returnHeaders=False, streamOutput=False):
-    request = urllib.request.Request("%s/%s" % (_binder_url, path))
-    request.get_method = lambda: method
-    if data:
-        request.add_header("Content-Type", "text/plain; charset=UTF-8")
-        request.data = data.encode("UTF-8")
-    if _cookie:
-        request.add_header("Cookie", _cookie)
-    try:
-        connection = _opener.open(request)
-        if streamOutput:
-            streamOutout(connection, sys.stdout)
-            # while True:
-            #    sys.stdout.write(connection.read(1).decode(encoding="utf-8"))
-            #    sys.stdout.flush()
-        else:
-            response = connection.read()
-            if returnHeaders:
-                return response.decode("UTF-8"), connection.info()
             else:
-                return response.decode("UTF-8")
-    except urllib.error.HTTPError as e:
-        sys.stderr.write(f"{e.code:d} {str(e)}\n")
-        if e.fp:
-            sys.stderr.write(e.fp.read().decode(encoding="utf-8"))
-        sys.exit(1)
+                if k == '@@':
+                    k = '@'
+                else:
+                    k = re.sub('[%:\r\n]', lambda c: f'%{ord(c.group(0)):02X}', k)
+                # v = op_list[i + 1].decode(_options.encoding)
+                v = op_list[i + 1]
+                if v.startswith('@@'):
+                    v = v[1:]
+                elif v.startswith('@') and len(v) > 1:
+                    f = codecs.open(v[1:], encoding=self.args.encoding)
+                    v = f.read()
+                    f.close()
+                v = re.sub('[%\r\n]', lambda c: f'%{ord(c.group(0)):02X}', v)
+                request.append(f'{k}: {v}')
+        return '\n'.join(request)
+
+    def encode(self, id_str):
+        return urllib.parse.quote(id_str, ':/')
+
+    def stream_write(self, src, dst):
+        buffer = ''
+        while True:
+            buffer += src.read(1).decode(encoding='utf-8')
+            status_pos = buffer.rfind('STATUS')
+            if status_pos > 0:
+                dst.write(f'{buffer[:status_pos].strip()}\n')
+                dst.flush()
+                buffer = buffer[status_pos:]
+
+    def issue_request(self, path, method, data=None, returnHeaders=False, streamOutput=False):
+        request = urllib.request.Request(f'{self.ezid_url}/{path}')
+        request.get_method = lambda: method
+        if data:
+            request.add_header('Content-Type', 'text/plain; charset=UTF-8')
+            request.data = data.encode('UTF-8')
+        if self.cookie:
+            request.add_header('Cookie', self.cookie)
+        try:
+            connection = self.opener.open(request)
+            if streamOutput:
+                self.stream_write(connection, sys.stdout)
+            else:
+                r = connection.read()
+                if returnHeaders:
+                    return r.decode('UTF-8'), connection.info()
+                else:
+                    return r.decode('UTF-8')
+        except urllib.error.HTTPError as e:
+            sys.stderr.write(f'{e.code:d} {str(e)}\n')
+            if e.fp:
+                sys.stderr.write(e.fp.read().decode(encoding='utf-8'))
+            sys.exit(1)
+
+    def print_anvl_response(self, response, sortLines=False):
+        line_list = response.splitlines()
+        if sortLines and len(line_list) >= 1:
+            statusLine = line_list[0]
+            line_list = line_list[1:]
+            line_list.sort()
+            line_list.insert(0, statusLine)
+        for line in line_list:
+            if self.args.formatTimestamps and (
+                line.startswith('_created:') or line.startswith('_updated:')
+            ):
+                ls = line.split(':')
+                line = ls[0] + ': ' + time.strftime('%Y-%m-%dT%H:%M:%S', time.localtime(int(ls[1])))
+            if self.args.decode:
+                line = re.sub('%([0-9a-fA-F][0-9a-fA-F])', lambda m: chr(int(m.group(1), 16)), line)
+            if self.args.oneLine:
+                line = line.replace('\n', ' ').replace('\r', ' ')
+            # print(line.encode(_options.encoding))
+            print(line)
+
+    def create_opener(self, credentials):
+        opener = urllib.request.build_opener(urllib.request.HTTPErrorProcessor())
+
+        if credentials.startswith('sessionid='):
+            self.cookie = credentials
+        elif credentials != '-':
+            if ':' in credentials:
+                username, password = credentials.split(':', 1)
+            else:
+                username = credentials
+                password = getpass.getpass()
+            h = urllib.request.HTTPBasicAuthHandler()
+            h.add_password('EZID', self.ezid_url, username, password)
+            opener.add_handler(h)
+
+        return opener
+
+    def assert_not_has_bang(self, has_bang):
+        if has_bang:
+            raise ClientError('This operation does not support a bang (!) suffix')
+
+    # def assert_correct_number_of_args(self, has_correct_number_of_args):
+    #     raise ClientError('Incorrect number of arguments for operation')
+
+    def assert_key_value_args(self, op_args):
+        if len(op_args) % 2:
+            raise ClientError('This operation requires arguments to be name-value pairs')
+
+    def assert_no_args(self, op_args):
+        if len(op_args):
+            raise ClientError('This operation accepts no arguments')
+
+    def assert_single_arg(self, op_args):
+        if len(op_args) != 1:
+            raise ClientError('This operation requires exactly one argument')
+
+    def assert_at_least_one_arg(self, op_args):
+        if not len(op_args):
+            raise ClientError('This operation requires at least one argument')
 
 
-def printAnvlResponse(response, sortLines=False):
-    response = response.splitlines()
-    if sortLines and len(response) >= 1:
-        statusLine = response[0]
-        response = response[1:]
-        response.sort()
-        response.insert(0, statusLine)
-    for line in response:
-        if _options.formatTimestamps and (
-            line.startswith("_created:") or line.startswith("_updated:")
-        ):
-            ls = line.split(":")
-            line = ls[0] + ": " + time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(int(ls[1])))
-        if _options.decode:
-            line = re.sub("%([0-9a-fA-F][0-9a-fA-F])", lambda m: chr(int(m.group(1), 16)), line)
-        if _options.oneLine:
-            line = line.replace("\n", " ").replace("\r", " ")
-        # print(line.encode(_options.encoding))
-        print(line)
+class ClientError(Exception):
+    pass
 
 
-# Process command line arguments.
-
-parser = optparse.OptionParser(formatter=MyHelpFormatter())
-parser.add_option("-d", action="store_true", dest="decode", default=False)
-parser.add_option("-e", action="store", dest="encoding", default="UTF-8")
-parser.add_option("-k", action="store_true", dest="disableCertificateChecking", default=False)
-parser.add_option("-l", action="store_true", dest="disableExternalUpdates", default=False)
-parser.add_option("-o", action="store_true", dest="oneLine", default=False)
-parser.add_option("-t", action="store_true", dest="formatTimestamps", default=False)
-
-# noinspection PyRedeclaration
-_options, args = parser.parse_args()
-if len(args) < 3:
-    parser.error("insufficient arguments")
-
-if _options.disableCertificateChecking:
-    try:
-        # noinspection PyUnresolvedReferences,PyProtectedMember,PyProtectedMember
-        ssl._create_default_https_context = ssl._create_unverified_context
-    except AttributeError:
-        pass
-
-_binder_url = KNOWN_SERVERS.get(args[0], args[0])
-
-_opener = urllib.request.build_opener(MyHTTPErrorProcessor())
-if args[1].startswith("sessionid="):
-    _cookie = args[1]
-elif args[1] != "-":
-    if ":" in args[1]:
-        username, password = args[1].split(":", 1)
-    else:
-        username = args[1]
-        password = getpass.getpass()
-    h = urllib.request.HTTPBasicAuthHandler()
-    h.add_password("EZID", _binder_url, username, password)
-    _opener.add_handler(h)
-
-if args[2].endswith("!"):
-    bang = True
-    args[2] = args[2][:-1]
-else:
-    bang = False
-operation = list([o for o in OPERATIONS if o.startswith(args[2])])
-# noinspection PyTypeChecker
-if len(operation) != 1:
-    parser.error("unrecognized or ambiguous operation")
-operation = operation[0]
-if bang and not OPERATIONS[operation][1]:
-    parser.error("unrecognized operation")
-
-args = args[3:]
-
-if (type(OPERATIONS[operation][0]) is int and len(args) != OPERATIONS[operation][0]) or (
-    type(OPERATIONS[operation][0]) is types.LambdaType and not OPERATIONS[operation][0](len(args))
-):
-    parser.error("incorrect number of arguments for operation")
-
-# Perform the operation.
-
-if operation == "mint":
-    shoulder = args[0]
-    if len(args) > 1:
-        data = formatAnvlRequest(args[1:])
-    else:
-        data = None
-    response = issueRequest("shoulder/" + encode(shoulder), "POST", data)
-    printAnvlResponse(response)
-elif operation == "create":
-    id = args[0]
-    if len(args) > 1:
-        data = formatAnvlRequest(args[1:])
-    else:
-        data = None
-    path = "id/" + encode(id)
-    if bang:
-        path += "?update_if_exists=yes"
-    response = issueRequest(path, "PUT", data)
-    printAnvlResponse(response)
-elif operation == "view":
-    id = args[0]
-    path = "id/" + encode(id)
-    if bang:
-        path += "?prefix_match=yes"
-    response = issueRequest(path, "GET")
-    printAnvlResponse(response, sortLines=True)
-elif operation == "update":
-    id = args[0]
-    if len(args) > 1:
-        data = formatAnvlRequest(args[1:])
-    else:
-        data = None
-    path = "id/" + encode(id)
-    if _options.disableExternalUpdates:
-        path += "?update_external_services=no"
-    response = issueRequest(path, "POST", data)
-    printAnvlResponse(response)
-elif operation == "delete":
-    id = args[0]
-    path = "id/" + encode(id)
-    if _options.disableExternalUpdates:
-        path += "?update_external_services=no"
-    response = issueRequest(path, "DELETE")
-    printAnvlResponse(response)
-elif operation == "login":
-    response, headers = issueRequest("login", "GET", returnHeaders=True)
-    response += "\nsessionid=%s\n" % headers["set-cookie"].split(";")[0].split("=")[1]
-    printAnvlResponse(response)
-elif operation == "logout":
-    response = issueRequest("logout", "GET")
-    printAnvlResponse(response)
-elif operation == "status":
-    d = {}
-    if "detailed" in args:
-        d["detailed"] = "yes"
-        args.remove("detailed")
-    if len(args) > 1:
-        parser.error("incorrect number of arguments for operation")
-    if len(args) > 0:
-        d["subsystems"] = args[0]
-    response = issueRequest("status?" + urllib.parse.urlencode(d), "GET")
-    printAnvlResponse(response)
-elif operation == "Version":
-    response = issueRequest("version", "GET")
-    printAnvlResponse(response)
-elif operation == "pause":
-    op = args[0]
-    if op.lower() in ["on", "monitor"]:
-        issueRequest("admin/pause?op=" + op, "GET", streamOutput=True)
-    else:
-        response = issueRequest("admin/pause?op=" + op, "GET")
-        printAnvlResponse(response)
-# elif operation == "reload":
-#     response = issueRequest("admin/reload", "POST")
-#     printAnvlResponse(response)
+if __name__ == '__main__':
+    sys.exit(main())

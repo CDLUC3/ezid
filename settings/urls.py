@@ -90,7 +90,7 @@ urlpatterns = [
 if django.conf.settings.STANDALONE:
     urlpatterns.extend([
         django.conf.urls.static.static(django.conf.settings.STATIC_URL, document_root=django.conf.settings.STATIC_ROOT)[0],
-        django.conf.urls.static.static(django.conf.settings.DOWNLOAD_PUBLIC_URL, document_root=django.conf.settings.DOWNLOAD_PUBLIC_DIR)[0],
+        django.conf.urls.static.static('/static/download/public', document_root=django.conf.settings.DAEMONS_DOWNLOAD_PUBLIC_DIR)[0],
     ])
 # fmt:on
 

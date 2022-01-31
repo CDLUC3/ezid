@@ -204,15 +204,9 @@ def getLongestShoulderMatch(identifier):
     # return lm
 
 
-def getExactShoulderMatch(prefix):
+def getShoulder(prefix):
     # Returns the shoulder having prefix 'prefix', or None.
-    # noinspection PyUnresolvedReferences
-    shoulder_model = Shoulder.objects.select_related("datacenter").get(prefix=prefix)
-    # shoulder_model = _shoulders.get(prefix, None)
-    # if not shoulder_model:
-    # noinspection PyTypeChecker
-    # logger.debug('Shoulder lookup from cache failed. prefix="{}"'.format(prefix))
-    return shoulder_model
+    return _getShoulder(prefix)
 
 
 def getArkTestShoulder():
