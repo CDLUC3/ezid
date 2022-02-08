@@ -467,6 +467,7 @@ class IdentifierBase(django.db.models.Model):
 
     metadata = django.db.models.JSONField(
         encoder=django.core.serializers.json.DjangoJSONEncoder,
+        blank=True,
         # null=True,
         default=dict,
     )
