@@ -72,7 +72,7 @@ Request a batch download:
   request body: application/x-www-form-urlencoded
   response body: status line
 """
-
+import cgi
 import logging
 import time
 
@@ -91,25 +91,20 @@ import impl.util
 
 
 def _readInput(request):
-    content_type = request.META.get('CONTENT_TYPE')
-    if content_type is None:
-        return {}
-
-    maintype, subtype = [s.strip().lower() for s in content_type.split(';', maxsplit=1)]
-    charset, encoding = [s.strip().lower() for s in subtype.split('=', maxsplit=1)]
-    if maintype != 'text/plain':
-        return 'error: bad request - expected Content-Type text/plain'
-    if encoding and encoding != 'utf-8':
-        return 'error: bad request - if specified, Content-Type subtype must be "utf-8"'
-
+    if not is_text_plain_utf8(request):
+        return (
+            'error: bad request - Content-Type must be text/plain. '
+            'If specified, encoding must be UTF-8'
+        )
     try:
-        # We'd like to call sanitizeXmlSafeCharset just once, before the ANVL parsing, but the
-        # problem is that hex-percent-encoded characters, when decoded, can result in additional
-        # disallowed characters appearing. So we sanitize after ANVL parsing.
+        # We'd like to call sanitizeXmlSafeCharset just once, before the ANVL parsing,
+        # but the problem is that hex-percent-encoded characters, when decoded, can
+        # result in additional disallowed characters appearing. So we sanitize after
+        # ANVL parsing.
         #
-        # It is possible here that two different labels, that differ in only disallowed characters,
-        # will be silently collapsed into one instead of resulting in an error. But that's a real
-        # edge case, so we don't worry about it.
+        # It is possible here that two different labels, that differ in only disallowed
+        # characters, will be silently collapsed into one instead of resulting in an
+        # error. But that's a real edge case, so we don't worry about it.
         return {
             impl.util.sanitizeXmlSafeCharset(k): impl.util.sanitizeXmlSafeCharset(v)
             for k, v in list(impl.anvl.parse(request.body.decode("utf-8")).items())
@@ -122,6 +117,16 @@ def _readInput(request):
         msg_str = "error: bad request - malformed or incomplete request body"
         logging.exception(msg_str)
         return msg_str
+
+
+def is_text_plain_utf8(request):
+    content_type = request.META.get('CONTENT_TYPE', '')
+    mimetype, options = cgi.parse_header(content_type)
+    if mimetype != 'text/plain':
+        return False
+    if options.get('charset', 'utf-8').lower() != 'utf-8':
+        return False
+    return True
 
 
 def _validateOptions(request, options):
