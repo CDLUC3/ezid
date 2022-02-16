@@ -306,11 +306,10 @@ def error(transactionId, exception):
 
 
 def otherError(caller, exception):
-    """Log an internal error.
+    """Log an internal exception.
 
-    Also, if the Django DEBUG flag is false, mails a traceback to the
-    Django administrator list. Must be called from an exception
-    handler.
+    Also, if the Django DEBUG flag is false, mails a traceback to the Django
+    administrator list.
     """
     m = str(exception)
     if len(m) > 0:
@@ -323,7 +322,7 @@ def otherError(caller, exception):
         )
     )
     if django.conf.settings.DEBUG:
-        raise
+        raise exception
     else:
         _notifyAdmins(
             "Exception raised in {}:\n{}{}\n\n{}".format(
