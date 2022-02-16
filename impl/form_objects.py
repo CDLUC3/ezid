@@ -286,7 +286,7 @@ def getAdvancedIdForm(profile, request=None):
 
 
 def _validate_phone(p):
-    r = re.sub(r'[^\\d]', '', p)
+    r = re.sub(r'[^\d]', '', p)
     if len(r) < 8:
         raise django.core.exceptions.ValidationError(
             _("Please enter a valid phone number, minimum 8 digits.")
