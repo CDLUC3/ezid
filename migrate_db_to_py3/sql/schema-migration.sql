@@ -1,6 +1,10 @@
 # Copyright©2021, Regents of the University of California
 # http://creativecommons.org/licenses/BSD
 
+use ezid;
+
+# $ ./db-restore-zstd.sh dump-2021-11-18.sql.zstd
+
 # Drop Django internal tables in the correct order
 drop table auth_group_permissions;
 drop table auth_user_groups;
@@ -13,7 +17,7 @@ drop table auth_user;
 drop table django_migrations;
 drop table django_session;
 
-# Then create internal tables for the current version of Django:
+# Then create internal tables for the current version of Django.
 # We don't migrate ezidapp here, since we don't have an automatic migration for it.
 $ manage.py migrate admin
 $ manage.py migrate auth
@@ -90,39 +94,34 @@ insert into ezidapp_storedatacenter(symbol, name)
 ;
 
 # Add JSON metadata columns
-# Time on stg-py3 host and DB with provisioned IO, searchidentifier: 20 min
+
 alter table `ezidapp_searchidentifier`
 add column `metadata` json null check (json_valid(`metadata`))
 ;
 
-# Time on stg-py3 host and DB with provisioned IO, storeidentifier: 12 min
 alter table `ezidapp_storeidentifier`
 add column `metadata` json null check (json_valid(`metadata`))
 ;
 
 # Decode blobs to JSON and write them to the new metadata columns.
 
-# searchidentifier: ~20 min
 $ ./db-migrate-blobs-to-metadata.py search
-
-# storeidentifier: ~10 min
 $ ./db-migrate-blobs-to-metadata.py store
 
 # Translate from search to store FKs in ezidapp_searchidentifier
-# Time on stg-py3 host and DB: 17 min
-# Time on stg-py3 host and dev DB: 24 min (probably starting with full level of burst tokens)
 $ ./db-update-fk.py
 
-# Drop the 'stub' tables that exist only to support ezidapp_searchidentifier when located in another DB. These tables
-# contain copies of some of the columns in the corresponding store* tables. The only search* table that remains
-# afterwards is ezidapp_searchidentifier.
+# Drop the 'stub' tables that exist only to support ezidapp_searchidentifier when located in another
+# DB. These tables contain copies of some of the columns in the corresponding store* tables. The
+# only search* table that remains afterwards is ezidapp_searchidentifier.
 drop table ezidapp_searchdatacenter;
 drop table ezidapp_searchgroup;
 drop table ezidapp_searchprofile;
 drop table ezidapp_searchrealm;
 drop table ezidapp_searchuser;
 
-# Since we no longer have "search" tables, we can now remove the "store" prefixes on the remaining tables.
+# Since we no longer have "search" tables, we can now remove the "store" prefixes on the remaining
+# tables.
 rename table ezidapp_storedatacenter to ezidapp_datacenter;
 rename table ezidapp_storegroup to ezidapp_group;
 rename table ezidapp_storegroup_shoulders to ezidapp_group_shoulders;
@@ -237,7 +236,7 @@ change column identifier identifier varchar(255)
 character set ascii collate ascii_bin not null
 ;
 
-# Create fulltext indexes (must be done one at a time). 30 min?
+# Create fulltext indexes (must be done one at a time).
 # EZID will not run without these indexes.
 # This is the final step to run before starting EZID.
 
@@ -246,16 +245,15 @@ alter table ezidapp_searchidentifier add fulltext ezidapp_searchidentifier_resou
 alter table ezidapp_searchidentifier add fulltext ezidapp_searchidentifier_resourcepublisher(resourcepublisher);
 alter table ezidapp_searchidentifier add fulltext ezidapp_searchidentifier_resourcetitle(resourcetitle);
 
-# Create foreign key constraints. 10 min
+# Create foreign key constraints.
 alter table ezidapp_searchidentifier
-add constraint `ezidapp_searc_owner_id_17d8ce4cfb6b0401_fk_ezidapp_searchuser_id` foreign key (`owner_id`) references `ezidapp_storeuser` (`id`),
-add constraint `ezidapp_ownergroup_id_69f5065adf48f369_fk_ezidapp_searchgroup_id` foreign key (`ownergroup_id`) references `ezidapp_storegroup` (`id`),
-add constraint `ezidapp__profile_id_112e6b8634f63b63_fk_ezidapp_searchprofile_id` foreign key (`profile_id`) references `ezidapp_storeprofile` (`id`),
-add constraint `ez_datacenter_id_2c99a133444936c8_fk_ezidapp_searchdatacenter_id` foreign key (`datacenter_id`) references `ezidapp_storedatacenter` (`id`)
+add constraint `ezidapp_searc_owner_id_17d8ce4cfb6b0401_fk_ezidapp_searchuser_2` foreign key (`owner_id`) references `ezidapp_user` (`id`),
+add constraint `ezidapp_ownergroup_id_69f5065adf48f369_fk_ezidapp_searchgroup_2` foreign key (`ownergroup_id`) references `ezidapp_group` (`id`),
+add constraint `ezidapp__profile_id_112e6b8634f63b63_fk_ezidapp_searchprofile_2` foreign key (`profile_id`) references `ezidapp_profile` (`id`),
+add constraint `ez_datacenter_id_2c99a133444936c8_fk_ezidapp_searchdatacenter_2` foreign key (`datacenter_id`) references `ezidapp_datacenter` (`id`)
 ;
 
 # Add the most used keys, using a batch query
-
 # 1694234344 | ezidapp_searchidentifie_publicSearchVisible_58de9f6f00b8058e_idx
 # 1470014804 | ezidapp_searchidentifier_oaiVisible_1d291a23fcff2ce2_idx
 #  211448890 | ezidapp_searchidentifier_5e7b1936
@@ -331,11 +329,6 @@ add key `ezidapp_searchidentifier_owner_id_5b203a171bdbab38_idx`(`owner_id`, `st
 # 3001925 | ezidapp_searchidentifier_owner_id_58dfc6401ef0e359_idx
 alter table ezidapp_searchidentifier
 add key `ezidapp_searchidentifier_owner_id_58dfc6401ef0e359_idx`(`owner_id`, `crossrefStatus`);
-/*
- * Copyright©2022, Regents of the University of California
- * http://creativecommons.org/licenses/BSD
- */
-
 # 2991637 | ezidapp_searchidentifier_ownergroup_id_4a1baf4823ddab6c_idx
 alter table ezidapp_searchidentifier
 add key `ezidapp_searchidentifier_ownergroup_id_4a1baf4823ddab6c_idx`(`ownergroup_id`, `searchablePublicationYear`);
