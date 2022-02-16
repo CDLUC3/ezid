@@ -38,7 +38,6 @@ DECODE_RX = re.compile("\^([0-9a-fA-F][0-9a-fA-F])?")
 
 @impl.log.stacklog
 def _issue(method, operations):
-    log.info('_issue', repr(method), repr(operations))
     # noinspection PyUnresolvedReferences
     r = urllib.request.Request(django.conf.settings.BINDER_URL + "?-")
     r.get_method = lambda: method
