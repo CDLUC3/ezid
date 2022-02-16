@@ -28,7 +28,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         impl.noid_egg.setElements(id_str, metadata)
 
     def update(self, task_model):
-        id_str = task_model.ref_identifier.identifier
+        id_str = task_model.refIdentifier.identifier
         metadata = task_model.refIdentifier.metadata
 
         m = impl.noid_egg.getElements(id_str)
@@ -46,7 +46,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             impl.noid_egg.setElements(id_str, m)
 
     def delete(self, task_model):
-        id_str = task_model.ref_identifier.identifier
+        id_str = task_model.refIdentifier.identifier
         impl.noid_egg.deleteIdentifier(id_str)
 
     def batchCreate(self, batch):
