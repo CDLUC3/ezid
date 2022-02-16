@@ -195,6 +195,14 @@ def _mintIdentifier(shoulder, user, metadata={}):
 
         logger.debug('Final shoulder + identifier: {}'.format(identifier))
 
+    assert not ezidapp.models.identifier.Identifier.objects.filter(
+        identifier=identifier
+    ).exists(), (
+        f'Freshly minted identifier already exists in the database. '
+        f'The minter BDB file for the shoulder may be outdated. '
+        f'shoulder="{shoulder_model.prefix}", identifier="{identifier}"'
+    )
+
     impl.log.success(tid, identifier)
 
     return createIdentifier(identifier, user, metadata)

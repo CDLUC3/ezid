@@ -12,6 +12,7 @@ PROJECT_ROOT/static/admin directories.
 
 
 import copy
+import logging
 
 import django
 import django.apps
@@ -32,6 +33,8 @@ import django.urls.resolvers
 import django.utils.html
 
 import ezidapp.models.util
+import impl.ezid
+import impl.log
 import impl.util
 from ezidapp.models.datacenter import Datacenter
 from ezidapp.models.group import Group
@@ -39,9 +42,6 @@ from ezidapp.models.new_account_worksheet import NewAccountWorksheet
 from ezidapp.models.realm import Realm
 from ezidapp.models.shoulder import Shoulder
 from ezidapp.models.user import User
-
-# Enable access to application logging
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -494,8 +494,6 @@ class NewAccountWorksheetAdmin(django.contrib.admin.ModelAdmin):
                     )
                 except Exception as e:
                     if django.conf.settings.DEBUG:
-                        import logging
-
                         logging.exception('#' * 100)
 
                     django.contrib.messages.error(
@@ -590,8 +588,6 @@ class GroupForm(django.forms.ModelForm):
 
 
 def createOrUpdateGroupPid(request, obj, change):
-    import impl.ezid
-    import impl.log
     f = impl.ezid.setMetadata if change else impl.ezid.createIdentifier
     logger.debug('createOrUpdateGroupPid, f= %s', f)
     r = f(
@@ -627,9 +623,6 @@ def createOrUpdateGroupPid(request, obj, change):
 
 
 def updateUserPids(request, users):
-    import impl.ezid
-    import impl.log
-
     errors = False
     for u in users:
         r = impl.ezid.setMetadata(
@@ -650,31 +643,6 @@ def updateUserPids(request, users):
         django.contrib.messages.error(request, "Error updating user PIDs.")
     else:
         django.contrib.messages.success(request, "User PIDs updated.")
-
-
-def onCommitWithSqliteHack(onCommitFunction):
-    # Oy vay, this has been so difficult to make work. Our recursive
-    # calls to EZID to create and update agent PIDs must occur in
-    # on_commit hooks because the Django admin, in its infinite wisdom,
-    # delays updating many-to-many relationships. This is not a problem
-    # for MySQL, but SQLite doesn't support starting a new transaction
-    # in an on_commit hook... something about the autocommit setting.
-    # As a hack, we force the operation to go through by setting an
-    # internal Django flag. The flag is reset afterwards for good
-    # measure, though it's not clear this is necessary. The effect of
-    # this hack is probably to break transaction rollback.
-    if "sqlite3" in django.conf.settings.DATABASES["default"]["ENGINE"]:
-        c = django.db.connection
-        v = c.features.autocommits_when_autocommit_is_off
-
-        def setFlag(value):
-            c.features.autocommits_when_autocommit_is_off = value
-
-        django.db.connection.on_commit(lambda: setFlag(False))
-        django.db.connection.on_commit(onCommitFunction)
-        django.db.connection.on_commit(lambda: setFlag(v))
-    else:
-        django.db.connection.on_commit(onCommitFunction)
 
 
 class GroupAdmin(django.contrib.admin.ModelAdmin):
@@ -754,27 +722,27 @@ class GroupAdmin(django.contrib.admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         # obj is an instance of Group
         logger.debug("save_model, obj(%s) = %s", type(obj).__name__, obj)
-        if change:
-            obj.save()
-            # In the python3 version, this was used to create an
-            # instance of SearchGroup to mirror obj (which is a Group)
-            # Group.objects.filter(pid=obj.pid).update(groupname=obj.groupname)
-        else:
-            # See above note on sg
-            # sg = Group(
-            #    pid=obj.pid,
-            #    groupname=obj.groupname,
-            #    realm=Realm.objects.get(name=obj.realm.name),
-            # )
-            # sg.full_clean()
-            obj.save()
-            # sg.save()
+        # if change:
+        obj.save()
+        #     # In the python3 version, this was used to create an
+        #     # instance of SearchGroup to mirror obj (which is a Group)
+        #     # Group.objects.filter(pid=obj.pid).update(groupname=obj.groupname)
+        # else:
+        #     # See above note on sg
+        #     # sg = Group(
+        #     #    pid=obj.pid,
+        #     #    groupname=obj.groupname,
+        #     #    realm=Realm.objects.get(name=obj.realm.name),
+        #     # )
+        #     # sg.full_clean()
+        #     obj.save()
+        #     # sg.save()
         # Our actions won't take effect until the Django admin's
         # transaction commits sometime in the future, so we defer clearing
         # the relevant caches. While not obvious, the following calls
         # rely on the django-transaction-hooks 3rd party package. (Django
         # 1.9 incorporates this functionality directly.)
-        onCommitWithSqliteHack(lambda: createOrUpdateGroupPid(request, obj, change))
+        createOrUpdateGroupPid(request, obj, change)
         # Changes to shoulders and Crossref enablement may trigger
         # adjustments to users in the group.
         if change:
@@ -800,7 +768,8 @@ class GroupAdmin(django.contrib.admin.ModelAdmin):
                 doUpdateUserPids = True
             if doUpdateUserPids:
                 users = list(obj.users.all())
-                onCommitWithSqliteHack(lambda: updateUserPids(request, users))
+                updateUserPids(request, users)
+
 
     def delete_model(self, request, obj):
         obj.delete()
@@ -937,9 +906,7 @@ class UserForm(django.forms.ModelForm):
 
 
 def createOrUpdateUserPid(request, obj, change):
-    import impl.ezid
-    import impl.log
-
+    logger.debug(f'createOrUpdateUserPid() obj={repr(obj)}, change={repr(change)}')
     f = impl.ezid.setMetadata if change else impl.ezid.createIdentifier
     r = f(
         obj.pid,
@@ -1175,29 +1142,30 @@ class UserAdmin(django.contrib.admin.ModelAdmin):
         return form
 
     def save_model(self, request, obj, form, change):
-        '''
+        """
         obj: User instance
-        '''
+        """
         logger.debug("UserAdmin.save_model: obj(%s): %s", type(obj).__name__, obj)
         if "password" in form.cleaned_data:
             obj.setPassword(form.cleaned_data["password"])
-        if change:
-            obj.save()
-            # This was previously used to update the SearchUser info
-            #User.objects.filter(pid=obj.pid).update(username=obj.username)
-        else:
-            # old code - su = SearchUser instance
-            #su = User(
-            #    pid=obj.pid,
-            #    username=obj.username,
-            #    group=Group.objects.get(pid=obj.group.pid),
-            #    realm=Realm.objects.get(name=obj.realm.name),
-            #)
-            #su.full_clean()
-            obj.save()
-            #su.save()
-        # See discussion in GroupAdmin above.
-        onCommitWithSqliteHack(lambda: createOrUpdateUserPid(request, obj, change))
+        obj.save()
+        # if change:
+        #     obj.save()
+        #     # This was previously used to update the SearchUser info
+        #     # User.objects.filter(pid=obj.pid).update(username=obj.username)
+        # else:
+        #     # old code - su = SearchUser instance
+        #     #su = User(
+        #     #    pid=obj.pid,
+        #     #    username=obj.username,
+        #     #    group=Group.objects.get(pid=obj.group.pid),
+        #     #    realm=Realm.objects.get(name=obj.realm.name),
+        #     #)
+        #     #su.full_clean()
+        #     obj.save()
+        #     #su.save()
+        # # See discussion in GroupAdmin above.
+        createOrUpdateUserPid(request, obj, change)
 
     def delete_model(self, request, obj):
         obj.delete()
@@ -1218,4 +1186,4 @@ def scheduleUserChangePostCommitActions(user):
     # This function should be called when a User object is updated
     # and saved outside this module; it should be called within the
     # transaction making the updates.
-    onCommitWithSqliteHack(lambda: createOrUpdateUserPid(None, user, True))
+    createOrUpdateUserPid(None, user, True)
