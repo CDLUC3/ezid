@@ -21,6 +21,10 @@ import ezidapp.models.async_queue
 
 log = logging.getLogger(__name__)
 
+class AsyncProcessingError(Exception):
+    """Raise when a permanent error is encountered.
+    """
+    pass
 
 class AsyncProcessingCommand(django.core.management.BaseCommand):
     help = __doc__
@@ -178,6 +182,9 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
 
     def is_permanent_error(self, e):
         """Return True if exception appears to be due to a permanent error"""
+        # The error is raised from something in a processor
+        if isinstance(e, AsyncProcessingError):
+            return True
         # We were able to connect to the server, but it returned a 5xx response
         if isinstance(e, urllib.error.HTTPError) and e.code >= 500:
             return True
