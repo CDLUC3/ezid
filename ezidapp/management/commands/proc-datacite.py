@@ -41,8 +41,22 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         metadata = ref_id.metadata
         datacenter = ref_id.datacenter
         r = impl.datacite.uploadMetadata(doi, {}, metadata, True, datacenter)
-        assert type(r) is not str, f"Unexpected return: {repr(r)}"
+        # r can be:
+        # None == success
+        # string == error message, something wrong with payload
+        # exception == something else went wrong.
+        # Exceptions are handled in the outer run method, so don't handle here.
+        #
+        if r is not None:
+            log.error("datacite.uploadMetadata returned: %s", r)
+            raise ezidapp.management.commands.proc_base.AsyncProcessingError(r)
         r = impl.datacite.setTargetUrl(doi, ref_id.target, datacenter)
-        assert type(r) is not str, f"Unexpected return: {repr(r)}"
+        # r can be:
+        #   None on success
+        #   a string error message if the target URL was not accepted by DataCite
+        #   a thrown exception on other error.
+        if r is not None:
+            log.error("datacite.setTargetUrl returned: %s", r)
+            raise ezidapp.management.commands.proc_base.AsyncProcessingError(r)
         if metadata.get("_is", "public") != "public" or metadata.get("_x", "yes") != "yes":
             impl.datacite.deactivateIdentifier(doi, datacenter)
