@@ -28,6 +28,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         impl.noid_egg.setElements(id_str, metadata)
 
     def update(self, task_model):
+        '''
+        task_model: BinderQueue
+        '''
         id_str = task_model.refIdentifier.identifier
         metadata = task_model.refIdentifier.metadata
 
