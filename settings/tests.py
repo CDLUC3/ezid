@@ -32,11 +32,19 @@ EZID_VERSION = 'TEST_INSTANCE'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
+<<<<<<< HEAD
         'HOST': 'localhost',
         'NAME': 'ezid_test_db',
         'USER': 'ezid_test_user',
         'PASSWORD': 'ezid_test_pw',
         'PORT': '',
+=======
+        'HOST': 'r1',
+        'NAME': 'ezid',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'PORT': '3306',
+>>>>>>> 2ff28b7066ec739c443e96e81cd237517ffcb18f
         'OPTIONS': {'charset': 'utf8mb4'},
         'ATOMIC_REQUESTS': False,
         'AUTOCOMMIT': True,
@@ -137,12 +145,21 @@ DAEMONS_NEWSFEED_ENABLED = True
 DAEMONS_SEARCH_INDEXER_ENABLED = True
 DAEMONS_STATISTICS_ENABLED = True
 DAEMONS_STATUS_ENABLED = True
+<<<<<<< HEAD
 
 # Daemons: Shared settings
 DAEMONS_IDLE_SLEEP = 5
 DAEMONS_BATCH_SLEEP = 1
 DAEMONS_MAX_BATCH_SIZE = 100
 
+=======
+
+# Daemons: Shared settings
+DAEMONS_IDLE_SLEEP = 5
+DAEMONS_BATCH_SLEEP = 1
+DAEMONS_MAX_BATCH_SIZE = 100
+
+>>>>>>> 2ff28b7066ec739c443e96e81cd237517ffcb18f
 # Daemons: Individual settings
 DAEMONS_DOWNLOAD_PROCESSING_IDLE_SLEEP = 10
 DAEMONS_DOWNLOAD_WORK_DIR = HOME_DIR / 'download'  # /apps/ezid/download
