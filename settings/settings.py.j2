@@ -126,21 +126,22 @@ if DAEMONS_ENABLED == 'auto':
 # - True: The daemon is available to be started.
 # - False: The daemon cannot run.
 # - See the DAEMONS_ENABLED setting above.
-DAEMONS_SEARCH_INDEXER_ENABLED = True
-DAEMONS_NEWSFEED_ENABLED = True
-DAEMONS_STATISTICS_ENABLED = True
-DAEMONS_STATUS_ENABLED = True
 DAEMONS_BINDER_ENABLED = True
-DAEMONS_DATACITE_ENABLED = True
 DAEMONS_CROSSREF_ENABLED = True
+DAEMONS_DATACITE_ENABLED = True
 DAEMONS_DOWNLOAD_ENABLED = True
+DAEMONS_EXPUNGE_ENABLED = True
 DAEMONS_LINKCHECKER_ENABLED = True
 DAEMONS_LINKCHECK_UPDATE_ENABLED = True
+DAEMONS_NEWSFEED_ENABLED = True
+DAEMONS_SEARCH_INDEXER_ENABLED = True
+DAEMONS_STATISTICS_ENABLED = True
+DAEMONS_STATUS_ENABLED = True
 
 # Daemons: Shared settings
 DAEMONS_IDLE_SLEEP = 5
 DAEMONS_BATCH_SLEEP = 1
-DAEMONS_MATCH_BATCH_SIZE = 100
+DAEMONS_MAX_BATCH_SIZE = 100
 
 # Daemons: Individual settings
 DAEMONS_DOWNLOAD_PROCESSING_IDLE_SLEEP = 10
@@ -155,6 +156,10 @@ MAX_CONCURRENT_OPERATIONS_PER_USER = 4
 MAX_THREADS_PER_USER = 16
 
 DATABASES_RECONNECT_DELAY = 60
+
+# Max age of test identifiers before they are deleted
+DAEMONS_EXPUNGE_MAX_AGE_SEC = 60 * 60 * 24 * 14
+
 
 # The options in this section are used only if fulltext search is supported by the
 # search database. The following two options could be obtained from MySQL directly, but

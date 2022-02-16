@@ -93,7 +93,7 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         while True:
             qs = self.queue.objects.filter(
                 status=ezidapp.models.async_queue.AsyncQueueBase.UNSUBMITTED,
-            ).order_by("seq")[: django.conf.settings.DAEMONS_MATCH_BATCH_SIZE]
+            ).order_by("seq")[: django.conf.settings.DAEMONS_MAX_BATCH_SIZE]
             if not qs:
                 self.sleep(django.conf.settings.DAEMONS_IDLE_SLEEP)
                 continue

@@ -1,5 +1,5 @@
-#  Copyright©2021, Regents of the University of California
-#  http://creativecommons.org/licenses/BSD
+# Copyright©2021, Regents of the University of California
+# http://creativecommons.org/licenses/BSD
 
 """EZID settings
 
@@ -10,8 +10,10 @@ import os
 import pathlib
 import socket
 import sys
+import ecs_logging
 
 import django.utils.translation
+
 
 # When DEBUG == True, any errors in EZID are returned to the user as pages containing
 # full stack traces and additional information. Should only be used for development.
@@ -21,15 +23,19 @@ DEBUG = True
 # for development.
 STANDALONE = False
 
+# Semantic versioning (SemVer) string that is returned by the getVersion API call.
+# TODO: Show this in the UI as well
+EZID_VERSION = 'TEST_INSTANCE'
+
 # Database
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': 'localhost',
-        'NAME': 'ezid_test_db',
-        'USER': 'ezid_test_user',
-        'PASSWORD': 'ezid_test_pw',
+        'HOST': 'r1',
+        'NAME': 'ezid',
+        'USER': 'root',
+        'PASSWORD': 'root',
         'PORT': '3306',
         'OPTIONS': {'charset': 'utf8mb4'},
         'ATOMIC_REQUESTS': False,
@@ -48,7 +54,7 @@ DATABASES = {
 DATABASES_RECONNECT_DELAY = 60
 
 # The options in this section are used only if fulltext search is supported by the
-# search database.  The following two options could be obtained from MySQL directly, but
+# search database. The following two options could be obtained from MySQL directly, but
 # we put them here to avoid any overt dependencies on MySQL.
 SEARCH_MINIMUM_WORD_LENGTH = 3
 
@@ -86,14 +92,6 @@ LOG_DIR = HOME_DIR / 'logs' # /apps/ezid/logs
 
 ROOT_URLCONF = 'settings.urls'
 
-# Download
-# URL paths
-DOWNLOAD_WORK_URL = '/static/download/'
-DOWNLOAD_PUBLIC_URL = '/static/download/public'
-# Filesystem paths
-DOWNLOAD_WORK_DIR = HOME_DIR / 'download'  # /apps/ezid/download
-DOWNLOAD_PUBLIC_DIR = DOWNLOAD_WORK_DIR / 'public'  # /apps/ezid/download/public
-
 # URL path to root of static files.
 STATIC_URL = '/static/'
 # Filesystem path to root of static files.
@@ -128,28 +126,31 @@ if DAEMONS_ENABLED == 'auto':
 # - True: The daemon is available to be started.
 # - False: The daemon cannot run.
 # - See the DAEMONS_ENABLED setting above.
-DAEMONS_SEARCH_INDEXER_ENABLED = True
-DAEMONS_NEWSFEED_ENABLED = True
-DAEMONS_STATISTICS_ENABLED = True
-DAEMONS_STATUS_ENABLED = True
 DAEMONS_BINDER_ENABLED = True
-DAEMONS_DATACITE_ENABLED = True
 DAEMONS_CROSSREF_ENABLED = True
+DAEMONS_DATACITE_ENABLED = True
 DAEMONS_DOWNLOAD_ENABLED = True
+DAEMONS_EXPUNGE_ENABLED = True
 DAEMONS_LINKCHECKER_ENABLED = True
 DAEMONS_LINKCHECK_UPDATE_ENABLED = True
+DAEMONS_NEWSFEED_ENABLED = True
+DAEMONS_SEARCH_INDEXER_ENABLED = True
+DAEMONS_STATISTICS_ENABLED = True
+DAEMONS_STATUS_ENABLED = True
 
-DAEMONS_BACKGROUND_PROCESSING_IDLE_SLEEP = 5
-DAEMONS_STATUS_LOGGING_INTERVAL = 60
-DAEMONS_BINDER_PROCESSING_IDLE_SLEEP = 5
-DAEMONS_BINDER_PROCESSING_ERROR_SLEEP = 300
-DAEMONS_DATACITE_PROCESSING_IDLE_SLEEP = 5
-DAEMONS_DATACITE_PROCESSING_ERROR_SLEEP = 300
-DAEMONS_CROSSREF_PROCESSING_IDLE_SLEEP = 60
+# Daemons: Shared settings
+DAEMONS_IDLE_SLEEP = 5
+DAEMONS_BATCH_SLEEP = 1
+DAEMONS_MAX_BATCH_SIZE = 100
+
+# Daemons: Individual settings
 DAEMONS_DOWNLOAD_PROCESSING_IDLE_SLEEP = 10
+DAEMONS_DOWNLOAD_WORK_DIR = HOME_DIR / 'download'  # /apps/ezid/download
+DAEMONS_DOWNLOAD_PUBLIC_DIR = DAEMONS_DOWNLOAD_WORK_DIR / 'public'  # /apps/ezid/download/public
+DAEMONS_DOWNLOAD_FILE_LIFETIME = 60 * 60 * 24 * 7
+
 DAEMONS_STATISTICS_COMPUTE_CYCLE = 3600
 DAEMONS_STATISTICS_COMPUTE_SAME_TIME_OF_DAY = True
-DAEMONS_MATCH_BATCH_SIZE = 100
 
 MAX_CONCURRENT_OPERATIONS_PER_USER = 4
 MAX_THREADS_PER_USER = 16
@@ -157,7 +158,7 @@ MAX_THREADS_PER_USER = 16
 DATABASES_RECONNECT_DELAY = 60
 
 # The options in this section are used only if fulltext search is supported by the
-# search database.  The following two options could be obtained from MySQL directly, but
+# search database. The following two options could be obtained from MySQL directly, but
 # we put them here to avoid any overt dependencies on MySQL.
 SEARCH_MINIMUM_WORD_LENGTH = 3
 SEARCH_STOPWORDS = (
@@ -183,7 +184,7 @@ EMAIL_NEW_ACCOUNT_EMAIL = 'invalid@invalid.invalid'
 
 # Error notification emails sufficiently similar to previously-sent
 # emails are suppressed for 'error_suppression_window' seconds; the
-# timer is completely reset after 'error_lifetime' seconds.  Two
+# timer is completely reset after 'error_lifetime' seconds. Two
 # emails are sufficiently similar if their similarity ratio is greater
 # than or equal to 'error_similarity_threshold'.
 EMAIL_ERROR_SUPPRESSION_WINDOW = 3600
@@ -290,7 +291,7 @@ logging.config.dictConfig(
 
 # Server instance
 
-EZID_BASE_URL = 'https://ezid.cdlib.org'
+EZID_BASE_URL = 'http://localhost:8000'
 ALLOWED_HOSTS = ['*']
 SECRET_KEY = '< placeholder - do not modify >'
 
@@ -403,7 +404,7 @@ ALLOCATOR_PURDUE_PASSWORD = ''
 # Crossref
 
 # The 'daemons.crossref_enabled' flag governs whether the Crossref
-# daemon thread runs.  The flag below governs if the daemon actually
+# daemon thread runs. The flag below governs if the daemon actually
 # contacts Crossref, or if Crossref calls are simply short-circuited.
 CROSSREF_ENABLED = False
 CROSSREF_DEPOSITOR_NAME = 'EZID'
@@ -485,7 +486,7 @@ LINKCHECKER_WORKSET_OWNER_MAX_LINKS = 500
 LINKCHECKER_CHECK_TIMEOUT = 30
 LINKCHECKER_USER_AGENT = 'EZID (EZID link checker; https://ezid.cdlib.org/)'
 # The following governs the number of bytes to read from any given
-# link.  Set to a negative value to make unlimited.
+# link. Set to a negative value to make unlimited.
 LINKCHECKER_MAX_READ = 104_857_600
 
 # Internal settings
