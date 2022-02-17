@@ -361,8 +361,8 @@ class Client:
     def issue_request(self, path, method, data=None, returnHeaders=False, streamOutput=False):
         request = urllib.request.Request(f'{self.ezid_url}/{path}')
         request.get_method = lambda: method
+        request.add_header('Content-Type', 'text/plain; charset=UTF-8')
         if data:
-            request.add_header('Content-Type', 'text/plain; charset=UTF-8')
             request.data = data.encode('UTF-8')
         if self.cookie:
             request.add_header('Cookie', self.cookie)

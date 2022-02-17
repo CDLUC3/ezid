@@ -93,8 +93,8 @@ import impl.util
 def _readInput(request):
     if not is_text_plain_utf8(request):
         return (
-            'error: bad request - Content-Type must be text/plain. '
-            'If specified, encoding must be UTF-8'
+            'error: bad request - If specified, Content-Type must be text/plain '
+            'and encoding must be UTF-8'
         )
     try:
         # We'd like to call sanitizeXmlSafeCharset just once, before the ANVL parsing,
@@ -122,7 +122,7 @@ def _readInput(request):
 def is_text_plain_utf8(request):
     content_type = request.META.get('CONTENT_TYPE', '')
     mimetype, options = cgi.parse_header(content_type)
-    if mimetype != 'text/plain':
+    if mimetype not in ('text/plain', ''):
         return False
     if options.get('charset', 'utf-8').lower() != 'utf-8':
         return False
