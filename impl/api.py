@@ -442,7 +442,6 @@ def _statusLineGenerator(includeSuccessLine):
             f"STATUS {'paused' if isPaused else 'running'} "
             f"activeOperations={sum(activeUsers.values())} "
             f"waitingRequests={sum(waitingUsers.values())} "
-            f"activeDataciteOperations={impl.datacite.numActiveOperations()} "
             f"binderQueueLength={impl.statistics.getBinderQueueLength()} "
             f"dataciteQueueLength={impl.statistics.getDataCiteQueueLength()} "
             "\n"
