@@ -25,6 +25,7 @@ import ezidapp.models.identifier
 import ezidapp.models.identifier
 import ezidapp.models.news_feed
 import ezidapp.models.shoulder
+from django.db.models import Q
 
 
 log = logging.getLogger(__name__)
@@ -39,34 +40,42 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         super().__init__()
         auth_handler = urllib.request.HTTPBasicAuthHandler()
         auth_handler.add_password(
-            "EZID", django.conf.settings.EZID_BASE_URL, "admin", django.conf.settings.ADMIN_PASSWORD
+            "EZID",
+            django.conf.settings.EZID_BASE_URL,
+            "admin",
+            django.conf.settings.ADMIN_PASSWORD,
         )
         self.opener = urllib.request.build_opener()
         self.opener.add_handler(auth_handler)
 
     def run(self):
         while True:
-            for prefix in [
-                ezidapp.models.shoulder.getArkTestShoulder().prefix,
-                ezidapp.models.shoulder.getDoiTestShoulder().prefix,
-                ezidapp.models.shoulder.getCrossrefTestShoulder().prefix,
-            ]:
-                max_age_ts = int(time.time()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
-                # TODO: This is a heavy query which can be optimized with better indexes
-                # or flags in the DB.
-                for si in (
-                    ezidapp.models.identifier.Identifier.objects.filter(
-                        identifier__startswith=prefix
-                    )
-                    .filter(createTime__lte=max_age_ts)
-                    .only("identifier")[: django.conf.settings.DAEMONS_MAX_BATCH_SIZE]
-                ):
-                    try:
-                        self.deleteIdentifier(si.identifier)
-                    except Exception:
-                        log.exception(f'Exception on expunge of identifier: {si.identifier}')
+            max_age_ts = int(time.time()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
+            # TODO: This is a heavy query which can be optimized with better indexes or
+            # flags in the DB.
+            qs = (
+                ezidapp.models.identifier.Identifier.objects.filter(
+                    Q(identifier__startswith=django.conf.settings.SHOULDERS_ARK_TEST)
+                    | Q(identifier__startswith=django.conf.settings.SHOULDERS_DOI_TEST)
+                    | Q(identifier__startswith=django.conf.settings.SHOULDERS_CROSSREF_TEST)
+                )
+                .filter(createTime__lte=max_age_ts)
+                .only("identifier")[: django.conf.settings.DAEMONS_MAX_BATCH_SIZE]
+            )
 
-                self.sleep(django.conf.settings.DAEMONS_IDLE_SLEEP)
+            if not qs:
+                self.sleep(django.conf.settings.DAEMONS_LONG_SLEEP)
+                continue
+
+            for si in qs:
+                try:
+                    self.deleteIdentifier(si.identifier)
+                except urllib.error.HTTPError as e:
+                    log.exception(f'{e.read()}: {str(e)}')
+                except Exception:
+                    log.exception(f'Exception on expunge of identifier: {si.identifier}')
+
+            self.sleep(django.conf.settings.DAEMONS_BATCH_SLEEP)
 
     def deleteIdentifier(self, id_str):
         """Though we read identifiers directly from the EZID database, to avoid

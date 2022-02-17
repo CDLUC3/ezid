@@ -27,6 +27,7 @@ import impl.ui_demo
 import impl.ui_home
 import impl.ui_manage
 import impl.ui_search
+import impl.monitor
 
 # fmt:off
 urlpatterns = [
@@ -80,7 +81,9 @@ urlpatterns = [
     # ADMIN
     django.urls.re_path("^admin/login/?$",                 impl.ui_account.login,              name="ui_account.login"),
     django.urls.re_path("^admin/logout/?$",                impl.ui_account.logout,             name="ui_account.logout"),
-    django.urls.re_path('^admin/',                        ezidapp.admin.superuser.urls),
+    django.urls.re_path('^admin/',                         ezidapp.admin.superuser.urls),
+    # Monitoring
+    django.urls.re_path('^monitor/queues',                 impl.monitor.Queues.as_view(),      name='monitor.Queues'),
 
     # django.urls.re_path("^admin/",                         django.conf.urls.include(ezidapp.admin.superuser.urls)),
     # django.urls.re_path("^admin/",                         ezidapp.admin.superuser.urls),

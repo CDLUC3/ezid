@@ -36,7 +36,7 @@ DATABASES = {
         'NAME': 'ezid_test_db',
         'USER': 'ezid_test_user',
         'PASSWORD': 'ezid_test_pw',
-        'PORT': '',
+        'PORT': '3306',
         'OPTIONS': {'charset': 'utf8mb4'},
         'ATOMIC_REQUESTS': False,
         'AUTOCOMMIT': True,
@@ -139,8 +139,17 @@ DAEMONS_STATISTICS_ENABLED = True
 DAEMONS_STATUS_ENABLED = True
 
 # Daemons: Shared settings
-DAEMONS_IDLE_SLEEP = 5
+# Sleep between batches. This sleep is performed while there is still work to do. It
+# is intended for making sure that a buggy process does not go into a tight loop that
+# consumes a lot of resources.
 DAEMONS_BATCH_SLEEP = 1
+# Sleep after all batches are done. This sleep is performed when there is no more work
+# to do, but new work is expected to be added shortly.
+DAEMONS_IDLE_SLEEP = 5
+# Sleep after the work is done, for use in processing that is not time critical.
+DAEMONS_LONG_SLEEP = 60 * 60 * 24
+# Limit the number of results in each queryset. This value becomes a LIMIT clause in the
+# SQL query that pulls work from the queue.
 DAEMONS_MAX_BATCH_SIZE = 100
 
 # Daemons: Individual settings
