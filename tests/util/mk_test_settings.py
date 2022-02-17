@@ -20,7 +20,8 @@ import sys
 import jinja2
 
 TEMPLATE_VARS = {
-    'ezid_base_url': 'https://ezid.cdlib.org',
+    'ezid_base_url': 'http://localhost:8000',
+    'ezid_version': 'TEST_INSTANCE',
     # DB
     'database_host': 'localhost',
     'database_name': 'ezid_test_db',
