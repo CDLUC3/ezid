@@ -21,10 +21,12 @@ import ezidapp.models.async_queue
 
 log = logging.getLogger(__name__)
 
+
 class AsyncProcessingError(Exception):
-    """Raise when a permanent error is encountered.
-    """
+    """Raise when a permanent error is encountered."""
+
     pass
+
 
 class AsyncProcessingCommand(django.core.management.BaseCommand):
     help = __doc__
@@ -102,13 +104,14 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
                 try:
                     self.do_task(task_model)
                 except Exception as e:
-                    log.exception('Task registration error')
+                    log.error('#'*100)
+                    log.exception(f'Exception when handling task "{task_model}"')
                     task_model.error = str(e)
                     # noinspection PyTypeChecker
-                    if self.is_permanent_error(e):
-                        task_model.status = ezidapp.models.async_queue.AsyncQueueBase.FAILURE
-                        task_model.errorIsPermanent = True
-                        # raise
+                    # if self.is_permanent_error(e):
+                    task_model.status = ezidapp.models.async_queue.AsyncQueueBase.FAILURE
+                    task_model.errorIsPermanent = True
+                    # raise
                 else:
                     task_model.status = ezidapp.models.async_queue.AsyncQueueBase.SUBMITTED
                     task_model.submitTime = self.now_int()
