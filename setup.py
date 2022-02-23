@@ -33,18 +33,20 @@ EZID_META = dict(
     # packages=setuptools.find_packages(),
     # include_package_data=True,
     packages=[
-        'settings',
         'ezidapp',
+        'ezidapp.management',
+        'ezidapp.management.commands',
+        'ezidapp.migrations',
+        'ezidapp.migrations.z2',
+        'ezidapp.models',
         'impl',
-        'ui_tags',
+        'impl.nog',
+        'settings',
         'tests',
         'tools',
-        'ezidapp.management',
-        'ezidapp.models',
-        'ezidapp.management.commands',
-        'impl.nog',
+        'ui_tags',
         'ui_tags.templatetags',
-        'tests.util',
+        'tests.util'
     ],
     url='https://ezid.cdlib.org/',
     license='http://creativecommons.org/licenses/BSD/',
@@ -70,14 +72,15 @@ HERE_PATH = pathlib.Path(__file__).parent
 def gen_console_scripts():
     """Generate command line stubs for the modules in the tools folders."""
     tool_path = HERE_PATH / 'tools'
-    return [
-        "ez-{}=tools.{}:main".format(
-            os.path.split(n)[1].replace("_", "-").replace(".py", ""),
-            n.replace(".py", ""),
-        )
-        for n in os.listdir(tool_path)
-        if n.endswith(".py") and not n.startswith("_")
-    ]
+    stub_list = []
+    for p in tool_path.glob('*.py'):
+        if p.name.startswith('_'):
+            continue
+        module_name = p.with_suffix('').name
+        tool_name = 'ez-{}'.format(module_name.replace('_', '-'))
+        stub_name = "{}=tools.{}:main".format( tool_name, module_name)
+        stub_list.append(stub_name)
+    return stub_list
 
 
 def gen_install_requires():
