@@ -69,7 +69,7 @@ def _issue(method, operations):
         c = None
         try:
             c = urllib.request.urlopen(r)
-            s = c.readlines()
+            s = c.readlines().decode('utf-8', errors='replace')
         except Exception:
             # noinspection PyTypeChecker
             if i == django.conf.settings.BINDER_NUM_ATTEMPTS - 1:
@@ -144,7 +144,7 @@ def batchSetElements(batch):
             else:
                 bind_list.append((identifier, "set", e, v))
     s = _issue("POST", bind_list)
-    assert len(s) >= 2 and s[-2] == b"egg-status: 0\n", _error("set/rm", s)
+    assert "egg-status: 0\n" in s, _error("set/rm", s)
 
 
 def getElements(identifier):
@@ -194,7 +194,7 @@ def deleteIdentifier(identifier):
     on error.
     """
     s = _issue("POST", [(identifier, "purge")])
-    assert len(s) >= 2 and s[-2] == "egg-status: 0\n", _error("purge", s)
+    assert "egg-status: 0\n" in s, _error("purge", s)
     # See the comment under 'identifierExists' above.
     assert not identifierExists(
         identifier
@@ -209,14 +209,14 @@ def batchDeleteIdentifier(batch):
     # guard against noid API changes, and having it in one place is
     # sufficient.
     s = _issue("POST", [(identifier, "purge") for identifier in batch])
-    assert len(s) >= 2 and s[-2] == "egg-status: 0\n", _error("purge", s)
+    assert "egg-status: 0\n" in s, _error("purge", s)
 
 
 def ping():
     """Test the server, returning "up" or "down"."""
     try:
         s = _issue("GET", [])
-        assert len(s) >= 2 and s[-2] == "egg-status: 0\n"
+        assert "egg-status: 0\n" in s
         return "up"
     except Exception:
         return "down"
