@@ -69,7 +69,7 @@ def _issue(method, operations):
         c = None
         try:
             c = urllib.request.urlopen(r)
-            s = c.readlines()
+            s = [line.decode('utf-8', errors='replace') for line in c.readlines()]
         except Exception:
             # noinspection PyTypeChecker
             if i == django.conf.settings.BINDER_NUM_ATTEMPTS - 1:
@@ -144,7 +144,7 @@ def batchSetElements(batch):
             else:
                 bind_list.append((identifier, "set", e, v))
     s = _issue("POST", bind_list)
-    assert len(s) >= 2 and s[-2] == b"egg-status: 0\n", _error("set/rm", s)
+    assert len(s) >= 2 and s[-2] == "egg-status: 0\n", _error("set/rm", s)
 
 
 def getElements(identifier):
