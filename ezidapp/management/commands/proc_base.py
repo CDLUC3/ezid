@@ -206,13 +206,15 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         return int(self.now())
 
     def sleep(self, duration_sec):
-        """Close DB connections and go to sleep"""
-        # The Py2 version frequently closed the database connections, which Django will
-        # automatically reopen as required. This instead closes the connection only if
-        # we are about to go to sleep. Not holding on to connections during sleep
-        # reduces the number of concurrent connection at the cost of having to
-        # reestablish the connection when returning from sleep.
-        log.debug(f'Closing DB connections and sleeping for {duration_sec:.2f}s...')
+        """Close DB connections and go to sleep
+
+        Django will automatically reopen database connections as required. Not holding
+        on to connections during sleep reduces the number of concurrent connection at
+        the cost of having to reestablish the connection when returning from sleep.
+        """
+        # This log statement can be useful for seeing which async processes were active
+        # at a given point in time, but does cause continuous noise in the logs.
+        # log.debug(f'Closing DB connections and sleeping for {duration_sec:.2f}s...')
         django.db.connections["default"].close()
         time.sleep(duration_sec)
 
