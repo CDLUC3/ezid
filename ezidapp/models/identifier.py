@@ -3,7 +3,6 @@
 
 """Object Relational Mapper (ORM) models for identifiers
 """
-
 import pprint
 import re
 import time
@@ -27,6 +26,7 @@ import ezidapp.models.user
 import ezidapp.models.util
 import ezidapp.models.validation
 import impl.crossref
+import impl.datacite
 import impl.mapping
 import impl.util
 import impl.util2
@@ -418,19 +418,15 @@ class IdentifierBase(django.db.models.Model):
 
     @property
     def defaultTarget(self):
-        import impl.util2 as util2
-
-        return util2.defaultTargetUrl(self.identifier)
+        return impl.util2.defaultTargetUrl(self.identifier)
 
     @property
     def resolverTarget(self):
         """The URL the identifier actually resolves to."""
-        import impl.util2 as util2
-
         if self.isReserved:
             return self.defaultTarget
         elif self.isUnavailable:
-            return util2.tombstoneTargetUrl(self.identifier)
+            return impl.util2.tombstoneTargetUrl(self.identifier)
         else:
             return self.target
 
@@ -486,9 +482,7 @@ class IdentifierBase(django.db.models.Model):
         # returns a record; missing attributes will be "(:unav)". The
         # mapping is based on the identifier's preferred metadata profile
         # but with priority given to the DataCite fields.
-        import impl.datacite as datacite
-
-        return datacite.formRecord(
+        return impl.datacite.formRecord(
             self.identifier, self.metadata, supplyMissing=True, profile=self.profile.label
         )
 
@@ -654,8 +648,6 @@ class IdentifierBase(django.db.models.Model):
 
     def cleanAgentPid(self):
         # Checks applicable to agent PIDs only.
-        import impl.util2 as util2
-
         if not self.isArk:
             raise django.core.exceptions.ValidationError({"identifier": "Agent PID is not an ARK."})
         if self.owner is None or self.owner.username != django.conf.settings.ADMIN_USERNAME:
@@ -671,7 +663,7 @@ class IdentifierBase(django.db.models.Model):
                 {"target": "Agent PID has non-default target URL."}
             )
         # N.B.: the isTest field hasn't been computed yet.
-        if util2.isTestIdentifier(self.identifier):
+        if impl.util2.isTestIdentifier(self.identifier):
             raise django.core.exceptions.ValidationError(
                 {"identifier": "Agent PID is a test identifier."}
             )
@@ -679,9 +671,6 @@ class IdentifierBase(django.db.models.Model):
     def cleanCitationMetadataFields(self):
         # Cleans certain citation metadata fields on which EZID imposes
         # structure.
-        # import ezidapp.management.commands.crossref as crossref
-        import impl.datacite as datacite
-
         if "datacite.resourcetype" in self.metadata:
             try:
                 self.metadata["datacite.resourcetype"] = ezidapp.models.validation.resourceType(
@@ -698,7 +687,7 @@ class IdentifierBase(django.db.models.Model):
                 # to ensure they will be accepted by DataCite.
                 #
                 # This check is performed for all types of identifiers, not just DOIs.
-                self.metadata["datacite"] = datacite.validateDcmsRecord(
+                self.metadata["datacite"] = impl.datacite.validateDcmsRecord(
                     self.identifier,
                     self.metadata["datacite"],
                     schemaValidate=(not self.isReserved),
@@ -729,8 +718,6 @@ class IdentifierBase(django.db.models.Model):
                 )
 
     def checkMetadataRequirements(self):
-        import impl.datacite as datacite
-
         if self.isDatacite and not self.isReserved:
             # If the identifier has DataCite or Crossref XML metadata, we
             # know automatically that metadata requirements are satisfied
@@ -741,7 +728,9 @@ class IdentifierBase(django.db.models.Model):
                 not self.usesCrossrefProfile or "crossref" not in self.metadata
             ):
                 try:
-                    datacite.formRecord(self.identifier, self.metadata, profile=self.profile.label)
+                    impl.datacite.formRecord(
+                        self.identifier, self.metadata, profile=self.profile.label
+                    )
                 except AssertionError as e:
                     raise django.core.exceptions.ValidationError(
                         f"Public DOI metadata requirements not satisfied: {str(e)}."
@@ -753,9 +742,7 @@ class IdentifierBase(django.db.models.Model):
             )
 
     def computeComputedValues(self):
-        import impl.util2 as util2
-
-        self.isTest = util2.isTestIdentifier(self.identifier)
+        self.isTest = impl.util2.isTestIdentifier(self.identifier)
 
     def __str__(self):
         return f'{self.__class__.__name__}({self.pk}, {self.identifier})'

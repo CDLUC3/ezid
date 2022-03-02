@@ -145,7 +145,7 @@ DAEMONS_STATUS_ENABLED = True
 DAEMONS_BATCH_SLEEP = 1
 # Sleep after all batches are done. This sleep is performed when there is no more work
 # to do, but new work is expected to be added shortly.
-DAEMONS_IDLE_SLEEP = 5
+DAEMONS_IDLE_SLEEP = 60
 # Sleep after the work is done, for use in processing that is not time critical.
 DAEMONS_LONG_SLEEP = 60 * 60 * 24
 # Limit the number of results in each queryset. This value becomes a LIMIT clause in the
@@ -305,6 +305,7 @@ logging.config.dictConfig(
 # Server instance
 
 EZID_BASE_URL = 'http://localhost:8000'
+DEFAULT_TARGET_BASE_URL = 'https://ezid.cdlib.org'
 ALLOWED_HOSTS = ['*']
 SECRET_KEY = '< placeholder - do not modify >'
 
