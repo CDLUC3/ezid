@@ -55,13 +55,13 @@ class Command(django.core.management.BaseCommand):
         if scheme_str == 'doi':
             full_shoulder = full_shoulder.upper()
         elif scheme_str == 'ark':
-            full_shoulder = full_shoulder
+            pass
         else:
             raise django.core.management.CommandError(
                 'Scheme must be "ark" or "doi": {}'.format(scheme_str)
             )
 
-        namespace_str = '{}:{}'.format(scheme_str, full_shoulder.upper())
+        namespace_str = '{}:{}'.format(scheme_str, full_shoulder)
 
         try:
             shoulder_model = ezidapp.models.shoulder.Shoulder.objects.get(prefix=namespace_str)
