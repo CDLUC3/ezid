@@ -28,6 +28,12 @@ class AsyncProcessingError(Exception):
     pass
 
 
+class AsyncProcessingRemoteError(AsyncProcessingError):
+    """Permanent error due to a remote service rejecting request"""
+
+    pass
+
+
 class AsyncProcessingCommand(django.core.management.BaseCommand):
     help = __doc__
     display = None
@@ -104,8 +110,14 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
                 try:
                     self.do_task(task_model)
                 except Exception as e:
-                    log.error('#'*100)
-                    log.exception(f'Exception when handling task "{task_model}"')
+                    if isinstance(e, AsyncProcessingRemoteError):
+                        # This is a bit messy. Do not log a trace when the
+                        # error is due to the remote service rejecting the request.
+                        # Such an error is still permanent for the task though.
+                        log.error(e)
+                    else:
+                        log.error('#' * 100)
+                        log.exception(f'Exception when handling task "{task_model}"')
                     task_model.error = str(e)
                     # noinspection PyTypeChecker
                     # if self.is_permanent_error(e):
