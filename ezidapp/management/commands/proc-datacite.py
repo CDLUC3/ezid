@@ -29,7 +29,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
     def delete(self, task_model):
         # We can't actually delete a DOI, so we do the next best thing...
-        #TODO: need to handle error conditions
+        # TODO: need to handle error conditions
         ref_id = task_model.refIdentifier
         doi = ref_id.identifier[4:]
         datacenter = ref_id.datacenter
