@@ -27,6 +27,12 @@ class AsyncProcessingError(Exception):
 
     pass
 
+class AsyncProcessingRemoteError(AsyncProcessingError):
+    """Permanent error due to a remote service rejecting request"""
+
+    pass
+
+
 
 class AsyncProcessingCommand(django.core.management.BaseCommand):
     help = __doc__
