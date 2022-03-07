@@ -29,6 +29,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
     def delete(self, task_model):
         # We can't actually delete a DOI, so we do the next best thing...
+        #TODO: need to handle error conditions
         ref_id = task_model.refIdentifier
         doi = ref_id.identifier[4:]
         datacenter = ref_id.datacenter
@@ -47,8 +48,11 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         # exception == something else went wrong.
         # Exceptions are handled in the outer run method, so don't handle here.
         #
+        # TODO: DRY this a bit
         if r is not None:
             log.error("datacite.uploadMetadata returned: %s", r)
+            if isinstance(r, str):
+                raise ezidapp.management.commands.proc_base.AsyncProcessingRemoteError(r)
             raise ezidapp.management.commands.proc_base.AsyncProcessingError(r)
         r = impl.datacite.setTargetUrl(doi, ref_id.target, datacenter)
         # r can be:
@@ -57,6 +61,13 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         #   a thrown exception on other error.
         if r is not None:
             log.error("datacite.setTargetUrl returned: %s", r)
+            if isinstance(r, str):
+                raise ezidapp.management.commands.proc_base.AsyncProcessingRemoteError(r)
             raise ezidapp.management.commands.proc_base.AsyncProcessingError(r)
         if metadata.get("_is", "public") != "public" or metadata.get("_x", "yes") != "yes":
-            impl.datacite.deactivateIdentifier(doi, datacenter)
+            r = impl.datacite.deactivateIdentifier(doi, datacenter)
+            if r is not None:
+                log.error("datacite.deactivateIdentifier returned: %s", r)
+                if isinstance(r, str):
+                    raise ezidapp.management.commands.proc_base.AsyncProcessingRemoteError(r)
+                raise ezidapp.management.commands.proc_base.AsyncProcessingError(r)
