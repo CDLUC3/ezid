@@ -104,7 +104,7 @@ class Command(django.core.management.BaseCommand):
                     )
                     if not s.startswith('success'):
                         raise django.core.management.CommandError(
-                            'Identifier deletion failed: ' + s
+                            'Identifier deletion failed: {}'.format(s)
                         )
 
                 if len(ids) == 0:
