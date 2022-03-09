@@ -224,7 +224,7 @@ logging.config.dictConfig(
             'simple': {'format': '%(asctime)s %(levelname)8s %(message)s'},
             'verbose': {
                 'format': (
-                    '%(levelname)8s %(name)8s %(module)s '
+                    '%(levelname)8s %(module)s '
                     '%(process)d %(thread)s %(message)s'
                 ),
             },

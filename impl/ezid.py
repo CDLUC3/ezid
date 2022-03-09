@@ -378,16 +378,16 @@ def getMetadata(identifier, user=ezidapp.models.user.AnonymousUser, prefixMatch=
 
 
 def setMetadata(identifier, user, metadata, updateExternalServices=True, internalCall=False):
-    """Set metadata elements of a given qualified identifier, e.g.,
-    "doi:10.5060/FOO". 'user' is the requestor and should be an authenticated
-    User object. 'metadata' should be a dictionary of element (name,
-    value) pairs. If an element being set already exists, it is overwritten,
-    if not, it is created; existing elements not set are left unchanged. Of
-    the reserved metadata elements, only "_owner", "_target", "_profile",
-    "_status", and "_export" may be set (unless the user is the EZID
-    administrator). The "_crossref" element may be set only in certain
-    situations. The successful return is a string that includes the canonical,
-    qualified form of the identifier, as in:
+    """Set metadata elements of a given qualified identifier, e.g., "doi:10.5060/FOO".
+
+    'user' is the requestor and should be an authenticated User object. 'metadata'
+    should be a dictionary of element (name, value) pairs. If an element being set
+    already exists, it is overwritten, if not, it is created; existing elements not set
+    are left unchanged. Of the reserved metadata elements, only "_owner", "_target",
+    "_profile", "_status", and "_export" may be set (unless the user is the EZID
+    administrator). The "_crossref" element may be set only in certain situations. The
+    successful return is a string that includes the canonical, qualified form of the
+    identifier, as in:
 
       success: doi:10.5060/FOO
 

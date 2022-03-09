@@ -17,26 +17,10 @@ import django.core.management
 import django.db
 import django.db.transaction
 
-import ezidapp.models.async_queue
-
 log = logging.getLogger(__name__)
-
-
-class AsyncProcessingError(Exception):
-    """Raise when a permanent error is encountered."""
-
-    pass
-
-
-class AsyncProcessingRemoteError(AsyncProcessingError):
-    """Permanent error due to a remote service rejecting request"""
-
-    pass
-
 
 class AsyncProcessingCommand(django.core.management.BaseCommand):
     help = __doc__
-    display = None
     setting = None
     queue = None
 
@@ -44,8 +28,8 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         pass
 
     def __init__(self):
-        assert self.display is not None
         assert self.setting is not None
+        assert self.queue is not None
         super().__init__()
         self.opt = None
 
@@ -75,10 +59,7 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
 
         logging.basicConfig(
             level=logging.DEBUG if self.opt.debug else logging.INFO,
-            format=(
-                f'%(levelname)8s %(name)8s %(module)s %(process)d %(thread)s '
-                f'{self.display}: %(message)s'
-            ),
+            format='%(levelname)8s %(module)s %(process)d %(thread)s: %(message)s',
             stream=sys.stderr,
             force=True,
         )
@@ -96,12 +77,10 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
 
         This method is not called for disabled async processes.
         """
-        assert self.queue is not None
-
         while True:
-            qs = self.queue.objects.filter(
-                status=ezidapp.models.async_queue.AsyncQueueBase.UNSUBMITTED,
-            ).order_by("seq")[: django.conf.settings.DAEMONS_MAX_BATCH_SIZE]
+            qs = self.queue.objects.filter(status=self.queue.UNSUBMITTED,).order_by(
+                "seq"
+            )[: django.conf.settings.DAEMONS_MAX_BATCH_SIZE]
             if not qs:
                 self.sleep(django.conf.settings.DAEMONS_IDLE_SLEEP)
                 continue
@@ -109,6 +88,8 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
             for task_model in qs:
                 try:
                     self.do_task(task_model)
+                except AsyncProcessingIgnored:
+                    task_model.status = self.queue.IGNORED
                 except Exception as e:
                     if isinstance(e, AsyncProcessingRemoteError):
                         # This is a bit messy. Do not log a trace when the
@@ -118,54 +99,30 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
                     else:
                         log.error('#' * 100)
                         log.exception(f'Exception when handling task "{task_model}"')
+
                     task_model.error = str(e)
-                    # noinspection PyTypeChecker
                     # if self.is_permanent_error(e):
-                    task_model.status = ezidapp.models.async_queue.AsyncQueueBase.FAILURE
+                    task_model.status = self.queue.FAILURE
                     task_model.errorIsPermanent = True
                     # raise
                 else:
-                    task_model.status = ezidapp.models.async_queue.AsyncQueueBase.SUBMITTED
+                    task_model.status = self.queue.SUBMITTED
                     task_model.submitTime = self.now_int()
 
                 task_model.save()
 
             self.sleep(django.conf.settings.DAEMONS_BATCH_SLEEP)
 
-            # The previous version of the Crossref process had the following logic,
-            # which would delete earlier tasks from the queue if the queue had multiple
-            # tasks for the same identifier. We currently have not ported this to Py3
-            # because it has the cost of having to check forwards in the queue. The Py2
-            # implementation retrieved the full queue, regardless of size, to do these
-            # checks. If the situation of having multiple updates for the same
-            # identifier in the queue is common enough that it's detrimental to simply
-            # process them all, it would be better to check for duplicates when the
-            # tasks are being inserted in the queue, and update existing tasks there
-            # instead of inserting new ones.
-            #
-            # if self.queue().objects.filter(identifier=r.identifier).count() > 1:
-            #     r.delete()
-            #     maxSeq = None
-            # else:
-            #     if r.status == ezidapp.models.async_queue.CrossrefQueue.UNSUBMITTED:
-            #         self._doDeposit(r)
-            #         maxSeq = None
-            #     elif r.status == ezidapp.models.async_queue.CrossrefQueue.SUBMITTED:
-            #         self._doPoll(r)
-            #         maxSeq = None
-            #     else:
-            #         pass
-
     def create(self, task_model):
-        """Overridden by processes that use the default run loop"""
+        """Must be overridden by processes that use the default run loop"""
         raise NotImplementedError()
 
     def update(self, task_model):
-        """Overridden by processes that use the default run loop"""
+        """Must be overridden by processes that use the default run loop"""
         raise NotImplementedError()
 
     def delete(self, task_model):
-        """Overridden by processes that use the default run loop"""
+        """Must be overridden by processes that use the default run loop"""
         raise NotImplementedError()
 
     def assert_proc_enabled(self):
@@ -182,16 +139,19 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
             self.raise_command_error(f'Cannot start. "{self.setting}" is False')
 
     def do_task(self, task_model):
-        label_str = ezidapp.models.async_queue.AsyncQueueBase.OPERATION_CODE_TO_LABEL_DICT[
-            task_model.operation
-        ]
-        log.debug(f'Processing task: {label_str}')
-        if task_model.operation == ezidapp.models.async_queue.AsyncQueueBase.CREATE:
-            self.create(task_model)
-        elif task_model.operation == ezidapp.models.async_queue.AsyncQueueBase.UPDATE:
-            self.update(task_model)
-        elif task_model.operation == ezidapp.models.async_queue.AsyncQueueBase.DELETE:
-            self.delete(task_model)
+        op_label_str = self.queue.OPERATION_CODE_TO_LABEL_DICT[task_model.operation].upper()
+        cur_status_str = self.queue.STATUS_CODE_TO_LABEL_DICT[task_model.status]
+        log.debug(
+            'Processing task: {}: {} (current status: {})'.format(
+                op_label_str, task_model.refIdentifier.identifier, cur_status_str
+            )
+        )
+        if task_model.operation == self.queue.CREATE:
+            return self.create(task_model)
+        elif task_model.operation == self.queue.UPDATE:
+            return self.update(task_model)
+        elif task_model.operation == self.queue.DELETE:
+            return self.delete(task_model)
         else:
             raise AssertionError(f'Invalid operation: {task_model.operation}')
 
@@ -226,13 +186,36 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         """
         # This log statement can be useful for seeing which async processes were active
         # at a given point in time, but does cause continuous noise in the logs.
-        # log.debug(f'Closing DB connections and sleeping for {duration_sec:.2f}s...')
+        log.debug(f'Closing DB connections and sleeping for {duration_sec:.2f}s...')
         django.db.connections["default"].close()
         time.sleep(duration_sec)
 
     def raise_command_error(self, msg_str):
         raise django.core.management.CommandError(
-            f'Async process: {self.display}. '
             f'Error: {msg_str}. '
             f'Using settings module "{os.environ["DJANGO_SETTINGS_MODULE"]}"'
         )
+
+
+class AsyncProcessingError(Exception):
+    """Raise when a permanent error is encountered."""
+
+    pass
+
+
+class AsyncProcessingRemoteError(AsyncProcessingError):
+    """Permanent error due to a remote service rejecting request"""
+
+    pass
+
+  
+class AsyncProcessingIgnored(Exception):
+    """Raise from create/update/delete methods of subclasses when the operation is not
+    applicable for the given identifier.
+
+    Create/update/delete tasks are added to all queues for all identifiers. This allows
+    logic for deciding if an operation is applicable for a given identifier to be
+    encapsulated within the async process which will perform the operation.
+    """
+
+    pass
