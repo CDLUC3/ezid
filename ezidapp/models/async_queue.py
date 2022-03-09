@@ -35,15 +35,24 @@ class AsyncQueueBase(django.db.models.Model):
     OPERATION_LABEL_TO_CODE_DICT = {v: k for k, v in OPERATION_CODE_TO_LABEL_DICT.items()}
 
     # Status of operation
+    # Tasks start out as UNSUBMITTED and always move to a later state, never back to
+    # an earlier state.
     UNSUBMITTED = "U"
+    UNCHECKED = "C"
     SUBMITTED = "S"
+    # End states.
     WARNING = "W"
     FAILURE = "F"
+    IGNORED = "I"
+    SUCCESS = "O"
     STATUS_CODE_TO_LABEL_DICT = {
         UNSUBMITTED: 'Awaiting submission',
+        UNCHECKED: 'Submitted, unchecked',
         SUBMITTED: 'Submitted',
         WARNING: 'Registered with warning',
         FAILURE: 'Registration failed',
+        IGNORED: 'Ignored (operation not applicable)',
+        SUCCESS: 'Completed successfully',
     }
     STATUS_LABEL_TO_CODE_DICT = {v: k for k, v in STATUS_CODE_TO_LABEL_DICT.items()}
 
