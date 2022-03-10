@@ -43,16 +43,30 @@ REMAINDER_BOX_DEFAULT = _("Recommended: Leave blank")
 RESOURCE_TYPES = (
     ('', _("Select a type of object")),
     ('Audiovisual', _('Audiovisual')),
+    ('Book', _('Book')),
+    ('BookChapter', _('Book Chapter')),
     ('Collection', _('Collection')),
+    ('ComputationalNotebook', _('Computational Notebook')),
+    ('Conference Paper', _('Conference Paper')),
+    ('ConferenceProceeding', _('Conference Proceeding')),
+    ('DataPaper', _('Data Paper')),
     ('Dataset', _('Dataset')),
+    ('Dissertation', _('Dissertation')),
     ('Event', _('Event')),
     ('Image', _('Image')),
     ('InteractiveResource', _('Interactive Resource')),
+    ('Journal', _('Journal')),
+    ('JournalArticle', _('Journal Article')),
     ('Model', _('Model')),
+    ('OutputManagementPlan', _('Output Management Plan')),
+    ('PeerReview', _('Peer Review')),
     ('PhysicalObject', _('Physical Object')),
+    ('Preprint', _('Preprint')),
+    ('Report', _('Report')),
     ('Service', _('Service')),
     ('Software', _('Software')),
-    ('Sound', _('Sound')),
+    ('Standard', _('Standard')),
+    ('BookChapter', _('Book Chapter')),
     ('Text', _('Text')),
     ('Workflow', _('Workflow')),
     ('Other', _('Other')),
@@ -339,6 +353,28 @@ def _validateNameIdGrouping(suffix, ni, ni_s, ni_s_uri):
     return err
 
 
+def _validateAffiliationIdGrouping(caff, caffId, caffId_s, caffId_s_uri):
+    err={}
+    if caff and not caffId:
+        err['affiliation-affiliationIdentifier'] = _(
+            "An Affiliation Identifier must be filled in if you specify an Affiliation."
+        )
+    if caff and caffId and not caffId_s:
+        err['affiliation-affiliationIdentifierScheme'] = _(
+            "An Affiliation Identifier Scheme must be filled in if you specify an Affiliation Identifier."
+        )
+    if caff and caffId and caffId_s and not caffId_s_uri:
+        err['affiliation-schemeURI'] = _(
+            "An Affiliation Identifier Scheme URI must be filled in if you specify an Affiliation Identifier."
+        )
+    if caffId or caffId_s or caffId_s_uri:
+        if not caff:
+            err['affiliation'] = _(
+                "An Affiliation must be filled in if you specify an Affiliation Identifier / Affiliation Identifier Scheme "
+            )
+    return err
+
+
 def _validate_geolong(n):
     m = re.match(REGEX_GEOPOINT, n)
     if not m or float(n) < -180 or float(n) > 180:
@@ -442,6 +478,15 @@ class NameIdMultBaseFormSet(django.forms.BaseFormSet):
                 form.fields[k] = django.forms.CharField(required=False, label=v)
         form.fields["affiliation"] = django.forms.CharField(
             required=False, label=_("Affiliation")
+        )
+        form.fields["affiliation-affiliationIdentifier"] = forms.CharField(
+            required=False, label=_("Affiliation Identifier")
+        )
+        form.fields["affiliation-affiliationIdentifierScheme"] = forms.CharField(
+            required=False, label=_("Affiliation Identifier Scheme")
+        )
+        form.fields["affiliation-schemeURI"] = forms.CharField(
+            required=False, label=_("Affiliation Identifier Scheme URI")
         )
         return form
 
@@ -677,9 +722,8 @@ class ContribForm(django.forms.Form):
             ni = cleaned_data.get(NAME_ID[0].format(str(i)))
             ni_s = cleaned_data.get(NAME_ID_SCHEME[0].format(str(i)))
             ni_s_uri = cleaned_data.get(NAME_ID_SCHEME_URI[0].format(str(i)))
-            caff = cleaned_data.get("affiliation")
             """ Use of contributor element requires name and type be populated """
-            if ctype or cname or cfname or cgname or caff or ni or ni_s or ni_s_uri:
+            if ctype or cname or cfname or cgname or ni or ni_s or ni_s_uri:
                 err1 = _gatherContribErr1(err1, ctype, cname)
             err = _validateNameIdGrouping(i, ni, ni_s, ni_s_uri)
             if err:
