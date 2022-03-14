@@ -1,2 +1,2 @@
-INFO impl.nog.shoulder shoulder Creating minter for ARK shoulder: ark:/91101/r01/
-    INFO ezidapp.management.commands.shoulder-create-ark shoulder-create-ark Shoulder created
+INFO shoulder Creating minter for ARK shoulder: ark:/91101/r01/
+    INFO shoulder-create-ark Shoulder created

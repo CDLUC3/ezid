@@ -24,7 +24,7 @@ log = logging.getLogger(__name__)
 def enqueue(
     si_model: ezidapp.models.identifier.Identifier,
     operation_label: str,
-    updateExternalServices : bool,
+    updateExternalServices: bool,
 ) -> None:
     """Add a new create, update or delete operation to each of the async processing
     queues
