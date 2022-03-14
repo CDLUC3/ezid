@@ -212,8 +212,6 @@ INFO shoulder Shoulders:
     INFO shoulder ark:/88114/p7        Purdue Polytechnic Institute (Retired Minter)
     INFO shoulder doi:10.5070/Q5       Queer Cats Journal of LGBTQ Studies
     INFO shoulder doi:10.5070/R3       Race and Yoga
-    INFO shoulder doi:10.95723/        rd-org
-    INFO shoulder doi:10.95724/        rd-orgsadf
     INFO shoulder doi:10.5070/R5       react/review: a responsive journal for art & architecture
     INFO shoulder doi:10.5070/R7       Refract
     INFO shoulder ark:/19153/spbb9     Scolomfr -- Association Française pour la Lecture
@@ -350,8 +348,6 @@ INFO shoulder Shoulders:
     INFO shoulder ark:/10945/t4        TeachPitch
     INFO shoulder doi:10.5070/T5       Technology Innovations in Statistics Education
     INFO shoulder doi:10.5070/T2       Territories: A Trans-Cultural Journal of Regional Studies
-    INFO shoulder ark:/81984/c8        test-org
-    INFO shoulder doi:10.5070/H8       test-org2
     INFO shoulder ark:/81423/b1        Texas A&M Univ Batt
     INFO shoulder ark:/81423/d2        Texas A&M Univ DigProjects
     INFO shoulder ark:/81423/m3        Texas A&M Univ Libr
@@ -542,10 +538,12 @@ INFO shoulder Shoulders:
     INFO shoulder doi:10.5070/F7       Ufahamu: A Journal of African Studies
     INFO shoulder doi:10.48453/S3      Ultrasound in Resource-Limited Settings
     INFO shoulder ark:/67034/k4        UMichigan Medical School DLHS-DLKS
+    INFO shoulder doi:10.5070/H8       Undergraduate Historical and Critical Race and Ethnic Studies Journal at UC Merced
     INFO shoulder ark:/87925/          University College Dublin
     INFO shoulder ark:/87925/h1        University College Dublin Minter
     INFO shoulder ark:/85140/d4        University of California, Davis, University Library
     INFO shoulder doi:10.15140/D3      University of California, Davis, University Library
+    INFO shoulder ark:/81984/c8        University of Illinois at Chicago
     INFO shoulder ark:/81984/d3        University of Illinois Chicago Digital Collections
     INFO shoulder ark:/47881/m6        University of Lyon
     INFO shoulder ark:/87302/z3        University of Michigan Library (Retired Minter)
