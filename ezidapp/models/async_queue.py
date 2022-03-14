@@ -27,6 +27,18 @@ class AsyncQueueBase(django.db.models.Model):
 
         abstract = True
 
+    def __str__(self):
+        return (
+            f'{self.__class__.__name__}('
+            f'id={self.pk}, '
+            f'refId={self.refIdentifier.identifier}, '
+            f'op={self.OPERATION_CODE_TO_LABEL_DICT[self.operation].upper()}, '
+            f'status="{self.STATUS_CODE_TO_LABEL_DICT[self.status]}", '
+            f'owner="{self.refIdentifier.owner}", '
+            f'group="{self.refIdentifier.ownergroup}"'
+            f')'
+        )
+
     # Operation to perform
     CREATE = "C"
     UPDATE = "U"
@@ -110,7 +122,7 @@ class AsyncQueueBase(django.db.models.Model):
     error = django.db.models.TextField(blank=True)
 
     # True if the error received is not transient. Permanent errors
-    # disable processing on the identifier and can must be removed manually.
+    # disable processing on the identifier and must be removed manually.
     errorIsPermanent = django.db.models.BooleanField(default=False)
 
 
@@ -131,6 +143,7 @@ class DataciteQueue(AsyncQueueBase):
 
 class SearchIndexerQueue(AsyncQueueBase):
     pass
+
 
 # The download queue does not relate to a single identifier, so is implemented separately.
 

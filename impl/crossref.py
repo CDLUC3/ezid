@@ -32,16 +32,16 @@ TITLE_PATH_LIST = [
     "../N:abbrev_title",
 ]
 
-_prologRE = re.compile(
+PROLOG_RX = re.compile(
     "<\\?xml\\s+version\\s*=\\s*['\"]([-\\w.:]+)[\"']"
     + "(\\s+encoding\\s*=\\s*['\"]([-\\w.]+)[\"'])?"
     + "(\\s+standalone\\s*=\\s*['\"](yes|no)[\"'])?\\s*\\?>\\s*"
 )
-_utf8RE = re.compile("UTF-?8$", re.I)
-_schemaLocation = "{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"
-_schemaLocationTemplate = "http://www.crossref.org/schema/deposit/crossref%s.xsd"
-_tagRE = re.compile("{(http://www\\.crossref\\.org/schema/(4\\.[34]\\.\\d))}([-\\w.]+)$")
-_rootTags = [
+UTF8_RX = re.compile("UTF-?8$", re.I)
+SCHEMA_LOCATION_STR = "{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"
+SCHEMA_LOCATION_FORMAT_STR = "http://www.crossref.org/schema/deposit/crossref%s.xsd"
+TAG_RX = re.compile("{(http://www\\.crossref\\.org/schema/(4\\.[34]\\.\\d))}([-\\w.]+)$")
+ROOT_TAG_LIST = [
     "journal",
     "book",
     "conference",
@@ -70,11 +70,11 @@ def validateBody(body):
     normalizing the one and only <doi_data> element.
     """
     # Strip off any prolog.
-    m = _prologRE.match(body)
+    m = PROLOG_RX.match(body)
     if m:
         assert m.group(1) == "1.0", "unsupported XML version"
         if m.group(2) is not None:
-            assert _utf8RE.match(m.group(3)), "XML encoding must be utf-8"
+            assert UTF8_RX.match(m.group(3)), "XML encoding must be utf-8"
         if m.group(4) is not None:
             assert m.group(5) == "yes", "XML document must be standalone"
         body = body[len(m.group(0)) :]
@@ -127,7 +127,7 @@ def validateBody(body):
         doiData.find("N:timestamp", namespaces=ns) is None
     ), "<doi_data> element contains more than one <timestamp> subelement"
     # Normalize schema declarations.
-    root.attrib[_schemaLocation] = namespace + " " + (_schemaLocationTemplate.format(version))
+    root.attrib[SCHEMA_LOCATION_STR] = namespace + " " + (SCHEMA_LOCATION_FORMAT_STR.format(version))
     try:
         # We re-sanitize the document because unacceptable characters can
         # be (and have been) introduced via XML character entities.
@@ -190,7 +190,7 @@ def _buildDeposit(body, registrant, doi, targetUrl, withdrawTitles=False, bodyOn
         return f"{{{namespace}}}{elementName}"
 
     root = lxml.etree.Element(q("doi_batch"), version=version)
-    root.attrib[_schemaLocation] = body.attrib[_schemaLocation]
+    root.attrib[SCHEMA_LOCATION_STR] = body.attrib[SCHEMA_LOCATION_STR]
 
     # TODO: This section is also in proc-crossref.py
     # START
@@ -212,7 +212,7 @@ def _buildDeposit(body, registrant, doi, targetUrl, withdrawTitles=False, bodyOn
     e = lxml.etree.SubElement(root, q("body"))
     # END
 
-    del body.attrib[_schemaLocation]
+    del body.attrib[SCHEMA_LOCATION_STR]
     if withdrawTitles:
         for p in TITLE_PATH_LIST:
             for t in doiData.xpath(p, namespaces=ns):

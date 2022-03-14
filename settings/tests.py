@@ -302,6 +302,9 @@ logging.config.dictConfig(
     }
 )
 
+logging.info(f'Starting EZID...')
+logging.info(f'DEBUG MODE (settings.DEBUG) = {DEBUG}')
+
 # Server instance
 
 EZID_BASE_URL = 'http://localhost:8000'
@@ -423,10 +426,10 @@ ALLOCATOR_PURDUE_PASSWORD = ''
 CROSSREF_ENABLED = False
 CROSSREF_DEPOSITOR_NAME = 'EZID'
 CROSSREF_DEPOSITOR_EMAIL = 'ezidcdl@gmail.com'
-CROSSREF_REAL_SERVER = 'doi.crossref.org'
-CROSSREF_TEST_SERVER = 'test.crossref.org'
-CROSSREF_DEPOSIT_URL = 'https://%%s/servlet/deposit'
-CROSSREF_RESULTS_URL = 'https://%%s/servlet/submissionDownload'
+CROSSREF_REAL_SERVER = 'https://doi.crossref.org'
+CROSSREF_TEST_SERVER = 'https://test.crossref.org'
+CROSSREF_DEPOSIT_PATH = '/servlet/deposit'
+CROSSREF_RESULTS_PATH = '/servlet/submissionDownload'
 CROSSREF_USERNAME = ''
 CROSSREF_PASSWORD = ''
 

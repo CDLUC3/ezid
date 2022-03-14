@@ -33,6 +33,7 @@ import ezidapp.models.async_queue
 import ezidapp.models.identifier
 import ezidapp.models.user
 import ezidapp.models.util
+import impl.crossref
 import impl.ezid
 import impl.log
 import impl.nog.util
@@ -66,6 +67,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 continue
 
             for task_model in qs:
+                log.info('-'*100)
+                log.info(f'Processing task: {str(task_model)}')
                 try:
                     self.do_task(task_model)
                 except ezidapp.management.commands.proc_base.AsyncProcessingIgnored:
@@ -87,7 +90,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     def do_task(self, task_model):
         if task_model.status == self.queue.UNSUBMITTED:
             self.submit(task_model)
-        elif task_model.status == self.queue.UNCHECKED:
+        elif task_model.status in (self.queue.UNCHECKED, self.queue.SUBMITTED):
             self.check_status(task_model)
         else:
             raise AssertionError('Unhandled case')
@@ -102,20 +105,18 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         if not ref_id.isCrossref:
             raise ezidapp.management.commands.proc_base.AsyncProcessingIgnored
 
-        meta = ref_id.metadata
-        op = task_model.operation
+        meta_dict = ref_id.metadata
+        op_str = task_model.operation
         id_base_str = ref_id.identifier[4:]
 
-        url = 'http://datacite.org/invalidDOI' if op == self.queue.DELETE else meta['_t']
+        url = 'http://datacite.org/invalidDOI' if op_str == self.queue.DELETE else ref_id.target
 
         submission, body, batchId = self._buildDeposit(
-            meta['crossref'],
-            ezidapp.models.util.getUserByPid(meta.owner).username,
+            meta_dict['crossref'],
+            ref_id.owner.username,
             id_base_str,
             url,
-            withdrawTitles=(
-                op == self.queue.DELETE or meta.get('_is', 'public').startswith('unavailable')
-            ),
+            withdrawTitles=(op_str == self.queue.DELETE or not ref_id.isReserved),
         )
 
         self._submitDeposit(submission, batchId, id_base_str)
@@ -144,7 +145,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             and 'batchId' is the submission batch identifier.
         """
         body = lxml.etree.XML(body)
-        m = self.TAG_REGEX.match(body.tag)
+        m = impl.crossref.TAG_REGEX.match(body.tag)
         namespace = m.group(1)
         version = m.group(2)
         ns = {'N': namespace}
@@ -160,7 +161,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             return f'{{{namespace}}}{elementName}'
 
         root = lxml.etree.Element(q('doi_batch'), version=version)
-        root.attrib[self._schemaLocation] = body.attrib[self._schemaLocation]
+        root.attrib[impl.crossref.SCHEMA_LOCATION_STR] = body.attrib[
+            impl.crossref.SCHEMA_LOCATION_STR
+        ]
         head = lxml.etree.SubElement(root, q('head'))
         batchId = str(uuid.uuid1())
         lxml.etree.SubElement(head, q('doi_batch_id')).text = batchId
@@ -177,9 +180,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         ).text = django.conf.settings.CROSSREF_DEPOSITOR_EMAIL
         lxml.etree.SubElement(head, q('registrant')).text = registrant
         e = lxml.etree.SubElement(root, q('body'))
-        del body.attrib[self._schemaLocation]
+        del body.attrib[impl.crossref.SCHEMA_LOCATION_STR]
         if withdrawTitles:
-            for p in self.TITLE_PATH_LIST:
+            for p in impl.crossref.TITLE_PATH_LIST:
                 for t in doiData.xpath(p, namespaces=ns):
                     if t.text is not None:
                         t.text = 'WITHDRAWN: ' + t.text
@@ -193,31 +196,20 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         Returns True on success, False on (internal) error. 'doi' is the
         identifier in question.
         """
-        body, boundary = self._multipartBody(
+        body_bytes, boundary = self._multipartBody(
             ('operation', 'doMDUpload'),
-            ('login_id', self._username),
+            ('login_id', django.conf.settings.CROSSREF_USERNAME),
             ('login_passwd', django.conf.settings.CROSSREF_PASSWORD),
             (
                 'fname',
                 batchId + '.xml',
                 'application/xml; charset=utf-8',
-                deposit.encode('utf-8'),
+                deposit,
             ),
         )
 
-        is_test_doi = impl.util2.isTestCrossrefDoi(doi)
-
-        # Force hitting the test server if EZID is running in DEBUG mode
-        is_test_doi |= django.conf.settings.DEBUG
-
-        log.debug(f'isTestCrossrefDoi({doi}) or DEBUG: {is_test_doi}')
-
-        url = django.conf.settings.CROSSREF_DEPOSIT_URL.format(
-            django.conf.settings.CROSSREF_TEST_SERVER
-            if is_test_doi
-            else django.conf.settings.CROSSREF_REAL_SERVER
-        )
-
+        base_url = self.get_base_url(doi)
+        url = base_url + django.conf.settings.CROSSREF_DEPOSIT_PATH
         log.debug(f'Deposit URL: {url}')
 
         try:
@@ -226,11 +218,11 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 c = urllib.request.urlopen(
                     urllib.request.Request(
                         url,
-                        body.encode('utf-8'),
+                        body_bytes,
                         {'Content-Type': 'multipart/form-data; boundary=' + boundary},
                     )
                 )
-                r = c.read()
+                r = c.read().decode('utf-8')
                 assert 'Your batch submission was successfully received.' in r, (
                     'unexpected return from metadata submission: ' + r
                 )
@@ -239,7 +231,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 msg = None
                 if e.fp is not None:
                     try:
-                        msg = e.fp.read()
+                        msg = e.fp.read().decode('utf-8')
                     except Exception:
                         log.exception('Exception')
                 raise Exception(msg) from e
@@ -256,6 +248,17 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         else:
             return True
 
+    def get_base_url(self, doi):
+        is_test_doi = impl.util2.isTestCrossrefDoi(doi)
+        # Force hitting the test server if EZID is running in DEBUG mode
+        is_test_doi |= django.conf.settings.DEBUG
+        log.debug(f'isTestCrossrefDoi({doi}) or DEBUG: {is_test_doi}')
+        return (
+            django.conf.settings.CROSSREF_TEST_SERVER
+            if is_test_doi
+            else django.conf.settings.CROSSREF_REAL_SERVER
+        )
+
     def check_status(self, task_model):
         """Check status of previously submitted Create/Update/Delete and move state
         from UNCHECKED/SUBMITTED to SUBMITTED/WARNING/FAILURE/SUCCESS.
@@ -266,7 +269,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         """
         log.debug(f'Check: {task_model}')
 
-        t = self._checkDepositStatus(task_model.batchId, task_model.refIdentifier.identifier[4:])
+        ref_id = task_model.refIdentifier
+        t = self._checkDepositStatus(task_model)
         status_str = t[0]
         msg_str = ''
 
@@ -292,7 +296,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             # such a way as to avoid infinite loops and triggering further updates to
             # DataCite or Crossref.
             s = impl.ezid.setMetadata(
-                task_model.refIdentifier.identifier,
+                ref_id.identifier,
                 ezidapp.models.util.getAdminUser(),
                 {'_crossref': f'{id_status}/{msg_str}'},
                 updateExternalServices=False,
@@ -310,32 +314,35 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
         Each part is either a 2-tuple (name, value) or a 4-tuple (name, filename,
         contentType, value). Returns a tuple (document, boundary).
-        """
-        while True:
-            boundary = f'BOUNDARY_{uuid.uuid1().hex}'
-            collision = False
-            for p in parts:
-                for e in p:
-                    if boundary in e:
-                        collision = True
-            if not collision:
-                break
-        body = []
-        for p in parts:
-            body.append('--' + boundary)
-            if len(p) == 2:
-                body.append(f'Content-Disposition: form-data; name="{p[0]}"')
-                body.append('')
-                body.append(p[1])
-            else:
-                body.append(f'Content-Disposition: form-data; name="{p[0]}"; filename="{p[1]}"')
-                body.append(f'Content-Type: {p[2]}')
-                body.append('')
-                body.append(p[3])
-        body.append(f'--{boundary}--')
-        return '\r\n'.join(body), boundary
 
-    def _checkDepositStatus(self, batchId, doi):
+        `value` is always bytes. Other elements are always str.
+        """
+        boundary = f'BOUNDARY_{uuid.uuid1().hex}'
+        part_list = []
+        for p in parts:
+            part_list.append('--' + boundary)
+            if len(p) == 2:
+                part_list.append(f'Content-Disposition: form-data; name="{p[0]}"')
+                part_list.append('')
+                part_list.append(p[1])
+            else:
+                part_list.append(
+                    f'Content-Disposition: form-data; name="{p[0]}"; filename="{p[1]}"'
+                )
+                part_list.append(f'Content-Type: {p[2]}')
+                part_list.append('')
+                part_list.append(p[3])
+        part_list.append(f'--{boundary}--')
+        return (
+            b'\r\n'.join([s.encode('utf-8') if isinstance(s, str) else s for s in part_list]),
+            boundary,
+        )
+
+    def _checkDepositStatus(self, task_model):
+        batchId = task_model.batchId
+        ref_id = task_model.refIdentifier
+        doi = ref_id.identifier[4:]
+
         """Check the status of the metadata submission identified by 'batchId'. 'doi' is
         the identifier in question. The return is one of the tuples:
 
@@ -362,13 +369,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         if not django.conf.settings.CROSSREF_ENABLED:
             return 'completed successfully', None
 
-        log.debug(f'error checking deposit status, doi {doi}, batch {batchId}')
-
-        url = django.conf.settings.CROSSREF_RESULTS_URL % (
-            django.conf.settings.CROSSREF_TEST_SERVER
-            if impl.util2.isTestCrossrefDoi(doi)
-            else django.conf.settings.CROSSREF_REAL_SERVER
-        )
+        log.debug(f'Checking deposit status, doi {doi}, batch {batchId}')
+        base_url = self.get_base_url(doi)
+        url = base_url + django.conf.settings.CROSSREF_RESULTS_PATH
 
         c = None
         try:
@@ -377,7 +380,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     url,
                     urllib.parse.urlencode(
                         {
-                            'usr': self._username,
+                            'usr': ref_id.owner.username,
                             'pwd': django.conf.settings.CROSSREF_PASSWORD,
                             'file_name': batchId + '.xml',
                             'type': 'result',
@@ -391,7 +394,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             msg = None
             if e.fp is not None:
                 try:
-                    msg = e.fp.read()
+                    msg = e.fp.read().decode('utf-8')
                 except Exception:
                     log.exception('Exception')
             raise Exception(msg) from e
@@ -438,7 +441,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
     def _sendEmail(self, emailAddress, task_model):
         warning_or_error_str = 'warning' if task_model.status == self.queue.WARNING else 'error'
-
+        ref_id = task_model.refIdentifier
         body_str = (
             'EZID received a{} {} in registering an identifier of yours with '
             'Crossref.\n\n'
@@ -452,10 +455,10 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             'Please do not reply.\n'.format(
                 'n' if warning_or_error_str == 'error' else '',
                 warning_or_error_str,
-                task_model.refIdentifier.identifier,
-                task_model.refIdentifier.get_status_display(),
+                ref_id.identifier,
+                ref_id.get_status_display(),
                 task_model.message if task_model.message != '' else '(unknown reason)',
-                f'{django.conf.settings.EZID_BASE_URL}/id/{urllib.parse.quote(task_model.refIdentifier.identifier, ":/")}',
+                f'{django.conf.settings.EZID_BASE_URL}/id/{urllib.parse.quote(ref_id.identifier, ":/")}',
             )
         )
 
