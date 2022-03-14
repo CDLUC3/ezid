@@ -284,7 +284,7 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
 
         with django.db.transaction.atomic():
             si.save()
-            impl.enqueue.enqueue(si, "create")
+            impl.enqueue.enqueue(si, "create", updateExternalServices=True)
 
     except django.core.exceptions.ValidationError as e:
         impl.log.badRequest(tid)
@@ -298,7 +298,7 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
             return "error: bad request - identifier already exists"
     except Exception as e:
         impl.log.error(tid, e)
-        if sys.is_running_under_pytest:
+        if hasattr(sys, 'is_running_under_pytest'):
             raise
         return "error: internal server error"
     else:
@@ -370,7 +370,7 @@ def getMetadata(identifier, user=ezidapp.models.user.AnonymousUser, prefixMatch=
         return "error: bad request - no such identifier"
     except Exception as e:
         impl.log.error(tid, e)
-        if sys.is_running_under_pytest:
+        if hasattr(sys, 'is_running_under_pytest'):
             raise
         return "error: internal server error"
     finally:
@@ -436,7 +436,7 @@ def setMetadata(identifier, user, metadata, updateExternalServices=True, interna
 
         with django.db.transaction.atomic():
             si.save()
-            impl.enqueue.enqueue(si, "update")
+            impl.enqueue.enqueue(si, "update", updateExternalServices)
 
     except ezidapp.models.identifier.Identifier.DoesNotExist:
         impl.log.badRequest(tid)
@@ -446,7 +446,7 @@ def setMetadata(identifier, user, metadata, updateExternalServices=True, interna
         return "error: bad request - " + impl.util.formatValidationError(e)
     except Exception as e:
         impl.log.error(tid, e)
-        if sys.is_running_under_pytest:
+        if hasattr(sys, 'is_running_under_pytest'):
             raise
         return "error: internal server error"
     else:

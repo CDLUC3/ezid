@@ -192,7 +192,7 @@ def enqueueRequest(state, user, request):
     except Exception as e:
         impl.log.otherError("download.enqueueRequest", e)
         # noinspection PyUnresolvedReferences
-        if sys.is_running_under_pytest:
+        if hasattr(sys, 'is_running_under_pytest'):
             raise
         return "error: internal server error"
 

@@ -1,4 +1,4 @@
-ERROR impl.nog.shoulder shoulder Datacenter must be one of:
+ERROR shoulder Datacenter must be one of:
   CDL.CDL
   CDL.CMU
   CDL.INVEMAR

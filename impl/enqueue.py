@@ -24,7 +24,7 @@ log = logging.getLogger(__name__)
 def enqueue(
     si_model: ezidapp.models.identifier.Identifier,
     operation_label: str,
-    update_external_services=True,
+    updateExternalServices: bool,
 ) -> None:
     """Add a new create, update or delete operation to each of the async processing
     queues
@@ -49,7 +49,7 @@ def enqueue(
     ref_id_model = create_ref_id_model(si_model)
 
     queue_model_list = [ezidapp.models.async_queue.SearchIndexerQueue]
-    if update_external_services:
+    if updateExternalServices:
         queue_model_list.extend(
             (
                 ezidapp.models.async_queue.BinderQueue,

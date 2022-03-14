@@ -1,2 +1,2 @@
-INFO impl.nog.shoulder shoulder Creating minter for DOI shoulder: doi:10.9111/R01
-    INFO ezidapp.management.commands.shoulder-create-doi shoulder-create-doi Shoulder created
+INFO shoulder Creating minter for DOI shoulder: doi:10.9111/R01
+    INFO shoulder-create-doi Shoulder created
