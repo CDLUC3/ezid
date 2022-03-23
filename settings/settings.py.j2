@@ -14,7 +14,6 @@ import ecs_logging
 
 import django.utils.translation
 
-
 # When DEBUG == True, any errors in EZID are returned to the user as pages containing
 # full stack traces and additional information. Should only be used for development.
 DEBUG = True
@@ -60,7 +59,8 @@ SEARCH_MINIMUM_WORD_LENGTH = 3
 
 # fmt:off
 SEARCH_STOPWORDS = [
-    'about', 'are', 'com', 'for', 'from', 'how', 'that', 'the', 'this', 'was', 'what', 'when',
+    'about', 'are', 'com', 'for', 'from', 'how', 'that', 'the', 'this', 'was', 'what',
+    'when',
     'where', 'who', 'will', 'with', 'und', 'www'
 ]
 # fmt:on
@@ -69,8 +69,10 @@ SEARCH_STOPWORDS = [
 # in the keyword text of more than 20% of identifiers.
 # fmt:off
 SEARCH_STOPWORDS += [
-    'http', 'https', 'ark', 'org', 'cdl', 'cdlib', 'doi', 'merritt', 'lib', 'ucb', 'dataset',
-    'and', 'data', 'edu', '13030', 'type', 'version', 'systems', 'inc', 'planet', 'conquest',
+    'http', 'https', 'ark', 'org', 'cdl', 'cdlib', 'doi', 'merritt', 'lib', 'ucb',
+    'dataset',
+    'and', 'data', 'edu', '13030', 'type', 'version', 'systems', 'inc', 'planet',
+    'conquest',
     '6068', 'datasheet', 'servlet', 'dplanet', 'dataplanet', 'statisticaldatasets',
 ]
 # fmt:on
@@ -88,7 +90,7 @@ TEMPLATE_DIR = PROJECT_ROOT / 'templates'  # /apps/ezid/ezid/templates
 # Dirs above PROJECT_ROOT
 HOME_DIR = (PROJECT_ROOT / '..').resolve()  # /apps/ezid
 MINTERS_PATH = HOME_DIR / 'var' / 'minters'  # /apps/ezid/var/minters
-LOG_DIR = HOME_DIR / 'logs' # /apps/ezid/logs
+LOG_DIR = HOME_DIR / 'logs'  # /apps/ezid/logs
 
 ROOT_URLCONF = 'settings.urls'
 
@@ -169,7 +171,6 @@ DATABASES_RECONNECT_DELAY = 60
 # Max age of test identifiers before they are deleted
 DAEMONS_EXPUNGE_MAX_AGE_SEC = 60 * 60 * 24 * 14
 
-
 # The options in this section are used only if fulltext search is supported by the
 # search database. The following two options could be obtained from MySQL directly, but
 # we put them here to avoid any overt dependencies on MySQL.
@@ -235,7 +236,7 @@ logging.config.dictConfig(
                 )
             },
             'ecs_logging': {
-                 'class': 'ecs_logging.StdlibFormatter',
+                'class': 'ecs_logging.StdlibFormatter',
             },
         },
         'handlers': {
@@ -357,7 +358,7 @@ ADMIN_ORG_NAME = '{{ admin_org_name }}'
 ADMIN_ORG_URL = '{{ admin_org_url }}'
 
 ADMIN_CROSSREF_EMAIL = '{{ admin_crossref_email }}'
-ADMIN_CROSSREF_ENABLED = {{ admin_crossref_enabled }}
+ADMIN_CROSSREF_ENABLED = {{admin_crossref_enabled}}
 
 ADMIN_PRIMARY_CONTACT_EMAIL = '{{ admin_primary_contact_email }}'
 ADMIN_PRIMARY_CONTACT_NAME = '{{ admin_primary_contact_name }}'
@@ -399,6 +400,14 @@ TEST_SHOULDER_DICT = [
     {"namespace": 'DOI Test', "prefix": 'doi:10.5072/FK2'},
 ]
 
+PROTO_SUPER_SHOULDER = {
+    "doi:10.7286/": "doi:10.7286/V1",
+    "doi:10.4246/": "doi:10.4246/P6",
+    "ark:/88435/": "ark:/88435/dc",
+    "doi:10.15697/": "doi:10.15697/FK2",
+    "ark:/12345/": "ark:/12345/fk8",
+}
+
 # DataCite
 
 DATACITE_ENABLED = True
@@ -439,7 +448,7 @@ DEFAULT_ARK_PROFILE = 'erc'
 DEFAULT_DOI_PROFILE = 'datacite'
 DEFAULT_UUID_PROFILE = 'erc'
 
-PROFILES_KEYS = ['INTERNAL','DATACITE','DC','ERC','CROSSREF']
+PROFILES_KEYS = ['INTERNAL', 'DATACITE', 'DC', 'ERC', 'CROSSREF']
 
 # The INTERNAL profile is special and must be listed first.
 PROFILE_INTERNAL_NAME = 'internal'
