@@ -36,7 +36,7 @@ def tombstoneTargetUrl(identifier):
 
     The identifier is assumed to be in normalized, qualified form.
     """
-    return f"{django.conf.settings.EZID_BASE_URL}/tombstone/id/{urllib.parse.quote(identifier, ':/')}"
+    return f"{django.conf.settings.DEFAULT_TARGET_BASE_URL}/tombstone/id/{urllib.parse.quote(identifier, ':/')}"
 
 
 def isTestIdentifier(identifier):

@@ -16,6 +16,18 @@ import impl.util
 
 
 class LinkChecker(django.db.models.Model):
+    def __str__(self):
+        return (
+            f'{self.__class__.__name__}('
+            f'pk={self.pk}, '
+            f'id={self.identifier}, '
+            f'error={self.error}, '
+            f'numFailures={self.numFailures}, '
+            f'size={self.size}, '
+            f'target={self.target}'
+            f')'
+        )
+
     class Meta:
         index_together = [("owner_id", "isBad", "lastCheckTime")]
 
@@ -61,9 +73,7 @@ class LinkChecker(django.db.models.Model):
 
     # The identifier in qualified, normalized form, e.g.,
     # "ark:/12345/abc" or "doi:10.1234/ABC".
-    identifier = django.db.models.CharField(
-        max_length=impl.util.maxIdentifierLength, unique=True
-    )
+    identifier = django.db.models.CharField(max_length=impl.util.maxIdentifierLength, unique=True)
 
     # The identifier's owner. As this table is populated from the
     # Identifier table (not ideal, but currently necessary), this

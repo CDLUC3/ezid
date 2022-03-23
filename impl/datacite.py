@@ -7,6 +7,7 @@ operated by the Technische Informationsbibliothek (TIB)
 """
 
 import http.client
+import logging
 import os
 import os.path
 import re
@@ -25,6 +26,8 @@ import ezidapp.models.shoulder
 import ezidapp.models.validation
 import impl.mapping
 import impl.util
+
+log = logging.getLogger(__name__)
 
 ALLOCATOR_DICT = {
     a: getattr(django.conf.settings, f"ALLOCATOR_{a}_PASSWORD")
@@ -112,23 +115,25 @@ def registerIdentifier(doi, targetUrl, datacenter=None):
     # the DataCite service, we make multiple attempts.
     for i in range(django.conf.settings.DATACITE_NUM_ATTEMPTS):
         o = urllib.request.build_opener(_HTTPErrorProcessor)
-        r = urllib.request.Request(django.conf.settings.DATACITE_DOI_URL)
+
+        data = "doi={}\nurl={}".format(
+            doi.replace('\\', r'\\'),
+            targetUrl.replace("\\", r'\\'),
+        ).encode("utf-8")
+
+        r = urllib.request.Request(django.conf.settings.DATACITE_DOI_URL, data=data)
         # We manually supply the HTTP Basic authorization header to avoid
         # the doubling of the number of HTTP transactions caused by the
         # challenge/response model.
         r.add_header("Authorization", _authorization(doi, datacenter))
         r.add_header("Content-Type", "text/plain; charset=utf-8")
 
-        r.data = "doi={}\nurl={}".format(
-            doi.replace('\\', r'\\'),
-            targetUrl.replace("\\", r'\\'),
-        ).encode("utf-8")
-
         c = None
         try:
             c = o.open(r, timeout=django.conf.settings.DATACITE_TIMEOUT)
             assert c.read() == "OK", "Unexpected return from DataCite register DOI operation"
         except urllib.error.HTTPError as e:
+            log.debug(f'registerIdentifier() failed: {str(e)}')
             message = e.fp.read()
             if e.code == 400 and message.startswith(b"[url]"):
                 return message

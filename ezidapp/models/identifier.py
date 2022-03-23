@@ -73,6 +73,19 @@ class IdentifierBase(django.db.models.Model):
     identifiers is stored either directly or is referenced in foreign keys.
     """
 
+    def __str__(self):
+        return (
+            f'{self.__class__.__name__}('
+            f'pk={self.pk}, '
+            f'id={self.identifier}, '
+            f'isArk={self.isArk}, '
+            f'isDOI={self.isDoi}, '
+            f'isDataCite={self.isDatacite}, '
+            f'isCrossref={self.isCrossref}, '
+            f'target={self.target}'
+            f')'
+        )
+
     class Meta:
         """This model does not itself cause a table to be created. Tables are created by
         subclasses below.
@@ -743,9 +756,6 @@ class IdentifierBase(django.db.models.Model):
 
     def computeComputedValues(self):
         self.isTest = impl.util2.isTestIdentifier(self.identifier)
-
-    def __str__(self):
-        return f'{self.__class__.__name__}({self.pk}, {self.identifier})'
 
     def toLegacy(self):
         """Return a legacy representation of the identifier

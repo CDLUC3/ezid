@@ -401,7 +401,7 @@ TEST_SHOULDER_DICT = [
 
 # DataCite
 
-DATACITE_ENABLED = False
+DATACITE_ENABLED = True
 DATACITE_DOI_URL = 'https://mds.datacite.org/doi'
 DATACITE_METADATA_URL = 'https://mds.datacite.org/metadata'
 
@@ -423,7 +423,7 @@ ALLOCATOR_PURDUE_PASSWORD = ''
 # The 'daemons.crossref_enabled' flag governs whether the Crossref
 # daemon thread runs. The flag below governs if the daemon actually
 # contacts Crossref, or if Crossref calls are simply short-circuited.
-CROSSREF_ENABLED = False
+CROSSREF_ENABLED = True
 CROSSREF_DEPOSITOR_NAME = 'EZID'
 CROSSREF_DEPOSITOR_EMAIL = 'ezidcdl@gmail.com'
 CROSSREF_REAL_SERVER = 'https://doi.crossref.org'

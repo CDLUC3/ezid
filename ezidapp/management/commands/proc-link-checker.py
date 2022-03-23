@@ -266,6 +266,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 break
             for o in qs:
                 if filter is None or filter(o):
+                    log.debug(f'Generator returning: {str(o)}')
                     yield o
             lastIdentifier = qs[-1].identifier
         yield None
@@ -282,7 +283,6 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         bad = [0, 0, self.now_int()]
 
         link_checker_model = django.apps.apps.get_model('ezidapp', 'LinkChecker')
-        # lcGenerator = self.harvest(ezidapp.models.link_checker.LinkChecker)
         lcGenerator = self.harvest(link_checker_model)
 
         search_identifier_model = django.apps.apps.get_model('ezidapp', 'SearchIdentifier')
@@ -311,11 +311,6 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     target=si.target,
                     owner_id=si.owner_id,
                 )
-                # nlc = ezidapp.models.link_checker.LinkChecker(
-                #     identifier=si.identifier,
-                #     target=si.target,
-                #     owner_id=si.owner_id,
-                # )
                 nlc.full_clean(validate_unique=False)
                 nlc.save()
                 si = next(siGenerator)
