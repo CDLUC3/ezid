@@ -7,10 +7,11 @@
 
 For a user to be deleted, the user must:
 
-   - Be disabled from logging in
+   - Not own any identifiers
+   - Not own any shoulders
    - Not inherit its group's shoulders
-   - Have no shoulders
    - Not have any proxies or be a proxy for another user
+   - Be disabled from logging in
 
 Identifier deletions are logged to standard error and not to the server's log.
 """
@@ -25,7 +26,6 @@ import ezidapp.models.group
 import ezidapp.models.identifier
 import ezidapp.models.realm
 import ezidapp.models.user
-import ezidapp.models.util
 import ezidapp.models.util
 import impl.django_util
 import impl.ezid
@@ -49,18 +49,6 @@ class Command(django.core.management.BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('user', help='The user to delete')
         parser.add_argument(
-            '-i',
-            action='store_true',
-            dest='deleteIdentifiers',
-            help='Also delete the user\'s identifiers',
-        )
-        parser.add_argument(
-            '-l',
-            action='store_false',
-            dest='updateExternalServices',
-            help='Disable external service updates',
-        )
-        parser.add_argument(
             "--debug",
             action="store_true",
             help="Debug level logging",
@@ -76,44 +64,32 @@ class Command(django.core.management.BaseCommand):
             raise django.core.management.CommandError('No such user: ' + opt.user)
 
         if (
-            user.loginEnabled
-            or user.inheritGroupShoulders
-            or user.shoulders.count() > 0
-            or user.proxies.count() > 0
-            or user.proxy_for.count() > 0
+            ezidapp.models.identifier.SearchIdentifier.objects.filter(owner=user).exists()
+            or ezidapp.models.identifier.Identifier.objects.filter(owner=user).exists()
         ):
             raise django.core.management.CommandError(
-                'Cannot delete user. Please check the preconditions for deleting a user '
-                'described in the help for this command'
+                'Cannot delete user: User is the owner of one or more identifiers'
             )
 
-        if opt.deleteIdentifiers:
-            # The loop below is designed to keep the length of the update queue
-            # reasonable when deleting large numbers of identifiers.
-            while True:
-                ids = list(
-                    ezidapp.models.identifier.Identifier.objects.filter(owner=user)
-                    .only('identifier')
-                    .order_by('identifier')[:1000]
-                )
-                for id_str in ids:
-                    s = impl.ezid.deleteIdentifier(
-                        id_str.identifier,
-                        ezidapp.models.util.getAdminUser(),
-                        opt.updateExternalServices,
-                    )
-                    if not s.startswith('success'):
-                        raise django.core.management.CommandError(
-                            'Identifier deletion failed: {}'.format(s)
-                        )
+        if user.loginEnabled:
+            raise django.core.management.CommandError(
+                'Cannot delete user: User is enabled for login'
+            )
 
-                if len(ids) == 0:
-                    break
-        else:
-            if ezidapp.models.identifier.Identifier.objects.filter(owner=user).count() > 0:
-                raise django.core.management.CommandError(
-                    'Cannot delete user because it has identifiers'
-                )
+        if user.inheritGroupShoulders or user.shoulders.count() > 0:
+            raise django.core.management.CommandError(
+                'Cannot delete user: User owns or inherits one or more shoulders'
+            )
+
+        if user.proxies.count() > 0:
+            raise django.core.management.CommandError(
+                'Cannot delete user: User has one or more proxy users'
+            )
+
+        if user.proxy_for.count() > 0:
+            raise django.core.management.CommandError(
+                'Cannot delete user: User is proxy for one or more users'
+            )
 
         searchUser = ezidapp.models.user.User.objects.get(username=user.username)
         user.delete()
