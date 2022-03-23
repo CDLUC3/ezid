@@ -17,6 +17,7 @@ import uuid
 
 import django.conf
 import django.core.exceptions
+import django.conf
 import django.db.transaction
 import django.db.utils
 
@@ -186,10 +187,13 @@ def _mintIdentifier(shoulder, user, metadata={}):
         identifier = impl.nog.minter.mint_id(shoulder_model)
         logger.debug('Minter returned identifier: {}'.format(identifier))
 
+        # proto super shoulder check
+        prefix_val = django.conf.settings.PROTO_SUPER_SHOULDER.get(shoulder_model.prefix, shoulder_model.prefix)
+
         if shoulder_model.prefix.startswith('doi:'):
-            identifier = shoulder_model.prefix + identifier.upper()
+            identifier = prefix_val + identifier.upper()
         elif shoulder_model.prefix.startswith('ark:/'):
-            identifier = shoulder_model.prefix + identifier.lower()
+            identifier = prefix_val + identifier.lower()
         else:
             raise ValueError('Expected ARK or DOI prefix, not "{}"'.format(shoulder_model.prefix))
 

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+	<meta charset="UTF-8">
+	<title>Home Layout</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+	<!-- build:css css/main2.min.css -->
+	<link rel="stylesheet" href="css/main2.css">
+	<!-- endbuild -->
+
+</head>
+<body>
+
+	<div class="container-fluid">
+
+    <h1><a href="index.html">EZID UI Library</a></h1>
+
+    <h2>Simple and Advanced Search Layout</h2>
+
+    <!--#include file="includes/header.html" -->
+
+    <!--#include file="includes/login-menu.html" -->
+
+    <div class="heading__primary-container">
+      <h1 class="heading__primary-text">Search across EZID identifiers</h1>
+    </div>
+    
+    <div class="search__simple">
+      <div class="fcontrol__group-stacked">
+        <label for="search__simple-label" class="fcontrol__text-label-hidden">Search</label>
+        <input id="search__simple-label" class="fcontrol__text-field-stacked" type="search" placeholder="Full text search using words about or describing the identifier.">
+        <span class="fcontrol__invalid-flag">Your search must not be empty</span>
+      </div>
+      <button class="search__simple-button">Search</button>
+    </div>
+
+    <details class="showhide">
+      <summary class="showhide__summary">Advanced Search</summary>
+      <div class="row">
+        <div class="col-md-6 search__form-element-container">
+          <div class="fcontrol__group-stacked">
+            <label for="search__simple-label" class="fcontrol__text-label-stacked">Identifier/Identifier Prefix</label>
+            <input id="search__simple-label" class="fcontrol__text-field-stacked" type="text" placeholder="doi:10.17614/Q44F1NB79" >
+            <span class="fcontrol__invalid-flag">Your search must not be empty</span>
+          </div>
+        </div>
+        <div class="col-md-6 search__form-element-container">
+          <div class="fcontrol__group-stacked">
+            <label for="search__simple-label" class="fcontrol__text-label-stacked">Object Title (What)</label>
+            <input id="search__simple-label" class="fcontrol__text-field-stacked" type="text" placeholder="Ex. 2,2,2-trichloro-1-[(4R)-3,3,4-trimethyl-1,1-dioxo-thiazetidin-2-yl]ethanone" >
+            <span class="fcontrol__invalid-flag">Your search must not be empty</span>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 search__form-element-container">
+          <div class="fcontrol__group-stacked">
+            <label for="search__simple-label" class="fcontrol__text-label-stacked">Object Creator (Who)</label>
+            <input id="search__simple-label" class="fcontrol__text-field-stacked" type="text" placeholder="Ex. Pitt Quantum Repository" >
+            <span class="fcontrol__invalid-flag">Your search must not be empty</span>
+          </div>
+        </div>
+        <div class="col-md-6 search__form-element-container">
+          <div class="fcontrol__group-stacked">
+            <label for="search__simple-label" class="fcontrol__text-label-stacked">Object Publisher</label>
+            <input id="search__simple-label" class="fcontrol__text-field-stacked" type="text" placeholder="Ex. University of Pittsburgh" >
+            <span class="fcontrol__invalid-flag">Your search must not be empty</span>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="fieldset-stacked" role="group" aria-labelledby="fieldset__example4">
+            <div id="fieldset__example4" class="fieldset-stacked__legend search__publication-fieldset">Object Publication Date (When)</div>
+            <div class="fcontrol__inline-groups search__inline-groups">
+              <div class="fcontrol__group-inline">
+                <label for="fcontrol__example-label2" class="fcontrol__text-label-inline">From</label>
+                <input id="fcontrol__example-label2" class="fcontrol__text-field-inline" type="text" placeholder="Ex. 2015">
+              </div>
+              <div class="fcontrol__group-inline">
+                <label for="fcontrol__example-label2" class="fcontrol__text-label-inline">To</label>
+                <input id="fcontrol__example-label2" class="fcontrol__text-field-inline" type="text" placeholder="Ex. 2016">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 search__form-element-container">
+          <div class="fcontrol__select-group-stacked">
+            <label for="fcontrol__example-label12" class="fcontrol__select-label-stacked">Object Type</label>
+            <select name="url-here" id="fcontrol__example-label12" class="fcontrol__select--fullwidth">
+              <option value="">Select a type of object</option>
+              <option value="">Autovisual</option>
+              <option value="">Collection</option>
+              <option value="">Etc.</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="fcontrol__select-group-stacked">
+            <label for="fcontrol__example-label12" class="fcontrol__select-label-stacked">ID Type</label>
+            <select name="url-here" id="fcontrol__example-label12" class="fcontrol__select--fullwidth">
+              <option value="">Select a type of identifier (ARK or DOI)</option>
+              <option value="">ARK</option>
+              <option value="">DOI</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <!-- empty bootstrap column-->
+        </div>
+      </div>
+    </details>
+
+    <!--#include file="includes/footer_geo-off.html" -->
+
+  </div>
+	
+  <!-- build:js js/main2.min.js -->
+  <script src="js/vendor/jquery.min.js"></script>
+  <script src="js/vendor/jquery-ui.min.js"></script>
+  <script src="js/vendor/better-dom.min.js"></script>
+  <script src="js/vendor/better-details-polyfill.js"></script>
+  <script src="js/vendor/picturefill.min.js"></script>
+  <script src="js/vendor/modernizr-custombuild.js"></script>
+  <script src="js/main2.js"></script>
+  <!-- endbuild -->
+	
+</body>
+</html>

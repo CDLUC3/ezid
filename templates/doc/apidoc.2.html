@@ -319,7 +319,7 @@ def escape (s):
   return re.sub(&quot;[%:\r\n]&quot;, lambda c: &quot;%%%02X&quot; % ord(c.group(0)), s)
 
 <span class="hl2">anvl</span> = &quot;\n&quot;.join(&quot;%s: %s&quot; % (escape(name), escape(value)) for name,
-  value in <span class="hl2">metadata</span>.items()).encode(&quot;UTF-8&quot;)
+  value in list(<span class="hl2">metadata</span>.items())).encode(&quot;UTF-8&quot;)
 </pre>
 <p>Conversely, to parse a UTF-8 encoded string, <span class="hl1">anvl</span>, producing
 a dictionary, <span class="hl1">metadata</span>:</p>
@@ -1360,13 +1360,13 @@ response will resemble the following:</p>
 </div>
 <div class="section" id="python-command-line-tool">
 <h1>Python command line tool</h1>
-<p><a class="reference external" href="https://github.com/CDLUC3/ezid-client-tools/blob/master/ezid.py">ezid.py</a> <span class="ext-icon"></span> is a command line tool, written in Python,
+<p><a class="reference external" href="https://github.com/CDLUC3/ezid-client-tools/blob/master/ezid3.py">ezid3.py</a> <span class="ext-icon"></span> is a command line tool, written in Python,
 that is capable of exercising all API functions.  It serves as an
 example of how to use the API from Python, but it's also useful in its
 own right as an easy, scriptable means of accessing EZID
 functionality.  The general usage is:</p>
 <pre class="literal-block">
-% ezid.py <span class="hl2">credentials</span> <span class="hl2">operation</span> <span class="hl2">[arguments...]</span>
+% ezid3.py <span class="hl2">credentials</span> <span class="hl2">operation</span> <span class="hl2">[arguments...]</span>
 </pre>
 <p>Run the tool with no command line arguments for a complete usage
 statement; additional documentation is in the source code.  To give a
@@ -1374,13 +1374,13 @@ flavor of the tool's usage and capabilities here, a few examples
 follow.</p>
 <p>To mint a test ARK identifier and supply initial metadata:</p>
 <pre class="literal-block">
-% ezid.py <span class="hl2">username</span>:<span class="hl2">password</span> mint ark:/99999/fk4 erc.who 'Proust, Marcel' \
+% ezid3.py <span class="hl2">username</span>:<span class="hl2">password</span> mint ark:/99999/fk4 erc.who 'Proust, Marcel' \
     erc.what 'Remembrance of Things Past' erc.when 1922
 success: ark:/99999/fk4gt78tq
 </pre>
 <p>To get identifier metadata:</p>
 <pre class="literal-block">
-% ezid.py -dt - view ark:/99999/fk4gt78tq
+% ezid3.py -dt - view ark:/99999/fk4gt78tq
 success: ark:/99999/fk4gt78tq
 _created: 2013-05-17T18:17:14
 _export: yes
@@ -1407,7 +1407,7 @@ erc.when: 1922
 <p>Then a test ARK identifier with that metadata can be minted by
 invoking:</p>
 <pre class="literal-block">
-% ezid.py <span class="hl2">username</span>:<span class="hl2">password</span> mint ark:/99999/fk4 &#64; metadata.txt
+% ezid3.py <span class="hl2">username</span>:<span class="hl2">password</span> mint ark:/99999/fk4 &#64; metadata.txt
 </pre>
 <p>And if a metadata element value has the form &quot;&#64;<span class="hl1">filename</span>&quot;, the
 named file is read and treated as a single value.  For example, if
@@ -1415,7 +1415,7 @@ file metadata.xml contains a DataCite XML document, then a test DOI
 identifier with that document as the value of the &quot;datacite&quot; element
 can be minted by invoking:</p>
 <pre class="literal-block">
-% ezid.py <span class="hl2">username</span>:<span class="hl2">password</span> mint doi:10.5072/FK2 datacite &#64;metadata.xml
+% ezid3.py <span class="hl2">username</span>:<span class="hl2">password</span> mint doi:10.5072/FK2 datacite &#64;metadata.xml
 </pre>
 </div>
 <div class="section" id="php-examples">
@@ -1802,7 +1802,7 @@ ARK identifiers:</p>
 <pre class="literal-block">
 #! /bin/bash
 for i in {1..100}; do
-  ezid.py <span class="hl2">username</span>:<span class="hl2">password</span> mint ark:/99999/fk4 | awk '{ print $2 }'
+  ezid3.py <span class="hl2">username</span>:<span class="hl2">password</span> mint ark:/99999/fk4 | awk '{ print $2 }'
 done
 </pre>
 <p>Second, the <a class="reference external" href="https://github.com/CDLUC3/ezid-client-tools/blob/master/batch-register.py">batch-register.py</a> <span class="ext-icon"></span> script automates several
