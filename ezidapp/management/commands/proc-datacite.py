@@ -22,10 +22,16 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     queue = ezidapp.models.async_queue.DataciteQueue
 
     def create(self, task_model):
-        self._overwrite(task_model)
+        if task_model.refIdentifier.isDatacite:
+            self._create_or_update(task_model)
+        else:
+            log.debug('Create skipped: isDatacite == False')
 
     def update(self, task_model):
-        self._overwrite(task_model)
+        if task_model.refIdentifier.isDatacite:
+            self._create_or_update(task_model)
+        else:
+            log.debug('Update skipped: isDatacite == False')
 
     def delete(self, task_model):
         # We can't actually delete a DOI, so we do the next best thing...
@@ -36,7 +42,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         impl.datacite.setTargetUrl(doi, "http://datacite.org/invalidDOI", datacenter)
         impl.datacite.deactivateIdentifier(doi, datacenter)
 
-    def _overwrite(self, task_model):
+    def _create_or_update(self, task_model):
         ref_id = task_model.refIdentifier
         doi = ref_id.identifier[4:]
         metadata = ref_id.metadata
