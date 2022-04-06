@@ -190,7 +190,7 @@ def _doGetRecord(oaiRequest):
     if id_str is None:
         return _error(oaiRequest, "idDoesNotExist")
     try:
-        identifier = ezidapp.models.identifier.Identifier.objects.get(
+        identifier = ezidapp.models.identifier.SearchIdentifier.objects.get(
             identifier=id_str
         )
     except ezidapp.models.identifier.Identifier.DoesNotExist:
@@ -279,7 +279,7 @@ def _doHarvest(oaiRequest, batchSize, includeMetadata):
             until = None
         cursor = 0
         total = None
-    q = ezidapp.models.identifier.Identifier.objects.filter(
+    q = ezidapp.models.identifier.SearchIdentifier.objects.filter(
         oaiVisible=True
     ).filter(updateTime__gt=from_)
     if until is not None:
