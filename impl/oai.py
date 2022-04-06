@@ -193,7 +193,7 @@ def _doGetRecord(oaiRequest):
         identifier = ezidapp.models.identifier.SearchIdentifier.objects.get(
             identifier=id_str
         )
-    except ezidapp.models.identifier.Identifier.DoesNotExist:
+    except ezidapp.models.identifier.SearchIdentifier.DoesNotExist:
         return _error(oaiRequest, "idDoesNotExist")
     if not identifier.oaiVisible:
         return _error(oaiRequest, "idDoesNotExist")
