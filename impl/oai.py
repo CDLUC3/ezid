@@ -229,7 +229,7 @@ def _doIdentify(oaiRequest):
     lxml.etree.SubElement(
         e, _q("adminEmail")
     ).text = django.conf.settings.OAI_ADMIN_EMAIL
-    t = ezidapp.models.identifier.Identifier.objects.filter(
+    t = ezidapp.models.identifier.SearchIdentifier.objects.filter(
         oaiVisible=True
     ).aggregate(django.db.models.Min("updateTime"))["updateTime__min"]
     if t is None:
