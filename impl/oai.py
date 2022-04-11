@@ -190,10 +190,10 @@ def _doGetRecord(oaiRequest):
     if id_str is None:
         return _error(oaiRequest, "idDoesNotExist")
     try:
-        identifier = ezidapp.models.identifier.Identifier.objects.get(
+        identifier = ezidapp.models.identifier.SearchIdentifier.objects.get(
             identifier=id_str
         )
-    except ezidapp.models.identifier.Identifier.DoesNotExist:
+    except ezidapp.models.identifier.SearchIdentifier.DoesNotExist:
         return _error(oaiRequest, "idDoesNotExist")
     if not identifier.oaiVisible:
         return _error(oaiRequest, "idDoesNotExist")
@@ -229,7 +229,7 @@ def _doIdentify(oaiRequest):
     lxml.etree.SubElement(
         e, _q("adminEmail")
     ).text = django.conf.settings.OAI_ADMIN_EMAIL
-    t = ezidapp.models.identifier.Identifier.objects.filter(
+    t = ezidapp.models.identifier.SearchIdentifier.objects.filter(
         oaiVisible=True
     ).aggregate(django.db.models.Min("updateTime"))["updateTime__min"]
     if t is None:
@@ -279,7 +279,7 @@ def _doHarvest(oaiRequest, batchSize, includeMetadata):
             until = None
         cursor = 0
         total = None
-    q = ezidapp.models.identifier.Identifier.objects.filter(
+    q = ezidapp.models.identifier.SearchIdentifier.objects.filter(
         oaiVisible=True
     ).filter(updateTime__gt=from_)
     if until is not None:
