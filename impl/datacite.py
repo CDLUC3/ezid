@@ -106,7 +106,7 @@ def registerIdentifier(doi, targetUrl, datacenter=None):
             "CDL.BUL".
 
     Returns:
-        There are three possible returns: None on success; a string error body_str if the
+        There are three possible returns: None on success; a string error message if the
         target URL was not accepted by DataCite; or a thrown exception on other error.
     """
     if not django.conf.settings.DATACITE_ENABLED:
@@ -423,7 +423,7 @@ def uploadMetadata(doi, current, delta, forceUpload=False, datacenter=None):
             (unless 'forceUpload' is true).
 
         forceUpload:
-        datacenter: If specified, should be the identifier'body_str datacenter, e.g.,
+        datacenter: If specified, should be the identifier datacenter, e.g.,
             "CDL.BUL".
 
     Returns:
