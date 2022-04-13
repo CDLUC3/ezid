@@ -23,7 +23,7 @@ log = logging.getLogger(__name__)
 
 class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     help = __doc__
-    display = 'NewsFeed'
+    name = __name__
     setting = 'DAEMONS_NEWSFEED_ENABLED'
 
     def run(self):
