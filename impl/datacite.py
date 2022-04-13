@@ -76,10 +76,10 @@ METADATA_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
   <publicationYear>{}</publicationYear>
 """
 
-RESOURCE_TYPE_TEMPLATE_1 = """  <resourceType resourceTypeGeneral="%s"/>
+RESOURCE_TYPE_TEMPLATE_1 = """  <resourceType resourceTypeGeneral="{}"/>
 """
 
-RESOURCE_TYPE_TEMPLATE_2 = """  <resourceType resourceTypeGeneral="%s">%s</resourceType>
+RESOURCE_TYPE_TEMPLATE_2 = """  <resourceType resourceTypeGeneral="{}">{}</resourceType>
 """
 
 
@@ -106,7 +106,7 @@ def registerIdentifier(doi, targetUrl, datacenter=None):
             "CDL.BUL".
 
     Returns:
-        There are three possible returns: None on success; a string error message if the
+        There are three possible returns: None on success; a string error body_str if the
         target URL was not accepted by DataCite; or a thrown exception on other error.
     """
     if not django.conf.settings.DATACITE_ENABLED:
@@ -131,12 +131,13 @@ def registerIdentifier(doi, targetUrl, datacenter=None):
         c = None
         try:
             c = o.open(r, timeout=django.conf.settings.DATACITE_TIMEOUT)
-            assert c.read() == "OK", "Unexpected return from DataCite register DOI operation"
+            body_str = c.read().decode('utf-8', errors='replace')
+            assert body_str == "OK", f"Unexpected return from DataCite register DOI operation: {body_str}"
         except urllib.error.HTTPError as e:
             log.debug(f'registerIdentifier() failed: {str(e)}')
-            message = e.fp.read()
-            if e.code == 400 and message.startswith(b"[url]"):
-                return message
+            body_str = e.fp.read().decode('utf-8', errors='replace')
+            if e.code == 400 and body_str.startswith("[url]"):
+                return body_str
             if e.code != 500 or i == django.conf.settings.DATACITE_NUM_ATTEMPTS - 1:
                 raise e
         except Exception:
@@ -422,7 +423,7 @@ def uploadMetadata(doi, current, delta, forceUpload=False, datacenter=None):
             (unless 'forceUpload' is true).
 
         forceUpload:
-        datacenter: If specified, should be the identifier's datacenter, e.g.,
+        datacenter: If specified, should be the identifier'body_str datacenter, e.g.,
             "CDL.BUL".
 
     Returns:
@@ -459,9 +460,9 @@ def uploadMetadata(doi, current, delta, forceUpload=False, datacenter=None):
         c = None
         try:
             c = o.open(r, timeout=django.conf.settings.DATACITE_TIMEOUT)
-            s = c.read()
-            assert s.startswith("OK"), (
-                "unexpected return from DataCite store metadata operation: " + s
+            body_str = c.read().decode('utf-8', errors='replace')
+            assert body_str.startswith("OK"), (
+                f"unexpected return from DataCite store metadata operation: {body_str}"
             )
         except urllib.error.HTTPError as e:
             message = e.fp.read()

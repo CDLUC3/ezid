@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 
 class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     help = __doc__
-    display = 'DataCite'
+    name = __name__
     setting = 'DAEMONS_DATACITE_ENABLED'
     queue = ezidapp.models.async_queue.DataciteQueue
 
@@ -38,7 +38,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         # TODO: need to handle error conditions
         ref_id = task_model.refIdentifier
         doi = ref_id.identifier[4:]
-        datacenter = ref_id.datacenter
+        datacenter = str(ref_id.datacenter)
         impl.datacite.setTargetUrl(doi, "http://datacite.org/invalidDOI", datacenter)
         impl.datacite.deactivateIdentifier(doi, datacenter)
 
@@ -46,7 +46,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         ref_id = task_model.refIdentifier
         doi = ref_id.identifier[4:]
         metadata = ref_id.metadata
-        datacenter = ref_id.datacenter
+        datacenter = str(ref_id.datacenter)
         r = impl.datacite.uploadMetadata(doi, {}, metadata, True, datacenter)
         # r can be:
         # None == success
