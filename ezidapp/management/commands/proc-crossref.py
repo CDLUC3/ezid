@@ -46,7 +46,7 @@ log = logging.getLogger(__name__)
 
 class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     help = __doc__
-    display = 'Crossref'
+    name = __name__
     setting = 'DAEMONS_CROSSREF_ENABLED'
     queue = ezidapp.models.async_queue.CrossrefQueue
 

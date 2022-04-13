@@ -17,12 +17,12 @@ import django.core.management
 import django.db
 import django.db.transaction
 
-log = logging.getLogger(__name__)
 
 class AsyncProcessingCommand(django.core.management.BaseCommand):
     help = __doc__
     setting = None
     queue = None
+    name = None
 
     class _AbortException(Exception):
         pass
@@ -30,8 +30,10 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
     def __init__(self):
         assert self.setting is not None
         assert self.queue is not None
-        super().__init__()
+        assert self.name is not None
+        self.log = logging.getLogger(self.name)
         self.opt = None
+        super().__init__()
 
     def create_parser(self, *args, **kwargs):
         parser = super().create_parser(*args, **kwargs)
@@ -47,9 +49,9 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
 
     def handle(self, *args, **opt):
         if django.conf.settings.DEBUG:
-            log.debug('Testing log level: DEBUG')
-            log.info('Testing log level: INFO')
-            log.error('Testing log level: ERROR')
+            self.log.debug('Testing log level: DEBUG')
+            self.log.info('Testing log level: INFO')
+            self.log.error('Testing log level: ERROR')
             print('Testing stdout')
             print('Testing stderr', file=sys.stderr)
 
@@ -66,7 +68,7 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
 
         # impl.nog.util.log_setup(self.module_name, self.opt.debug)
         # with self.lock:
-        log.debug('Entering run loop...')
+        self.log.debug('Entering run loop...')
         self.run()
 
     def run(self):
@@ -95,10 +97,10 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
                         # This is a bit messy. Do not log a trace when the
                         # error is due to the remote service rejecting the request.
                         # Such an error is still permanent for the task though.
-                        log.error(e)
+                        self.log.error(e)
                     else:
-                        log.error('#' * 100)
-                        log.exception(f'Exception when handling task "{task_model}"')
+                        self.log.error('#' * 100)
+                        self.log.exception(f'Exception when handling task "{task_model}"')
 
                     task_model.error = str(e)
                     # if self.is_permanent_error(e):
@@ -141,7 +143,7 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
     def do_task(self, task_model):
         op_label_str = self.queue.OPERATION_CODE_TO_LABEL_DICT[task_model.operation].upper()
         cur_status_str = self.queue.STATUS_CODE_TO_LABEL_DICT[task_model.status]
-        log.debug(
+        self.log.debug(
             'Processing task: {}: {} (current status: {})'.format(
                 op_label_str, task_model.refIdentifier.identifier, cur_status_str
             )
@@ -186,7 +188,7 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         """
         # This log statement can be useful for seeing which async processes were active
         # at a given point in time, but does cause continuous noise in the logs.
-        log.debug(f'Closing DB connections and sleeping for {duration_sec:.2f}s...')
+        self.log.debug(f'Closing DB connections and sleeping for {duration_sec:.2f}s...')
         django.db.connections["default"].close()
         time.sleep(duration_sec)
 
@@ -208,7 +210,7 @@ class AsyncProcessingRemoteError(AsyncProcessingError):
 
     pass
 
-  
+
 class AsyncProcessingIgnored(Exception):
     """Raise from create/update/delete methods of subclasses when the operation is not
     applicable for the given identifier.
