@@ -3,6 +3,7 @@
 import argparse
 import http.client
 import logging
+import multiprocessing
 import os
 import sys
 import time
@@ -31,6 +32,7 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         assert self.setting is not None
         assert self.queue is not None
         assert self.name is not None
+        multiprocessing.current_process().name = self.name
         self.log = logging.getLogger(self.name)
         self.opt = None
         super().__init__()
@@ -61,7 +63,7 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
 
         logging.basicConfig(
             level=logging.DEBUG if self.opt.debug else logging.INFO,
-            format='%(levelname)8s %(module)s %(process)d %(thread)s: %(message)s',
+            format='%(levelname)8s %(processName)s %(thread)s: %(message)s',
             stream=sys.stderr,
             force=True,
         )
