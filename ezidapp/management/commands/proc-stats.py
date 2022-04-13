@@ -33,7 +33,7 @@ log = logging.getLogger(__name__)
 
 class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     help = __doc__
-    display = 'Statistics'
+    name = __name__
     setting = 'DAEMONS_STATISTICS_ENABLED'
 
     def __init__(self):

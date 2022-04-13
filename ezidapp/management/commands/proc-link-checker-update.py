@@ -22,7 +22,7 @@ log = logging.getLogger(__name__)
 
 class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     help = __doc__
-    display = 'LinkCheckerUpdate'
+    name = __name__
     setting = 'DAEMONS_LINKCHECK_UPDATE_ENABLED'
     # Number of records retrieved per database call in _harvest, 100000 seems ok
     # and balances time taken vs resource use
