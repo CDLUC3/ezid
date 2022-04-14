@@ -41,6 +41,7 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         # Gracefully handle interrupt or termination
         signal.signal(signal.SIGINT, self._handleSignals)
         signal.signal(signal.SIGTERM, self._handleSignals)
+        self._last_connection_reset = self.now_int()
         super().__init__()
 
     def _handleSignals(self, *args):
@@ -189,6 +190,8 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         return time.time()
 
     def now_int(self):
+        '''Seconds since epoch as integer
+        '''
         return int(self.now())
 
     def sleep(self, duration_sec):
@@ -198,8 +201,11 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         on to connections during sleep reduces the number of concurrent connection at
         the cost of having to reestablish the connection when returning from sleep.
         """
-        # Only reset the db connections after at least 10 minutes since last reset
-        if self.now_int() - self._last_connection_reset > 600:
+        # Only reset the db connections after at least this time since last reset
+        if (
+            self.now_int() - self._last_connection_reset
+            > django.conf.settings.DAEMONS_IDLE_DB_RECONNECT
+        ):
             # This log statement can be useful for seeing which async processes were active
             # at a given point in time, but does cause continuous noise in the logs.
             self.log.debug(f'Closing DB connections and sleeping for {duration_sec:.2f}s...')
