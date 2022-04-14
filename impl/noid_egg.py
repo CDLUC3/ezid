@@ -67,11 +67,13 @@ def _issue(method, operations):
 
     for i in range(django.conf.settings.BINDER_NUM_ATTEMPTS):
         c = None
+        log.debug("noid_egg._issue attempt:%s %s url:%s", i, method, r.full_url)
         try:
             c = urllib.request.urlopen(r)
             s = [line.decode('utf-8', errors='replace') for line in c.readlines()]
-        except Exception:
+        except Exception as e:
             # noinspection PyTypeChecker
+            log.warning("noid_egg._issue attempt:%s exception: %s", i, e)
             if i == django.conf.settings.BINDER_NUM_ATTEMPTS - 1:
                 raise
         else:
@@ -122,6 +124,8 @@ def setElements(id_str, d):
 
     The elements should be given in a dictionary that maps names to
     values. Raises an exception on error.
+
+    Setable elements are described in the N2T API docs: http://n2t.net/e/n2t_apidoc.html
     """
     batchSetElements([(id_str, d)])
 
