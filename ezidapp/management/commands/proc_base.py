@@ -5,6 +5,7 @@ import http.client
 import logging
 import multiprocessing
 import os
+import signal
 import sys
 import time
 import types
@@ -24,6 +25,8 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
     setting = None
     queue = None
     name = None
+    _terminated = False
+    _last_connection_reset = 0
 
     class _AbortException(Exception):
         pass
@@ -35,7 +38,14 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         multiprocessing.current_process().name = self.name
         self.log = logging.getLogger(self.name)
         self.opt = None
+        # Gracefully handle interrupt or termination
+        signal.signal(signal.SIGINT, self._handleSignals)
+        signal.signal(signal.SIGTERM, self._handleSignals)
+        self._last_connection_reset = self.now_int()
         super().__init__()
+
+    def _handleSignals(self, *args):
+        self._terminated = True
 
     def create_parser(self, *args, **kwargs):
         parser = super().create_parser(*args, **kwargs)
@@ -81,7 +91,7 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
 
         This method is not called for disabled async processes.
         """
-        while True:
+        while not self._terminated:
             qs = self.queue.objects.filter(status=self.queue.UNSUBMITTED,).order_by(
                 "seq"
             )[: django.conf.settings.DAEMONS_MAX_BATCH_SIZE]
@@ -116,6 +126,7 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
                 task_model.save()
 
             self.sleep(django.conf.settings.DAEMONS_BATCH_SLEEP)
+        self.log.info("Exiting run loop.")
 
     def create(self, task_model):
         """Must be overridden by processes that use the default run loop"""
@@ -179,6 +190,8 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         return time.time()
 
     def now_int(self):
+        '''Seconds since epoch as integer
+        '''
         return int(self.now())
 
     def sleep(self, duration_sec):
@@ -188,16 +201,21 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         on to connections during sleep reduces the number of concurrent connection at
         the cost of having to reestablish the connection when returning from sleep.
         """
-        # This log statement can be useful for seeing which async processes were active
-        # at a given point in time, but does cause continuous noise in the logs.
-        self.log.debug(f'Closing DB connections and sleeping for {duration_sec:.2f}s...')
-        django.db.connections["default"].close()
+        # Only reset the db connections after at least this time since last reset
+        if (
+            self.now_int() - self._last_connection_reset
+            > django.conf.settings.DAEMONS_IDLE_DB_RECONNECT
+        ):
+            # This log statement can be useful for seeing which async processes were active
+            # at a given point in time, but does cause continuous noise in the logs.
+            self.log.debug(f'Closing DB connections and sleeping for {duration_sec:.2f}s...')
+            django.db.connections["default"].close()
+            self._last_connection_reset = self.now_int()
         time.sleep(duration_sec)
 
     def raise_command_error(self, msg_str):
         raise django.core.management.CommandError(
-            f'Error: {msg_str}. '
-            f'Using settings module "{os.environ["DJANGO_SETTINGS_MODULE"]}"'
+            f'Error: {msg_str}. ' f'Using settings module "{os.environ["DJANGO_SETTINGS_MODULE"]}"'
         )
 
 
