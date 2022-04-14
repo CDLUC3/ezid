@@ -23,28 +23,58 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     queue = ezidapp.models.async_queue.BinderQueue
 
     def create(self, task_model):
+        """
+        Creates an entry in N2T for a new identifier.
+        The fields to be set are described in the N2T API documentation:
+          http://n2t.net/e/n2t_apidoc.html
+        Minimally, the fields must include:
+          who
+          what
+          when
+          where
+          how    Where is this value stored in EZID?
+          _t
+        """
         id_str = task_model.refIdentifier.identifier
+        self.log.info("CREATE: %s", id_str)
         metadata = task_model.refIdentifier.metadata
+        # add the required target metadata:
+        metadata["_t"] = task_model.refIdentifier.target
         impl.noid_egg.setElements(id_str, metadata)
 
     def update(self, task_model):
         '''
         task_model: BinderQueue
+
+        Retrieves existing metadata from N2T and sends back updates to any
+        new fields oor fields that have changed values.
         '''
         id_str = task_model.refIdentifier.identifier
         metadata = task_model.refIdentifier.metadata
+        # add the required target metadata:
+        metadata["_t"] = task_model.refIdentifier.target
+        self.log.info("UPDATE: %s", id_str)
 
+        # Retrieve the existing metadata from N2T
         m = impl.noid_egg.getElements(id_str)
         if m is None:
             m = {}
+        # First, update m with provided metadata
         for k, v in list(metadata.items()):
+            # If the provided metadata matches existing, then ignore
             if m.get(k) == v:
                 del m[k]
+            # Otherwise add property to list for sending back to N2T
             else:
                 m[k] = v
+        # If properties retrieved from N2T are not present in the supplied
+        # update metadata, then set the value of the field to an empty string.
+        # An empty value results in an "rm" (remove) operation for that field
+        # being sent to N2T.
         for k in list(m.keys()):
             if k not in metadata:
                 m[k] = ""
+        self.log.debug("UPDATE: %s m = %s", id_str, m)
         if len(m) > 0:
             impl.noid_egg.setElements(id_str, m)
 
