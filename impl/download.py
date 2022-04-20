@@ -1,10 +1,11 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-import hashlib
+import logging
+import random
 import re
+import string
 import sys
-import threading
 import time
 
 import django.conf
@@ -17,22 +18,17 @@ import impl.log
 import impl.policy
 import impl.util
 
-_usedFilenames = []
-
 SUFFIX_FORMAT_DICT = {
     ezidapp.models.async_queue.DownloadQueue.ANVL: "txt",
     ezidapp.models.async_queue.DownloadQueue.CSV: "csv",
     ezidapp.models.async_queue.DownloadQueue.XML: "xml",
 }
 
-_lock = threading.Lock()
-
-import logging
 
 log = logging.getLogger(__name__)
 
 
-def enqueueRequest(state, user, request):
+def enqueueRequest(user, request):
     """Enqueue a batch download request
 
     The request must be authenticated; 'user' should be a User object.
@@ -97,17 +93,10 @@ def enqueueRequest(state, user, request):
         "xml": ezidapp.models.async_queue.DownloadQueue.XML,
     }
 
-    SUFFIX_FORMAT_DICT = {
-        ezidapp.models.async_queue.DownloadQueue.ANVL: "txt",
-        ezidapp.models.async_queue.DownloadQueue.CSV: "csv",
-        ezidapp.models.async_queue.DownloadQueue.XML: "xml",
-    }
-
     _compressionCode = {
         "gzip": ezidapp.models.async_queue.DownloadQueue.GZIP,
         "zip": ezidapp.models.async_queue.DownloadQueue.ZIP,
     }
-    _usedFilenames = []
 
     def error(s):
         return "error: bad request - " + s
@@ -173,9 +162,9 @@ def enqueueRequest(state, user, request):
         else:
             options = {"convertTimestamps": False}
         requestor = user.pid
-        filename = _generateFilename(requestor)
+        filename = _generateFilename()
         r = ezidapp.models.async_queue.DownloadQueue(
-            requestTime=int(time.time()),
+            enqueueTime=int(time.time()),
             rawRequest=request.urlencode(),
             requestor=requestor,
             format=_formatCode[format],
@@ -186,6 +175,10 @@ def enqueueRequest(state, user, request):
             notify=encode(notify),
             filename=filename,
             toHarvest=",".join(toHarvest),
+            # stage=CharField(,
+            # currentIndex=IntegerField(default=0),
+            # lastId=CharField(max_length=impl.util.maxIdentifierLength, blank=True),
+            # fileSize=0,
         )
         r.save()
         return f"success: {django.conf.settings.EZID_BASE_URL}/download/{filename}.{_fileSuffix(r)}"
@@ -240,19 +233,13 @@ def _validateGroup(v):
         raise _ValidationException("no such group")
 
 
-def _generateFilename(requestor):
-    while True:
-        f = hashlib.sha1(
-            f"{requestor},{str(time.time())},{django.conf.settings.SECRET_KEY}"
-        ).hexdigest()[::4]
-        _lock.acquire()
-        try:
-            if f not in _usedFilenames:
-                # noinspection PyUnresolvedReferences
-                _usedFilenames.append(f)
-                return f
-        finally:
-            _lock.release()
+def _generateFilename():
+    """Generate 16 character random filename base
+
+    E.g.: ofqTb4ndbkom15Tn
+    Possible combinations: 62^16
+    """
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=16))
 
 
 # A simple encoding mechanism for storing Python objects as strings

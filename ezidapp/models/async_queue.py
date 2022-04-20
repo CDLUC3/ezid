@@ -159,7 +159,7 @@ class DownloadQueue(django.db.models.Model):
 
     # The time the request was made, as a Unix timestamp. Not used by
     # EZID, but useful for status monitoring.
-    requestTime = django.db.models.IntegerField()
+    enqueueTime = django.db.models.IntegerField()
 
     # The raw request, i.e., the urlencoded query string.
     rawRequest = django.db.models.TextField()
@@ -200,6 +200,15 @@ class DownloadQueue(django.db.models.Model):
     # "LSme@this.com,Syou@that.com". Encoded per download.encode.
     notify = django.db.models.TextField(blank=True)
 
+    # The filename root, e.g., "ofqTb4ndbkom15Tn".
+    filename = django.db.models.CharField(max_length=16, blank=True)
+
+    # A comma-separated list of persistent identifiers of one or more
+    # users to harvest, e.g.,
+    # "ark:/99166/p9jm23f63,ark:/99166/p99k45t25". The list is computed
+    # at the time the request is made and not changed thereafter.
+    toHarvest = django.db.models.TextField()
+
     # The current processing stage.
     CREATE = "C"
     HARVEST = "H"
@@ -220,14 +229,6 @@ class DownloadQueue(django.db.models.Model):
         default=CREATE,
     )
 
-    # The filename root, e.g., "da543b91a0".
-    filename = django.db.models.CharField(max_length=10, blank=True)
-
-    # A comma-separated list of persistent identifiers of one or more
-    # users to harvest, e.g.,
-    # "ark:/99166/p9jm23f63,ark:/99166/p99k45t25". The list is computed
-    # at the time the request is made and not changed thereafter.
-    toHarvest = django.db.models.TextField()
 
     # The index into toHarvest of the user currently being harvested.
     # HARVEST stage only.

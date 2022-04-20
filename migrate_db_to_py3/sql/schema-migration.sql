@@ -193,6 +193,8 @@ create table ezidapp_newsfeed (
     title longtext not null,
     link varchar(200) not null
 )
+engine = InnoDB
+default charset = utf8mb4
 ;
 
 drop table if exists ezidapp_downloadqueue;
@@ -200,15 +202,6 @@ drop table if exists ezidapp_downloadqueue;
 create table ezidapp_downloadqueue (
     seq int auto_increment primary key,
     enqueueTime int not null,
-    submitTime int null,
-    operation varchar(1) not null,
-    status varchar(1) not null,
-    message longtext not null,
-    batchId varchar(36) not null,
-    error longtext not null,
-    errorIsPermanent tinyint(1) not null,
-    refIdentifier_id int not null,
-    requestTime int not null,
     rawRequest longtext not null,
     requestor varchar(255) not null,
     format varchar(1) not null,
@@ -217,14 +210,22 @@ create table ezidapp_downloadqueue (
     constraints longtext not null,
     options longtext not null,
     notify longtext not null,
-    stage varchar(1) not null,
-    filename varchar(1) not null,
+    filename varchar(16) not null,
     toHarvest longtext not null,
+    stage varchar(1) not null,
     currentIndex int not null,
     lastId varchar(255) not null,
-    fileSize bigint not null
+    fileSize bigint
+#     operation varchar(1) not null,
+#     status varchar(1) not null,
+#     message longtext not null,
+#     batchId varchar(36) not null,
+#     error longtext not null,
+#     errorIsPermanent tinyint(1) not null,
+#     refIdentifier_id int not null,
 )
-charset = utf8mb4
+engine = InnoDB
+default charset = utf8mb4
 ;
 
 drop table if exists ezidapp_refidentifier;

@@ -12,7 +12,6 @@ conditions exist between the old and new threads while the old
 thread still exists, but actual conflicts should be very unlikely.
 """
 
-import argparse
 import csv
 import logging
 import os
@@ -35,6 +34,7 @@ import ezidapp.models.model_util
 import ezidapp.models.user
 import ezidapp.models.util
 import impl.anvl
+import impl.download
 import impl.log
 import impl.nog.util
 import impl.policy
@@ -43,6 +43,12 @@ import impl.util2
 
 log = logging.getLogger(__name__)
 
+
+SUFFIX_FORMAT_DICT = {
+    ezidapp.models.async_queue.DownloadQueue.ANVL: "txt",
+    ezidapp.models.async_queue.DownloadQueue.CSV: "csv",
+    ezidapp.models.async_queue.DownloadQueue.XML: "xml",
+}
 
 class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     help = __doc__
@@ -126,7 +132,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         else:
             d = django.conf.settings.DAEMONS_DOWNLOAD_PUBLIC_DIR
         if i == 1:
-            s = self.SUFFIX_FORMAT_DICT[r.format]
+            s = impl.download.SUFFIX_FORMAT_DICT[r.format]
         elif i in [2, 3]:
             s = self._fileSuffix(r)
         else:
@@ -143,10 +149,11 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     def _createFile(self, r):
         f = None
         try:
-            f = open(self._path(r, 1), "wb")
+            f = open(self._path(r, 1), "w", newline='')
             if r.format == ezidapp.models.async_queue.DownloadQueue.CSV:
                 w = csv.writer(f)
-                w.writerow([self._csvEncode(c) for c in self._decode(r.columns)])
+                row_list = [self._csvEncode(c) for c in self._decode(r.columns)]
+                w.writerow(row_list)
                 self._flushFile(f)
             elif r.format == ezidapp.models.async_queue.DownloadQueue.XML:
                 f.write(b'<?xml version="1.0" encoding="utf-8"?>\n<records>')
@@ -260,7 +267,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         options = self._decode(r.options)
         while True:
             qs = (
-                ezidapp.models.identifier.Identifier.objects.filter(identifier__gt=r.lastId)
+                ezidapp.models.identifier.SearchIdentifier.objects.filter(identifier__gt=r.lastId)
                 .filter(owner__pid=r.toHarvest.split(",")[r.currentIndex])
                 .select_related("owner", "ownergroup", "datacenter", "profile")
                 .order_by("identifier")
@@ -282,6 +289,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                             assert False, "unhandled case"
                 self._flushFile(f)
             except Exception as e:
+                raise
                 log.exception('Exception')
                 raise self._wrapException("error writing file", e)
             r.lastId = ids[-1].identifier
@@ -293,7 +301,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         try:
             try:
                 assert os.path.getsize(self._path(r, 1)) >= r.fileSize, "file is short"
-                f = open(self._path(r, 1), "r+b")
+                f = open(self._path(r, 1), "r+")
                 f.seek(r.fileSize)
                 f.truncate()
             except Exception as e:
@@ -359,7 +367,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 )
                 stderr = p.communicate()[0]
             assert (
-                p.returncode == 0 and stderr == ""
+                p.returncode == 0 and stderr == b''
             ), f"compression command returned status code {p.returncode:d}, stderr '{stderr}'"
         except Exception as e:
             log.exception('Exception')
@@ -444,3 +452,43 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 log.exception('Exception')
                 raise self._wrapException("error sending email", e)
         r.delete()
+
+    def _unescape(self, s):
+        return re.sub("%([0-9A-F][0-9A-F])", lambda m: chr(int(m.group(1), 16)), s)
+
+
+    def _decode(self, s):
+        if s[0] == "B":
+            return s[1:] == "True"
+        elif s[0] == "I":
+            return int(s[1:])
+        elif s[0] == "S":
+            return s[1:]
+        elif s[0] == "L":
+            if len(s) > 1:
+                return [self._decode(self._unescape(i)) for i in s[1:].split(",")]
+            else:
+                return []
+        elif s[0] == "D":
+            if len(s) > 1:
+                return dict(
+                    list(
+                        map(
+                            lambda i: tuple(
+                                [self._decode(self._unescape(kv)) for kv in i.split("=")]
+                            ),
+                            s[1:].split(","),
+                        )
+                    )
+                )
+            else:
+                return {}
+        else:
+            assert False, "unhandled case"
+
+
+    def _fileSuffix(self, r):
+        if r.compression == ezidapp.models.async_queue.DownloadQueue.GZIP:
+            return SUFFIX_FORMAT_DICT[r.format] + ".gz"
+        else:
+            return "zip"
