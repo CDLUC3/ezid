@@ -89,7 +89,7 @@ def run_cmd(cmd_str):
 def connect():
     log.info(f'Connecting to database...')
     cnx = mysql.connector.connect(
-        use_pure=False,
+        # use_pure=False,
         # pool_size=1,
         # pool_name='mypool',
         host=DB_HOST,

@@ -135,7 +135,7 @@ def connect(host_str, port_str, user_str, pw_str, name_str):
         user=user_str,
         password=pw_str,
         database=name_str,
-        use_pure=False,
+        # use_pure=False,
         pool_size=1,
         pool_name='mypool',
     )

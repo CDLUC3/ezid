@@ -139,7 +139,7 @@ def proc_blob(conn_args, table_str, args):
     if not hasattr(proc_blob, 'conn'):
         print(f'Connecting PID {multiprocessing.current_process().pid}')
         proc_blob.conn = mysql.connector.connect(
-            use_pure=False,
+            # use_pure=False,
             **conn_args,
         )
         proc_blob.conn.autocommit = True
@@ -170,7 +170,7 @@ def connect(conn_args):
     for k, v in conn_args.items():
         log.info(f'{k}: {v}')
     conn = mysql.connector.connect(
-        use_pure=False,
+        # use_pure=False,
         # pool_size=10,
         # pool_name='mypool',
         **conn_args,
