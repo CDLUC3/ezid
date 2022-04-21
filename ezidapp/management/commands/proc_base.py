@@ -33,7 +33,6 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
 
     def __init__(self):
         assert self.setting is not None
-        assert self.queue is not None
         assert self.name is not None
         multiprocessing.current_process().name = self.name
         self.log = logging.getLogger(self.name)
@@ -91,6 +90,8 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
 
         This method is not called for disabled async processes.
         """
+        assert self.queue is not None, "Must must specify queue or override run()"
+
         while not self._terminated:
             qs = self.queue.objects.filter(status=self.queue.UNSUBMITTED,).order_by(
                 "seq"
