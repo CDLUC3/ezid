@@ -19,7 +19,7 @@ storage of user account information. As the 'admin' account also stores account
 information in a user account, the admin user is created both as a Django superuser for
 Django and as a user flagged with elevated access in EZID's custom authentication system
 """
-
+import argparse
 import datetime
 
 import django.conf
