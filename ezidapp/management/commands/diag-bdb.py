@@ -9,35 +9,35 @@ connect to the EZID database.
 - list: List basic information about the minters found in the directory tree rooted at
   the default location or under another location if '--root' is specified.
 
-  E.g.: ./manage.py bdb list
+  E.g.: ./manage.py diag-bdb list
 
 - unique: List the unique values and the number of occurrences of each value for a
   single minter field.
 
-  E.g.: ./manage.py bdb unique --field oacounter
+  E.g.: ./manage.py diag-bdb unique --field oacounter
 
 - backup: Copy a minter to backup location. This, together with 'restore' is intended to
   provide an easy way to run repeatable tests or experiments.
 
-  E.g.: ./manage.py bdb backup ark:/99999/fk4
+  E.g.: ./manage.py diag-bdb backup ark:/99999/fk4
 
 - restore: Copy a minter from a backup created with 'backup' to its original location.
   Does not remove the backup file, so can be used any number of times to roll the minter
   back to a known state.
 
-  E.g.: ./manage.py bdb restore ark:/99999/fk4
+  E.g.: ./manage.py diag-bdb restore ark:/99999/fk4
 
 - dump: Dump a minter to a normalized HJSON file.
 
-  E.g.: ./manage.py bdb dump ark:/99999/fk4
+  E.g.: ./manage.py diag-bdb dump ark:/99999/fk4
 
 - dump-full: Dump arbitrary BerkeleyDB to HJSON.
 
-  E.g.: ./manage.py bdb dump-full path/to/database.xyz
+  E.g.: ./manage.py diag-bdb dump-full path/to/database.xyz
 
 - create: Create a new minter for a given shoulder.
 
-  E.g.: ./manage.py bdb create doi:10.1234/fk4
+  E.g.: ./manage.py diag-bdb create doi:10.1234/fk4
 
 - mint: Mint any number of identifiers with a given minter. By default, the minter state
   is not updated to reflect the minted identifiers, so the result can be considered as
@@ -46,7 +46,13 @@ connect to the EZID database.
   This command is intended mainly for testing an existing minter and only provides
   identifiers going forward from the minter's current state. See also: 'slice'
 
-  E.g.: ./manage.py bdb mint doi:10.123/fk4 --update
+  E.g.: ./manage.py diag-bdb mint doi:10.123/fk4 --update
+
+- forward: "Fast forward" all minters by a given number of identifiers. This is intended
+  for moving to minters to a state in which they will not repeat identifiers minted by
+  another instance of EZID.
+
+  E.g.: ./manage.py diag-bdb forward --count 1000000
 
 - slice: Mint a "slice" of identifiers with a minter that is created on the fly and
   destroyed after minting.
@@ -105,6 +111,7 @@ class Command(django.core.management.BaseCommand):
                 'dump',
                 'dump-full',
                 'mint',
+                'forward',
                 'create',
                 'slice',
             ),
@@ -147,7 +154,7 @@ class Command(django.core.management.BaseCommand):
             "-c",
             type=int,
             default=1,
-            help="For use with 'mint' and 'slice': Set the number of identifiers to mint",
+            help="For use with 'mint', 'forward' and 'slice': Set the number of identifiers to mint",
         )
         # For 'unique'
         parser.add_argument(
@@ -276,6 +283,27 @@ class Command(django.core.management.BaseCommand):
             )
         ):
             log.info("{: 5d}: {}".format(i + 1, id_str))
+
+    def forward(self):
+        root_path = impl.nog.bdb.get_bdb_root(self.opt.root_path)
+        if not root_path.is_dir():
+            raise django.core.management.CommandError(
+                'Invalid root path: {}'.format(root_path.as_posix())
+            )
+        for i, (naan_prefix_str, shoulder_str, minter_bdb) in enumerate(
+            impl.nog.bdb.iter_bdb(self.opt.root_path)
+        ):
+            bdb_path = root_path / naan_prefix_str / (shoulder_str or 'NULL') / 'nog.bdb'
+            log.info(f"Fast-Forwarding minter by {self.opt.count:,} identifiers: {bdb_path}")
+            assert bdb_path.exists(), f'Invalid BDB path: {bdb_path}'
+            id_str = '<start>'
+            for id_str in impl.nog.minter.mint_by_bdb_path(
+                bdb_path,
+                self.opt.count,
+                dry_run=False,
+            ):
+                pass
+            log.info(f'Last minted: {id_str}')
 
     def create(self):
         self._assert_bdb_path(exists=None if self.opt.clobber else False)
