@@ -479,13 +479,13 @@ class NameIdMultBaseFormSet(django.forms.BaseFormSet):
         form.fields["affiliation"] = django.forms.CharField(
             required=False, label=_("Affiliation")
         )
-        form.fields["affiliation-affiliationIdentifier"] = forms.CharField(
+        form.fields["affiliation-affiliationIdentifier"] = django.forms.CharField(
             required=False, label=_("Affiliation Identifier")
         )
-        form.fields["affiliation-affiliationIdentifierScheme"] = forms.CharField(
+        form.fields["affiliation-affiliationIdentifierScheme"] = django.forms.CharField(
             required=False, label=_("Affiliation Identifier Scheme")
         )
-        form.fields["affiliation-schemeURI"] = forms.CharField(
+        form.fields["affiliation-schemeURI"] = django.forms.CharField(
             required=False, label=_("Affiliation Identifier Scheme URI")
         )
         return form
