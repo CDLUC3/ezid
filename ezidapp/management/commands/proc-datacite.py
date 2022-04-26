@@ -34,7 +34,11 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             log.debug('Update skipped: isDatacite == False')
 
     def delete(self, task_model):
-        # We can't actually delete a DOI, so we do the next best thing...
+        if not task_model.refIdentifier.isDatacite:
+            return
+        # We cannot delete a DOI on DataCite, so we disable it by setting an invalid
+        # target URL and removing it from DataCite's search index. See
+        # deactivateIdentifier() for additional info.
         # TODO: need to handle error conditions
         ref_id = task_model.refIdentifier
         doi = ref_id.identifier[4:]
