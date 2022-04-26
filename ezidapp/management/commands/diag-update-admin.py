@@ -3,13 +3,12 @@
 
 """Create or update the EZID admin account, password and related details
 
-If the EZID admin account does not already exist, crate it. Then, both for existing and
-newly created account, set the EZID admin password and related details as configured in
-the `ADMIN_` settings in `settings.py`.
-
-This command must be run in order to apply any changes made to the `ADMIN_` settings.
+This command must be run in order to apply any changes made to the `ADMIN_` settings
+in settings.py.
 
 Notes:
+
+If the EZID admin account does not already exist, it is created.
 
 'admin' is the only user that is authenticated using Django's standard authorization,
 and so is the only user in Django's `auth_user` table.
@@ -17,7 +16,8 @@ and so is the only user in Django's `auth_user` table.
 EZID uses custom authentication for regular users, which combines authentication and
 storage of user account information. As the 'admin' account also stores account
 information in a user account, the admin user is created both as a Django superuser for
-Django and as a user flagged with elevated access in EZID's custom authentication system
+Django and as a user flagged with elevated access in EZID's custom authentication
+system.
 """
 import argparse
 import datetime
