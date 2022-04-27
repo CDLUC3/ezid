@@ -153,7 +153,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             if r.format == ezidapp.models.async_queue.DownloadQueue.CSV:
                 w = csv.writer(f)
                 row_list = [self._csvEncode(c) for c in self._decode(r.columns)]
-                w.writerow(row_list)
+                w.writerow([b.decode('utf-8', errors='replace') for b in row_list])
                 self._flushFile(f)
             elif r.format == ezidapp.models.async_queue.DownloadQueue.XML:
                 f.write(b'<?xml version="1.0" encoding="utf-8"?>\n<records>')
@@ -249,7 +249,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 l.append(id_model.resourceType)
             else:
                 l.append(metadata.get(c, ""))
-        w.writerow([self._csvEncode(c) for c in l])
+        w.writerow([self._csvEncode(c).decode('utf-8', errors='replace') for c in l])
 
     def _writeXml(self, f, id, metadata):
         f.write(f'<record identifier="{impl.util.xmlEscape(id.identifier)}">')
@@ -289,7 +289,6 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                             assert False, "unhandled case"
                 self._flushFile(f)
             except Exception as e:
-                raise
                 log.exception('Exception')
                 raise self._wrapException("error writing file", e)
             r.lastId = ids[-1].identifier
