@@ -33,6 +33,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         # We cannot delete a DOI on DataCite, so we disable it by setting an invalid
         # target URL and removing it from DataCite's search index. See
         # deactivateIdentifier() for additional info.
+        if not task_model.refIdentifier.isDatacite:
+            return
         # TODO: need to handle error conditions
         if self._is_eligible(task_model):
             ref_id = task_model.refIdentifier
