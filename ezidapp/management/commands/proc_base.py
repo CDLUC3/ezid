@@ -19,6 +19,8 @@ import django.core.management
 import django.db
 import django.db.transaction
 
+import impl.nog.util
+
 
 class AsyncProcessingCommand(django.core.management.BaseCommand):
     help = __doc__
@@ -37,9 +39,6 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         multiprocessing.current_process().name = self.name
         self.log = logging.getLogger(self.name)
         self.opt = None
-        # Gracefully handle interrupt or termination
-        signal.signal(signal.SIGINT, self._handleSignals)
-        signal.signal(signal.SIGTERM, self._handleSignals)
         self._last_connection_reset = self.now_int()
         super().__init__()
 
@@ -65,6 +64,10 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
             self.log.error('Testing log level: ERROR')
             print('Testing stdout')
             print('Testing stderr', file=sys.stderr)
+        else:
+            # Gracefully handle interrupt or termination
+            signal.signal(signal.SIGINT, self._handleSignals)
+            signal.signal(signal.SIGTERM, self._handleSignals)
 
         self.assert_proc_enabled()
         self.opt = types.SimpleNamespace(**opt)

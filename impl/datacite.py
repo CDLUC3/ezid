@@ -465,9 +465,10 @@ def uploadMetadata(doi, current, delta, forceUpload=False, datacenter=None):
                 f"unexpected return from DataCite store metadata operation: {body_str}"
             )
         except urllib.error.HTTPError as e:
-            message = e.fp.read()
+            message = e.fp.read().decode('utf-8', errors='replace')
+            log.error(f'{str(e)}: {message}')
             if e.code in (400, 422):
-                return "element 'datacite': " + message.decode('utf-8')
+                return f"element 'datacite': {message}"
             if e.code != 500 or i == django.conf.settings.DATACITE_NUM_ATTEMPTS - 1:
                 raise e
         except Exception:

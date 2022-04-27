@@ -22,29 +22,33 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     queue = ezidapp.models.async_queue.DataciteQueue
 
     def create(self, task_model):
-        if task_model.refIdentifier.isDatacite:
+        if self._is_eligible(task_model):
             self._create_or_update(task_model)
-        else:
-            log.debug('Create skipped: isDatacite == False')
 
     def update(self, task_model):
-        if task_model.refIdentifier.isDatacite:
+        if self._is_eligible(task_model):
             self._create_or_update(task_model)
-        else:
-            log.debug('Update skipped: isDatacite == False')
 
     def delete(self, task_model):
-        if not task_model.refIdentifier.isDatacite:
-            return
         # We cannot delete a DOI on DataCite, so we disable it by setting an invalid
         # target URL and removing it from DataCite's search index. See
         # deactivateIdentifier() for additional info.
+        if not task_model.refIdentifier.isDatacite:
+            return
         # TODO: need to handle error conditions
-        ref_id = task_model.refIdentifier
-        doi = ref_id.identifier[4:]
-        datacenter = str(ref_id.datacenter)
-        impl.datacite.setTargetUrl(doi, "http://datacite.org/invalidDOI", datacenter)
-        impl.datacite.deactivateIdentifier(doi, datacenter)
+        if self._is_eligible(task_model):
+            ref_id = task_model.refIdentifier
+            doi = ref_id.identifier[4:]
+            datacenter = str(ref_id.datacenter)
+            impl.datacite.setTargetUrl(doi, "http://datacite.org/invalidDOI", datacenter)
+            impl.datacite.deactivateIdentifier(doi, datacenter)
+
+    def _is_eligible(self, task_model):
+        """Return True if task is eligible for this process"""
+        is_eligible = task_model.refIdentifier.isDatacite and not task_model.refIdentifier.isTest
+        if not is_eligible:
+            log.debug(f'Skipping ineligible task: {task_model}')
+        return is_eligible
 
     def _create_or_update(self, task_model):
         ref_id = task_model.refIdentifier
