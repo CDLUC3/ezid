@@ -95,7 +95,7 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         """
         assert self.queue is not None, "Must must specify queue or override run()"
 
-        while self.not_terminated():
+        while not self.terminated():
             qs = self.queue.objects.filter(status=self.queue.UNSUBMITTED,).order_by(
                 "seq"
             )[: django.conf.settings.DAEMONS_MAX_BATCH_SIZE]
