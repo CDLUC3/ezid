@@ -49,7 +49,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         self.opener.add_handler(auth_handler)
 
     def run(self):
-        while True:
+        while not self.terminated():
             max_age_ts = int(time.time()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
             # TODO: This is a heavy query which can be optimized with better indexes or
             # flags in the DB.

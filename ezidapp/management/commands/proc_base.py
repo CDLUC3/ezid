@@ -64,10 +64,10 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
             self.log.error('Testing log level: ERROR')
             print('Testing stdout')
             print('Testing stderr', file=sys.stderr)
-        else:
-            # Gracefully handle interrupt or termination
-            signal.signal(signal.SIGINT, self._handleSignals)
-            signal.signal(signal.SIGTERM, self._handleSignals)
+
+        # Gracefully handle interrupt or termination
+        signal.signal(signal.SIGINT, self._handleSignals)
+        signal.signal(signal.SIGTERM, self._handleSignals)
 
         self.assert_proc_enabled()
         self.opt = types.SimpleNamespace(**opt)
@@ -95,7 +95,7 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         """
         assert self.queue is not None, "Must must specify queue or override run()"
 
-        while not self._terminated:
+        while not self.terminated():
             qs = self.queue.objects.filter(status=self.queue.UNSUBMITTED,).order_by(
                 "seq"
             )[: django.conf.settings.DAEMONS_MAX_BATCH_SIZE]
@@ -173,6 +173,11 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
             return self.delete(task_model)
         else:
             raise AssertionError(f'Invalid operation: {task_model.operation}')
+
+
+    def terminated(self):
+        """Return True if the process has been signaled to terminate"""
+        return self._terminated
 
     def is_permanent_error(self, e):
         """Return True if exception appears to be due to a permanent error"""

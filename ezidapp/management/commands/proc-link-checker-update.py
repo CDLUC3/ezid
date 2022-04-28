@@ -52,7 +52,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 # server near startup or reload.
                 self.sleep(600)
 
-        while True:
+        while not self.terminated():
             start = self.now()
             try:
                 # noinspection PyTypeChecker
@@ -122,7 +122,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
     def _harvest(self, model, only=None, filter=None):
         lastIdentifier = ""
-        while True:
+        while not self.terminated():
             qs = model.objects.filter(identifier__gt=lastIdentifier).order_by("identifier")
             if only is not None:
                 qs = qs.only(*only)

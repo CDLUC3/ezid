@@ -55,7 +55,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
         This method is not called for disabled async processes.
         """
-        while True:
+        while not self.terminated():
             qs = self.queue.objects.filter(
                 Q(status=self.queue.UNSUBMITTED)
                 | Q(status=self.queue.UNCHECKED)

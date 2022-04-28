@@ -11,8 +11,8 @@ SearchIdentifier model adds a set of indexes that make inserts expensive. So we 
 update StoreIdentifier "inline", while processing a request, and update SearchIdentifier
 asynchronously.
 
-As the changes made to the StoreIdentifer are wrapped in a transaction that covers the
-request, partial changes in StoreIdentifer are not visible to this process, and all
+As the changes made to the StoreIdentifier are wrapped in a transaction that covers the
+request, partial changes in StoreIdentifier are not visible to this process, and all
 changes to a single identifier are handled as a single unit after the request is
 completed.
 """

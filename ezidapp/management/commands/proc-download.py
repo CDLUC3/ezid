@@ -62,7 +62,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         This command implements its own run loop.
         """
         doSleep = True
-        while True:
+        while not self.terminated():
             if doSleep:
                 self.sleep(django.conf.settings.DAEMONS_DOWNLOAD_PROCESSING_IDLE_SLEEP)
             try:
@@ -265,7 +265,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         columns = self._decode(r.columns)
         constraints = self._decode(r.constraints)
         options = self._decode(r.options)
-        while True:
+        while not self.terminated():
             qs = (
                 ezidapp.models.identifier.SearchIdentifier.objects.filter(identifier__gt=r.lastId)
                 .filter(owner__pid=r.toHarvest.split(",")[r.currentIndex])
