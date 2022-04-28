@@ -47,7 +47,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             # server near startup or reload.
             self.sleep(600)
 
-        while True:
+        while not self.terminated():
             start = self.now()
             self.recomputeStatistics()
             if django.conf.settings.DAEMONS_STATISTICS_COMPUTE_SAME_TIME_OF_DAY:
@@ -89,7 +89,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             }
             counts = {}
             lastIdentifier = ""
-            while True:
+            while not self.terminated():
                 qs = (
                     ezidapp.models.identifier.Identifier.objects.filter(
                         identifier__gt=lastIdentifier

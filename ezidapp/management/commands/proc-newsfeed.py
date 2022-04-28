@@ -27,7 +27,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     setting = 'DAEMONS_NEWSFEED_ENABLED'
 
     def run(self):
-        while True:
+        while not self.terminated():
             try:
                 feed = feedparser.parse(django.conf.settings.NEWSFEED_URL)
                 for entry in feed.entries:

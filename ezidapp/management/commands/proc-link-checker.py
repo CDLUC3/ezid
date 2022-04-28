@@ -112,7 +112,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             sys.exit(1)
         if len(sys.argv) == 2:
             _exclusionFile = sys.argv[1]
-        while True:
+        while not self.terminated():
             self.check_all()
 
     def check_all(self):
@@ -125,6 +125,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             firstRound
             or self.remaining(start, django.conf.settings.LINKCHECKER_TABLE_UPDATE_CYCLE) > 0
         ):
+            if self.terminated():
+                break
             self.loadWorkset()
             log.info("begin processing")
             # noinspection PyTypeChecker
@@ -257,7 +259,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
     def harvest(self, model, only=None, filter=None):
         lastIdentifier = ""
-        while True:
+        while not self.terminated():
             qs = model.objects.filter(identifier__gt=lastIdentifier).order_by("identifier")
             if only is not None:
                 qs = qs.only(*only)
@@ -469,7 +471,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             startingIndex = self._index
             allFinished = True
             t = self.now()
-            while True:
+            while not self.terminated():
                 # noinspection PyUnresolvedReferences
                 ow = _workset[self._index]
                 if not ow.isFinished():
@@ -554,7 +556,7 @@ class Worker(Command):
 
     def run(self):
         try:
-            while not self._stopNow:
+            while not self.terminated() and not self._stopNow:
                 r = self.getNextLink()
                 if type(r) is str:
                     if r == "finished":
