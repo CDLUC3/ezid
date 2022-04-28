@@ -131,7 +131,7 @@ def _buildResumptionToken(from_, until, prefix, cursor, total):
     else:
         until = ""
     hash = hashlib.sha1(
-        f"{from_:d},{until},{prefix},{cursor:d},{total:d},{django.conf.settings.SECRET_KEY}"
+        f"{from_:d},{until},{prefix},{cursor:d},{total:d},{django.conf.settings.SECRET_KEY}".encode("UTF-8")
     ).hexdigest()[::4]
     return f"{from_:d},{until},{prefix},{cursor:d},{total:d},{hash}"
 
@@ -140,7 +140,7 @@ def _unpackResumptionToken(token):
     try:
         from_, until, prefix, cursor, total, hash1 = token.split(",")
         hash2 = hashlib.sha1(
-            f"{from_},{until},{prefix},{cursor},{total},{django.conf.settings.SECRET_KEY}"
+            f"{from_},{until},{prefix},{cursor},{total},{django.conf.settings.SECRET_KEY}".encode("UTF-8")
         ).hexdigest()[::4]
         assert hash1 == hash2
         if len(until) > 0:
