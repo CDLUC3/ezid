@@ -112,9 +112,9 @@ STATICFILES_DIRS = [
 # - True: Daemons (asynchronous processing tasks) that are enabled in the
 #   DAEMONS_*_ENABLED settings listed below are available to be started. For a daemon
 #   to be able to be started, both this setting and its individual setting must be set
-#   to ENABLED (True). A daemon that is started without being enabled will will stop
-#   without modifying the system state in any way, with a message indicating the
-#   settings that were used.
+#   to ENABLED (True). A daemon that is started without being enabled will stop without
+#   modifying the system state in any way, with a message indicating the settings that
+#   were used.
 # - False: Daemons cannot run. They are disabled regardless of the DAEMONS_*_ENABLED
 #   settings listed below.
 # - 'auto': Set to True if EZID is running under Apache / mod_wsgi, False otherwise.

@@ -11,7 +11,7 @@ as a batch.
 Usage:
     - Run inspections in PyCharm
     - In the Inspection Results, Export > Export to XML
-    - Only the output dir is selectable, not the the filename. That's because
+    - Only the output dir is selectable, not the filename. That's because
     PyCharm uses the filename to recognize the type of XML file.
     - Add code in this script to filter the inspections
     - Import the file in PyCharm with 'View Offline Inspection Results'. (The title is

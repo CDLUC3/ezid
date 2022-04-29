@@ -93,7 +93,7 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
 
         This method is not called for disabled async processes.
         """
-        assert self.queue is not None, "Must must specify queue or override run()"
+        assert self.queue is not None, "Must specify queue or override run()"
 
         while not self.terminated():
             qs = self.queue.objects.filter(status=self.queue.UNSUBMITTED,).order_by(

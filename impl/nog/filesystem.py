@@ -30,7 +30,7 @@ def get_safe_reversible_path(*path_list):
         If a reversible path is not required, see :func:`get_safe_lossy_path`, which is
         not reversible, but may be easier to read.
 
-        To get get the original string from the path, see :func:`get_original_path`.
+        To get the original string from the path, see :func:`get_original_path`.
     """
     return os.path.join(*[get_safe_reversible_path_element(p) for p in path_list])
 

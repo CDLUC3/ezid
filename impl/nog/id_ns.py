@@ -127,7 +127,7 @@ class IdNamespace(
         and shoulder. The returned elements will always combine back to the
         full namespace.
 
-        This also checks if the the DOI or ARK appears to be valid for
+        This also checks if the DOI or ARK appears to be valid for
         use in EZID. If {ns} is already an IdNamespace, this is a no-op.
         """
         if isinstance(ns, IdNamespace):
@@ -137,11 +137,11 @@ class IdNamespace(
 
     @staticmethod
     def split_ark_namespace(ark_ns):
-        """Split a full ARK namespace into scheme, NAAN, slash and shoulder.
-        The returned elements will always combine back to the full namespace.
+        """Split a full ARK namespace into scheme, NAAN, slash and shoulder. The
+        returned elements will always combine back to the full namespace.
 
-        This also checks if the the ARK appears to be valid for use in
-        EZID. If {ns} is already an IdNamespace, this is a no-op.
+        This also checks if the ARK appears to be valid for use in EZID. If {ns} is
+        already an IdNamespace, this is a no-op.
         """
         if isinstance(ark_ns, IdNamespace):
             return ark_ns
@@ -150,11 +150,11 @@ class IdNamespace(
 
     @staticmethod
     def split_doi_namespace(doi_ns):
-        """Split a full DOI namespace into scheme, NAAN, slash and shoulder.
-        The returned elements will always combine back to the full namespace.
+        """Split a full DOI namespace into scheme, NAAN, slash and shoulder. The
+        returned elements will always combine back to the full namespace.
 
-        This also checks if the the ARK appears to be valid for use in
-        EZID. If {ns} is already an IdNamespace, this is a no-op.
+        This also checks if the ARK appears to be valid for use in EZID. If {ns} is
+        already an IdNamespace, this is a no-op.
         """
         if isinstance(doi_ns, IdNamespace):
             return doi_ns

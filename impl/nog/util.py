@@ -24,8 +24,8 @@ def log_setup(module_name, is_debug, suppress_context=False):
 
         If debug level logging is NOT enabled, we want to be able to log at all levels
         above DEBUG and have those not be filtered out. So we set the root logger to
-        INFO. But we don't want to see INFO level from from other loggers, so we bump
-        all existing loggers to ERROR.
+        INFO. But we don't want to see INFO level from other loggers, so we bump all
+        existing loggers to ERROR.
     """
     root_logger = logging.getLogger()
     # Remove any existing handlers that write to the console (stdout or stderr).

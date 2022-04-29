@@ -49,12 +49,10 @@ class TestNogMinter:
                 )
 
     def test_1010(self, tmp_bdb_root, test_docs):
-        """Minter yields identifiers matching N2T through a template
-        extensions.
+        """Minter yields identifiers matching N2T through a template extensions.
 
-        This checks identifiers in an area where where the minter
-        template must be extended before it can be stepped to the next
-        state.
+        This checks identifiers in an area where the minter template must be extended
+        before it can be stepped to the next state.
         """
         with lzma.open(PERL_MINTED_PATH, 'rt') as f:
             for i in range(6218):

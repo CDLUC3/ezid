@@ -1164,41 +1164,43 @@ class Identifier(IdentifierBase):
 class RefIdentifier(IdentifierBase):
     """Identifier referenced in task queues
 
-    The queues hold create, update and/or delete operations that have been scheduled but not yet
-    completed.
+    The queues hold create, update and/or delete operations that have been scheduled but
+    not yet completed.
 
     TODO: Factor in docstring from IdentifierObjectField:
 
-    - The Identifier model instance primary key (pk) attribute may be set or unset. If `pk` is
-    unset, the object is designated as newly created and unsaved (existing only in memory). The
-    object does not reference any existing rows in the the Identifier table, and the identifier
-    in the model instance may or may not exist in the Identifier, or other tables.
+    - The Identifier model instance primary key (pk) attribute may be set or unset. If
+    `pk` is unset, the object is designated as newly created and unsaved (existing only
+    in memory). The object does not reference any existing rows in the Identifier table,
+    and the identifier in the model instance may or may not exist in the Identifier, or
+    other tables.
 
-    - If set, `pk` must reference an existing row in the Identifier table. The identifier in
-    the referenced row should be an exact match for identifier in the model instance. Other values
-    may differ, representing the identifier in a different state.
+    - If set, `pk` must reference an existing row in the Identifier table. The
+    identifier in the referenced row should be an exact match for identifier in the
+    model instance. Other values may differ, representing the identifier in a different
+    state.
 
-    - Model instances are normally in an unsaved state only briefly after they're created, which is
-    while they are being populated with field values. Once populated, the object's `.save()` method
-    is called, which causes the object to be serialized and written to a new database row, and the
-    object's `pk` to be set to the index of the new row, which enables future model modifications to
-    be synced to the database.
+    - Model instances are normally in an unsaved state only briefly after they're
+    created, which is while they are being populated with field values. Once populated,
+    the object's `.save()` method is called, which causes the object to be serialized
+    and written to a new database row, and the object's `pk` to be set to the index of
+    the new row, which enables future model modifications to be synced to the database.
 
-    - If there are issues finding the field values for an object, e.g., if the object was intended
-    to hold the results of an operation, and the operation was cancelled or interrupted, the object
-    may end up being discarded instead of saved. Any object that becomes unreachable without having
-    had its `.save()` method called, is discarded.
+    - If there are issues finding the field values for an object, e.g., if the object
+    was intended to hold the results of an operation, and the operation was cancelled or
+    interrupted, the object may end up being discarded instead of saved. Any object that
+    becomes unreachable without having had its `.save()` method called, is discarded.
 
-    - Calling `.save()` on an an object always causes a new row to be inserted if `pk` is unset, and
-    an existing row to be updated if `pk` is set. If the inserted or updated row breaks any
-    constraints, the operation fails with an IntegrityError or other exception.
+    - Calling `.save()` on an object always causes a new row to be inserted if `pk` is
+    unset, and an existing row to be updated if `pk` is set. If the inserted or updated
+    row breaks any constraints, the operation fails with an IntegrityError or other
+    exception.
 
-    - `pk` can be manipulated programmatically before calling `.save()` in order to change an update
-    to an insert and vice versa, or to change which row is updated.
+    - `pk` can be manipulated programmatically before calling `.save()` in order to
+    change an update to an insert and vice versa, or to change which row is updated.
 
-    - Sample Identifier model instance, after serialization to JSON. .cm is a nested serialized
-    instance of a metadata object.
-    """
+    - Sample Identifier model instance, after serialization to JSON. .cm is a nested
+    serialized instance of a metadata object. """
 
     # The identifier in qualified, normalized form, e.g.,
     # "ark:/12345/abc" or "doi:10.1234/ABC".
