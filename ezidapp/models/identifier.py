@@ -19,7 +19,6 @@ import django.db
 import django.db.models
 import django.db.utils
 
-import ezidapp.models.custom_fields
 import ezidapp.models.group
 import ezidapp.models.profile
 import ezidapp.models.user
