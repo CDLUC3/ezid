@@ -268,7 +268,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 break
             for o in qs:
                 if filter is None or filter(o):
-                    log.debug(f'Generator returning: {str(o)}')
+                    # log.debug(f'Generator returning: {str(o)}')
                     yield o
             lastIdentifier = qs[-1].identifier
         yield None
