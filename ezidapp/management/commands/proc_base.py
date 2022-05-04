@@ -203,14 +203,25 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         '''
         return int(self.now())
 
-    def sleep(self, duration_sec):
-        """Close DB connections and go to sleep
+    def sleep(self, duration_sec, check_terminated_sec=1.0):
+        """Go to sleep, close DB connection at regular intervals.
+
+        Only reset the db connections after at least this time since last reset.
 
         Django will automatically reopen database connections as required. Not holding
         on to connections during sleep reduces the number of concurrent connection at
         the cost of having to reestablish the connection when returning from sleep.
+
+        Args:
+            duration_sec (float): Total amount of time to sleep. The function will not
+              return until this period of time has passed or the process terminate flag
+              has been set.
+            check_terminated_sec (float): The amount of time to sleep between each check
+              of the terminate flag.
         """
-        # Only reset the db connections after at least this time since last reset
+
+        start_ts = time.monotonic()
+
         if (
             self.now_int() - self._last_connection_reset
             > django.conf.settings.DAEMONS_IDLE_DB_RECONNECT
@@ -220,7 +231,9 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
             self.log.debug(f'Closing DB connections and sleeping for {duration_sec:.2f}s...')
             django.db.connections["default"].close()
             self._last_connection_reset = self.now_int()
-        time.sleep(duration_sec)
+
+        while time.monotonic() - start_ts < duration_sec and not self.terminated():
+            time.sleep(check_terminated_sec)
 
     def raise_command_error(self, msg_str):
         raise django.core.management.CommandError(
