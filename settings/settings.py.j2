@@ -318,9 +318,7 @@ logging.info(f'DEBUG MODE (settings.DEBUG) = {DEBUG}')
 EZID_BASE_URL = '{{ ezid_base_url }}'
 DEFAULT_TARGET_BASE_URL = 'https://ezid.cdlib.org'
 ALLOWED_HOSTS = ['*']
-# Use "./manage.py diag-gen-secret-key" to generate a secret key. Replace this string
-# with the generated string.
-SECRET_KEY = '< default insecure secret key for testing >'
+SECRET_KEY = '{{ secret_key }}'
 
 # i18n / locale
 
