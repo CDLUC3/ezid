@@ -19,6 +19,7 @@ import urllib.response
 import django.conf
 import django.conf
 import django.db
+import django.db.transaction
 
 import ezidapp.management.commands.proc_base
 import ezidapp.models.identifier
@@ -62,7 +63,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 continue
 
             for si in qs:
-                impl.enqueue.enqueue(si, "delete", updateExternalServices=True)
-                si.delete()
+                with django.db.transaction.atomic():
+                    impl.enqueue.enqueue(si, "delete", updateExternalServices=True)
+                    si.delete()
 
             self.sleep(django.conf.settings.DAEMONS_BATCH_SLEEP)
