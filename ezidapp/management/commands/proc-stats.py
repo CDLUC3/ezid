@@ -13,6 +13,7 @@ recorded.
 
 import datetime
 import logging
+import pprint
 import time
 
 import django.conf
@@ -25,8 +26,8 @@ import ezidapp.management.commands.proc_base
 import ezidapp.models.identifier
 import ezidapp.models.statistics
 import ezidapp.models.user
-import impl.log
 
+BATCH_SIZE = 10000
 
 log = logging.getLogger(__name__)
 
@@ -40,27 +41,89 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         super().__init__()
 
     def run(self):
-        if django.conf.settings.DAEMONS_STATISTICS_COMPUTE_SAME_TIME_OF_DAY:
-            self.sleep(self._sameTimeOfDayDelta())
-        else:
-            # We arbitrarily sleep 10 minutes to avoid putting a burden on the
-            # server near startup or reload.
-            self.sleep(600)
+        # log.debug(f'In {__name__} run loop...')
+
+        if not self.opt.debug:
+            if django.conf.settings.DAEMONS_STATISTICS_COMPUTE_SAME_TIME_OF_DAY:
+                self.sleep(self._sameTimeOfDayDelta())
+            else:
+                # We arbitrarily sleep 10 minutes to avoid putting a burden on the
+                # server near startup or reload.
+                self.sleep(600)
 
         while not self.terminated():
-            start = self.now()
+            start_ts = self.now()
             self.recomputeStatistics()
             if django.conf.settings.DAEMONS_STATISTICS_COMPUTE_SAME_TIME_OF_DAY:
                 self.sleep(self._sameTimeOfDayDelta())
             else:
-                # noinspection PyTypeChecker
                 self.sleep(
                     max(
                         django.conf.settings.DAEMONS_STATISTICS_COMPUTE_CYCLE
-                        - (self.now() - start),
+                        - (self.now() - start_ts),
                         0,
                     )
                 )
+
+    def recomputeStatistics(self):
+        """Recompute and stores identifier statistics
+
+        The old statistics are completely replaced.
+        """
+        user_dict = {
+            u.id: (u.pid, u.group.pid, u.realm.name)
+            for u in ezidapp.models.user.User.objects.all().select_related('group', 'realm')
+        }
+        counter_dict = {}
+        last_id_str = ''
+
+        while not self.terminated():
+            # log.debug(f'Starting query')
+
+            qs = (
+                ezidapp.models.identifier.SearchIdentifier.objects.filter(
+                    identifier__gt=last_id_str
+                )
+                .only('identifier', 'owner_id', 'createTime', 'isTest', 'hasMetadata')
+                .order_by('identifier')
+            )[:BATCH_SIZE]
+
+            # log.debug(f'QuerySet len={len(qs)}')
+            # log.debug(f'last_id_str="{last_id_str}"')
+
+            if not qs:
+                break
+
+            for id_model in qs:
+                # log.debug(f'id_model="{id_model}"')
+
+                if not id_model.isTest and id_model.owner_id in user_dict:
+                    k = (
+                        self._timestampToMonth(id_model.createTime),
+                        id_model.owner_id,
+                        self._identifierType(id_model.identifier),
+                        id_model.hasMetadata,
+                    )
+                    counter_dict[k] = counter_dict.get(k, 0) + 1
+
+                last_id_str = id_model.identifier
+
+        log.debug(f'Updating statistics: {pprint.pformat(counter_dict)}')
+
+        with django.db.transaction.atomic():
+            ezidapp.models.statistics.Statistics.objects.all().delete()
+            for k, v in counter_dict.items():
+                c = ezidapp.models.statistics.Statistics(
+                    month=k[0],
+                    owner=user_dict[k[1]][0],
+                    ownergroup=user_dict[k[1]][1],
+                    realm=user_dict[k[1]][2],
+                    type=k[2],
+                    hasMetadata=k[3],
+                    count=v,
+                )
+                c.full_clean(validate_unique=False)
+                c.save(force_insert=True)
 
     def _sameTimeOfDayDelta(self):
         now = datetime.datetime.now()
@@ -72,87 +135,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         return d
 
     def _timestampToMonth(self, t):
-        return time.strftime("%Y-%m", time.localtime(t))
+        return time.strftime('%Y-%m', time.localtime(t))
 
     def _identifierType(self, id_str):
-        return id_str.split(":")[0].upper()
-
-    def recomputeStatistics(self):
-        """Recompute and stores identifier statistics
-
-        The old statistics are completely replaced.
-        """
-        try:
-            users = {
-                u.id: (u.pid, u.group.pid, u.realm.name)
-                for u in ezidapp.models.user.User.objects.all().select_related("group", "realm")
-            }
-            counts = {}
-            lastIdentifier = ""
-            while not self.terminated():
-                qs = (
-                    ezidapp.models.identifier.Identifier.objects.filter(
-                        identifier__gt=lastIdentifier
-                    )
-                    .only("identifier", "owner_id", "createTime", "isTest", "hasMetadata")
-                    .order_by("identifier")
-                )
-                qs = list(qs[:1000])
-                if len(qs) == 0:
-                    break
-                for id_model in qs:
-                    if not id_model.isTest and id_model.owner_id in users:
-                        t = (
-                            self._timestampToMonth(id_model.createTime),
-                            id_model.owner_id,
-                            self._identifierType(id_model.identifier),
-                            id_model.hasMetadata,
-                        )
-                        counts[t] = counts.get(t, 0) + 1
-                lastIdentifier = qs[-1].identifier
-            with django.db.transaction.atomic():
-                ezidapp.models.statistics.Statistics.objects.all().delete()
-                for t, v in list(counts.items()):
-                    c = ezidapp.models.statistics.Statistics(
-                        month=t[0],
-                        owner=users[t[1]][0],
-                        ownergroup=users[t[1]][1],
-                        realm=users[t[1]][2],
-                        type=t[2],
-                        hasMetadata=t[3],
-                        count=v,
-                    )
-                    c.full_clean(validate_unique=False)
-                    c.save(force_insert=True)
-        except Exception as e:
-            log.exception('Exception')
-            impl.log.otherError("stats.recomputeStatistics", e)
-
-    def query(
-        self,
-        month=None,
-        owner=None,
-        ownergroup=None,
-        realm=None,
-        type=None,
-        hasMetadata=None,
-    ):
-        """Return the number of identifiers matching a constraint as defined by
-        the non-None argument values.
-
-        The arguments correspond to the fields in the Statistics model.
-        """
-        qs = ezidapp.models.statistics.Statistics.objects
-        if month is not None:
-            qs = qs.filter(month=month)
-        if owner is not None:
-            qs = qs.filter(owner=owner)
-        if ownergroup is not None:
-            qs = qs.filter(ownergroup=ownergroup)
-        if realm is not None:
-            qs = qs.filter(realm=realm)
-        if type is not None:
-            qs = qs.filter(type=type)
-        if hasMetadata is not None:
-            qs = qs.filter(hasMetadata=hasMetadata)
-        return qs.aggregate(django.db.models.Sum("count"))["count__sum"] or 0
+        return id_str.split(':')[0].upper()
