@@ -3,6 +3,7 @@
 
 import hashlib
 import json
+import logging
 import operator
 import re
 import time
@@ -16,6 +17,7 @@ import django.contrib.messages
 import django.core.mail
 import django.core.validators
 import django.db.transaction
+import django.http
 import django.shortcuts
 import django.urls.resolvers
 import django.utils.http
@@ -41,6 +43,8 @@ ACCOUNT_FIELDS_EDITABLE = [
 
 proxies_default = _("None chosen")
 
+log = logging.getLogger(__name__)
+
 
 def login(request):
     """Render the login page (GET) or processes a login form submission
@@ -52,14 +56,12 @@ def login(request):
     if request.method == "GET":
         if "next" in request.GET:
             try:
-                #m = django.urls.resolvers.resolve(request.GET["next"])
+                # m = django.urls.resolvers.resolve(request.GET["next"])
                 m = django.urls.resolve(request.GET["next"])
                 if m.app_name == "admin":
                     django.contrib.messages.error(
                         request,
-                        _(
-                            "You must be logged in as an administrator to view this page."
-                        ),
+                        _("You must be logged in as an administrator to view this page."),
                     )
             except django.urls.resolvers.Resolver404:
                 pass
@@ -89,9 +91,7 @@ def login(request):
                 _("Login successful."),
                 extra_tags='Accounts Submit Login',
             )
-            if django.utils.http.is_safe_url(
-                url=d["next"], allowed_hosts=[request.get_host()]
-            ):
+            if django.utils.http.is_safe_url(url=d["next"], allowed_hosts=[request.get_host()]):
                 return django.shortcuts.redirect(d["next"])
             else:
                 return django.shortcuts.redirect("ui_home.index")
@@ -140,20 +140,15 @@ def edit(request):
         proxy_for_list = user.proxy_for.all().order_by("username")
         d['proxy_for'] = (
             "<br/> ".join(
-                "[" + u.username + "]&nbsp;&nbsp;&nbsp;" + u.displayName
-                for u in proxy_for_list
+                "[" + u.username + "]&nbsp;&nbsp;&nbsp;" + u.displayName for u in proxy_for_list
             )
             if proxy_for_list
             else "None"
         )
         d['proxies_default'] = proxies_default
         d['proxy_users_picked_list'] = json.dumps(proxies_orig)
-        d['proxy_users_picked'] = ', '.join(
-            proxies_orig if proxies_orig else [proxies_default]
-        )
-        d['form'] = impl.form_objects.UserForm(
-            d, user=user, username=d['username'], pw_reqd=False
-        )
+        d['proxy_users_picked'] = ', '.join(proxies_orig if proxies_orig else [proxies_default])
+        d['form'] = impl.form_objects.UserForm(d, user=user, username=d['username'], pw_reqd=False)
     elif request.method == "POST":
         d['form'] = impl.form_objects.UserForm(
             request.POST, initial=d, user=user, username=d['username'], pw_reqd=False
@@ -169,10 +164,7 @@ def edit(request):
                     newProxies = _getNewProxies(
                         user,
                         proxies_orig,
-                        [
-                            x.strip()
-                            for x in request.POST['proxy_users_picked'].split(",")
-                        ],
+                        [x.strip() for x in request.POST['proxy_users_picked'].split(",")],
                     )
             _update_edit_user(request, user, newProxies, basic_info_changed)
         else:  # Form did not validate
@@ -231,9 +223,7 @@ def _update_edit_user(request, user, new_proxies_selected, basic_info_changed):
             user.displayName = d["accountDisplayName"]
             user.accountEmail = d["accountEmail"]
             # user.proxies.clear()
-            for p_user in [
-                p_user.strip() for p_user in d["proxy_users_picked"].split(",")
-            ]:
+            for p_user in [p_user.strip() for p_user in d["proxy_users_picked"].split(",")]:
                 if p_user not in ["", proxies_default]:
                     user.proxies.add(ezidapp.models.util.getUserByUsername(p_user))
             if d["pwcurrent"].strip() != "":
@@ -249,30 +239,28 @@ def _update_edit_user(request, user, new_proxies_selected, basic_info_changed):
             for new_proxy in new_proxies_selected:
                 _sendProxyEmail(request, new_proxy, user)
         if basic_info_changed:
-            django.contrib.messages.success(
-                request, _("Your information has been updated.")
-            )
+            django.contrib.messages.success(request, _("Your information has been updated."))
         if d['pwcurrent'].strip() != '' and d['pwnew'].strip() != '':
-            django.contrib.messages.success(
-                request, _("Your password has been updated.")
-            )
+            django.contrib.messages.success(request, _("Your password has been updated."))
 
 
-def _sendEmail(request, user, subject, message):
+def _sendEmail(request, user, subject, message, to_address=None):
+    to_address = to_address or user.accountEmail
+    to_full_address = user.primaryContactName + "<" + to_address + ">"
+    log.info(f'Sending email:\nTo: {to_full_address}\nSubject: {subject}\n{message}')
     try:
         django.core.mail.send_mail(
             subject,
             message,
             django.conf.settings.SERVER_EMAIL,
-            [user.accountEmail],
+            [to_address],
             fail_silently=True,
         )
     except Exception as e:
-        u = user.primaryContactName + "<" + user.accountEmail + ">"
         django.contrib.messages.error(
             request,
             _("Error sending email to {username}: {errormessage}").format(
-                {'username': u, 'errormessage': str(e)}
+                {'username': to_full_address, 'errormessage': str(e)}
             ),
         )
 
@@ -281,9 +269,7 @@ def _sendProxyEmail(request, p_user, user):
     m = (
         _("Dear")
         + " {},\n\n"
-        + _(
-            "You have been added as a proxy user to the identifiers owned by the following "
-        )
+        + _("You have been added as a proxy user to the identifiers owned by the following ")
         + _("primary user")
         + ":\n\n"
         + "   "
@@ -298,9 +284,7 @@ def _sendProxyEmail(request, p_user, user):
         + "   "
         + _("Account Email")
         + ": {}\n\n"
-        + _(
-            "As a proxy user, you can create and modify identifiers owned by the primary user"
-        )
+        + _("As a proxy user, you can create and modify identifiers owned by the primary user")
         + ". "
         + _("If you need more information about proxy ownership of EZID identifiers, ")
         + _("please don't hesitate to contact us")
@@ -318,9 +302,7 @@ def _sendProxyEmail(request, p_user, user):
 
 def _sendUserEmail(request, user, new_proxies):
     plural = True if len(new_proxies) > 1 else False
-    intro = (
-        _("These proxy users have been") if plural else _("This proxy user has been")
-    )
+    intro = _("These proxy users have been") if plural else _("This proxy user has been")
     p_list = ""
     for p in new_proxies:
         p_list += (
@@ -349,7 +331,7 @@ def _sendUserEmail(request, user, new_proxies):
     _sendEmail(request, user, subj, m)
 
 
-def pwreset(request, pwrr):
+def pwreset(request, pwrr=None):
     """Handle all GET and POST interactions related to password resets."""
     if pwrr:  # Change password here after receiving email
         d = {'menu_item': 'ui_null.null'}
@@ -359,16 +341,12 @@ def pwreset(request, pwrr):
             return django.http.HttpResponseRedirect("/")
         username, t = r
         if int(time.time()) - t >= 24 * 60 * 60:
-            django.contrib.messages.error(
-                request, _("Password reset request has expired.")
-            )
+            django.contrib.messages.error(request, _("Password reset request has expired."))
             return django.http.HttpResponseRedirect("/")
         d['pwrr'] = pwrr
         if request.method == "GET":
             d['username'] = username
-            d['form'] = impl.form_objects.BasePasswordForm(
-                None, username=username, pw_reqd=True
-            )
+            d['form'] = impl.form_objects.BasePasswordForm(None, username=username, pw_reqd=True)
         elif request.method == "POST":
             if "pwnew" not in request.POST or "pwconfirm" not in request.POST:
                 return impl.ui_common.badRequest(request)
@@ -415,7 +393,7 @@ def pwreset(request, pwrr):
                 # noinspection PyUnresolvedReferences
                 return impl.ui_common.render(request, "account/pwreset1", d)
             else:
-                r = sendPasswordResetEmail(username, email)
+                r = sendPasswordResetEmail(request, username, email)
                 if type(r) in (str, str):
                     django.contrib.messages.error(request, r)
                     # noinspection PyUnresolvedReferences
@@ -427,7 +405,7 @@ def pwreset(request, pwrr):
             return impl.ui_common.methodNotAllowed(request)
 
 
-def sendPasswordResetEmail(username, emailAddress):
+def sendPasswordResetEmail(request, username, emailAddress):
     """Send an email containing a password reset request link
 
     Returns None on success or a string message on error.
@@ -443,9 +421,14 @@ def sendPasswordResetEmail(username, emailAddress):
         return _("Email address does not match any address registered for username.")
     t = int(time.time())
     hash = hashlib.sha1(
-        f"{username}|{t:d}|{django.conf.settings.SECRET_KEY}"
+        f"{username}|{t:d}|{django.conf.settings.SECRET_KEY}".encode('utf-8')
     ).hexdigest()[::4]
-    link = f"{impl.ui_common.ezidUrl}/account/pwreset/{urllib.parse.quote(username)},{t:d},{hash}"
+    link = "{}/account/pwreset/{},{},{}".format(
+        django.conf.settings.EZID_BASE_URL,
+        urllib.parse.quote(username),
+        t,
+        hash,
+    )
     message = (
         _("You have requested to reset your EZID password")
         + ".\n"
@@ -456,13 +439,7 @@ def sendPasswordResetEmail(username, emailAddress):
         + _("Please do not reply to this email")
         + ".\n"
     )
-    django.core.mail.send_mail(
-        _("EZID password reset request"),
-        message,
-        django.conf.settings.SERVER_EMAIL,
-        [emailAddress],
-    )
-    return None
+    _sendEmail(request, username, _("EZID password reset request"), message, emailAddress)
 
 
 def decodePasswordResetRequest(request):
@@ -475,9 +452,9 @@ def decodePasswordResetRequest(request):
     t = m.group(2)
     hash = m.group(3)
     if (
-        hashlib.sha1(f"{username}|{t}|{django.conf.settings.SECRET_KEY}").hexdigest()[
-            ::4
-        ]
+        hashlib.sha1(
+            f"{username}|{t}|{django.conf.settings.SECRET_KEY}".encode('utf-8')
+        ).hexdigest()[::4]
         != hash
     ):
         return None
