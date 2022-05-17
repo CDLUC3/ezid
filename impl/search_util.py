@@ -354,10 +354,10 @@ def formulateQuery(
             qlist = []
             for v in values:
                 q = django.db.models.Q(
-                    searchableTarget=v[::-1][: ezidapp.models.identifier.MAX_TARGET_LENGTH]
+                    searchableTarget=v[::-1][: ezidapp.models.identifier.MAX_SEARCHABLE_TARGET_LENGTH]
                 )
                 # noinspection PyTypeChecker
-                if len(v) > ezidapp.models.identifier.MAX_TARGET_LENGTH:
+                if len(v) > ezidapp.models.identifier.MAX_SEARCHABLE_TARGET_LENGTH:
                     q &= django.db.models.Q(target=v)
                 qlist.append(q)
             filters.append(functools.reduce(operator.or_, qlist))

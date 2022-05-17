@@ -30,7 +30,7 @@ import impl.mapping
 import impl.util
 import impl.util2
 
-MAX_TARGET_LENGTH = 255
+MAX_SEARCHABLE_TARGET_LENGTH = 255
 
 
 def getIdentifier(identifier, prefixMatch=False):
@@ -1024,7 +1024,7 @@ class SearchIdentifier(IdentifierBase):
     # too long to be fully indexed), this field is the last 255
     # characters of the target URL in reverse order.
     searchableTarget = django.db.models.CharField(
-        max_length=MAX_TARGET_LENGTH,
+        max_length=MAX_SEARCHABLE_TARGET_LENGTH,
         editable=False,
     )
 
