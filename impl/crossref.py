@@ -39,7 +39,7 @@ PROLOG_RX = re.compile(
 )
 UTF8_RX = re.compile("UTF-?8$", re.I)
 SCHEMA_LOCATION_STR = "{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"
-SCHEMA_LOCATION_FORMAT_STR = "http://www.crossref.org/schema/deposit/crossref%s.xsd"
+SCHEMA_LOCATION_FORMAT_STR = "http://www.crossref.org/schema/deposit/crossref{}.xsd"
 TAG_RX = re.compile("{(http://www\\.crossref\\.org/schema/(4\\.[34]\\.\\d))}([-\\w.]+)$")
 ROOT_TAG_LIST = [
     "journal",
