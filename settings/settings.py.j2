@@ -16,7 +16,7 @@ import django.utils.translation
 
 # When DEBUG == True, any errors in EZID are returned to the user as pages containing
 # full stack traces and additional information. Should only be used for development.
-DEBUG = True
+DEBUG = {{ django_debug }}
 
 # When STANDALONE == True, Django handles serving of static files. Should only be used
 # for development.

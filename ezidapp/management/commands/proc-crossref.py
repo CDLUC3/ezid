@@ -251,7 +251,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     def get_base_url(self, doi):
         is_test_doi = impl.util2.isTestCrossrefDoi(doi)
         # Force hitting the test server if EZID is running in DEBUG mode
-        is_test_doi |= django.conf.settings.DEBUG
+        # is_test_doi |= django.conf.settings.DEBUG
         log.debug(f'isTestCrossrefDoi({doi}) or DEBUG: {is_test_doi}')
         return (
             django.conf.settings.CROSSREF_TEST_SERVER
