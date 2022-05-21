@@ -380,7 +380,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     url,
                     urllib.parse.urlencode(
                         {
-                            'usr': ref_id.owner.username,
+                            'usr': django.conf.settings.CROSSREF_USERNAME,
                             'pwd': django.conf.settings.CROSSREF_PASSWORD,
                             'file_name': batchId + '.xml',
                             'type': 'result',
