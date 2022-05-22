@@ -16,7 +16,7 @@ import django.utils.translation
 
 # When DEBUG == True, any errors in EZID are returned to the user as pages containing
 # full stack traces and additional information. Should only be used for development.
-DEBUG = {{ django_debug }}
+DEBUG = {{django_debug}}
 
 # When STANDALONE == True, Django handles serving of static files. Should only be used
 # for development.
@@ -58,22 +58,14 @@ DATABASES_RECONNECT_DELAY = 60
 SEARCH_MINIMUM_WORD_LENGTH = 3
 
 # fmt:off
+# The following stopwords, determined empirically, are the words that appear in the
+# keyword text of more than 20% of identifiers.
 SEARCH_STOPWORDS = [
-    'about', 'are', 'com', 'for', 'from', 'how', 'that', 'the', 'this', 'was', 'what',
-    'when',
-    'where', 'who', 'will', 'with', 'und', 'www'
-]
-# fmt:on
-
-# The following additional stopwords, determined empirically, are the words that appear
-# in the keyword text of more than 20% of identifiers.
-# fmt:off
-SEARCH_STOPWORDS += [
-    'http', 'https', 'ark', 'org', 'cdl', 'cdlib', 'doi', 'merritt', 'lib', 'ucb',
-    'dataset',
-    'and', 'data', 'edu', '13030', 'type', 'version', 'systems', 'inc', 'planet',
-    'conquest',
-    '6068', 'datasheet', 'servlet', 'dplanet', 'dataplanet', 'statisticaldatasets',
+    'about', 'are', 'com', 'for', 'from', 'how', 'that', 'the', 'this', 'was', 'what', 'when',
+    'where', 'who', 'will', 'with', 'und', 'www', 'http', 'https', 'ark', 'org', 'cdl',
+    'cdlib', 'doi', 'merritt', 'lib', 'ucb', 'dataset', 'and', 'data', 'edu', '13030',
+    'type', 'version', 'systems', 'inc', 'planet', 'conquest', '6068', 'datasheet',
+    'servlet', 'dplanet', 'dataplanet', 'statisticaldatasets',
 ]
 # fmt:on
 
@@ -182,17 +174,6 @@ DAEMONS_EXPUNGE_MAX_AGE_SEC = 60 * 60 * 24 * 14
 # search database. The following two options could be obtained from MySQL directly, but
 # we put them here to avoid any overt dependencies on MySQL.
 SEARCH_MINIMUM_WORD_LENGTH = 3
-SEARCH_STOPWORDS = (
-    'about are com for from how that the this was what when where who will with und www'
-)
-
-# The following additional stopwords, determined empirically, are the words that appear
-# in the keyword text of more than 20% of identifiers.
-SEARCH_EXTRA_STOPWORDS = (
-    'http https ark org cdl cdlib doi merritt lib ucb dataset and data edu 13030 type '
-    'version systems inc planet conquest 6068 datasheet servlet dplanet dataplanet '
-    'statisticaldatasets'
-)
 
 # Email
 
@@ -231,15 +212,11 @@ logging.config.dictConfig(
         'formatters': {
             'simple': {'format': '%(asctime)s %(levelname)8s %(message)s'},
             'verbose': {
-                'format': (
-                    '%(levelname)8s %(module)s '
-                    '%(process)d %(thread)s %(message)s'
-                ),
+                'format': ('%(levelname)8s %(module)s ' '%(process)d %(thread)s %(message)s'),
             },
             'trace': {
                 'format': (
-                    '%(asctime)s %(levelname)s '
-                    '%(module)s.%(funcName)s:%(lineno)s: %(message)s'
+                    '%(asctime)s %(levelname)s ' '%(module)s.%(funcName)s:%(lineno)s: %(message)s'
                 )
             },
             'ecs_logging': {
@@ -269,7 +246,7 @@ logging.config.dictConfig(
                 'level': 'DEBUG',
                 'class': 'logging.FileHandler',
                 'filename': LOG_DIR / 'ecs_json.log',
-                'formatter': "ecs_logging"
+                'formatter': "ecs_logging",
             },
         },
         'loggers': {
