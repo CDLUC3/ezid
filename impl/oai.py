@@ -396,7 +396,7 @@ def dispatch(request):
             "method not allowed", status=405, content_type="text/plain"
         )
     oaiRequest = _buildRequest(request)
-    if type(oaiRequest) is str:
+    if isinstance(oaiRequest, bytes):
         r = oaiRequest
     else:
         if oaiRequest[0] == "GetRecord":
@@ -420,7 +420,7 @@ def dispatch(request):
         elif oaiRequest[0] == "ListSets":
             r = _doListSets(oaiRequest)
         else:
-            assert False, "unhandled case"
+            assert False, f"unhandled case: {oaiRequest}"
     response = django.http.HttpResponse(r, content_type="text/xml; charset=utf-8")
     response["Content-Length"] = len(r)
     return response
