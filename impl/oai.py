@@ -396,7 +396,9 @@ def dispatch(request):
             "method not allowed", status=405, content_type="text/plain"
         )
     oaiRequest = _buildRequest(request)
-    if type(oaiRequest) is str:
+    # oaiRequest is response of lxml.etree.tostring() i.e. "bytes", if
+    # an error condition is encountered in _buildRequest()
+    if isinstance(oaiRequest, bytes):
         r = oaiRequest
     else:
         if oaiRequest[0] == "GetRecord":
@@ -420,7 +422,9 @@ def dispatch(request):
         elif oaiRequest[0] == "ListSets":
             r = _doListSets(oaiRequest)
         else:
-            assert False, "unhandled case"
+            # Keep this as an exception since we should never reach this point
+            # unless something is wrong in _buildRequest
+            assert False, f"Invalid OAI-PMH request: {str(oaiRequest)}"
     response = django.http.HttpResponse(r, content_type="text/xml; charset=utf-8")
     response["Content-Length"] = len(r)
     return response
