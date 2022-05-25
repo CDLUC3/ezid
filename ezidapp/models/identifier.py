@@ -314,6 +314,7 @@ class IdentifierBase(django.db.models.Model):
         blank=True,
         default="",
         validators=[django.core.validators.MinValueValidator(0)],
+        db_index=True,
     )
 
     RESERVED = "R"
@@ -887,51 +888,34 @@ class SearchIdentifier(IdentifierBase):
 
     class Meta:
         index_together = [
-            # Batch download and management search
-            # ("owner", "identifier"),
-            # ("ownergroup", "identifier"),
-            # Management search
-            # ("owner", "createTime"),
-            # ("owner", "updateTime"),
-            # ("owner", "status"),
-            # ("owner", "exported"),
-            # ("owner", "crossrefStatus"),
-            # ("owner", "profile"),
-            # ("owner", "isTest"),
-            # ("owner", "searchablePublicationYear"),
-            # ("owner", "searchableResourceType"),
-            # ("owner", "hasMetadata"),
-            # ("owner", "hasIssues"),
-            # ("owner", "resourceCreatorPrefix"),
-            # ("owner", "resourceTitlePrefix"),
-            # ("owner", "resourcePublisherPrefix"),
-            # ("ownergroup", "createTime"),
-            # ("ownergroup", "updateTime"),
-            # ("ownergroup", "status"),
-            # ("ownergroup", "exported"),
-            # ("ownergroup", "crossrefStatus"),
-            # ("ownergroup", "profile"),
-            # ("ownergroup", "isTest"),
-            # ("ownergroup", "searchablePublicationYear"),
-            # ("ownergroup", "searchableResourceType"),
-            # ("ownergroup", "hasMetadata"),
-            # ("ownergroup", "hasIssues"),
-            # ("ownergroup", "resourceCreatorPrefix"),
-            # ("ownergroup", "resourceTitlePrefix"),
-            # ("ownergroup", "resourcePublisherPrefix"),
-            # Public search
-            # ("publicSearchVisible", "identifier"),
-            # ("publicSearchVisible", "createTime"),
-            # ("publicSearchVisible", "updateTime"),
-            ("publicSearchVisible", "searchablePublicationYear"),
-            ("publicSearchVisible", "searchableResourceType"),
-            ("publicSearchVisible", "resourceCreatorPrefix"),
-            ("publicSearchVisible", "resourceTitlePrefix"),
-            ("publicSearchVisible", "resourcePublisherPrefix"),
-            # General search
-            ("searchableTarget",),
-            # OAI
-            # ("oaiVisible", "updateTime"),
+            ('oaiVisible', 'updateTime'),
+            ('owner_id', 'createTime'),
+            ('owner_id', 'crossrefStatus'),
+            ('owner_id', 'exported'),
+            ('owner_id', 'hasIssues'),
+            ('owner_id', 'hasMetadata'),
+            ('owner_id', 'identifier'),
+            ('owner_id', 'profile_id'),
+            ('owner_id', 'resourceCreatorPrefix'),
+            ('owner_id', 'resourceTitlePrefix'),
+            ('owner_id', 'searchablePublicationYear'),
+            ('owner_id', 'searchableResourceType'),
+            ('owner_id', 'status'),
+            ('owner_id', 'updateTime'),
+            ('ownergroup_id', 'createTime'),
+            ('ownergroup_id', 'crossrefStatus'),
+            ('ownergroup_id', 'exported'),
+            ('ownergroup_id', 'hasIssues'),
+            ('ownergroup_id', 'identifier'),
+            ('ownergroup_id', 'isTest'),
+            ('ownergroup_id', 'profile_id'),
+            ('ownergroup_id', 'resourceTitlePrefix'),
+            ('ownergroup_id', 'searchablePublicationYear'),
+            ('ownergroup_id', 'updateTime'),
+            ('publicSearchVisible', 'createTime'),
+            ('publicSearchVisible', 'identifier'),
+            ('publicSearchVisible', 'searchablePublicationYear'),
+            ('publicSearchVisible', 'searchableResourceType'),
         ]
 
     def issueReasons(self):
@@ -1199,7 +1183,7 @@ class RefIdentifier(IdentifierBase):
     change an update to an insert and vice versa, or to change which row is updated.
 
     - Sample Identifier model instance, after serialization to JSON. .cm is a nested
-    serialized instance of a metadata object. """
+    serialized instance of a metadata object."""
 
     # The identifier in qualified, normalized form, e.g.,
     # "ark:/12345/abc" or "doi:10.1234/ABC".
