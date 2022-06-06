@@ -40,8 +40,11 @@ class AsyncQueueBase(django.db.models.Model):
         )
 
     # Operation to perform
+    # A new identifier is being created
     CREATE = "C"
+    # An existing identifier is being updated
     UPDATE = "U"
+    # An existing identifier is being deleted
     DELETE = "D"
     OPERATION_CODE_TO_LABEL_DICT = {CREATE: "create", UPDATE: "update", DELETE: "delete"}
     OPERATION_LABEL_TO_CODE_DICT = {v: k for k, v in OPERATION_CODE_TO_LABEL_DICT.items()}
