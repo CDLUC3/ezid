@@ -149,14 +149,14 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     def _createFile(self, r):
         f = None
         try:
-            f = open(self._path(r, 1), "w", newline='')
+            f = open(self._path(r, 1), "w", newline='', encoding="utf-8")
             if r.format == ezidapp.models.async_queue.DownloadQueue.CSV:
                 w = csv.writer(f)
                 row_list = [self._csvEncode(c) for c in self._decode(r.columns)]
                 w.writerow([b.decode('utf-8', errors='replace') for b in row_list])
                 self._flushFile(f)
             elif r.format == ezidapp.models.async_queue.DownloadQueue.XML:
-                f.write(b'<?xml version="1.0" encoding="utf-8"?>\n<records>')
+                f.write('<?xml version="1.0" encoding="utf-8"?>\n<records>')
                 self._flushFile(f)
             # We don't know exactly what the CSV writer wrote, so we must
             # probe the file to find its size.
@@ -315,7 +315,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 self._harvest1(r, f)
             if r.format == ezidapp.models.async_queue.DownloadQueue.XML:
                 try:
-                    f.write(b"</records>")
+                    f.write("</records>")
                     self._flushFile(f)
                 except Exception as e:
                     log.exception('Exception')
