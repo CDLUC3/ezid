@@ -111,12 +111,16 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
         url = 'http://datacite.org/invalidDOI' if op_str == self.queue.DELETE else ref_id.target
 
+        # withdrawTitles is set to True if:
+        #  The current operation is a DELETE
+        #  OR
+        #  the identifier is unvailable, meaning the identified resource is not available
         submission, body, batchId = self._buildDeposit(
             meta_dict['crossref'],
             ref_id.owner.username,
             id_base_str,
             url,
-            withdrawTitles=(op_str == self.queue.DELETE or not ref_id.isReserved),
+            withdrawTitles=(op_str == self.queue.DELETE or ref_id.isUnavailable),
         )
 
         self._submitDeposit(submission, batchId, id_base_str)
