@@ -185,12 +185,12 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 self.sleep(60)
             firstRound = False
 
-    # @staticmethod
-    # def s(n):
-    #     if n != 1:
-    #         return "s"
-    #     else:
-    #         return ""
+    @staticmethod
+    def s(n):
+        if n != 1:
+            return "s"
+        else:
+            return ""
 
     @staticmethod
     def toHms(seconds):
