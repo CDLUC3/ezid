@@ -148,6 +148,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
     def _createFile(self, r):
         f = None
+        log.debug("createFile: %s", self._path(r, 1))
         try:
             f = open(self._path(r, 1), "w", newline='', encoding="utf-8")
             if r.format == ezidapp.models.async_queue.DownloadQueue.CSV:
@@ -258,7 +259,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 v = impl.util.removeXmlDeclaration(v)
             else:
                 v = impl.util.xmlEscape(v)
-            f.write(f'<element name="{impl.util.xmlEscape(k)}">{v}</element>'.encode("utf-8"))
+            f.write(f'<element name="{impl.util.xmlEscape(k)}">{v}</element>')
         f.write("</record>")
 
     def _harvest1(self, r, f):
@@ -273,6 +274,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 .order_by("identifier")
             )
             ids = list(qs[:1000])
+            log.debug("End harvest query, count = %s", len(ids))
             if len(ids) == 0:
                 break
             try:

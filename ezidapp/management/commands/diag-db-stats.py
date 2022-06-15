@@ -14,6 +14,7 @@ missing, it indicates an issue with the model search.
 
 import contextlib
 import logging
+import argparse
 
 import django.apps
 import django.conf
