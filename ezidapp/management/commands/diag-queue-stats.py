@@ -1,4 +1,20 @@
-import contextlib
+#  Copyright©2021, Regents of the University of California
+#  http://creativecommons.org/licenses/BSD
+
+"""Report queue statuses
+
+For each queue, report the number of entries at each status level.
+
+For queues other than download:
+  U = Unsubmitted
+  C = Unchecked
+  S = Submitted
+  W = Warning
+  F = Failure
+  I = Ignored
+  O = Success
+"""
+
 import json
 import logging
 
