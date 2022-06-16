@@ -25,7 +25,6 @@ import django.conf
 import django.core.mail
 import django.core.management
 import django.db
-import django.db.models
 
 import ezidapp.management.commands.proc_base
 import ezidapp.models.async_queue
