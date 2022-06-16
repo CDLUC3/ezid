@@ -41,7 +41,7 @@ import impl.policy
 import impl.util
 import impl.util2
 
-log = logging.getLogger(__name__)
+#log = logging.getLogger(__name__)
 
 
 SUFFIX_FORMAT_DICT = {
@@ -74,7 +74,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 self._remove_expired_files()
                 doSleep = False
             except Exception as e:
-                log.exception('Exception')
+                self.log.exception('Exception')
                 impl.log.otherError("download.run", e)
                 doSleep = True
 
@@ -148,7 +148,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
     def _createFile(self, r):
         f = None
-        log.debug("createFile: %s", self._path(r, 1))
+        self.log.debug("createFile: %s", self._path(r, 1))
         try:
             f = open(self._path(r, 1), "w", newline='', encoding="utf-8")
             if r.format == ezidapp.models.async_queue.DownloadQueue.CSV:
@@ -163,7 +163,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             # probe the file to find its size.
             n = f.tell()
         except Exception as e:
-            log.exception('Exception')
+            self.log.exception('Exception')
             raise self._wrapException("error creating file", e)
         else:
             r.stage = ezidapp.models.async_queue.DownloadQueue.HARVEST
@@ -266,6 +266,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         columns = self._decode(r.columns)
         constraints = self._decode(r.constraints)
         options = self._decode(r.options)
+        _total = 0
         while not self.terminated():
             qs = (
                 ezidapp.models.identifier.SearchIdentifier.objects.filter(identifier__gt=r.lastId)
@@ -273,8 +274,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 .select_related("owner", "ownergroup", "datacenter", "profile")
                 .order_by("identifier")
             )
+            self.log.debug("Query issued: %s", str(qs.query))
             ids = list(qs[:1000])
-            log.debug("End harvest query, count = %s", len(ids))
+            self.log.debug("Matches = %s", len(ids))
             if len(ids) == 0:
                 break
             try:
@@ -289,13 +291,18 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                             self._writeXml(f, id, m)
                         else:
                             assert False, "unhandled case"
+                        _total += 1
                 self._flushFile(f)
             except Exception as e:
-                log.exception('Exception')
+                self.log.exception('Exception')
                 raise self._wrapException("error writing file", e)
             r.lastId = ids[-1].identifier
             r.fileSize = f.tell()
             r.save()
+        if self.terminated():
+            self.log.info("Terminated.")
+        else:
+            self.log.info("Total records exported: %s", _total)
 
     def _harvest(self, r):
         f = None
@@ -306,7 +313,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 f.seek(r.fileSize)
                 f.truncate()
             except Exception as e:
-                log.exception('Exception')
+                self.log.exception('Exception')
                 raise self._wrapException("error re-opening/seeking/truncating file", e)
             start = r.currentIndex
             for i in range(r.currentIndex, len(r.toHarvest.split(","))):
@@ -320,7 +327,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     f.write("</records>")
                     self._flushFile(f)
                 except Exception as e:
-                    log.exception('Exception')
+                    self.log.exception('Exception')
                     raise self._wrapException("error writing file footer", e)
             r.stage = ezidapp.models.async_queue.DownloadQueue.COMPRESS
             r.save()
@@ -371,7 +378,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 p.returncode == 0 and stderr == b''
             ), f"compression command returned status code {p.returncode:d}, stderr '{stderr}'"
         except Exception as e:
-            log.exception('Exception')
+            self.log.exception('Exception')
             raise self._wrapException("error compressing file", e)
         else:
             r.stage = ezidapp.models.async_queue.DownloadQueue.DELETE
@@ -387,7 +394,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             if os.path.exists(self._path(r, 1)):
                 os.unlink(self._path(r, 1))
         except Exception as e:
-            log.exception('Exception')
+            self.log.exception('Exception')
             raise self._wrapException("error deleting uncompressed file", e)
         else:
             r.stage = ezidapp.models.async_queue.DownloadQueue.MOVE
@@ -400,7 +407,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             else:
                 assert os.path.exists(self._path(r, 3)), "file has disappeared"
         except Exception as e:
-            log.exception('Exception')
+            self.log.exception('Exception')
             raise self._wrapException("error moving compressed file", e)
         else:
             r.stage = ezidapp.models.async_queue.DownloadQueue.NOTIFY
@@ -414,7 +421,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 f"{ezidapp.models.util.getUserByPid(r.requestor).username}\n{r.rawRequest.encode('utf-8')}\n"
             )
         except Exception as e:
-            log.exception('Exception')
+            self.log.exception('Exception')
             raise self._wrapException("error writing sidecar file", e)
         finally:
             if f:
@@ -450,7 +457,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     fail_silently=True,
                 )
             except Exception as e:
-                log.exception('Exception')
+                self.log.exception('Exception')
                 raise self._wrapException("error sending email", e)
         r.delete()
 
