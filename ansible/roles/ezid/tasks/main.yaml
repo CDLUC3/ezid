@@ -30,8 +30,3 @@
     include_tasks: configure_httpd.yaml
   tags: configure_httpd
 
-- block:
-  - name: "call setup_scripts.yaml"
-    include_tasks: setup_scripts.yaml
-  tags: setup_scripts
-
