@@ -114,7 +114,7 @@ def publicationDate(date):
             # return ("%04d", "%04d-%02d", "%04d-%02d-%02d")[numComponents - 1] % t[:numComponents]
             return ("{:04d}", "{:04d}-{:02d}", "{:04d}-{:02d}-{:02d}")[
                 numComponents - 1
-            ].format(t[:numComponents])
+            ].format(*t[:numComponents])
         except Exception:
             pass
     raise django.core.exceptions.ValidationError(
