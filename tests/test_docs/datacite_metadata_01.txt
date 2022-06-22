@@ -1,0 +1,7 @@
+# For input to client testing datacite minting
+# client.py l admin mint doi:10.5072/FK2 @datacite_metadata_01.txt
+datacite.creator: Dave
+datacite.title: Test doc
+datacite.publicationyear: 1961
+datacite.resourcetype: Event
+datacite.publisher: Tester
