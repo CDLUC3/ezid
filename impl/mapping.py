@@ -21,7 +21,7 @@ purposes of satisfying requirements.
 
 import re
 
-# import ezidapp.models.validation
+import ezidapp.models.validation
 import impl.datacite
 import impl.erc
 import impl.util
@@ -52,8 +52,8 @@ class KernelMetadata(object):
     def validatedDate(self):
         if self.date is not None:
             try:
-                import ezidapp.models.validation
-
+                #2022-06-22 Not clear why this import was within the method instead of module level
+                #import ezidapp.models.validation
                 return ezidapp.models.validation.publicationDate(self.date)
             except Exception:
                 return None
