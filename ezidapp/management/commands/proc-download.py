@@ -126,7 +126,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             m = ": " + m
         return Exception(f"batch download error: {context}: {type(exception).__name__}{m}")
 
-    def _path(self, r: ezidapp.models.async_queue.DownloadQueue, i: int):
+    def _path(self, r: ezidapp.models.async_queue.DownloadQueue, i: int)->str:
         # i=1: uncompressed work file
         # i=2: compressed work file
         # i=3: compressed delivery file
@@ -143,7 +143,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             s = "request"
         return os.path.join(d, f"{r.filename}.{s}")
 
-    def _csvEncode(self, s):
+    def _csvEncode(self, s:str)->bytes:
         return impl.util.oneLine(s).encode("utf-8")
 
     def _flushFile(self, f: typing.TextIO):
@@ -170,6 +170,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             self.log.exception('Exception')
             raise self._wrapException("error creating file", e)
         else:
+            # This is run if there's no exception thrown
             r.stage = ezidapp.models.async_queue.DownloadQueue.HARVEST
             r.fileSize = n
             r.save()
@@ -236,7 +237,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         if f.tell() > 0:
             f.write("\n")
         f.write(f":: {id_model.identifier}\n")
-        f.write(impl.anvl.format(metadata).encode("utf-8"))
+        # f is a text file handle, opened with utf-8 encoding
+        f.write(impl.anvl.format(metadata))
 
     def _writeCsv(
         self,
