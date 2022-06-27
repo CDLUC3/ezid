@@ -126,7 +126,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             m = ": " + m
         return Exception(f"batch download error: {context}: {type(exception).__name__}{m}")
 
-    def _path(self, r: ezidapp.models.async_queue.DownloadQueue, i: int)->str:
+    def _path(self, r: ezidapp.models.async_queue.DownloadQueue, i: int) -> str:
         # i=1: uncompressed work file
         # i=2: compressed work file
         # i=3: compressed delivery file
@@ -143,7 +143,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             s = "request"
         return os.path.join(d, f"{r.filename}.{s}")
 
-    def _csvEncode(self, s:str)->bytes:
+    def _csvEncode(self, s: str) -> bytes:
         return impl.util.oneLine(s).encode("utf-8")
 
     def _flushFile(self, f: typing.TextIO):
