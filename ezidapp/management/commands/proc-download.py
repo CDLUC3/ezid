@@ -65,25 +65,28 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             if doSleep:
                 self.sleep(django.conf.settings.DAEMONS_DOWNLOAD_PROCESSING_IDLE_SLEEP)
             try:
+                # Try and retrieve a single task from the DownloadQueue
+                # Tasks are ordered by sequence of creation.
+                # There are several stages of work for a task, so the same
+                # task may be retrieved multiple times to complete all the stages
                 rs = ezidapp.models.async_queue.DownloadQueue.objects.all().order_by("seq")[:1]
                 if len(rs) == 0:
-                    # Don't sleep while work is in progress
+                    # OK to sleep since no work to do
                     doSleep = True
                     continue
-                self._proc_stage(rs)
+                # Process the next stage of the single task
+                self._proc_stage(rs[0])
                 self._remove_expired_files()
+                # Don't sleep while work is in progress
                 doSleep = False
             except Exception as e:
                 self.log.exception('Exception')
                 impl.log.otherError("download.run", e)
                 doSleep = True
 
-    def _proc_stage(self, rs):
-        # rs is a list of ezidapp.models.async_queue.DownloadQueue
+    def _proc_stage(self, r:ezidapp.models.async_queue.DownloadQueue):
         # Only process one download request at a time
-        # Once completed, current is deleted, so the
-        # next one becomes index 0
-        r = rs[0]
+        # Once completed, current is deleted
         if r.stage == ezidapp.models.async_queue.DownloadQueue.CREATE:
             self._createFile(r)
         elif r.stage == ezidapp.models.async_queue.DownloadQueue.HARVEST:
