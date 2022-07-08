@@ -519,8 +519,10 @@ def fromExchange(line, identifierEmbedded=False):
 
 def oneLine(s):
     """Replace newlines in a string with spaces."""
-    assert isinstance(s, str)
-    return re.sub("\\s", " ", s)
+    #assert isinstance(s, str)
+    if isinstance(s, str):
+        return re.sub("\\s", " ", s)
+    return s
 
 
 def formatException(exception):
