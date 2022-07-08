@@ -71,6 +71,15 @@ Request a batch download:
   POST /download_request   [authentication required]
   request body: application/x-www-form-urlencoded
   response body: status line
+
+Resolve an identifier:
+  GET /{identifier}
+  response status: 302
+  response body: json document with target info
+
+Identifier inflection (introspection):
+  GET /{identifier}? or ??
+  response body as for View an identifier
 """
 import cgi
 import logging
@@ -492,3 +501,23 @@ def pause(request):
         )
     else:
         assert False, "unhandled case"
+
+def resolveIdentifier(request, identifier):
+    import json
+    res = {
+        "value": identifier,
+        "method": request.method,
+        "path": request.path,
+        "path_info": request.path_info,
+        "META": {}
+    }
+    for k,v in request.META.items():
+        res["META"][k] = str(v)
+    c = json.dumps(res, indent=2)
+    r = django.http.HttpResponse(
+        c,
+        status=200,
+        content_type="application/json; charset=utf-8",
+    )
+    r["Content-Length"] = len(c)
+    return r
