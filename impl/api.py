@@ -508,15 +508,20 @@ def pause(request):
 
 def resolveIdentifier(request, identifier):
     import json
-    res = {
-        "value": identifier,
-        "method": request.method,
-        "path": request.path,
-        "path_info": request.path_info,
-        "META": {}
-    }
-    for k,v in request.META.items():
-        res["META"][k] = str(v)
+
+    identifier = f"ark:{identifier}"
+    res = impl.ezid.resolveIdentifier(identifier)
+
+    if True:
+        res['META'] = {
+            "value": identifier,
+            "method": request.method,
+            "path": request.path,
+            "path_info": request.path_info,
+            "META": {}
+        }
+        for k,v in request.META.items():
+            res["META"][k] = str(v)
     c = json.dumps(res, indent=2)
     r = django.http.HttpResponse(
         c,

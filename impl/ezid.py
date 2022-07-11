@@ -315,6 +315,18 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
         _releaseIdentifierLock(normalizedIdentifier, user.username)
 
 
+def resolveIdentifier(identifier):
+    nqidentifier = impl.util.normalizeIdentifier(identifier)
+    if nqidentifier is None:
+        #TODO: verify this causes a 404
+        return "error: bad request - invalid identifier"
+    # TODO: verify that lock should is not needed here.
+    try:
+        return ezidapp.models.identifier.resolveIdentifier(nqidentifier)
+    except ezidapp.models.identifier.Identifier.DoesNotExist:
+        return "error: bad request - no such identifier"
+
+
 def getMetadata(identifier, user=ezidapp.models.user.AnonymousUser, prefixMatch=False):
     """Return all metadata for a given qualified identifier, e.g.,
     "doi:10.5060/FOO". 'user' is the requestor and should be an authenticated

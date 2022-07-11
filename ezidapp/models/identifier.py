@@ -33,6 +33,21 @@ import impl.util2
 MAX_SEARCHABLE_TARGET_LENGTH = 255
 
 
+def resolveIdentifier(identifier):
+    """Returns the target for the specified identifier.
+
+    Prefix matching is always applied to support suffix pass through.
+    """
+    _l = list(
+        Identifier.objects.filter(
+            identifier__in=impl.util.explodePrefixes(identifier)
+        ).values('identifier', 'target')
+    )
+    if len(_l) > 0:
+        return max(_l, key=lambda si: len(si["identifier"]))
+    raise Identifier.DoesNotExist()
+
+
 def getIdentifier(identifier, prefixMatch=False):
     if prefixMatch:
         l = list(
