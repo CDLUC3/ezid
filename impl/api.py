@@ -139,6 +139,9 @@ def is_text_plain_utf8(request):
 
 
 def _validateOptions(request, options):
+    '''
+    Returns a dict of parameters or a string on error
+    '''
     d = {}
     for k, v in list(request.GET.items()):
         if k in options:
@@ -156,11 +159,12 @@ def _validateOptions(request, options):
                 if not found:
                     return (
                         "error: bad request - invalid value for URL query parameter "
-                        "'%s'".format(k.encode("utf-8"))
+                        "'%s'".format(k)
                     )
         else:
             return "error: bad request - unrecognized URL query parameter '%s'" % impl.util.oneLine(
-                k.encode("ASCII", "xmlcharrefreplace")
+                # has the effect of XML encoding non-ascii chars
+                k.encode("ASCII", "xmlcharrefreplace").decode()
             )
     return d
 
