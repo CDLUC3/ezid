@@ -222,6 +222,10 @@ logging.config.dictConfig(
             'ecs_logging': {
                 'class': 'ecs_logging.StdlibFormatter',
             },
+            'mail_admins': {
+                'level': 'ERROR',
+                'class': 'django.utils.log.AdminEmailHandler'
+            },
         },
         'handlers': {
             'console': {
@@ -260,17 +264,21 @@ logging.config.dictConfig(
             'django.server': {
                 # 'level': 'DEBUG',
                 'level': 'ERROR',
+                'handler': ['mail_admins']
             },
             'django.db': {
                 # 'level': 'DEBUG',
                 'level': 'ERROR',
+                'handler': ['mail_admins']
             },
             'django.request': {
                 'level': 'ERROR',
+                'handler': ['mail_admins']
             },
             # TODO: Look into messages about missing variables in templates
             'django.template': {
                 'level': 'INFO',
+                'handler': ['mail_admins']
             },
             'filelock': {
                 'level': 'ERROR',
