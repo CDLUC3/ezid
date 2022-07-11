@@ -98,6 +98,7 @@ database_password:             "{{ ssm_params['database_password'] }}"
 
 datacite_doi_url:              "{{ ssm_params['datacite_doi_url'] }}"
 datacite_metadata_url:         "{{ ssm_params['datacite_metadata_url'] }}"
+django_admins:                 "{{ ssm_params['django_admins'] }}"
 django_debug:                  "{{ ssm_params['django_debug'] }}"
 ezid_base_url:                 "{{ ssm_params['ezid_base_url']}}"
 email_new_account:             "{{ ssm_params['email_new_account'] }}"
