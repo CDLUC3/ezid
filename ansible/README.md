@@ -99,7 +99,6 @@ ezid-ansible> grep tags roles/ezid/tasks/main.yaml
   tags: install_ezid
   tags: configure_ezid
   tags: configure_httpd
-  tags: setup_scripts
 
 # Use flag `--tags` to only run pyenv setup play
 ansible-playbook -i hosts site.yaml -e @ansible_extra_vars.yaml --tags 'setup_pyenv'
