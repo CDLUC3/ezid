@@ -222,10 +222,6 @@ logging.config.dictConfig(
             'ecs_logging': {
                 'class': 'ecs_logging.StdlibFormatter',
             },
-            'mail_admins': {
-                'level': 'ERROR',
-                'class': 'django.utils.log.AdminEmailHandler'
-            },
         },
         'handlers': {
             'console': {
@@ -251,6 +247,10 @@ logging.config.dictConfig(
                 'class': 'logging.FileHandler',
                 'filename': LOG_DIR / 'ecs_json.log',
                 'formatter': "ecs_logging",
+            },
+            'mail_admins': {
+                'level': 'ERROR',
+                'class': 'django.utils.log.AdminEmailHandler'
             },
         },
         'loggers': {
