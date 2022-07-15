@@ -463,6 +463,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 self.daysSince(bad[1]),
             )
         )
+        self._workset = _workset
 
     def getNextLink(self):
         # acquire.acquire()
