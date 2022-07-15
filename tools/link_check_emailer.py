@@ -24,6 +24,9 @@ import re
 import subprocess
 import tempfile
 
+import django
+django.setup()
+
 import django.conf
 import django.conf
 import django.core.exceptions
