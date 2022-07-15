@@ -408,7 +408,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             def query(isBad, timeBound, limit):
                 link_checker_model = django.apps.apps.get_model('ezidapp', 'LinkChecker')
                 return list(
-                    ezidapp.models.link_checker.objects.filter(owner_id=user.id)
+                    ezidapp.models.link_checker.LinkChecker.objects.filter(owner_id=user.id)
                     .filter(isBad=isBad)
                     .filter(lastCheckTime__lt=timeBound)
                     .order_by("lastCheckTime")[:limit]
