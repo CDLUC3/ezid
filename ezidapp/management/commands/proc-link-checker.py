@@ -160,6 +160,10 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     t = threading.Thread(target=Worker)
                     t.start()
                     threads.append(t)
+                threadLength = len(thread)
+                log.info(
+                    "current threadLength: {threadLength}, "
+                )
                 for i in range(django.conf.settings.LINKCHECKER_NUM_WORKERS):
                     threads[i].join(timeout)
                     if threads[i].is_alive():
@@ -172,13 +176,18 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 # noinspection PyTypeChecker
                 numChecked = sum(ow.nextIndex for ow in self._workset)
                 rate = numChecked / (self.now() - roundStart)
-                if rate >= 1 / 1.05:  # using this bound avoids printing 1/1.0
-                    rate = str(round(rate, 1)) + " links/s"
-                else:
-                    rate = "1/%s link/s" % str(round(1 / rate, 1))
-                log.info(
-                    f"end processing, checked {numChecked} links at {rate}, slept {self.toHms(_totalSleepTime)}"
-                )
+                try: 
+                    if rate >= 1 / 1.05:  # using this bound avoids printing 1/1.0
+                        rate = str(round(rate, 1)) + " links/s"
+                    else:
+                        rate = "1/%s link/s" % str(round(1 / rate, 1))
+                    log.info(
+                        f"end processing, checked {numChecked} links at {rate}, slept {self.toHms(_totalSleepTime)}"
+                    )
+                except ZeroDivisionError:
+                    log.info(
+                        f"end processing, checked {numChecked}, slept {self.toHms(_totalSleepTime)}"
+                    )
             else:
                 # The sleep below is just to prevent a compute-intensive loop.
                 log.info("end processing (nothing to check)")
