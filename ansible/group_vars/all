@@ -5,11 +5,11 @@ group: "{{ user }}"
 app_dir: "{{ lookup('env', 'HOME') | default('ezid') }}"
 
 virtual_environments:
-- python_version: 2.7.18
-  pyenv_name: ezid-py27
+- python_version: 3.8.5
+  pyenv_name: ezid-py38
   ensure: present
 pyenv_root: "{{ app_dir }}/.pyenv"
-pyenv_global: ezid-py27
+pyenv_global: ezid-py38
 
 ezid_repo: https://github.com/CDLUC3/ezid.git
 ezid_version: master
@@ -22,7 +22,6 @@ ezid_info_pages_branch: master
 http_port: 18880
 https_port: 18443
 http_protocol: http
-use_ssl: false
 
 
 # AWS SSM Params
