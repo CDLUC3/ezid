@@ -14,11 +14,11 @@ What Puppet does
 - Configure bash shell environment for application user (SSM_DEFAULT_PATH, SSM_ROOT_PATH, AWS_REGION)
 - Install system package prerequisites
 - Install ansible as $app_user
-- Clone ansible project repo into $install_dir
+- Clone EZID project repo into $install_dir
 - Install required additional ansible (Galaxy) roles.  These are used to set up pyenv.
 - Manage `ansible_extra_vars.yaml` file.
 - Run ansible-playbook to deploy application.
-- Manage ezid service with systemd. 
+- Manage ezid service and background jobs with systemd. 
 
 
 What ezid-ansible does
@@ -33,7 +33,6 @@ What ezid-ansible does
 - Run `setup.py` to install python requirements and ezid commandline tools (console_scripts)
 - Generate `settings.settings.py` from template using values retrived from SSM ParameterStore
 - Configure httpd
-- Manage helper scripts
 
 
 Installation
@@ -45,14 +44,14 @@ Puppet takes care of this part for you, but to be thorough:
 
 ```
 cd ${install_dir}
-git clone https://github.com/CDLUC3/ezid-ansible
+git clone https://github.com/CDLUC3/ezid
 ```
 
 2. Install ansible galaxy pluggins for `pyenv`:
 
   ```
   # install ansible plugins
-  ansible-galaxy install -r ${install_dir}/ezid-ansible/roles/requirements.yaml
+  ansible-galaxy install -r ${install_dir}/ezid/ansible/roles/requirements.yaml
   ```
 
 
@@ -60,6 +59,8 @@ Usage
 -----
 
 ```
+# Run all ansible-playbook commands from `ansible` directory (i.e. where this README lives).
+
 # Default deployment (see `group_vars/all`)
 #
 # dry-run 
@@ -126,7 +127,7 @@ ezid-ansible$ cat ansible_extra_vars.yaml
 user: ezid
 group: ezid
 app_dir: /ezid
-ezid_version: 3.0.0-0.0.0
+ezid_version: 3.0.0
 pyenv_global: ezid-py38
 virtual_environments:
 - python_version: 2.7.18
