@@ -5,15 +5,10 @@ Fri Jul 22 10:39:37 PDT 2022
 I'm merging ezid-ansible into ezid.  I want contents of ezid-ansible to be a subdirectory
 of ezid/.
 
-agould@uc3-ezidui01x2-dev:~/git/github/cdluc3> ls -ld ezid ezid-ansible/
+-dev:~/git/github/cdluc3> ls -ld ezid ezid-ansible/
 drwxr-xr-x 19 agould users 6144 Jul 22 10:15 ezid
 drwxr-xr-x 10 agould users 6144 Jul 12 13:19 ezid-ansible/
 
-
-I've cleaned up all old branches in ezid-ansible and make a new branch off main:
-  agould@uc3-ezidui01x2-dev:~/git/github/cdluc3/ezid-ansible/notes> git branch
-    main
-  * merge_ansible_code
 
 First, move all content of ezid-ansible into a subdirectory.  
 from https://ericlathrop.com/2014/01/combining-git-repositories/
@@ -26,7 +21,7 @@ git filter-branch --prune-empty --tree-filter '
 
 This failed:
 
-  agould@uc3-ezidui01x2-dev:~/git/github/cdluc3/ezid-ansible> git filter-branch --prune-empty --tree-filter '
+  -dev:~/git/github/cdluc3/ezid-ansible> git filter-branch --prune-empty --tree-filter '
   > if [ ! -e ansible ]; then
   >     mkdir -p ansilbe
   >     git ls-tree --name-only $GIT_COMMIT | xargs -I files mv files ansible
