@@ -1,0 +1,117 @@
+diff --git a/settings/common.py b/settings/common.py
+index f8d567b5..a73d76b6 100644
+--- a/settings/common.py
++++ b/settings/common.py
+@@ -13,7 +13,8 @@ SETTINGS_DIR = os.path.join(PROJECT_ROOT, "settings")
+ EZID_CONFIG_FILE = os.path.join(SETTINGS_DIR, "ezid.conf")
+ EZID_SHADOW_CONFIG_FILE = EZID_CONFIG_FILE + ".shadow"
+ LOGGING_CONFIG_FILE = "logging.server.conf"
+-MINTERS_PATH = os.path.join(PROJECT_ROOT, "db", "minters")
++#MINTERS_PATH = os.path.join(PROJECT_ROOT, "db", "minters")
++MINTERS_PATH = '/apps/ezid/var/minters'
+ 
+ # TODO: Stop fudging the syspath
+ sys.path.append(os.path.join(PROJECT_ROOT, "impl"))
+@@ -23,7 +24,6 @@ DEBUG = True
+ TEST_RUNNER = "django.test.runner.DiscoverRunner"
+ 
+ MANAGERS = ADMINS = [
+-    ("Dave Vieglais", "dave.vieglais@gmail.com"),
+     ("John Kunze", "jak@ucop.edu"),
+     ("Maria Gould", "Maria.Gould@ucop.edu"),
+     ("Roger Dahl", "cdl-ezid@dahlsys.com"),
+@@ -42,7 +42,7 @@ DATABASES = {
+         "ENGINE": "django.db.backends.mysql",
+         "HOST": "databases.store_host",  # see below
+         "NAME": "ezid",
+-        "USER": "ezidrw",
++        "USER": "eziddba",
+         "PORT": "databases.store_port",
+         "PASSWORD": "databases.store_password",  # see below
+         "OPTIONS": {"charset": "utf8mb4"},
+@@ -51,7 +51,7 @@ DATABASES = {
+         "ENGINE": "django.db.backends.mysql",
+         "HOST": "databases.search_host",  # see below
+         "NAME": "ezid",
+-        "USER": "ezidrw",
++        "USER": "eziddba",
+         "PORT": "databases.search_port",
+         "PASSWORD": "databases.search_password",  # see below
+         "OPTIONS": {"charset": "utf8mb4"},
+diff --git a/settings/ezid.conf b/settings/ezid.conf
+index e14208a3..8e97b098 100644
+--- a/settings/ezid.conf
++++ b/settings/ezid.conf
+@@ -21,7 +21,10 @@
+ #{remotedev}ezid_base_url: https://uc3-ezidx2-dev.cdlib.org
+ {remotedev}ezid_base_url: https://ezid-stg.cdlib.org 
+ {staging}ezid_base_url: https://uc3-ezidx2-stg.cdlib.org
+-{production}ezid_base_url: https://ezid.cdlib.org
++#{production}ezid_base_url: https://ezid.cdlib.org
++#Loadbalancer base_url, for pre-production testing:
++{production}ezid_base_url: https://uc3-ezid-ui-prd.cdlib.org
++
+ 
+ default_doi_profile: datacite
+ default_ark_profile: erc
+@@ -104,7 +107,7 @@ error_similarity_threshold: .6
+ 
+ [binder]
+ url: https://n2t-stg.n2t.net/a/ezid/b
+-{production}url: https://n2t.net/a/ezid/b
++{production}url: https://n2t-stg.n2t.net/a/ezid/b
+ username: ezid
+ password: (see shadow file)
+ num_attempts: 3
+@@ -122,6 +125,7 @@ ark: https://n2t-stg.n2t.net
+ # required.
+ url: file:///apps/ezid/apps/apache/ezid-shoulders/master_shoulders.txt
+ {localdev}url: file://%(PROJECT_ROOT)s/master_shoulders.txt
++{production}url: file:///apps/ezid/ezid/master_shoulders.txt
+ username:
+ password:
+ ark_test: ark:/99999/fk4
+@@ -144,8 +148,8 @@ enabled: false
+ {production}enabled: true
+ {staging}enabled: true
+ {remotedev}enabled: true
+-doi_url: https://mds.datacite.org/doi
+-metadata_url: https://mds.datacite.org/metadata
++doi_url: https://mds.test.datacite.org/doi
++metadata_url: https://mds.test.datacite.org/metadata
+ {staging}doi_url: https://mds.test.datacite.org/doi
+ {staging}metadata_url: https://mds.test.datacite.org/metadata
+ {remotedev}doi_url: https://mds.test.datacite.org/doi
+@@ -174,7 +178,7 @@ enabled: false
+ {remotedev}enabled: true
+ depositor_name: EZID
+ depositor_email: ezidcdl@gmail.com
+-real_server: doi.crossref.org
++real_server: test.crossref.org
+ test_server: test.crossref.org
+ {staging}real_server: test.crossref.org
+ {staging}test_server: test.crossref.org
+diff --git a/settings/production.py b/settings/production.py
+index 4cab66b4..d575bbc7 100644
+--- a/settings/production.py
++++ b/settings/production.py
+@@ -7,6 +7,18 @@ DEBUG = False
+ ADMINS.append(("Marisa Strong", "marisa.strong@ucop.edu"))
+ ADMINS.append(("Maria Gould", "maria.gould@ucop.edu"))
+ 
+-ALLOWED_HOSTS = ["ezid.cdlib.org"]
++ALLOWED_HOSTS = ['*']
++
++#ALLOWED_HOSTS = [
++#        "localhost",
++#        "127.0.0.1",
++#        "172.30.43.85",
++#        "ezid.cdlib.org",
++#        "uc3-ezid-ui-prd.cdlib.org",
++#        "uc3-ezidui01x2-prd.cdlib.org",
++#        "uc3-ezidui01x2-prd.cdlib.org:18880",
++#        'uc3-ezidui01x2-prd:18880',
++#        'uc3-ezidui01x2-prd',
++#        ]
+ 
+ injectSecrets(DEPLOYMENT_LEVEL)

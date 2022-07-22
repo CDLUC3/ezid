@@ -1,0 +1,206 @@
+commit 2aa5a13659af87c8f57c89d7495bf52763ed0b2e
+Author: Dave Vieglais <datadavev@users.noreply.github.com>
+Date:   Wed Oct 28 07:33:04 2020 -0400
+
+    Add note for hostname and port for admin commands
+
+diff --git a/files/etc/init.d/httpd b/files/etc/init.d/httpd
+index 8009d0e..07a95b1 100755
+--- a/files/etc/init.d/httpd
++++ b/files/etc/init.d/httpd
+@@ -1,5 +1,6 @@
+ #! /bin/bash
+-
++# Note that $HOSTNAME is expected to be set to the value of $(hostname -f) 
++# for this machine. It is set in profile of the ezid user.
+ USAGE="Usage: $0 start|stop|force-stop|restart|force-restart|status"
+ APACHE_BASE="/apps/ezid/etc/httpd"
+ APACHE_CONF="${APACHE_BASE}/conf/httpd.conf"
+@@ -49,7 +50,7 @@ function pauseEzid {
+     fi
+     password=${password#*: }
+     #echo "$CLIENT https://$HOSTNAME \"admin:${password}\" pause idlewait"
+-    $CLIENT $PROTOCOL://$HOSTNAME "admin:$password" pause idlewait
++    $CLIENT $PROTOCOL://$HOSTNAME:18880 "admin:$password" pause idlewait
+     status=$?
+ }
+ 
+@@ -59,7 +60,7 @@ function exerciseEzid {
+   # tested, but it does confirm that Apache, mod_wsgi, Django, and
+   # EZID are basically functioning.
+   echo "Exercising the server..."
+-  $WGET -q -T 10 -t 1 -O /dev/null $PROTOCOL://$HOSTNAME/status
++  $WGET -q -T 10 -t 1 -O /dev/null $PROTOCOL://$HOSTNAME:18880/status
+   status=$?
+ }
+ 
+@@ -101,7 +102,7 @@ case $1 in
+         if [ $pidcount -gt 0 ]; then
+             # The server appears to be running; check that it's
+             # responsive.
+-            $WGET -q -T 10 -t 1 -O /dev/null $PROTOCOL://$HOSTNAME/status
++            $WGET -q -T 10 -t 1 -O /dev/null $PROTOCOL://$HOSTNAME:18880/status
+             status=$?
+             if [ $status -eq 0 ]; then
+                 echo "up"
+
+commit c8b27fd1abec6a5d84896120acdb8d94176f8f0d
+Author: Dave Vieglais <datadavev@users.noreply.github.com>
+Date:   Wed Oct 28 07:28:24 2020 -0400
+
+    Remove commented out SSL config
+
+diff --git a/files/etc/httpd/conf.d/03-ezid-nossl.conf b/files/etc/httpd/conf.d/03-ezid-nossl.conf
+index f4c9200..8c00ff5 100644
+--- a/files/etc/httpd/conf.d/03-ezid-nossl.conf
++++ b/files/etc/httpd/conf.d/03-ezid-nossl.conf
+@@ -47,84 +47,4 @@
+  	Alias /robots.txt /apps/ezid/var/www/html/robots.txt
+  	Alias /sitemap.xml /apps/ezid/ezid/static/sitemap.xml
+  	Alias /favicon.ico /apps/ezid/ezid/static/images/favicon.ico	
+-
+-  <IfDefine DontIgnoreThis>
+-	RewriteEngine on
+-        RewriteCond %{HTTP_HOST} !^uc3-ezidx2-dev\.cdlib\.org$ [NC]
+-        RewriteRule .* - [L,F]
+-	RewriteCond %{REQUEST_METHOD} =HEAD
+-	RewriteRule .* - [R=405,L]
+-	RewriteCond %{REQUEST_METHOD} =GET
+-	RewriteRule ^/(login$|admin(/.*)?$) - [F,L]
+-	RewriteCond %{REQUEST_METHOD} =GET
+-	RewriteRule ^/(.*) https://%{SERVER_NAME}/$1 [R=permanent,L]
+-	RewriteCond %{REQUEST_METHOD} !=GET
+-	RewriteRule .* - [F,L]
+-	</IfDefine>
+-
+-
+ </VirtualHost>
+-
+-<IfDefine DontIgnoreThis>
+-    <VirtualHost *:18443>
+-    	ServerName uc3-ezidx2-dev.cdlib.org
+-            DocumentRoot /apps/ezid/apps/apache/htdocs
+-            <Directory />
+-                    Options FollowSymLinks
+-                    AllowOverride None
+-                    Require all granted
+-            </Directory>
+-            <Directory /apps/ezid/apps/apache/htdocs>
+-                    Require all granted
+-            </Directory>    
+-
+-    	ErrorLog /apps/ezid/var/log/httpd/ezid_ssl_error.log
+-    	TransferLog /apps/ezid/var/log/httpd/ezid_ssl_access.log
+-    	LogLevel warn    
+-
+-    	SSLEngine on
+-    	SSLCertificateFile /apps/ezid/ssl/2022-06-04/uc3-ezidx2-dev.cdlib.org.bundle
+-    	SSLCertificateKeyFile /apps/ezid/ssl/2022-06-04/uc3_ezidx2_dev.cdlib_org.key
+-    	SSLCertificateChainFile /apps/ezid/ssl/2022-06-04/uc3-ezidx2-dev.cdlib.org.bundle
+-    	SSLUseStapling on
+-    	SSLStaplingReturnResponderErrors off
+-    	SSLStaplingResponderTimeout 5    
+-
+-    	<Files ~ "\.(cgi|shtml|phtml|php3?)$">
+-    		SSLOptions +StdEnvVars
+-    	</Files>
+-    	<Directory "/apps/ezid/var/www/cgi-bin">
+-    		SSLOptions +StdEnvVars
+-    	</Directory>    
+-
+-    	AllowEncodedSlashes On
+-    	RewriteEngine on
+-    	# Disallow all unsupported hostnames.
+-    	RewriteCond %{HTTP_HOST} !^uc3-ezidx2-dev\.cdlib\.org$ [NC]
+-    	RewriteRule .* - [L,F]    
+-
+-    	WSGIDaemonProcess ezid_app threads=50 shutdown-timeout=60 python-home=/apps/ezid/.pyenv/versions/ezid_2.7.18 python-path=/apps/ezid/apps/ezid:/apps/ezid/apps/ezid/impl
+-    	WSGIScriptAlias / /apps/ezid/ezid/apache/django.wsgi
+-    	<Directory /apps/ezid/ezid/apache>
+-    		Require all granted
+-    		WSGIApplicationGroup %{GLOBAL}
+-    		WSGIProcessGroup ezid_app
+-    		WSGIPassAuthorization on
+-    	</Directory>    
+-
+-    	Alias /static /apps/ezid/ezid/static
+-    	<Directory /apps/ezid/ezid/static>
+-    		Require all granted
+-    	</Directory>
+-    	Alias /download /apps/ezid/var/www/download/public
+-    	<Directory /apps/ezid/var/www/download/public>
+-    		Require all granted
+-    		Options -Indexes
+-    		ErrorDocument 404 /download_error
+-    	</Directory>    
+-
+-    	Alias /robots.txt /apps/ezid/var/www/html/robots.txt
+-    	Alias /sitemap.xml /apps/ezid/ezid/static/sitemap.xml
+-    	Alias /favicon.ico /apps/ezid/ezid/static/images/favicon.ico	
+-    </VirtualHost>
+-</IfDefine>
+
+commit 2f1c28e232e018a000b66b67badd66f22ba45a31
+Author: Dave Vieglais <datadavev@users.noreply.github.com>
+Date:   Wed Oct 28 07:27:11 2020 -0400
+
+    Unset header upgrade
+
+diff --git a/files/etc/httpd/conf.d/03-ezid-nossl.conf b/files/etc/httpd/conf.d/03-ezid-nossl.conf
+index 237316d..f4c9200 100644
+--- a/files/etc/httpd/conf.d/03-ezid-nossl.conf
++++ b/files/etc/httpd/conf.d/03-ezid-nossl.conf
+@@ -2,6 +2,7 @@
+ 	ServerName uc3-ezidx2-dev.cdlib.org
+ 	DirectorySlash Off
+ 	AllowEncodedSlashes On
++	Header unset Upgrade
+ 
+ 	<Directory />
+ 		Options FollowSymLinks
+
+commit 5b43eae3f11e9186b6daf5d7493e9c5440561d99
+Author: Dave Vieglais <datadavev@users.noreply.github.com>
+Date:   Wed Oct 28 07:25:31 2020 -0400
+
+    Set port to 18880
+
+diff --git a/files/etc/httpd/conf.d/03-ezid-nossl.conf b/files/etc/httpd/conf.d/03-ezid-nossl.conf
+index b2f3917..237316d 100644
+--- a/files/etc/httpd/conf.d/03-ezid-nossl.conf
++++ b/files/etc/httpd/conf.d/03-ezid-nossl.conf
+@@ -1,4 +1,4 @@
+-<VirtualHost *:18080>
++<VirtualHost *:18880>
+ 	ServerName uc3-ezidx2-dev.cdlib.org
+ 	DirectorySlash Off
+ 	AllowEncodedSlashes On
+@@ -126,4 +126,4 @@
+     	Alias /sitemap.xml /apps/ezid/ezid/static/sitemap.xml
+     	Alias /favicon.ico /apps/ezid/ezid/static/images/favicon.ico	
+     </VirtualHost>
+-</IfDefine>
+\ No newline at end of file
++</IfDefine>
+
+commit a4627317d2d274fb23192fd61383d765becc45f2
+Author: Dave Vieglais <datadavev@users.noreply.github.com>
+Date:   Wed Oct 28 07:24:44 2020 -0400
+
+    Update httpd.conf
+    
+    Adjust port to 18880
+
+diff --git a/files/etc/httpd/conf/httpd.conf b/files/etc/httpd/conf/httpd.conf
+index a9bc9e3..e6cd145 100644
+--- a/files/etc/httpd/conf/httpd.conf
++++ b/files/etc/httpd/conf/httpd.conf
+@@ -39,7 +39,7 @@ ServerRoot "/apps/ezid/etc/httpd"
+ # prevent Apache from glomming onto all bound IP addresses.
+ #
+ #Listen 12.34.56.78:80
+-Listen 18080
++Listen 18880
+ 
+ #
+ # Dynamic Shared Object (DSO) Support

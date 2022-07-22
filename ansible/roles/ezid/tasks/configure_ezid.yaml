@@ -1,0 +1,68 @@
+---
+
+## Configure the EZID application
+
+- name: symlink ezid logs
+  file:
+    path: "{{ app_dir }}/logs"
+    src: "{{ app_dir }}/var/log/ezid"
+    state: link
+- name: symlink download dir
+  file:
+    path: "{{ app_dir }}/download"
+    src: "{{ app_dir }}/var/www/download"
+    state: link
+
+- name: settings.py
+  template:
+    src: "{{ app_dir }}/ezid/settings/settings.py.j2"
+    #src: "templates/ezid/settings/settings.py.j2"
+    dest: "{{ app_dir }}/ezid/settings/settings.py"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: "0600"
+
+- name: run setup.py
+  ansible.builtin.command:
+    chdir: "{{ app_dir }}/ezid"
+    argv:
+      - "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/python"
+      - "{{ app_dir }}/ezid/setup.py"
+      - develop
+  register: _response1
+
+- name: run pyenv rehash
+  ansible.builtin.command: pyenv rehash
+
+- name: run manage.py collectstatic
+  ansible.builtin.command:
+    chdir: "{{ app_dir }}/ezid"
+    argv:
+      - "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/python"
+      - "{{ app_dir }}/ezid/manage.py"
+      - collectstatic
+      - --clear
+      - --no-input
+  register: _response2
+
+#- when: _response1.rc is defined
+#  block:
+#
+#  - name: report setup.py response std_out
+#    debug:
+#      msg="{{ _response1.stdout_lines }}"
+#  
+#  - name: report setup.py response std_err
+#    debug:
+#      msg="{{ _response1.stderr_lines }}"
+
+#- when: _response2.rc is defined
+#  block:
+#
+#  - name: report manage.py response std_out
+#    debug:
+#      msg="{{ _response2.stdout_lines }}"
+#  
+#  - name: report manage.py response std_err
+#    debug:
+#      msg="{{ _response2.stderr_lines }}"

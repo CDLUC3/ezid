@@ -1,0 +1,58 @@
+#! /bin/bash
+#
+# Managed by Ansible
+#
+# This script is called from ezid.serivce in systemd during ExecStop action
+
+
+CLIENT={{ app_dir }}/.pyenv/shims/ez-client
+DJANGO_SETTINGS_MODULE=settings.settings
+SETTINGS={{ app_dir }}/ezid/settings/settings.py
+PROTOCOL={{ http_protocol }}
+HOSTNAME=$(hostname -f)
+PORT={{ http_port }}
+
+PAUSE_MODE=idlewait
+if [ $# -gt 0 ]; then
+    case $1 in
+    	on|off|idlewait|monitor)
+	    PAUSE_MODE=$1
+	    ;;
+	*) 
+            echo "Usage: $(basename $0) [ on|off|idlewait|monitor ]"
+	    exit 1
+	    ;;
+    esac
+fi
+
+function checkStatus {
+    if [ $status -eq 0 ]; then
+        echo "OK"
+    else
+        echo "FAILED"
+        exit 1
+    fi
+}
+
+function pauseEzid {
+    echo "Pausing the server..."
+    pidcount=`ps -fU ezid | grep -c '[h]ttpd'`
+    if [ $pidcount -eq 0 ]; then
+        echo "(server doesn't appear to be running)"
+        status=0
+        return
+    fi
+    password=`grep -m1 '^AUTH_ADMIN_PASSWORD [^ ]' $SETTINGS`
+    if [ "$password" == "" ]; then
+        echo "unable to locate admin password"
+        status=1
+        return
+    fi
+    password=${password#*: }
+    $CLIENT $PROTOCOL://$HOSTNAME:$PORT "admin:$password" pause $PAUSE_MODE
+    status=$?
+}
+
+pauseEzid
+checkStatus
+
