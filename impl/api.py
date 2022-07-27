@@ -450,7 +450,7 @@ def _statusLineGenerator(includeSuccessLine):
             f"dataciteQueueLength={impl.statistics.getDataCiteQueueLength()} "
             "\n"
         )
-        yield s.encode("utf-8")
+        yield s
         time.sleep(3)
 
 
