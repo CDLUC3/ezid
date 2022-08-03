@@ -1,5 +1,7 @@
 *.before.py
 static/
+.DS_Store
+current_work.md
 
 # Files
 *.pyc
