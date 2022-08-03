@@ -194,7 +194,7 @@ EMAIL_ERROR_LIFETIME = 14400
 EMAIL_ERROR_SIMILARITY_THRESHOLD = 0.6
 
 # EZID errors are automatically emailed to this list.
-MANAGERS = ADMINS = []
+MANAGERS = ADMINS = {{ django_admins }}
 
 # Logging
 
@@ -248,6 +248,10 @@ logging.config.dictConfig(
                 'filename': LOG_DIR / 'ecs_json.log',
                 'formatter': "ecs_logging",
             },
+            'mail_admins': {
+                'level': 'ERROR',
+                'class': 'django.utils.log.AdminEmailHandler'
+            },
         },
         'loggers': {
             '': {
@@ -260,17 +264,21 @@ logging.config.dictConfig(
             'django.server': {
                 # 'level': 'DEBUG',
                 'level': 'ERROR',
+                'handlers': ['mail_admins']
             },
             'django.db': {
                 # 'level': 'DEBUG',
                 'level': 'ERROR',
+                'handlers': ['mail_admins']
             },
             'django.request': {
                 'level': 'ERROR',
+                'handlers': ['mail_admins']
             },
             # TODO: Look into messages about missing variables in templates
             'django.template': {
                 'level': 'INFO',
+                'handlers': ['mail_admins']
             },
             'filelock': {
                 'level': 'ERROR',
