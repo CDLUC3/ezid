@@ -121,7 +121,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
     def check_all(self):
         start = self.now()
-        # self.updateDatabaseTable()
+        self.updateDatabaseTable()
         # The following flag is used to ensure at least one round gets
         # fully processed. In general rounds may be interrupted.
         firstRound = True
