@@ -74,6 +74,7 @@ import threading
 import urllib.error
 import urllib.parse
 import urllib.request
+import time
 
 import django.apps
 import django.conf
@@ -90,13 +91,13 @@ import impl.nog.util
 import impl.util
 
 log = logging.getLogger(__name__)
+_lock = threading.Lock()
 
 
 class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     help = __doc__
     name = __name__
     setting = 'DAEMONS_LINKCHECKER_ENABLED'
-    queue = ezidapp.models.async_queue.DownloadQueue
 
     def __init__(self):
         super().__init__()
@@ -115,9 +116,12 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         while not self.terminated():
             self.check_all()
 
+    def now(self):
+        return time.time()
+
     def check_all(self):
         start = self.now()
-        self.updateDatabaseTable()
+        # self.updateDatabaseTable()
         # The following flag is used to ensure at least one round gets
         # fully processed. In general rounds may be interrupted.
         firstRound = True
@@ -132,9 +136,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             # noinspection PyTypeChecker
             if len(self._workset) > 0:
                 roundStart = self.now()
-                _stopNow = False
-                _index = 0
-                _totalSleepTime = 0
+                self._stopNow = False
+                self._index = 0
+                self._totalSleepTime = 0
                 if firstRound:
                     timeout = None
                 else:
@@ -157,36 +161,32 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     )
                 threads = []
                 for i in range(django.conf.settings.LINKCHECKER_NUM_WORKERS):
-                    t = threading.Thread(target=Worker)
+                    t = threading.Thread(target=self.worker)
                     t.start()
                     threads.append(t)
-                threadLength = len(thread)
-                log.info(
-                    "current threadLength: {threadLength}, "
-                )
                 for i in range(django.conf.settings.LINKCHECKER_NUM_WORKERS):
                     threads[i].join(timeout)
                     if threads[i].is_alive():
                         # If the thread is still alive it must have timed out,
                         # meaning it's time to terminate it and all remaining
                         # threads.
-                        _stopNow = True
+                        self._stopNow = True
                         timeout = None
                         threads[i].join()
                 # noinspection PyTypeChecker
                 numChecked = sum(ow.nextIndex for ow in self._workset)
                 rate = numChecked / (self.now() - roundStart)
-                try: 
+                try:
                     if rate >= 1 / 1.05:  # using this bound avoids printing 1/1.0
                         rate = str(round(rate, 1)) + " links/s"
                     else:
                         rate = "1/%s link/s" % str(round(1 / rate, 1))
                     log.info(
-                        f"end processing, checked {numChecked} links at {rate}, slept {self.toHms(_totalSleepTime)}"
+                        f"end processing, checked {numChecked} links at {rate}, slept {self.toHms(self._totalSleepTime)}"
                     )
                 except ZeroDivisionError:
                     log.info(
-                        f"end processing, checked {numChecked}, slept {self.toHms(_totalSleepTime)}"
+                        f"end processing, checked {numChecked}, slept {self.toHms(self._totalSleepTime)}"
                     )
             else:
                 # The sleep below is just to prevent a compute-intensive loop.
@@ -475,7 +475,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         self._workset = _workset
 
     def getNextLink(self):
-        # acquire.acquire()
+        _lock.acquire()
         try:
             self.loadExclusionFile()
             startingIndex = self._index
@@ -483,7 +483,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             t = self.now()
             while not self.terminated():
                 # noinspection PyUnresolvedReferences
-                ow = _workset[self._index]
+                ow = self._workset[self._index]
                 if not ow.isFinished():
                     if (
                         not ow.isLocked
@@ -499,15 +499,15 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 if self._index == startingIndex:
                     return "finished" if allFinished else "wait"
         finally:
-            self._lock.release()
+            _lock.release()
 
     # noinspection PyUnresolvedReferences
     def markLinkChecked(self, index):
         _lock.acquire()
         try:
-            ow = _workset[index]
+            ow = self._workset[index]
             ow.nextIndex += 1
-            ow.lastCheckTime = now()
+            ow.lastCheckTime = self.now()
             ow.isLocked = False
         finally:
             _lock.release()
@@ -521,6 +521,92 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     # analysis, we don't have a way of verifying that an option to
     # authenticate is being provided. So for now we consider 401 and 403
     # errors to be successes.
+
+    def worker(self):
+        try:
+            while not self.terminated() and not self._stopNow:
+                r = self.getNextLink()
+                if type(r) is str:
+                    if r == "finished":
+                        return
+                    else:  # wait
+                        self.sleep(1)
+                        _lock.acquire()
+                        try:
+                            self._totalSleepTime += 1
+                        finally:
+                            _lock.release()
+                        continue
+                index, lc = r
+                # Some websites fall into infinite redirect loops if cookies
+                # are not utilized.
+                o = urllib.request.build_opener(
+                    urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()),
+                    MyHTTPErrorProcessor(),
+                )
+                c = None
+                mimeType = "unknown"
+                try:
+                    # This should probably be considered a Python bug, but urllib2
+                    # fails if the URL contains Unicode characters. Encoding the
+                    # URL as UTF-8 is sufficient.
+                    # Another gotcha: some websites require an Accept header.
+                    r = urllib.request.Request(
+                        lc.target,
+                        headers={
+                            "User-Agent": django.conf.settings.LINKCHECKER_USER_AGENT,
+                            "Accept": "*/*",
+                        },
+                    )
+                    c = o.open(r, timeout=django.conf.settings.LINKCHECKER_CHECK_TIMEOUT)
+                    mimeType = c.info().get("Content-Type", "unknown")
+                    content = c.read(django.conf.settings.LINKCHECKER_MAX_READ)
+                except http.client.IncompleteRead as e:
+                    log.exception('http.client.IncompleteRead')
+                    # Some servers deliver a complete HTML document, but,
+                    # apparently expecting further requests from a web browser
+                    # that never arrive, hold the connection open and ultimately
+                    # deliver a read failure. We consider these cases successes.
+                    # noinspection PyUnresolvedReferences
+                    if mimeType.startswith("text/html") and re.search(
+                        "</\s*html\s*>\s*$", e.partial, re.I
+                    ):
+                        success = True
+                        # noinspection PyUnresolvedReferences
+                        content = e.partial
+                    else:
+                        success = False
+                        returnCode = -1
+                        lc.checkFailed(returnCode, impl.util.formatException(e))
+                except urllib.error.HTTPError as e:
+                    log.exception('HTTPError')
+                    success = False
+                    returnCode = e.code
+                except Exception as e:
+                    log.exception('Exception')
+                    success = False
+                    returnCode = -1
+                    lc.checkFailed(returnCode, impl.util.formatException(e))
+                else:
+                    success = True
+                finally:
+                    if c:
+                        c.close()
+
+                if success:
+                    # noinspection PyUnboundLocalVariable
+                    lc.checkSucceeded(mimeType, content)
+                else:
+                    # noinspection PyUnboundLocalVariable
+                    if returnCode >= 0:
+                        lc.checkFailed(returnCode)
+                lc.full_clean(validate_unique=False)
+                lc.save()
+
+                self.markLinkChecked(index)
+
+        except Exception as e:
+            log.exception('Exception: ' + str(e))
 
 
 class OwnerWorkset(Command):
@@ -558,95 +644,3 @@ class MyHTTPErrorProcessor(urllib.request.HTTPErrorProcessor):
             return urllib.request.HTTPErrorProcessor.http_response(self, request, response)
 
     https_response = http_response
-
-
-class Worker(Command):
-    def __index__(self):
-        pass
-
-    def run(self):
-        try:
-            while not self.terminated() and not self._stopNow:
-                r = self.getNextLink()
-                if type(r) is str:
-                    if r == "finished":
-                        return
-                    else:  # wait
-                        self.sleep(1)
-                        self._lock.acquire()
-                        try:
-                            self._totalSleepTime += 1
-                        finally:
-                            self._lock.release()
-                        continue
-                index, lc = r
-                # Some websites fall into infinite redirect loops if cookies
-                # are not utilized.
-                o = urllib.request.build_opener(
-                    urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()),
-                    MyHTTPErrorProcessor(),
-                )
-                c = None
-                mimeType = "unknown"
-                try:
-                    # This should probably be considered a Python bug, but urllib2
-                    # fails if the URL contains Unicode characters. Encoding the
-                    # URL as UTF-8 is sufficient.
-                    # Another gotcha: some websites require an Accept header.
-                    r = urllib.request.Request(
-                        lc.target.encode("UTF-8"),
-                        headers={
-                            "User-Agent": django.conf.settings.LINKCHECKER_USER_AGENT,
-                            "Accept": "*/*",
-                        },
-                    )
-                    c = o.open(r, timeout=django.conf.settings.LINKCHECKER_CHECK_TIMEOUT)
-                    mimeType = c.info().get("Content-Type", "unknown")
-                    content = c.read(django.conf.settings.LINKCHECKER_MAX_READ)
-                except http.client.IncompleteRead as e:
-                    log.exception('http.client.IncompleteRead')
-                    # Some servers deliver a complete HTML document, but,
-                    # apparently expecting further requests from a web browser
-                    # that never arrive, hold the connection open and ultimately
-                    # deliver a read failure. We consider these cases successes.
-                    # noinspection PyUnresolvedReferences
-                    if mimeType.startswith("text/html") and re.search(
-                        "</\s*html\s*>\s*$", e.partial, re.I
-                    ):
-                        success = True
-                        # noinspection PyUnresolvedReferences
-                        content = e.partial
-                    else:
-                        success = False
-                        returnCode = -1
-                except urllib.error.HTTPError as e:
-                    log.exception('HTTPError')
-                    success = False
-                    returnCode = e.code
-                except Exception as e:
-                    log.exception('Exception')
-                    success = False
-                    returnCode = -1
-                else:
-                    success = True
-                finally:
-                    if c:
-                        c.close()
-
-                if success:
-                    # noinspection PyUnboundLocalVariable
-                    lc.checkSucceeded(mimeType, content)
-                else:
-                    # noinspection PyUnboundLocalVariable
-                    if returnCode >= 0:
-                        lc.checkFailed(returnCode)
-                    else:
-                        # noinspection PyUnboundLocalVariable
-                        lc.checkFailed(returnCode, impl.util.formatException(e))
-                lc.full_clean(validate_unique=False)
-                lc.save()
-
-                self.markLinkChecked(index)
-
-        except Exception:
-            log.exception('Exception')
