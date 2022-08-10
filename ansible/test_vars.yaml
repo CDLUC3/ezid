@@ -1,0 +1,44 @@
+---
+- hosts: all
+  connection: local
+  remote_user: "{{ user }}"
+  tasks:
+
+  # ansible_extra_vars.yaml
+  - name: report user
+    debug: msg="{{ user }}"
+  - name: report group
+    debug: msg="{{ group }}"
+  - name: report app_dir
+    debug: msg="{{ app_dir }}"
+  - name: report ezid_version
+    debug: msg="{{ ezid_version }}"
+  - name: report pyenv_global
+    debug: msg="{{ pyenv_global }}"
+  - name: report virtual_environments
+    ansible.builtin.debug:
+      msg="{{ item }}"
+    loop: "{{ virtual_environments }}"
+
+  # ssm vars
+  - name: report ssm_root_path
+    debug: msg="{{ ssm_root_path }}"
+  - name: report ssm_default_path
+    debug: msg="{{ ssm_default_path }}"
+  - name: return ssm_default_params dict from group_vars
+    debug: msg="{{ ssm_default_params }}"
+  - name: return ssm_root_params dict from group_vars
+    debug: msg="{{ ssm_root_params }}"
+  - name: return ssm_params dict from group_vars
+    debug: msg="{{ ssm_params }}"
+  - name: return a single param based on ssm_default_path as variable
+    ##debug: msg="{{ ssm_params['database_port'] }}"
+    debug: msg="database_port {{ database_port }}"
+  - name: return a single param based on ssm_root_path as variable
+    ##debug: msg="{{ ssm_params['database_host'] }}"
+    debug: msg="database_host {{ database_host }}"
+  - name: return binder_url
+    debug: msg="{{ binder_url }}"
+  - name: return resolver_ark
+    debug: msg="{{ resolver_ark }}"
+
