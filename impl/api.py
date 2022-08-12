@@ -179,6 +179,9 @@ def _statusMapping(content, createRequest):
     '''
     for test, code in STATUS_CODE_MAP:
         if content.startswith(test):
+            if code==200 and createRequest:
+                # per API docs, successful create returns 201
+                return 201
             return code
     # Note that 500 errors trigger an email to the settings.MANAGERS targets
     return 500
