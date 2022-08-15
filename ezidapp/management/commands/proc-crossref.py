@@ -42,7 +42,7 @@ import impl.util2
 from django.db.models import Q
 
 log = logging.getLogger(__name__)
-TAG_REGEX = re.compile("http:\/\/www.crossref.org\/schema\/(4\.[34]\.\d|5\.[3]\.\d)")
+TAG_REGEX = re.compile("{(http://www\\.crossref\\.org/schema/(4\.[34]\.\d|5\.[3]\.\d))}([-\\w.]+)$")
 
 
 class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
