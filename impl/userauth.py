@@ -153,6 +153,8 @@ def authenticateRequest(request, storeSessionCookie=False):
             u, p = impl.util.parse_basic_auth(request.META["HTTP_AUTHORIZATION"])
         except ValueError:
             return "error: bad request - malformed Authorization header"
+        except Exception as e:
+            return "error: unable to parse basic_auth request"
         return authenticate(
             u,
             p,

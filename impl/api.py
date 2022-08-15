@@ -90,6 +90,7 @@ import impl.userauth
 import impl.util
 
 
+
 def _readInput(request):
     if not is_text_plain_utf8(request):
         return (
@@ -159,22 +160,28 @@ def _validateOptions(request, options):
             )
     return d
 
+STATUS_CODE_MAP = [
+    ("success:", 200),
+    ("error: bad request", 400),
+    ("error: unable to parse", 400),
+    ("error: unauthorized", 401),
+    ("error: forbidden", 403),
+    ("error: method not allowed", 405),
+    ("error: concurrency limit exceeded", 503),
+]
 
 def _statusMapping(content, createRequest):
-    if content.startswith("success:"):
-        return 201 if createRequest else 200
-    elif content.startswith("error: bad request"):
-        return 400
-    elif content.startswith("error: unauthorized"):
-        return 401
-    elif content.startswith("error: forbidden"):
-        return 403
-    elif content.startswith("error: method not allowed"):
-        return 405
-    elif content.startswith("error: concurrency limit exceeded"):
-        return 503
-    else:
-        return 500
+    '''
+    Map a response string to a response status code.
+
+    Known errors must match here otherwise a 500 status
+    is reported, which in turn will trigger an alert email.
+    '''
+    for test, code in STATUS_CODE_MAP:
+        if content.startswith(test):
+            return code
+    # Note that 500 errors trigger an email to the settings.MANAGERS targets
+    return 500
 
 
 def _response(status, createRequest=False, addAuthenticateHeader=False, anvlBody=""):
@@ -450,7 +457,7 @@ def _statusLineGenerator(includeSuccessLine):
             f"dataciteQueueLength={impl.statistics.getDataCiteQueueLength()} "
             "\n"
         )
-        yield s.encode("utf-8")
+        yield s
         time.sleep(3)
 
 

@@ -39,7 +39,17 @@ def contact(request):
     if host != "default":
         localized = True
     if request.method == "POST":
-        P = request.POST
+        try:
+            P = request.POST
+        except django.http.UnreadablePostError as e:
+            err = _(
+                "Form could not be sent. Please check the highlighted field(s) below for details."
+            )
+            django.contrib.messages.error(request, err)
+            # fall through to re-render page; form already
+            # noinspection PyUnresolvedReferences
+            return impl.ui_common.render(request, 'contact', d)
+
         d['form'] = impl.form_objects.ContactForm(P, localized=localized)
         if (not 'url' in P or ('url' in P and P['url'] != '')) or (
             P['question'] and not re.match("(2|two)", P['question'])
