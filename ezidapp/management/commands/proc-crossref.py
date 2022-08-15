@@ -42,6 +42,7 @@ import impl.util2
 from django.db.models import Q
 
 log = logging.getLogger(__name__)
+TAG_REGEX = re.compile("http:\/\/www.crossref.org\/schema\/(4\.[34]\.\d|5\.[3]\.\d)")
 
 
 class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
@@ -149,7 +150,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             and 'batchId' is the submission batch identifier.
         """
         body = lxml.etree.XML(body)
-        m = impl.crossref.TAG_REGEX.match(body.tag)
+        m = TAG_REGEX.match(body.tag)
         namespace = m.group(1)
         version = m.group(2)
         ns = {'N': namespace}

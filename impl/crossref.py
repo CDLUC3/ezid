@@ -40,7 +40,7 @@ PROLOG_RX = re.compile(
 UTF8_RX = re.compile("UTF-?8$", re.I)
 SCHEMA_LOCATION_STR = "{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"
 SCHEMA_LOCATION_FORMAT_STR = "http://www.crossref.org/schema/deposit/crossref{}.xsd"
-TAG_RX = re.compile("{(http://www\\.crossref\\.org/schema/(4\\.[34]\\.\\d))}([-\\w.]+)$")
+
 ROOT_TAG_LIST = [
     "journal",
     "book",
@@ -53,8 +53,13 @@ ROOT_TAG_LIST = [
 ]
 
 # noinspection HttpUrlsUsage
-TAG_REGEX = re.compile("{(http://www\\.crossref\\.org/schema/(4\\.[34]\\.\\d))}([-\\w.]+)$")
+TAG_REGEX = re.compile("{(http://www\\.crossref\\.org/schema/(4\.[34]\.\d|5\.[3]\.\d))}([-\\w.]+)$")
 
+def _notOne (n):
+  if n == 0:
+    return "no"
+  else:
+    return "more than one"
 
 # noinspection PyUnresolvedReferences
 def validateBody(body):
