@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /doc/apidoc.1.html
+Disallow: /doc/apidoc.2.html
+Disallow: /search
+

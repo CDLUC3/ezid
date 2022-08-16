@@ -740,7 +740,7 @@ def parseXmlString(document):
     """
     assert isinstance(document, str)
 
-    if type(document) is str:
+    if type(document) is bytes:
         return lxml.etree.XML(document)
     elif type(document) is str:
         return lxml.etree.XML(removeXmlEncodingDeclaration(document))

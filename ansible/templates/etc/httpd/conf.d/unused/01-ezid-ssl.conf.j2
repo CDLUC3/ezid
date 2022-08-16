@@ -1,0 +1,71 @@
+#  SSL Global Context
+#
+AddType application/x-x509-ca-cert .crt
+AddType application/x-pkcs7-crl    .crl
+SSLPassPhraseDialog  builtin
+SSLSessionCache         shmcb:{{ app_dir }}/var/run/httpd/sslcache(512000)
+SSLSessionCacheTimeout  300
+Mutex  default
+Listen {{ https_port }}
+
+# Virtual host context
+#
+<VirtualHost *:{{ https_port }}>
+	ServerName {{ ansible_facts.fqdn }}
+	DirectorySlash Off
+	AllowEncodedSlashes On
+	Header unset Upgrade
+	LimitRequestBody 2097152
+
+        SSLEngine on
+        SSLProtocol all -SSLv2
+        SSLCipherSuite HIGH:MEDIUM:!aNULL:!MD5
+        SSLCertificateFile "{{ app_dir }}/ssl/{{ ansible_facts.fqdn }}/fullchain.pem"
+        SSLCertificateKeyFile "{{ app_dir }}/ssl/{{ ansible_facts.fqdn }}/privkey.pem"
+        CustomLog "{{ app_dir }}/var/log/httpd/ezid-ssl_request_log" \
+                  "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"
+
+	<Directory />
+		Options FollowSymLinks
+		AllowOverride None
+		Require all granted
+	</Directory>
+
+	DocumentRoot {{ app_dir }}/var/www/html
+	<Directory {{ app_dir }}/var/www/html>
+		Require all granted
+	</Directory>
+
+	ErrorLog {{ app_dir }}/var/log/httpd/ezid_error.log
+	LogLevel warn
+        CustomLog {{ app_dir }}/var/log/httpd/ezid_access.log combined
+
+
+ 	AllowEncodedSlashes On
+ 	RewriteEngine on
+
+ 	WSGIDaemonProcess ezid_app threads=50 shutdown-timeout=60 python-home={{ app_dir }}/.pyenv/versions/{{ pyenv_global }} python-path={{ app_dir }}/ezid:{{ app_dir }}/ezid/impl
+ 	WSGIScriptAlias / {{ app_dir }}/ezid/apache/django.wsgi
+ 	<Directory {{ app_dir }}/ezid/apache>
+ 		Require all granted
+ 		WSGIApplicationGroup %{GLOBAL}
+ 		WSGIProcessGroup ezid_app
+ 		WSGIPassAuthorization on
+ 	</Directory>     	
+
+ 	Alias /static {{ app_dir }}/ezid/static
+ 	<Directory {{ app_dir }}/ezid/static>
+ 		Require all granted
+ 	</Directory>
+ 	
+ 	Alias /download {{ app_dir }}/var/www/download/public
+ 	<Directory {{ app_dir }}/var/www/download/public>
+ 		Require all granted
+ 		Options -Indexes
+ 		ErrorDocument 404 /download_error
+ 	</Directory>     	
+
+ 	Alias /robots.txt {{ app_dir }}/var/www/html/robots.txt
+ 	Alias /sitemap.xml {{ app_dir }}/ezid/static/sitemap.xml
+ 	Alias /favicon.ico {{ app_dir }}/ezid/static/images/favicon.ico	
+</VirtualHost>

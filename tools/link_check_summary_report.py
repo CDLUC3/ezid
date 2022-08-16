@@ -25,6 +25,9 @@ import os.path
 import sys
 import tempfile
 
+import django
+django.setup()
+
 import django.conf
 import django.core.mail
 import django.db.models

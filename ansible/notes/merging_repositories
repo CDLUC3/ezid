@@ -1,0 +1,267 @@
+Fri Jul 22 10:39:37 PDT 2022
+
+
+
+I'm merging ezid-ansible into ezid.  I want contents of ezid-ansible to be a subdirectory
+of ezid/.
+
+-dev:~/git/github/cdluc3> ls -ld ezid ezid-ansible/
+drwxr-xr-x 19 agould users 6144 Jul 22 10:15 ezid
+drwxr-xr-x 10 agould users 6144 Jul 12 13:19 ezid-ansible/
+
+
+First, move all content of ezid-ansible into a subdirectory.  
+from https://ericlathrop.com/2014/01/combining-git-repositories/
+
+git filter-branch --prune-empty --tree-filter '
+  if [ ! -e ansible ]; then
+      mkdir -p ansilbe
+      git ls-tree --name-only $GIT_COMMIT | xargs -I files mv files ansible
+  fi'
+
+This failed:
+
+  -dev:~/git/github/cdluc3/ezid-ansible> git filter-branch --prune-empty --tree-filter '
+  > if [ ! -e ansible ]; then
+  >     mkdir -p ansilbe
+  >     git ls-tree --name-only $GIT_COMMIT | xargs -I files mv files ansible
+  > fi'
+  WARNING: git-filter-branch has a glut of gotchas generating mangled history
+           rewrites.  Hit Ctrl-C before proceeding to abort, then use an
+           alternative filtering tool such as 'git filter-repo'
+           (https://github.com/newren/git-filter-repo/) instead.  See the
+           filter-branch manual page for more details; to squelch this warning,
+           set FILTER_BRANCH_SQUELCH_WARNING=1.
+  Proceeding with filter-branch...
+
+  Rewrite 93b3ac387385f8013f935a9c454f79d67acf9662 (1/102) (0 seconds passed, remaining 0 predicted)    mv: cannot overwrite non-directory ‘ansible’ with directory ‘group_vars’
+  mv: cannot overwrite non-directory ‘ansible’ with directory ‘roles’
+  tree filter failed:
+  if [ ! -e ansible ]; then
+      mkdir -p ansilbe
+      git ls-tree --name-only $GIT_COMMIT | xargs -I files mv files ansible
+  fi
+  rm: cannot remove ‘/home/agould/git/github/cdluc3/ezid-ansible/.git-rewrite’: Directory not empty
+
+
+
+________________________________________________________________________________
+
+
+Taking the advice from the above error message, I am now trying with git filter-repo
+
+Installation
+------------
+
+  agould@localhost:~> cd git/github/
+  agould@localhost:~/git/github> python --version
+  Python 3.7.9
+  agould@localhost:~/git/github> mkdir newren
+  agould@localhost:~/git/github> cd newren
+  agould@localhost:~/git/github/newren> git clone git@github.com:newren/git-filter-repo.git
+  
+  agould@localhost:~/git/github/newren/git-filter-repo> ll
+  total 244
+  drwxr-xr-x 1 agould users     34 Jul 22 11:12 contrib
+  -rw-r--r-- 1 agould users   1159 Jul 22 11:12 COPYING
+  -rw-r--r-- 1 agould users  18092 Jul 22 11:12 COPYING.gpl
+  -rw-r--r-- 1 agould users   1054 Jul 22 11:12 COPYING.mit
+  drwxr-xr-x 1 agould users    202 Jul 22 11:12 Documentation
+  -rwxr-xr-x 1 agould users 165699 Jul 22 11:12 git-filter-repo
+  lrwxrwxrwx 1 agould users     15 Jul 22 11:12 git_filter_repo.py -> git-filter-repo
+  -rw-r--r-- 1 agould users   6220 Jul 22 11:12 INSTALL.md
+  -rw-r--r-- 1 agould users   6533 Jul 22 11:12 Makefile
+  -rw-r--r-- 1 agould users  28801 Jul 22 11:12 README.md
+  drwxr-xr-x 1 agould users     34 Jul 22 11:12 release
+  drwxr-xr-x 1 agould users    274 Jul 22 11:12 t
+  
+  agould@localhost:~/git/github/newren/git-filter-repo> vi INSTALL.md 
+  agould@localhost:~/git/github/newren/git-filter-repo> git --exec-path
+  /usr/lib/git
+  
+  agould@localhost:~/git/github/newren/git-filter-repo> sudo cp git-filter-repo $(git --exec-path)
+  agould@localhost:~/git/github/newren/git-filter-repo> ls -l /usr/lib/git/git-filter-repo
+  -rwxr-xr-x 1 root root 165699 Jul 22 11:21 /usr/lib/git/git-filter-repo
+
+Usage
+-----
+
+From: https://htmlpreview.github.io/?https://github.com/newren/git-filter-repo/blob/docs/html/git-filter-repo.html
+
+  If you wanted all the files from the original repo, but wanted to move everything under a subdirectory named my-module/, so that your new directory structure looked like
+  
+  my-module/
+     module/
+        foo.c
+        bar.c
+     otherDir/
+        blah.config
+        stuff.txt
+     zebra.jpg
+  
+  then you would instead run run
+  
+  git filter-repo --to-subdirectory-filter my-module/
+
+
+Here goes:
+
+  agould@localhost:~/git/github/cdluc3/ezid-ansible> git --no-pager branch
+    main
+  * merge_ansible_into_ezid
+  agould@localhost:~/git/github/cdluc3/ezid-ansible> git filter-repo --to-subdirectory-filter ansible/
+  agould@localhost:~/git/github/cdluc3/ezid-ansible> git filter-repo --to-subdirectory-filter ansible/
+  Aborting: Refusing to destructively overwrite repo history since
+  this does not look like a fresh clone.
+    (expected freshly packed repo)
+  Please operate on a fresh clone instead.  If you want to proceed
+  anyway, use --force.
+
+So I need to clone this repo from scratch first
+
+  agould@localhost:~> cd tmp/
+  agould@localhost:~/tmp> mkdir merge_ansible_into_ezid
+  agould@localhost:~/tmp> cd merge_ansible_into_ezid
+  agould@localhost:~/tmp/merge_ansible_into_ezid> git clone git@github.com:CDLUC3/ezid-ansible.git
+  Cloning into 'ezid-ansible'...
+  remote: Enumerating objects: 829, done.
+  remote: Counting objects: 100% (31/31), done.
+  remote: Compressing objects: 100% (14/14), done.
+  remote: Total 829 (delta 11), reused 26 (delta 10), pack-reused 798
+  Receiving objects: 100% (829/829), 116.31 KiB | 844.00 KiB/s, done.
+  Resolving deltas: 100% (345/345), done.
+  
+  agould@localhost:~/tmp/merge_ansible_into_ezid/ezid-ansible> git filter-repo --to-subdirectory-filter ansible/
+  Parsed 103 commits
+  New history written in 0.06 seconds; now repacking/cleaning...
+  Repacking your repo and cleaning out old unneeded objects
+  HEAD is now at b1b90f1 Merge branch 'main' into django_admins
+  Enumerating objects: 932, done.
+  Counting objects: 100% (932/932), done.
+  Delta compression using up to 8 threads
+  Compressing objects: 100% (337/337), done.
+  Writing objects: 100% (932/932), done.
+  Total 932 (delta 344), reused 932 (delta 344), pack-reused 0
+  Completely finished after 0.12 seconds.
+  
+  agould@localhost:~/tmp/merge_ansible_into_ezid/ezid-ansible> ls -la
+  total 0
+  drwxr-xr-x 1 agould users  22 Jul 22 11:33 .
+  drwxr-xr-x 1 agould users  24 Jul 22 11:32 ..
+  drwxr-xr-x 1 agould users 180 Jul 22 11:33 ansible
+  drwxr-xr-x 1 agould users 178 Jul 22 11:33 .git
+  agould@localhost:~/tmp/merge_ansible_into_ezid/ezid-ansible> ls -l ansible/
+  total 20
+  drwxr-xr-x 1 agould users   26 Jul 22 11:33 files
+  drwxr-xr-x 1 agould users    6 Jul 22 11:33 group_vars
+  -rw-r--r-- 1 agould users   10 Jul 22 11:33 hosts
+  drwxr-xr-x 1 agould users   98 Jul 22 11:33 notes
+  drwxr-xr-x 1 agould users   20 Jul 22 11:33 playbooks
+  -rw-r--r-- 1 agould users 7243 Jul 22 11:33 README.md
+  drwxr-xr-x 1 agould users   42 Jul 22 11:33 roles
+  -rw-r--r-- 1 agould users  185 Jul 22 11:33 site.yaml
+  drwxr-xr-x 1 agould users   20 Jul 22 11:33 templates
+  -rw-r--r-- 1 agould users 1425 Jul 22 11:33 test_vars.yaml
+
+  agould@localhost:~/tmp/merge_ansible_into_ezid/ezid-ansible> git --no-pager  log --oneline  ansible/group_vars/
+  b1b90f1 (HEAD -> main, tag: 0.2.12) Merge branch 'main' into django_admins
+  8f1be59 add settings var django_admins
+  d99f087 (tag: 0.2.11) Merge tag '0.2.10'
+  fc92e65 (tag: 0.2.10) add var django_debug
+  c4e3fe3 (tag: 0.2.9) set var secret_key from ssm
+  95f2373 (tag: v0.2.8) add var 'secret_key' for settings.py template
+  ea5d935 (tag: v0.2.6) group_vars/all: rename ezid_branch > ezid_version
+
+fuckin A!
+
+
+Merge ezid_ansible into ezid
+----------------------------
+
+From: https://stackoverflow.com/questions/13040958/merge-two-git-repositories-without-breaking-file-history.  See third answer:
+
+  Say you want to merge repository a into b (I'm assuming they're located alongside one another):
+  
+  cd b
+  git remote add a ../a
+  git fetch a
+  git merge --allow-unrelated-histories a/master
+  git remote remove a
+  
+  In case you want to put a into a subdirectory do the following before the commands above:
+  
+  cd a
+  git filter-repo --to-subdirectory-filter a
+  cd ..
+  
+  For this you need git-filter-repo installed (filter-branch is discouraged).
+
+
+Here goes:
+
+  agould@localhost:~/git/github/cdluc3/ezid> git branch 
+  agould@localhost:~/git/github/cdluc3/ezid> git checkout merge_ansible_into_ezid 
+  Switched to branch 'merge_ansible_into_ezid'
+  agould@localhost:~/git/github/cdluc3/ezid> git remote add ezid-ansible ~/tmp/merge_ansible_into_ezid/ezid-ansible
+  agould@localhost:~/git/github/cdluc3/ezid> git fetch ezid-ansible 
+  remote: Enumerating objects: 923, done.
+  remote: Counting objects: 100% (923/923), done.
+  remote: Compressing objects: 100% (335/335), done.
+  remote: Total 923 (delta 340), reused 923 (delta 340), pack-reused 0
+  Receiving objects: 100% (923/923), 118.23 KiB | 23.65 MiB/s, done.
+  Resolving deltas: 100% (340/340), done.
+  From /home/agould/tmp/merge_ansible_into_ezid/ezid-ansible
+   * [new branch]        main       -> ezid-ansible/main
+   * [new tag]           0.2.12     -> 0.2.12
+   * [new tag]           0.0.0dev0  -> 0.0.0dev0
+   * [new tag]           0.0.0dev1  -> 0.0.0dev1
+  [cut]
+  
+  agould@localhost:~/git/github/cdluc3/ezid> git merge --allow-unrelated-histories ezid-ansible/main 
+  Merge made by the 'ort' strategy.
+   ansible/.gitignore                                                |   3 +
+   ansible/README.md                                                 | 237 +++++++++++++
+   ansible/files/archive/etc/ezid_env.sh                             |  11 +
+   ansible/files/archive/etc/httpd/conf.d/00-welcome.conf            |  18 +
+  [cut]
+
+
+Looks good!
+
+agould@localhost:~/git/github/cdluc3/ezid> ll
+total 848
+drwxr-xr-x 1 agould users    180 Jul 22 11:46 ansible
+drwxr-xr-x 1 agould users     22 Jul 13 13:27 apache
+-rwxr-xr-x 1 agould users    531 Jan  3  2022 buildStyles.bash
+drwxr-xr-x 1 agould users   1514 Jan  3  2022 dev
+drwxr-xr-x 1 agould users    234 Jul 13 13:27 doc
+-rwxr-xr-x 1 agould users    930 Jul 13 13:27 dump-queue-tables.sh
+drwxr-xr-x 1 agould users    122 Jul 13 13:27 ezidapp
+[cut]
+
+agould@localhost:~/git/github/cdluc3/ezid> git log --oneline ansible/
+agould@localhost:~/git/github/cdluc3/ezid> git --no-pager log --oneline ansible/ |head
+b1b90f1d Merge branch 'main' into django_admins
+8f1be597 add settings var django_admins
+d99f0871 Merge tag '0.2.10'
+535764c4 delete setup_scripts task. no longer needed
+fc92e655 add var django_debug
+c4e3fe39 set var secret_key from ssm
+95f23731 add var 'secret_key' for settings.py template
+ca710769 clean up all use of var 'ezid_branch'
+ea5d9359 group_vars/all: rename ezid_branch > ezid_version
+05d0ec5b py38-ssl: all good.  ready to mearge
+
+agould@localhost:~/git/github/cdluc3/ezid> git --no-pager log --oneline |head
+72dbe392 Merge remote-tracking branch 'ezid-ansible/main' into merge_ansible_into_ezid
+a0def724 Fixing a typo with handlers
+5b830e9d Merge pull request #324 from CDLUC3/develop
+3d3a81b6 move mail_admins object to handlers dict
+b1b90f1d Merge branch 'main' into django_admins
+3104e2ea settings.py.j2: fix syntax
+31e9166d settings.py.j2: add var django_admins sourced from ansible
+8f1be597 add settings var django_admins
+f890280f Update settings template to include email handler
+06c2ee22 Merge pull request #319 from CDLUC3/develop
+
+
