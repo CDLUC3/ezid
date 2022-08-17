@@ -152,6 +152,10 @@ DAEMONS_LONG_SLEEP = 60 * 60 * 24
 # Limit the number of results in each queryset. This value becomes a LIMIT clause in the
 # SQL query that pulls work from the queue.
 DAEMONS_MAX_BATCH_SIZE = 100
+# The default for client connections is no timeout which can be
+# problematic in unusual situations and cause services to hang.
+# This value is used by proc_* http clients to avoid a hang.
+DAEMONS_HTTP_CLIENT_TIMEOUT = 30 #seconds
 
 # Daemons: Individual settings
 DAEMONS_DOWNLOAD_PROCESSING_IDLE_SLEEP = 10

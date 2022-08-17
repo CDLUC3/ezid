@@ -29,6 +29,7 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
     name = None
     _terminated = False
     _last_connection_reset = 0
+    _http_client_timeout = 30  #seconds, overridden by DAEMONS_HTTP_CLIENT_TIMEOUT
 
     class _AbortException(Exception):
         pass
@@ -40,6 +41,10 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         self.log = logging.getLogger(self.name)
         self.opt = None
         self._last_connection_reset = self.now_int()
+        try:
+            self._http_client_timeout = django.conf.settings.DAEMONS_HTTP_CLIENT_TIMEOUT
+        except AttributeError as e:
+            self.log.warning("No settings.DAEMONS_HTTP_CLIENT_TIMEOUT. Using default of %s", self._http_client_timeout)
         super().__init__()
 
     def _handleSignals(self, *args):
