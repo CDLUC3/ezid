@@ -41,7 +41,9 @@ import impl.util
 import impl.util2
 from django.db.models import Q
 
+
 log = logging.getLogger(__name__)
+TAG_REGEX = re.compile("{(http://www\\.crossref\\.org/schema/(4\.[34]\.\d|5\.[3]\.\d))}([-\\w.]+)$")
 
 
 class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
@@ -149,7 +151,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             and 'batchId' is the submission batch identifier.
         """
         body = lxml.etree.XML(body)
-        m = impl.crossref.TAG_REGEX.match(body.tag)
+        m = TAG_REGEX.match(body.tag)
         namespace = m.group(1)
         version = m.group(2)
         ns = {'N': namespace}
@@ -224,7 +226,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                         url,
                         body_bytes,
                         {'Content-Type': 'multipart/form-data; boundary=' + boundary},
-                    )
+                    ),
+                    timeout=self._http_client_timeout
                 )
                 r = c.read().decode('utf-8')
                 assert 'Your batch submission was successfully received.' in r, (
@@ -390,6 +393,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                             'type': 'result',
                         }
                     ),
+                    timeout=self._http_client_timeout
                 )
             )
             response = c.read()

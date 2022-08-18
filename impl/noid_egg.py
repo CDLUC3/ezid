@@ -49,6 +49,11 @@ def _issue(method, operations):
             django.conf.settings.BINDER_PASSWORD,
         ),
     )
+    _timeout = 60 #seconds
+    try:
+        _timeout = django.conf.settings.DAEMONS_HTTP_CLIENT_TIMEOUT
+    except AttributeError:
+        log.warning("No settings.DAEMONS_HTTP_CLIENT_TIMEOUT. Using default of %s", _timeout)
 
     r.add_header("Content-Type", "text/plain")
 
@@ -69,7 +74,7 @@ def _issue(method, operations):
         c = None
         log.debug("noid_egg._issue attempt:%s %s url:%s", i, method, r.full_url)
         try:
-            c = urllib.request.urlopen(r)
+            c = urllib.request.urlopen(r, timeout=_timeout)
             s = [line.decode('utf-8', errors='replace') for line in c.readlines()]
         except Exception as e:
             # noinspection PyTypeChecker
