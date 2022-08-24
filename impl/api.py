@@ -82,6 +82,7 @@ Identifier inflection (introspection):
   response body as for View an identifier
 """
 import cgi
+import json
 import logging
 import time
 
@@ -517,26 +518,15 @@ def pause(request):
         assert False, "unhandled case"
 
 def resolveIdentifier(request, identifier):
-    import json
-
     identifier = f"ark:{identifier}"
-    res = impl.ezid.resolveIdentifier(identifier)
 
-    if True:
-        res['META'] = {
-            "value": identifier,
-            "method": request.method,
-            "path": request.path,
-            "path_info": request.path_info,
-            "META": {}
-        }
-        for k,v in request.META.items():
-            res["META"][k] = str(v)
+    # request has a double ??
+    if request.META.get("QUERY_STRING", "") == "?":
+        s, r = impl.ezid.getMetadata(
+            identifier, prefixMatch=False
+        )
+        return _response(s, anvlBody=impl.anvl.format(r))
+
+    res = impl.ezid.resolveIdentifier(identifier)
     c = json.dumps(res, indent=2)
-    r = django.http.HttpResponse(
-        c,
-        status=200,
-        content_type="application/json; charset=utf-8",
-    )
-    r["Content-Length"] = len(c)
-    return r
+    return django.http.HttpResponseRedirect(res['target'], content=c, content_type="application/json; charset=utf-8")
