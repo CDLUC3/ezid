@@ -81,8 +81,7 @@ def main():
             p.error("options -a and -o are incompatible")
         options.email = True
     else:
-        options.email = True
-        options.emailAddresses.append(django.conf.settings.LINK_CHECKER_ADMIN[0][1])
+        options.email = False
     if options.realm:
         if not ezidapp.models.realm.Realm.objects.filter(
             name=options.realm
