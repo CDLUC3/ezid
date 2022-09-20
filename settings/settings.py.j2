@@ -228,6 +228,11 @@ logging.config.dictConfig(
                 'class': 'ecs_logging.StdlibFormatter',
             },
         },
+        'filters': {
+           'reduce_unreadable_post_errors' : {
+                '()' : 'impl.log_filters.ReduceUnreadablePostErrors'
+            },
+        },
         'handlers': {
             'console': {
                 'level': 'DEBUG',
@@ -255,6 +260,7 @@ logging.config.dictConfig(
             },
             'mail_admins': {
                 'level': 'ERROR',
+                'filters': ['require_debug_false','reduce_unreadable_post_errors'],
                 'class': 'django.utils.log.AdminEmailHandler'
             },
         },
