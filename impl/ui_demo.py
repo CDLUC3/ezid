@@ -27,6 +27,7 @@ def simple(request):
 # noinspection PyDictCreation
 def advanced(request):
     d = {'menu_item': 'ui_home.learn'}
+    d["testPrefixes"] = django.conf.settings.TEST_SHOULDER_DICT
     d['prefixes'] = sorted(
         django.conf.settings.TEST_SHOULDER_DICT, key=lambda p: p['namespace'].lower()
     )  # must be done before calling form processing
