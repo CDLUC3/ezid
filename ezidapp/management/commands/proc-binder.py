@@ -37,9 +37,10 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         """
         id_str = task_model.refIdentifier.identifier
         self.log.info("CREATE: %s", id_str)
-        metadata = task_model.refIdentifier.metadata
+        ##metadata = task_model.refIdentifier.metadata
         # add the required target metadata:
-        metadata["_t"] = task_model.refIdentifier.target
+        ##metadata["_t"] = task_model.refIdentifier.target
+        metadata = task_model.refIdentifier.toLegacy()
         impl.noid_egg.setElements(id_str, metadata)
 
     def update(self, task_model):
@@ -50,9 +51,10 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         new fields oor fields that have changed values.
         '''
         id_str = task_model.refIdentifier.identifier
-        metadata = task_model.refIdentifier.metadata
-        # add the required target metadata:
-        metadata["_t"] = task_model.refIdentifier.target
+        ##metadata = task_model.refIdentifier.metadata
+        ### add the required target metadata:
+        ##metadata["_t"] = task_model.refIdentifier.target
+        metadata = task_model.refIdentifier.toLegacy()
         self.log.info("UPDATE: %s", id_str)
 
         # Retrieve the existing metadata from N2T
