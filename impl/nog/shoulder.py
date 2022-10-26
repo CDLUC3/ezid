@@ -116,12 +116,12 @@ def create_shoulder(
     log.debug('Minter BerkeleyDB created at: {}'.format(bdb_path.as_posix()))
     # Add new shoulder row to the shoulder table.
     try:
-        if (is_super_shoulder):
-            minterVal = ''
-        else:
-            minterVal = "ezid:/{}".format(
+        minterVal = "ezid:/{}".format(
                 '/'.join(bdb_path.parts[-3:-1]),
             )
+        if (is_super_shoulder):
+            minterVal = ''
+
         ezidapp.models.shoulder.Shoulder.objects.create(
             prefix=ns,
             type=ns.scheme.upper(),
