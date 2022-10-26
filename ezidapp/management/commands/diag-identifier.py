@@ -39,64 +39,91 @@ class Command(django.core.management.BaseCommand):
     help = __doc__
 
     def __init__(self):
-        super(Command, self).__init__()
+        super().__init__()
         self.opt = None
 
     def create_parser(self, *args, **kwargs):
-        parser = super(Command, self).create_parser(*args, **kwargs)
+        parser = super().create_parser(*args, **kwargs)
         parser.formatter_class = argparse.RawTextHelpFormatter
         return parser
 
-    def add_arguments(self, parser):
-        parser.add_argument(
+    def add_arguments(self, parser:argparse.ArgumentParser):
+        subparsers = parser.add_subparsers(
+            title="Operations",
+            dest="operation",
+            required=True
+        )
+
+        _show = subparsers.add_parser("show")
+        _list = subparsers.add_parser("list")
+        _show.add_argument(
             "identifiers",
             nargs="+",
             type=str,
             help="Space delimited list of identifiers to retrieve",
         )
-        parser.add_argument(
+        _show.add_argument(
             '-I',
             '--identifier',
             action='store_true',
             help='Show Identifier instead of SearchIdentifier table entry',
         )
-        parser.add_argument(
+        _show.add_argument(
             '-y',
             '--legacy',
             action='store_true',
             help='Show legacy form of identifier record',
         )
-        parser.add_argument(
+        _show.add_argument(
             '-m',
             '--cm',
             action='store_true',
             help='Decode the identifier cm zipped json section',
         )
-        parser.add_argument(
+        _show.add_argument(
             '-e',
             '--expanded',
             action='store_true',
             help='Expand related info such as owner, ownergroup, profile, and datacenter',
         )
-        parser.add_argument(
+        _show.add_argument(
             '-t',
             '--times',
             action='store_true',
             help='Convert timestamps to textual time representation',
         )
-        parser.add_argument(
+        _show.add_argument(
             '-N',
             '--N2T',
             action='store_true',
             help='Retrieve record from N2T if available',
         )
-        parser.add_argument(
+        _show.add_argument(
             '--sync',
             action='store_true',
-            help="Synchronize the N2T entry with metadata from the database."
+            help="Synchronize the N2T entry with metadata from the database.",
         )
 
-    def handle(self, *args, **opts):
+        _list.add_argument(
+            "filter",
+            nargs="+",
+            type=str,
+            help="Filter to select identifiers, e.g. 'createTime__gt1653019200'. Multiple filters are combined with AND.",
+        )
+        _list.add_argument(
+            '-I',
+            '--identifier',
+            action='store_true',
+            help='Show Identifier instead of SearchIdentifier table entry',
+        )
+        _list.add_argument(
+            '-W',
+            '--whereclause',
+            action='store_true',
+            help='Filter is an SQL WHERE clause instead of ORM applied to the identifier or searchIdentifier tables.',
+        )
+
+    def handle_show(self, *args, **opts):
         def jsonable_instance(o):
             if o is None:
                 return o
@@ -130,9 +157,7 @@ class Command(django.core.management.BaseCommand):
                 entry["legacy"] = identifier.toLegacy()
             if opts["expanded"]:
                 for field_name in expand_fields:
-                    entry["fields"][field_name] = jsonable_instance(
-                        getattr(identifier, field_name)
-                    )
+                    entry["fields"][field_name] = jsonable_instance(getattr(identifier, field_name))
             if opts["times"]:
                 entry["fields"]["createTime"] = tstamp_to_text(entry["fields"]["createTime"])
                 entry["fields"]["updateTime"] = tstamp_to_text(entry["fields"]["updateTime"])
@@ -192,4 +217,52 @@ class Command(django.core.management.BaseCommand):
 
             entries.append(entry)
         self.stdout.write(json.dumps(entries, indent=2, sort_keys=True))
+
+    def handle_list_by_where(self, *args, **opts):
+        filter_strings = opts['filter']
+        _filter = {}
+        identifiers = None
+        identifier_class = ezidapp.models.identifier.SearchIdentifier
+        _table = "ezidapp_searchidentifier"
+        if opts["identifier"]:
+            _table = "ezidapp_identifier"
+        sqlc = f"SELECT count(*) FROM {_table} WHERE {' AND '.join(filter_strings)};"
+        sql = f"SELECT id, identifier FROM {_table} WHERE {' AND '.join(filter_strings)};"
+        log.info("Generated SQL = %s", sql)
+        identifiers = identifier_class.objects.raw(sql)
+        for identifier in identifiers:
+            self.stdout.write(f"{identifier.identifier}")
+
+    def handle_list(self, *args, **opts):
+        filter_strings = opts['filter']
+        _filter = {}
+        identifier_class = ezidapp.models.identifier.SearchIdentifier
+        for filter_string in filter_strings:
+            parts = filter_string.split(':', 1)
+            if len(parts) > 1:
+                _filter[parts[0]] = parts[1]
+        self.stdout.write(f"Provided filter = {_filter}")
+        if opts["identifier"]:
+            identifier_class = ezidapp.models.identifier.Identifier
+        identifiers = identifier_class.objects.filter(**_filter)
+        for identifier in identifiers:
+            self.stdout.write(f"{identifier.identifier}")
+        self.stdout.write(f"Total matches: {identifiers.count()}")
+
+
+    def run_from_argv(self, *args, **kwargs):
+        try:
+            return super().run_from_argv(*args, **kwargs)
+        except django.core.management.base.CommandError:
+            print("oops")
+
+    def handle(self, *args, **opts):
+        operation = opts['operation']
+        if operation == 'show':
+            self.handle_show(*args, **opts)
+        elif operation == 'list':
+            if opts['whereclause']:
+                self.handle_list_by_where(*args, **opts)
+            else:
+                self.handle_list(*args, **opts)
 
