@@ -14,6 +14,7 @@ is used. Confirmation is requested before any metadata updates are propagated to
 """
 
 import argparse
+import csv
 import json
 import logging
 import datetime
@@ -25,6 +26,7 @@ import django.core.management
 import django.core.serializers
 import django.db.models
 import django.forms
+import django.forms.models
 
 import ezidapp.models.datacenter
 import ezidapp.models.group
@@ -34,6 +36,11 @@ import impl.noid_egg
 
 log = logging.getLogger(__name__)
 
+class SplitArgs(argparse.Action):
+    # From: https://stackoverflow.com/questions/52132076/argparse-action-or-type-for-comma-separated-list
+    def __call__(self, parser, namespace, values, option_string=None):
+        # Be sure to strip, maybe they have spaces where they don't belong and wrapped the arg value in quotes
+        setattr(namespace, self.dest, [value.strip() for value in values.split(",")])
 
 class Command(django.core.management.BaseCommand):
     help = __doc__
@@ -122,6 +129,37 @@ class Command(django.core.management.BaseCommand):
             action='store_true',
             help='Filter is an SQL WHERE clause instead of ORM applied to the identifier or searchIdentifier tables.',
         )
+        _list.add_argument(
+            '-F',
+            '--fields',
+            action=SplitArgs,
+            default=[],
+            help="Comma separated list of fields in addition to identifier to list."
+        )
+        _list.add_argument(
+            '--compare',
+            action='store_true',
+            help='Show difference between EZID and N2T metadata.',
+        )
+
+    def diff_n2t(self, identifier:ezidapp.models.identifier):
+        res = {}
+        n2t_meta = impl.noid_egg.getElements(identifier.identifier)
+        if n2t_meta is None:
+            n2t_meta = {}
+        _legacy = identifier.toLegacy()
+        for k, v in _legacy.items():
+            res[k] = [v, None]
+        # If properties retrieved from N2T are not present in the supplied
+        # update metadata, then set the value of the field to an empty string.
+        # An empty value results in an "rm" (remove) operation for that field
+        # being sent to N2T.
+        for k, v in n2t_meta.items():
+            if k not in res:
+                res[k] = [None, v]
+            else:
+                res[k][1] = v
+        return res
 
     def handle_show(self, *args, **opts):
         def jsonable_instance(o):
@@ -152,6 +190,7 @@ class Command(django.core.management.BaseCommand):
             # Note, it is far more efficient to just call serialize('json', identifiers, indent=2)
             # but we want to futz around with the cm section and other fields for each instance.
             entry = jsonable_instance(identifier)
+            entry["isAgentPid"] = identifier.isAgentPid
             if opts["legacy"]:
                 # Get the "legacy" format, which is used for sending to N2T binder
                 entry["legacy"] = identifier.toLegacy()
@@ -174,6 +213,7 @@ class Command(django.core.management.BaseCommand):
                     entry["cm_eq_metadata"] = _mequal
                 except zlib.error:
                     log.info("No cm section in %s", identifier.identifier)
+            n2t_meta = None
             if opts["N2T"]:
                 # Retrieve entry from N2T
                 n2t_meta = impl.noid_egg.getElements(identifier.identifier)
@@ -182,7 +222,9 @@ class Command(django.core.management.BaseCommand):
                 _legacy = identifier.toLegacy()
                 # See proc_binder.update
                 # Retrieve the existing metadata from N2T
-                m = impl.noid_egg.getElements(identifier.identifier)
+                m = n2t_meta
+                if m is None:
+                    m = impl.noid_egg.getElements(identifier.identifier)
                 if m is None:
                     m = {}
                 # First, update m with provided metadata
@@ -221,20 +263,24 @@ class Command(django.core.management.BaseCommand):
     def handle_list_by_where(self, *args, **opts):
         filter_strings = opts['filter']
         _filter = {}
+        _fields = ['identifier',] + opts.get('fields', [])
         identifiers = None
         identifier_class = ezidapp.models.identifier.SearchIdentifier
         _table = "ezidapp_searchidentifier"
         if opts["identifier"]:
             _table = "ezidapp_identifier"
         sqlc = f"SELECT count(*) FROM {_table} WHERE {' AND '.join(filter_strings)};"
-        sql = f"SELECT id, identifier FROM {_table} WHERE {' AND '.join(filter_strings)};"
+        sql = f"SELECT * FROM {_table} WHERE {' AND '.join(filter_strings)};"
         log.info("Generated SQL = %s", sql)
         identifiers = identifier_class.objects.raw(sql)
+        writer = csv.DictWriter(self.stdout, _fields, dialect='excel')
+        writer.writeheader()
         for identifier in identifiers:
-            self.stdout.write(f"{identifier.identifier}")
+            writer.writerow(django.forms.models.model_to_dict(identifier, fields=_fields))
 
     def handle_list(self, *args, **opts):
         filter_strings = opts['filter']
+        _fields = ['identifier',] + opts.get('fields', [])
         _filter = {}
         _default_key = ""
         identifier_class = ezidapp.models.identifier.SearchIdentifier
@@ -251,16 +297,17 @@ class Command(django.core.management.BaseCommand):
         if opts["identifier"]:
             identifier_class = ezidapp.models.identifier.Identifier
         identifiers = identifier_class.objects.filter(**_filter)
+        dfields = _fields
+        if opts.get("compare", False):
+            dfields.append('n2t')
+        writer = csv.DictWriter(self.stdout, dfields, dialect='excel')
+        writer.writeheader()
         for identifier in identifiers:
-            self.stdout.write(f"{identifier.identifier}")
-        self.stdout.write(f"Total matches: {identifiers.count()}")
+            row = django.forms.models.model_to_dict(identifier, fields=_fields)
+            if opts.get('compare', False):
+                row['n2t'] = self.diff_n2t(identifier)
+            writer.writerow(row)
 
-
-    def run_from_argv(self, *args, **kwargs):
-        try:
-            return super().run_from_argv(*args, **kwargs)
-        except django.core.management.base.CommandError:
-            print("oops")
 
     def handle(self, *args, **opts):
         operation = opts['operation']
