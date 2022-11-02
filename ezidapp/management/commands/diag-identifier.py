@@ -108,7 +108,7 @@ class Command(django.core.management.BaseCommand):
             "filter",
             nargs="+",
             type=str,
-            help="Filter to select identifiers, e.g. 'createTime__gt1653019200'. Multiple filters are combined with AND.",
+            help="Filter to select identifiers, e.g. 'createTime__gt:1653019200'. Multiple filters are combined with AND.",
         )
         _list.add_argument(
             '-I',
@@ -236,12 +236,18 @@ class Command(django.core.management.BaseCommand):
     def handle_list(self, *args, **opts):
         filter_strings = opts['filter']
         _filter = {}
+        _default_key = ""
         identifier_class = ezidapp.models.identifier.SearchIdentifier
         for filter_string in filter_strings:
             parts = filter_string.split(':', 1)
             if len(parts) > 1:
-                _filter[parts[0]] = parts[1]
+                _filter[parts[0].strip()] = parts[1].strip()
+            else:
+                log.warning("Expecting ':' delimiter between filter and match value, e.g. createTime__gt:1653019200, got %s",filter_string)
         self.stdout.write(f"Provided filter = {_filter}")
+        if len(_filter.keys()) < 1:
+            log.error("Aborting: Null filter matches all records.")
+            return
         if opts["identifier"]:
             identifier_class = ezidapp.models.identifier.Identifier
         identifiers = identifier_class.objects.filter(**_filter)
