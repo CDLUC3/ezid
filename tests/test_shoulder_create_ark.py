@@ -90,11 +90,9 @@ class TestShoulderCreateArk:
             '--skip-checks',
             '--test',
         )
-        ezid_uri = "ezid:/99920/NULL"
+        ezid_uri = ''
         assert ezidapp.models.shoulder.Shoulder.objects.filter(prefix=ns_str).exists()
-        s = ezidapp.models.shoulder.Shoulder.objects.filter(minter=ezid_uri).get()
-        sample.assert_match(tests.util.util.shoulder_to_dict(s), 'NULL')
-        assert s.minter == ezid_uri
+        s = ezidapp.models.shoulder.Shoulder.objects.filter(prefix=ns_str).get()
         assert s.name == org_str
         assert s.active
         assert s.isSupershoulder

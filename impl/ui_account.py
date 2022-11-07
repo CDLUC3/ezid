@@ -244,7 +244,7 @@ def _update_edit_user(request, user, new_proxies_selected, basic_info_changed):
             django.contrib.messages.success(request, _("Your password has been updated."))
 
 
-def _sendEmail(request, user, subject, message, to_address=None):
+def _sendEmail(request, user:ezidapp.models.user.User, subject:str, message:str, to_address:str=None):
     to_address = to_address or user.accountEmail
     to_full_address = user.primaryContactName + "<" + to_address + ">"
     log.info(f'Sending email:\nTo: {to_full_address}\nSubject: {subject}\n{message}')
@@ -405,7 +405,7 @@ def pwreset(request, pwrr=None):
             return impl.ui_common.methodNotAllowed(request)
 
 
-def sendPasswordResetEmail(request, username, emailAddress):
+def sendPasswordResetEmail(request, username:str, emailAddress:str):
     """Send an email containing a password reset request link
 
     Returns None on success or a string message on error.
@@ -439,7 +439,7 @@ def sendPasswordResetEmail(request, username, emailAddress):
         + _("Please do not reply to this email")
         + ".\n"
     )
-    _sendEmail(request, username, _("EZID password reset request"), message, emailAddress)
+    _sendEmail(request, user, _("EZID password reset request"), message, emailAddress)
 
 
 def decodePasswordResetRequest(request):

@@ -933,6 +933,11 @@ class SearchIdentifier(IdentifierBase):
             ('publicSearchVisible', 'searchableResourceType'),
         ]
 
+        indexes = [
+            django.db.models.Index(fields=['createTime']),
+            django.db.models.Index(fields=['updateTime']),
+        ]
+
     def issueReasons(self):
         # Returns a list of the identifier's issues.
         reasons = []
@@ -1156,7 +1161,12 @@ class SearchIdentifier(IdentifierBase):
 
 
 class Identifier(IdentifierBase):
-    pass
+
+    class Meta:
+        indexes = [
+            django.db.models.Index(fields=['createTime']),
+            django.db.models.Index(fields=['updateTime']),
+        ]
 
 
 class RefIdentifier(IdentifierBase):

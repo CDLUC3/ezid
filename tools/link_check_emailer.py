@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
 
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
@@ -24,6 +25,7 @@ import re
 import subprocess
 import tempfile
 
+import settings
 import django
 django.setup()
 
@@ -36,7 +38,7 @@ import ezidapp.models.identifier
 import ezidapp.models.link_checker
 import ezidapp.models.user
 import impl
-
+from http import HTTPStatus
 
 def encode(s):
     # There seems to be no way to safely encode a multi-line value in CSV.
@@ -55,9 +57,9 @@ def gatherFailures(owner_id, threshold):
         # metadata and to confirm that the identifier still exists and is
         # still subject to link checking.
         try:
-            si = ezidapp.models.identifier.Identifier.objects.get(
+            si = ezidapp.models.identifier.SearchIdentifier.objects.filter(
                 identifier=lcList[i].identifier
-            )
+            ).get()
             if (
                 si.isPublic
                 and si.owner_id == lcList[i].owner_id
@@ -74,9 +76,9 @@ def gatherFailures(owner_id, threshold):
 
 def formatError(returnCode, error):
     if returnCode >= 0:
-        if returnCode in http.HTTPStatus.responses:
-            return "%d %s" % (returnCode, http.HTTPStatus.responses[returnCode])
-        else:
+        try:
+            return "%d %s" % (returnCode, HTTPStatus(returnCode).phrase)
+        except:
             return "HTTP status code %d" % returnCode
     else:
         return error
@@ -103,15 +105,15 @@ def writeCsv(lcList, filename):
         w.writerow(
             [
                 lc.identifier,
-                encode(lc.target),
+                lc.target,
                 str(lc.numFailures),
                 impl.util.formatTimestampZulu(lc.lastCheckTime),
-                encode(formatError(lc.returnCode, lc.error)),
-                encode(lc.aux.resourceCreator),
-                encode(lc.aux.resourceTitle),
-                encode(lc.aux.resourcePublisher),
-                encode(lc.aux.resourcePublicationDate),
-                encode(lc.aux.resourceType),
+                formatError(lc.returnCode, lc.error),
+                lc.aux.resourceCreator,
+                lc.aux.resourceTitle,
+                lc.aux.resourcePublisher,
+                lc.aux.resourcePublicationDate,
+                lc.aux.resourceType,
             ]
         )
     f.close()
@@ -255,7 +257,7 @@ def main():
                     username,
                     su.id,
                     su.realm.name,
-                    ezidapp.models.user.User.User.objects.get(
+                    ezidapp.models.user.User.objects.get(
                         username=username
                     ).accountEmail,
                 )
