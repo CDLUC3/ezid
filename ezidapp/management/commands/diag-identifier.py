@@ -17,6 +17,7 @@ import argparse
 import csv
 import json
 import logging
+import time
 import datetime
 import zlib
 
@@ -62,7 +63,6 @@ class Command(django.core.management.BaseCommand):
         )
 
         _show = subparsers.add_parser("show")
-        _list = subparsers.add_parser("list")
         _show.add_argument(
             "identifiers",
             nargs="+",
@@ -111,6 +111,7 @@ class Command(django.core.management.BaseCommand):
             help="Synchronize the N2T entry with metadata from the database.",
         )
 
+        _list = subparsers.add_parser("list")
         _list.add_argument(
             "filter",
             nargs="+",
@@ -141,6 +142,37 @@ class Command(django.core.management.BaseCommand):
             action='store_true',
             help='Show difference between EZID and N2T metadata.',
         )
+        _list.add_argument(
+            '-m',
+            '--max_rows',
+            type=int,
+            default=10,
+            help='Maximum number of rows to list.'
+        )
+
+        _resolve = subparsers.add_parser("resolve")
+        _resolve.add_argument(
+            "identifier",
+            type=str,
+            help="Identifier to resolve."
+        )
+
+        _metrics = subparsers.add_parser("metrics")
+        _metrics.add_argument(
+            '-s',
+            '--start',
+            type=datetime.datetime.fromisoformat,
+            default=datetime.datetime.utcnow() - datetime.timedelta(hours=24),
+            help="Starting date for metrics"
+        )
+        _metrics.add_argument(
+            '-e',
+            '--end',
+            type=datetime.datetime.fromisoformat,
+            default=datetime.datetime.utcnow(),
+            help="Ending date for metrics"
+        )
+
 
     def diff_n2t(self, identifier:ezidapp.models.identifier):
         res = {}
@@ -261,25 +293,40 @@ class Command(django.core.management.BaseCommand):
         self.stdout.write(json.dumps(entries, indent=2, sort_keys=True))
 
     def handle_list_by_where(self, *args, **opts):
-        filter_strings = opts['filter']
-        _filter = {}
         _fields = ['identifier',] + opts.get('fields', [])
+        _params = []
+        filter_strings = []
+        for _f in opts['filter']:
+            if '%s:' in _f:
+                a,b = _f.split(':',1)
+                filter_strings.append(a)
+                _params.append(b)
+            else:
+                filter_strings.append(_f)
         identifiers = None
         identifier_class = ezidapp.models.identifier.SearchIdentifier
         _table = "ezidapp_searchidentifier"
         if opts["identifier"]:
             _table = "ezidapp_identifier"
-        sqlc = f"SELECT count(*) FROM {_table} WHERE {' AND '.join(filter_strings)};"
+            identifier_class = ezidapp.models.identifier.Identifier
+        #sqlc = f"SELECT count(*) FROM {_table} WHERE {' AND '.join(filter_strings)};"
         sql = f"SELECT * FROM {_table} WHERE {' AND '.join(filter_strings)};"
-        log.info("Generated SQL = %s", sql)
-        identifiers = identifier_class.objects.raw(sql)
+        log.debug("Generated SQL = " + sql)
+        identifiers = identifier_class.objects.raw(sql, _params)
+        log.debug(identifiers.raw_query)
         writer = csv.DictWriter(self.stdout, _fields, dialect='excel')
         writer.writeheader()
         for identifier in identifiers:
             writer.writerow(django.forms.models.model_to_dict(identifier, fields=_fields))
 
     def handle_list(self, *args, **opts):
-        filter_strings = opts['filter']
+        max_rows = opts.get("max_rows", 10)
+        filter_strings = []
+        for _f in opts['filter']:
+            if _f == "recent":
+                filter_strings.append(f"createTime__lte:{int(time.time())}")
+            else:
+                filter_strings.append(_f)
         _fields = ['identifier',] + opts.get('fields', [])
         _filter = {}
         _default_key = ""
@@ -296,7 +343,7 @@ class Command(django.core.management.BaseCommand):
             return
         if opts["identifier"]:
             identifier_class = ezidapp.models.identifier.Identifier
-        identifiers = identifier_class.objects.filter(**_filter)
+        identifiers = identifier_class.objects.filter(**_filter).order_by("-createTime")[:max_rows]
         dfields = _fields
         if opts.get("compare", False):
             dfields.append('n2t')
@@ -309,6 +356,50 @@ class Command(django.core.management.BaseCommand):
             writer.writerow(row)
 
 
+    def handle_resolve(self, *args, **opts):
+        '''Given an identifier, determine it's resolver as known by EZID.
+        '''
+        identifier = opts.get("identifier", None)
+        if identifier is None:
+            log.error("Provided identifier is NULL")
+            return
+        res = ezidapp.models.identifier.resolveIdentifier(identifier)
+        self.stdout.write(str(res))
+
+
+    def handle_metrics(self, *args, **opts):
+        '''
+        Generate a report of identifier creations grouped by day and owner group.
+        '''
+        start_date = opts.get('start', datetime.datetime.utcnow() - datetime.timedelta(hours=24))
+        end_date = opts.get('end', datetime.datetime.utcnow())
+        _t0 = int(start_date.timestamp())
+        _t1 = int(end_date.timestamp())
+        tfield = 'createTime'
+        if opts.get('tmodified', False):
+            tfield = 'updateTime'
+        model = 'ezidapp_searchidentifier'
+        identifier_class = ezidapp.models.identifier.SearchIdentifier
+        if opts.get("identifier"):
+            model = 'ezidapp_identifier'
+            identifier_class = ezidapp.models.identifier.Identifier
+        sql = (f'SELECT floor(({model}.{tfield}-%s)/86400) as day, '
+               f'count(*) as n, ezidapp_group.groupname '
+               f'FROM {model}, ezidapp_group '
+               f'WHERE {model}.ownergroup_id = ezidapp_group.id '
+               f'AND {model}.{tfield} > %s AND {model}.{tfield} <= %s '
+               f'GROUP BY day, {model}.ownergroup_id '
+               'ORDER BY day;'
+               )
+        with django.db.connection.cursor() as cursor:
+            _fields = ['day', 'n', 'gname']
+            writer = csv.writer(self.stdout, dialect='excel')
+            writer.writerow(_fields)
+            cursor.execute(sql, [_t0, _t0, _t1])
+            for row in cursor.fetchall():
+                writer.writerow(row)
+
+
     def handle(self, *args, **opts):
         operation = opts['operation']
         if operation == 'show':
@@ -318,4 +409,9 @@ class Command(django.core.management.BaseCommand):
                 self.handle_list_by_where(*args, **opts)
             else:
                 self.handle_list(*args, **opts)
+        elif operation == 'resolve':
+            self.handle_resolve(*args, **opts)
+        elif operation == 'metrics':
+            self.handle_metrics(*args, **opts)
+
 
