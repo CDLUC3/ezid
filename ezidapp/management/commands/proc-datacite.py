@@ -68,7 +68,10 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             if isinstance(r, str):
                 raise ezidapp.management.commands.proc_base.AsyncProcessingRemoteError(r)
             raise ezidapp.management.commands.proc_base.AsyncProcessingError(r)
-        r = impl.datacite.setTargetUrl(doi, ref_id.target, datacenter)
+        # This should set the datacite target url to identifier.resolverTarget
+        # to take into consideration reserved or unavailable status.
+        #r = impl.datacite.setTargetUrl(doi, ref_id.target, datacenter)
+        r = impl.datacite.setTargetUrl(doi, ref_id.resolverTarget, datacenter)
         # r can be:
         #   None on success
         #   a string error message if the target URL was not accepted by DataCite

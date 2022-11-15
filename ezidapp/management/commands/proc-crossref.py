@@ -111,7 +111,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         op_str = task_model.operation
         id_base_str = ref_id.identifier[4:]
 
-        url = 'http://datacite.org/invalidDOI' if op_str == self.queue.DELETE else ref_id.target
+        # Use the resolveTarget property to ensure correct setting for reserved or unavailable identifiers
+        #url = 'http://datacite.org/invalidDOI' if op_str == self.queue.DELETE else ref_id.target
+        url = 'http://datacite.org/invalidDOI' if op_str == self.queue.DELETE else ref_id.resolverTarget
 
         # withdrawTitles is set to True if:
         #  The current operation is a DELETE
