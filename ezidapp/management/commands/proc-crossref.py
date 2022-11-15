@@ -89,7 +89,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
             self.sleep(django.conf.settings.DAEMONS_BATCH_SLEEP)
 
-    def do_task(self, task_model):
+    def do_task(self, task_model:ezidapp.models.async_queue.CrossrefQueue):
         if task_model.status == self.queue.UNSUBMITTED:
             self.submit(task_model)
         elif task_model.status in (self.queue.UNCHECKED, self.queue.SUBMITTED):
@@ -97,7 +97,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         else:
             raise AssertionError('Unhandled case')
 
-    def submit(self, task_model):
+    def submit(self, task_model:ezidapp.models.async_queue.CrossrefQueue):
         """Submit Create/Update/Delete to Crossref and move state from UNSUBMITTED to
         UNCHECKED.
         """
@@ -133,7 +133,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         task_model.batchId = batchId
         task_model.submitTime = self.now_int()
 
-    def _buildDeposit(self, body, registrant, doi, targetUrl, withdrawTitles=False, bodyOnly=False):
+    def _buildDeposit(self, body:str, registrant:str, doi:str, targetUrl:str, withdrawTitles:bool=False, bodyOnly:bool=False)->(str,str,str):
         """Build a Crossref metadata submission document
 
         Args:
@@ -198,7 +198,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         d2 = self._addDeclaration(lxml.etree.tostring(root, encoding='unicode'))
         return d2, d1, batchId
 
-    def _submitDeposit(self, deposit, batchId, doi):
+    def _submitDeposit(self, deposit:str, batchId:str, doi:str)->bool:
         """Submit a Crossref metadata submission document.
 
         Returns True on success, False on (internal) error. 'doi' is the
@@ -257,7 +257,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         else:
             return True
 
-    def get_base_url(self, doi):
+    def get_base_url(self, doi:str)->str:
         is_test_doi = impl.util2.isTestCrossrefDoi(doi)
         # Force hitting the test server if EZID is running in DEBUG mode
         # is_test_doi |= django.conf.settings.DEBUG
@@ -268,7 +268,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             else django.conf.settings.CROSSREF_REAL_SERVER
         )
 
-    def check_status(self, task_model):
+    def check_status(self, task_model:ezidapp.models.async_queue.CrossrefQueue):
         """Check status of previously submitted Create/Update/Delete and move state
         from UNCHECKED/SUBMITTED to SUBMITTED/WARNING/FAILURE/SUCCESS.
 
@@ -317,7 +317,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             if u.crossrefEmail:
                 self._sendEmail(u.crossrefEmail, task_model)
 
-    def _multipartBody(self, *parts):
+    def _multipartBody(self, *parts)->(bytes,str):
         """Build a multipart/form-data (RFC 2388) document out of a list of constituent
         parts.
 
@@ -347,7 +347,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             boundary,
         )
 
-    def _checkDepositStatus(self, task_model):
+    def _checkDepositStatus(self, task_model:ezidapp.models.async_queue.CrossrefQueue):
         batchId = task_model.batchId
         ref_id = task_model.refIdentifier
         doi = ref_id.identifier[4:]
@@ -449,7 +449,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             else:
                 assert False, 'unexpected status value: ' + d.attrib['status']
 
-    def _sendEmail(self, emailAddress, task_model):
+    def _sendEmail(self, emailAddress:str, task_model:ezidapp.models.async_queue.CrossrefQueue):
         warning_or_error_str = 'warning' if task_model.status == self.queue.WARNING else 'error'
         ref_id = task_model.refIdentifier
         body_str = (

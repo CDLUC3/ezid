@@ -9,6 +9,7 @@ import signal
 import sys
 import time
 import types
+import typing
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -19,13 +20,14 @@ import django.core.management
 import django.db
 import django.db.transaction
 
+import ezidapp.models.async_queue
 import impl.nog.util
 
 
 class AsyncProcessingCommand(django.core.management.BaseCommand):
     help = __doc__
     setting = None
-    queue = None
+    queue: typing.Optional[ezidapp.models.async_queue.AsyncQueueBase] = None
     name = None
     _terminated = False
     _last_connection_reset = 0

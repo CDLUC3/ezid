@@ -2,6 +2,11 @@
 #  http://creativecommons.org/licenses/BSD
 
 """Asynchronous DataCite processing
+
+This background process takes tasks from the DataciteQueue
+and performs the specified actions to set infomration in
+Datacite to correspond with the identifier and its
+metadata in EZID.
 """
 
 import logging
@@ -21,15 +26,15 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     setting = 'DAEMONS_DATACITE_ENABLED'
     queue = ezidapp.models.async_queue.DataciteQueue
 
-    def create(self, task_model):
+    def create(self, task_model:ezidapp.models.async_queue.DataciteQueue):
         if self._is_eligible(task_model):
             self._create_or_update(task_model)
 
-    def update(self, task_model):
+    def update(self, task_model:ezidapp.models.async_queue.DataciteQueue):
         if self._is_eligible(task_model):
             self._create_or_update(task_model)
 
-    def delete(self, task_model):
+    def delete(self, task_model:ezidapp.models.async_queue.DataciteQueue):
         # We cannot delete a DOI on DataCite, so we disable it by setting an invalid
         # target URL and removing it from DataCite's search index. See
         # deactivateIdentifier() for additional info.
@@ -43,16 +48,18 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             impl.datacite.setTargetUrl(doi, "http://datacite.org/invalidDOI", datacenter)
             impl.datacite.deactivateIdentifier(doi, datacenter)
 
-    def _is_eligible(self, task_model):
+    def _is_eligible(self, task_model:ezidapp.models.async_queue.DataciteQueue):
         """Return True if task is eligible for this process"""
         is_eligible = task_model.refIdentifier.isDatacite and not task_model.refIdentifier.isTest
         if not is_eligible:
             log.debug(f'Skipping ineligible task: {task_model}')
         return is_eligible
 
-    def _create_or_update(self, task_model):
-        ref_id = task_model.refIdentifier
-        doi = ref_id.identifier[4:]
+    def _create_or_update(self, task_model:ezidapp.models.async_queue.DataciteQueue):
+        ref_id:ezidapp.models.identifier.RefIdentifier = task_model.refIdentifier
+        # doi:10.1234/foo
+        #     ^---------
+        doi:str = ref_id.identifier[4:]
         metadata = ref_id.metadata
         datacenter = str(ref_id.datacenter)
         r = impl.datacite.uploadMetadata(doi, {}, metadata, True, datacenter)
@@ -62,16 +69,16 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         # exception == something else went wrong.
         # Exceptions are handled in the outer run method, so don't handle here.
         #
-        # TODO: DRY this a bit
         if r is not None:
             log.error("datacite.uploadMetadata returned: %s", r)
             if isinstance(r, str):
                 raise ezidapp.management.commands.proc_base.AsyncProcessingRemoteError(r)
             raise ezidapp.management.commands.proc_base.AsyncProcessingError(r)
+
         # This should set the datacite target url to identifier.resolverTarget
         # to take into consideration reserved or unavailable status.
-        #r = impl.datacite.setTargetUrl(doi, ref_id.target, datacenter)
         r = impl.datacite.setTargetUrl(doi, ref_id.resolverTarget, datacenter)
+
         # r can be:
         #   None on success
         #   a string error message if the target URL was not accepted by DataCite
@@ -81,6 +88,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             if isinstance(r, str):
                 raise ezidapp.management.commands.proc_base.AsyncProcessingRemoteError(r)
             raise ezidapp.management.commands.proc_base.AsyncProcessingError(r)
+        # check for non-public and adjust to suit
         if metadata.get("_is", "public") != "public" or metadata.get("_x", "yes") != "yes":
             r = impl.datacite.deactivateIdentifier(doi, datacenter)
             if r is not None:
