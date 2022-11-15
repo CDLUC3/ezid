@@ -26,15 +26,15 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     setting = 'DAEMONS_DATACITE_ENABLED'
     queue = ezidapp.models.async_queue.DataciteQueue
 
-    def create(self, task_model:ezidapp.models.async_queue.DataciteQueue):
+    def create(self, task_model: ezidapp.models.async_queue.DataciteQueue):
         if self._is_eligible(task_model):
             self._create_or_update(task_model)
 
-    def update(self, task_model:ezidapp.models.async_queue.DataciteQueue):
+    def update(self, task_model: ezidapp.models.async_queue.DataciteQueue):
         if self._is_eligible(task_model):
             self._create_or_update(task_model)
 
-    def delete(self, task_model:ezidapp.models.async_queue.DataciteQueue):
+    def delete(self, task_model: ezidapp.models.async_queue.DataciteQueue):
         # We cannot delete a DOI on DataCite, so we disable it by setting an invalid
         # target URL and removing it from DataCite's search index. See
         # deactivateIdentifier() for additional info.
@@ -48,18 +48,18 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             impl.datacite.setTargetUrl(doi, "http://datacite.org/invalidDOI", datacenter)
             impl.datacite.deactivateIdentifier(doi, datacenter)
 
-    def _is_eligible(self, task_model:ezidapp.models.async_queue.DataciteQueue):
+    def _is_eligible(self, task_model: ezidapp.models.async_queue.DataciteQueue):
         """Return True if task is eligible for this process"""
         is_eligible = task_model.refIdentifier.isDatacite and not task_model.refIdentifier.isTest
         if not is_eligible:
             log.debug(f'Skipping ineligible task: {task_model}')
         return is_eligible
 
-    def _create_or_update(self, task_model:ezidapp.models.async_queue.DataciteQueue):
-        ref_id:ezidapp.models.identifier.RefIdentifier = task_model.refIdentifier
+    def _create_or_update(self, task_model: ezidapp.models.async_queue.DataciteQueue):
+        ref_id: ezidapp.models.identifier.RefIdentifier = task_model.refIdentifier
         # doi:10.1234/foo
         #     ^---------
-        doi:str = ref_id.identifier[4:]
+        doi: str = ref_id.identifier[4:]
         metadata = ref_id.metadata
         datacenter = str(ref_id.datacenter)
         r = impl.datacite.uploadMetadata(doi, {}, metadata, True, datacenter)

@@ -31,7 +31,7 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
     name = None
     _terminated = False
     _last_connection_reset = 0
-    _http_client_timeout = 30  #seconds, overridden by DAEMONS_HTTP_CLIENT_TIMEOUT
+    _http_client_timeout = 30  # seconds, overridden by DAEMONS_HTTP_CLIENT_TIMEOUT
 
     class _AbortException(Exception):
         pass
@@ -46,7 +46,10 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         try:
             self._http_client_timeout = django.conf.settings.DAEMONS_HTTP_CLIENT_TIMEOUT
         except AttributeError as e:
-            self.log.warning("No settings.DAEMONS_HTTP_CLIENT_TIMEOUT. Using default of %s", self._http_client_timeout)
+            self.log.warning(
+                "No settings.DAEMONS_HTTP_CLIENT_TIMEOUT. Using default of %s",
+                self._http_client_timeout,
+            )
         super().__init__()
 
     def _handleSignals(self, *args):
@@ -181,7 +184,6 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         else:
             raise AssertionError(f'Invalid operation: {task_model.operation}')
 
-
     def terminated(self):
         """Return True if the process has been signaled to terminate"""
         return self._terminated
@@ -206,8 +208,7 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         return time.time()
 
     def now_int(self):
-        '''Seconds since epoch as integer
-        '''
+        '''Seconds since epoch as integer'''
         return int(self.now())
 
     def sleep(self, duration_sec, check_terminated_sec=1.0):
