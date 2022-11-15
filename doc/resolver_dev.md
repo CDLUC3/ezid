@@ -16,6 +16,56 @@ the application.
 N2T reports approximately one resolution per second on average for 
 EZID identifiers over several months. The burst rate is not currently known.
 
+## Service Description
+
+Two types of operation are supported under the topic of identifier resolution: resolution and introspection (inflection).
+
+### Resolution
+
+```
+{BASE_URL}/{identifier}
+
+{identifier} = {scheme} + ":" + {value}
+```
+
+If the identifier scheme is "doi", the client is redirected to:
+
+```
+https://dx.doi.net/{value}
+```
+
+If the identifier scheme is "ark":
+
+```
+{value} = ["/"] + {NAAN} + ["/" + {suffix}]
+```
+
+If the value is not an EZID shoulder, the client is redirected to:
+
+```
+https://n2t.net/{identifier}
+```
+
+If the value is a shoulder managed by EZID:
+
+If the status is "R" ("Reserved"), a status code of 403 Forbidden is returned.
+
+If the status is "U" ("Unavailable"), a status code of 308 Permanent Redirect is returned with a Location header containing the tombstone page for that identifier. The tombstone page will typically be:
+
+```
+{BASE_URL}/tombstone/id/{identifier}
+```
+
+If the status is "P" ("Public"), a status code of 307 Temporary Redirect is returned with a Location header containing the registered Location value.
+
+
+
+### Introspection
+
+Identifier introspection provides metadata about the identifier rather than the identified resource.
+
+
+
 ## Initial Design
 
 Since the resolver does not update the database, it can be implemented
