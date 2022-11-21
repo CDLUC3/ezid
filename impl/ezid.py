@@ -13,6 +13,7 @@ normally.
 import logging
 import sys
 import threading
+import typing
 import uuid
 
 import django.conf
@@ -315,15 +316,18 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
         _releaseIdentifierLock(normalizedIdentifier, user.username)
 
 
-def resolveIdentifier(identifier):
-    nqidentifier = impl.util.normalizeIdentifier(identifier)
+def resolveIdentifier(identifier:str)->typing.Union[str, ezidapp.models.identifier.Identifier]:
+    '''
+    '''
+    nqidentifier = impl.util.normalizeIdentifier(identifier, assert_length=False)
     if nqidentifier is None:
         #TODO: verify this causes a 404
+        raise ValueError(f"Invalid identifier: {identifier}")
         return "error: bad request - invalid identifier"
-    # TODO: verify that lock should is not needed here.
     try:
         return ezidapp.models.identifier.resolveIdentifier(nqidentifier)
-    except ezidapp.models.identifier.Identifier.DoesNotExist:
+    except ezidapp.models.identifier.Identifier.DoesNotExist as e:
+        raise e
         return "error: bad request - no such identifier"
 
 

@@ -14,6 +14,7 @@ import re
 import shutil
 import sys
 import time
+import typing
 import types
 import xml.sax.saxutils
 
@@ -26,7 +27,7 @@ _doiPattern = re.compile('10\\.[1-9]\\d{3,4}/[!"$->@-~]+$')
 logger = logging.getLogger(__name__)
 
 
-def validateDoi(doi):
+def validateDoi(doi:str, assert_length:bool=True):
     """If the supplied string (e.g., "10.5060/foo") is a syntactically valid
     scheme-less DOI identifier, returns the canonical form of the identifier
     (namely, uppercased).
@@ -56,11 +57,12 @@ def validateDoi(doi):
         return None
     if "//" in doi or doi.endswith("/"):
         return None
-    # We should probably test the length of the shadow ARK as well (it
-    # may be longer than the DOI due to extra percent encoding), but
-    # don't at present.
-    if len(doi) > maxIdentifierLength - 4:
-        return None
+    if assert_length:
+        # We should probably test the length of the shadow ARK as well (it
+        # may be longer than the DOI due to extra percent encoding), but
+        # don't at present.
+        if len(doi) > maxIdentifierLength - 4:
+            return None
     return doi.upper()
 
 
@@ -91,7 +93,7 @@ def _normalizeArkPercentEncoding(m):
             return f"%{ord(s):02x}"
 
 
-def validateArk(ark):
+def validateArk(ark, assert_length:bool=True):
     """If the supplied string (e.g., "13030/foo") is a syntactically valid
     scheme-less ARK identifier, returns the canonical form of the identifier.
 
@@ -136,8 +138,9 @@ def validateArk(ark):
         s = _arkPattern5.sub(_normalizeArkPercentEncoding, s)
     except AssertionError:
         return None
-    if len(p) + len(s) > maxIdentifierLength - 5:
-        return None
+    if assert_length:
+        if len(p) + len(s) > maxIdentifierLength - 5:
+            return None
     return p + s
 
 
@@ -159,7 +162,7 @@ def validateUuid(id_str):
         return None
 
 
-def validateIdentifier(identifier):
+def validateIdentifier(identifier:str, assert_length:bool=True)->typing.Optional[str]:
     """If the supplied string is any type of qualified, syntactically valid
     identifier, returns the canonical form of the identifier.
 
@@ -168,13 +171,13 @@ def validateIdentifier(identifier):
     logger.debug('validateIdentifier(): {}'.format(identifier))
 
     if identifier.startswith("ark:/"):
-        s = validateArk(identifier[5:])
+        s = validateArk(identifier[5:], assert_length=assert_length)
         if s is not None:
             return "ark:/" + s
         else:
             return None
     elif identifier.startswith("doi:"):
-        s = validateDoi(identifier[4:])
+        s = validateDoi(identifier[4:], assert_length=assert_length)
         if s is not None:
             return "doi:" + s
         else:
@@ -318,7 +321,7 @@ def shadow2doi(ark):
 _shadowedDoiPattern = re.compile("ark:/[bcdfghjkmnpqrstvwxz]")  # see _arkPattern1 above
 
 
-def normalizeIdentifier(id_str):
+def normalizeIdentifier(id_str:str, assert_length:bool=True)->typing.Optional[str]:
     """Similar to 'validateIdentifier': if the supplied string is any type of
     qualified, syntactically valid identifier, returns the canonical form of
     the identifier.
@@ -329,7 +332,7 @@ def normalizeIdentifier(id_str):
     """
     logger.debug('normalizeIdentifier(): {}'.format(id_str))
 
-    id_str = validateIdentifier(id_str)
+    id_str = validateIdentifier(id_str, assert_length=assert_length)
     if id_str is None:
         return None
     if id_str.startswith("ark:/"):
@@ -348,7 +351,7 @@ def normalizeIdentifier(id_str):
         return id_str
 
 
-def explodePrefixes(id_str):
+def explodePrefixes(id_str:str)->list[str]:
     """Given a normalized, qualified identifier (e.g., "ark:/12345/x/yz"),
     returns a list of all prefixes of the identifier that are syntactically
     valid identifiers (e.g., ["ark:/12345/x", "ark:/12345/x/y",
@@ -368,7 +371,7 @@ def explodePrefixes(id_str):
     else:
         assert False, "unhandled case"
     l = []
-    for i in range(1, len(id) + 1):
+    for i in range(3, min(len(id), maxIdentifierLength) + 1):
         if predicate(id[:i]) == id[:i]:
             l.append(prefix + id[:i])
     return l

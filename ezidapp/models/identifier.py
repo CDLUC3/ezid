@@ -33,39 +33,6 @@ import impl.util2
 MAX_SEARCHABLE_TARGET_LENGTH = 255
 
 
-def resolveIdentifier(identifier):
-    """Returns the target for the specified identifier.
-
-    Prefix matching is always applied to support suffix pass through.
-    """
-    _l = list(
-        Identifier.objects.filter(
-            identifier__in=impl.util.explodePrefixes(identifier)
-        ).values('identifier', 'target')
-    )
-    if len(_l) > 0:
-        return max(_l, key=lambda si: len(si["identifier"]))
-    raise Identifier.DoesNotExist()
-
-
-def getIdentifier(identifier, prefixMatch=False):
-    if prefixMatch:
-        l = list(
-            Identifier.objects.select_related(
-                "owner", "owner__group", "ownergroup", "datacenter", "profile"
-            ).filter(identifier__in=impl.util.explodePrefixes(identifier))
-        )
-        if len(l) > 0:
-            return max(l, key=lambda si: len(si.identifier))
-        else:
-            raise Identifier.DoesNotExist()
-    else:
-        # TODO: Combine with the select_related above and apply filter in separate step
-        # if prefixmatch.
-        return Identifier.objects.select_related(
-            "owner", "owner__group", "ownergroup", "datacenter", "profile"
-        ).get(identifier=identifier)
-
 
 def getDefaultProfileLabel(identifier):
     """Return the label of the default metadata profile for a given qualified identifier."""
@@ -1220,3 +1187,38 @@ class RefIdentifier(IdentifierBase):
         # default='',
         # null=True,
     )
+
+
+def resolveIdentifier(identifier:str)->Identifier:
+    """Returns the target for the specified identifier.
+
+    Prefix matching is always applied to support suffix pass through.
+    """
+    _l = list(
+        Identifier.objects.filter(
+            identifier__in=impl.util.explodePrefixes(identifier)
+        )
+    )
+    if len(_l) > 0:
+        return max(_l, key=lambda si: len(si.identifier))
+    raise Identifier.DoesNotExist()
+
+
+def getIdentifier(identifier:str, prefixMatch:bool=False)->Identifier:
+    if prefixMatch:
+        l = list(
+            Identifier.objects.select_related(
+                "owner", "owner__group", "ownergroup", "datacenter", "profile"
+            ).filter(identifier__in=impl.util.explodePrefixes(identifier))
+        )
+        if len(l) > 0:
+            return max(l, key=lambda si: len(si.identifier))
+        else:
+            raise Identifier.DoesNotExist()
+    else:
+        # TODO: Combine with the select_related above and apply filter in separate step
+        # if prefixmatch.
+        return Identifier.objects.select_related(
+            "owner", "owner__group", "ownergroup", "datacenter", "profile"
+        ).get(identifier=identifier)
+

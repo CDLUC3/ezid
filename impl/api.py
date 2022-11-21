@@ -82,12 +82,15 @@ Identifier inflection (introspection):
   response body as for View an identifier
 """
 import cgi
+import datetime
 import json
 import logging
 import time
 
 import django.conf
 import django.http
+
+import ezidapp.models.identifier
 
 import impl.anvl
 import impl.datacite
@@ -99,7 +102,7 @@ import impl.statistics
 import impl.userauth
 import impl.util
 
-
+HTTP_DATE_FORMAT = "%a, %d %b %Y %H:%M:%S GMT"
 
 def _readInput(request):
     if not is_text_plain_utf8(request):
@@ -517,8 +520,8 @@ def pause(request):
     else:
         assert False, "unhandled case"
 
-def resolveIdentifier(request, identifier):
-    identifier = f"ark:{identifier}"
+def resolveDoiIdentifier(request, identifier:str) -> django.http.HttpResponse:
+    identifier = f"doi:{identifier}"
 
     # request has a double ??
     if request.META.get("QUERY_STRING", "") == "?":
@@ -526,7 +529,93 @@ def resolveIdentifier(request, identifier):
             identifier, prefixMatch=False
         )
         return _response(s, anvlBody=impl.anvl.format(r))
+    msg = {"id":identifier}
+    try:
+        res = impl.ezid.resolveIdentifier(identifier)
+        #c = json.dumps(res, indent=2)
+        #return django.http.HttpResponseRedirect(res.resolverTarget, content=c, content_type="application/json; charset=utf-8")
+        return django.http.HttpResponseRedirect(res.resolverTarget)
+    except ValueError:
+        # invalid identifier
+        msg["error"] = "Invalid or unrecognized identifier."
+    except ezidapp.models.identifier.Identifier.DoesNotExist:
+        # identifier not found here
+        msg["error"] = "Not found."
+        msg["alternate"] = f"https://n2t.net/{identifier}"
+    return django.http.HttpResponseNotFound(json.dumps(msg),content_type="application/json; charset=utf-8")
 
-    res = impl.ezid.resolveIdentifier(identifier)
-    c = json.dumps(res, indent=2)
-    return django.http.HttpResponseRedirect(res['target'], content=c, content_type="application/json; charset=utf-8")
+
+def resolveArkIdentifier(request, identifier:str) -> django.http.HttpResponse:
+    '''
+    Performs ARK identifier resolution.
+
+    identifier is the path portion of the request after 'ark:'.
+
+    If an EZID identifier, shoulder, or super shoulder matches the start of
+    the identifier string, then:
+      if the request query contains a single "?"
+        return infection info on the matched entry
+      else
+        return a redirect to the identifier.
+
+    The redirect URL is the request "identifier [+ querystring]" appended to the
+    identifier target. If the identifier is flagged as unavailable, then the
+    tombstone page is the redirect target.
+
+    The Last-Modified header of the response is set to the date updated of the
+    matching identifier.
+
+    The response content body is a JSON block containing the keys:
+      id: The matched identifier value
+      suffix: The suffix portion of the request, including query string if any
+      location: The redirection target URL
+      modified: The identifier date updated value
+
+    If the identifier is invalid, then a 404 response is returned, with a JSON body
+    with the keys:
+      id: The requested identifier value
+      error: A brief description of the reason
+
+    If the identifier is valid but not present or reserved, a 404 response is
+    returned with a JSON body contining the keys:
+      id: The requested identifier value
+      error: "Not found."
+      alternate: A suggested alternate location to try (N2T url)
+    '''
+    identifier = f"ark:{identifier}"
+    # request has a double ??
+    if request.META.get("QUERY_STRING", "") == "?":
+        s, r = impl.ezid.getMetadata(
+            identifier, prefixMatch=False
+        )
+        return _response(s, anvlBody=impl.anvl.format(r))
+    msg = {"id":identifier}
+    try:
+        res = impl.ezid.resolveIdentifier(identifier)
+        t_modified = datetime.datetime.fromtimestamp(res.updateTime, tz=datetime.timezone.utc)
+        headers = {
+            "Last-Modified": t_modified.strftime(HTTP_DATE_FORMAT)
+        }
+        if res.isReserved:
+            raise Exception
+        msg["id"] = res.identifier
+        qstr = ""
+        if request.META.get("QUERY_STRING",None) is not None:
+            qstr = f"?{request.META.get('QUERY_STRING','')}"
+        full_request_str = f"{identifier}{qstr}"
+        msg["suffix"] = full_request_str.replace(res.identifier, '')
+        msg['location'] = f"{res.resolverTarget}{msg['suffix']}"
+        msg['modified'] = t_modified.isoformat()
+        _body = json.dumps(msg, indent=2)
+        return django.http.HttpResponseRedirect(msg["location"], headers=headers, content=_body, content_type="application/json; charset=utf-8")
+    except ValueError:
+        # invalid identifier
+        msg["error"] = "Invalid or unrecognized identifier."
+    except ezidapp.models.identifier.Identifier.DoesNotExist:
+        # identifier not found here
+        msg["error"] = "Not found."
+        msg["alternate"] = f"https://n2t.net/{identifier}"
+    except:
+        msg["error"] = "Not found."
+    return django.http.HttpResponseNotFound(json.dumps(msg),content_type="application/json; charset=utf-8")
+
