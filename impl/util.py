@@ -351,7 +351,7 @@ def normalizeIdentifier(id_str:str, assert_length:bool=True)->typing.Optional[st
         return id_str
 
 
-def explodePrefixes(id_str:str)->list[str]:
+def explodePrefixes(id_str:str)->typing.Sequence[str]:
     """Given a normalized, qualified identifier (e.g., "ark:/12345/x/yz"),
     returns a list of all prefixes of the identifier that are syntactically
     valid identifiers (e.g., ["ark:/12345/x", "ark:/12345/x/y",
