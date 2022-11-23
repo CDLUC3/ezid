@@ -1,32 +1,58 @@
-# Resolver Development
+# EZID Identifier Resolution
 
-Notes on design and implementation of identifier resolution 
-capability within the EZID application. These notes are for 
-design purposes. Actual implementation may vary.
+EZID supports minting identifiers, the binding of an identifier to a target, and resolution of the target given an identifier.
 
+The EZID resolver endpoint is the base URL of the EZID service. For example, the base URL of the production EZID instance is `https://ezid.cdlib.org/`, so production identifiers may be resolved using the pattern `https://ezid.cdlib.org/{IDENTIFIER}` where `{IDENTIFIER}` is an identifier value such as `ark:/99999/fk43n3kd35`. 
 
-## Goal 
-
-To support resolution of any identifier minted by the EZID application.
-
-Identifier resolution is currently handled by N2T.net. The EZID application 
-should provide at least equivalent capability for identifiers minted through 
-the application.
-
-N2T reports approximately one resolution per second on average for 
-EZID identifiers over several months. The burst rate is not currently known.
-
-## Service Description
-
-Two types of operation are supported under the topic of identifier resolution: resolution and introspection (inflection).
-
-### Resolution
+The resolver service supports suffix pass-through. A suffix appended to an identifier is "passed through" to the resolved target URL. For example, given a registered identifier of `ark:99999/fk4foo` bound to `https://example.org/test/`, a request such as:
 
 ```
-{BASE_URL}/{identifier}
-
-{identifier} = {scheme} + ":" + {value}
+https://ezid.cdlib.org/ark:99999/fk4fooExtra?portion=hello
 ```
+
+would resolve to:
+
+```
+https://example.org/test/Extra?portion=hello
+```
+
+## Resolution
+
+A complete description of the resolve service behavior follows.
+
+Given a request:
+```
+{BASE_URL}/{request_identifier}
+```
+
+the following parts are parsed:
+```
+{request_identifier} = {scheme} + ":" + {value} [+ {suffix}] [+"??"]
+```
+
+where:
+
+`scheme` is one of `ark` or `doi`<br />
+`value` is an identifier value in EZID<br />
+`suffix` 0..n characters after the `value`<br />
+`??` signifies an inflection request<br />
+
+Resolution proceeds in the following manner:
+
+1. `request_identifier` is normalized to `normalized_identifier_request` according the rules of `scheme`
+2. If `normalized_identifier_request` does not appear to be a valid identifier, a `404 Not Found` response is returned.
+3. A prefix search is performed to determine the `registered_identifier` that matches the start of `normalized_identifier_request`
+4. If a `registered_identifier` is not found, a `404 Not Found` error is returned.
+5. If `registered_identifier` has `RESERVED` status, a `404 Not Found` error i s returned.
+6. If `registered_identifier` has an `UNAVAILABLE` status, a HTTP 302 Temporary Redirect is returned with `Location` being the tombstone page for the identifier.
+7. `suffix` is the string remaining after subtracting `identifier` from the start of the string. This may include a query portion, i.e. key-value pairs.
+8. `Location` is constructed as `identifier.target + suffix`
+9. A HTTP `302 Temporary Redirect` response is returned, with `Location`. A response body of `JSON` is included, and the `Last-Modified` response header is set to the time that the record was last updated.
+
+
+
+
+
 
 If the identifier scheme is "doi", the client is redirected to:
 
@@ -60,7 +86,7 @@ If the status is "P" ("Public"), a status code of 307 Temporary Redirect is retu
 
 
 
-### Introspection
+### Inflection
 
 Identifier introspection provides metadata about the identifier rather than the identified resource.
 
