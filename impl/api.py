@@ -600,7 +600,7 @@ def resolveArkIdentifier(request, identifier:str) -> django.http.HttpResponse:
             raise Exception
         msg["id"] = res.identifier
         qstr = ""
-        if request.META.get("QUERY_STRING",None) is not None:
+        if len(request.META.get("QUERY_STRING",'')) > 0:
             qstr = f"?{request.META.get('QUERY_STRING','')}"
         full_request_str = f"{identifier}{qstr}"
         msg["suffix"] = full_request_str.replace(res.identifier, '')
