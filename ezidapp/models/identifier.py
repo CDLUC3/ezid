@@ -339,6 +339,7 @@ class IdentifierBase(django.db.models.Model):
     # exporting it to external indexing and harvesting services.
     # Although this flag may be set independently of the status, in fact
     # it has effect only if the status is public.
+    # This field is toggled by the index field in demo/advanced
     exported = django.db.models.BooleanField(default=True)
 
     # datacenter = django.db.models.ForeignKey(datacenter.Datacenter,
