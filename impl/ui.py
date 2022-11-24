@@ -194,7 +194,8 @@ def tombstone(request):
             c2 = lxml.etree.SubElement(row, "td", attrib={"class": "dcms_value"})
             c2.text = status
             root.append(row)
-            md = lxml.etree.tostring(root)
+            # lxml tostring returns bytes
+            md = lxml.etree.tostring(root).decode()
     if not htmlMode:
         # This echoes the Merritt hack above.
         if m["_profile"] == "erc" and m.get("erc", "").strip() != "":
