@@ -137,7 +137,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
             if d > 0:
                 self.send_header("Retry-After", str(d))
         self.end_headers()
-        self.wfile.write(content)
+        self.wfile.write(content.encode())
         self.wfile.flush()
 
     def do_GET(self):
