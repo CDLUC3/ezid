@@ -232,7 +232,6 @@ class DownloadQueue(django.db.models.Model):
         default=CREATE,
     )
 
-
     # The index into toHarvest of the user currently being harvested.
     # HARVEST stage only.
     currentIndex = django.db.models.IntegerField(default=0)

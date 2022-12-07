@@ -22,7 +22,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     setting = 'DAEMONS_BINDER_ENABLED'
     queue = ezidapp.models.async_queue.BinderQueue
 
-    def create(self, task_model):
+    def create(self, task_model: ezidapp.models.async_queue.BinderQueue):
         """
         Creates an entry in N2T for a new identifier.
         The fields to be set are described in the N2T API documentation:
@@ -37,12 +37,13 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         """
         id_str = task_model.refIdentifier.identifier
         self.log.info("CREATE: %s", id_str)
-        metadata = task_model.refIdentifier.metadata
+        ##metadata = task_model.refIdentifier.metadata
         # add the required target metadata:
-        metadata["_t"] = task_model.refIdentifier.target
+        ##metadata["_t"] = task_model.refIdentifier.target
+        metadata = task_model.refIdentifier.toLegacy()
         impl.noid_egg.setElements(id_str, metadata)
 
-    def update(self, task_model):
+    def update(self, task_model: ezidapp.models.async_queue.BinderQueue):
         '''
         task_model: BinderQueue
 
@@ -50,9 +51,10 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         new fields oor fields that have changed values.
         '''
         id_str = task_model.refIdentifier.identifier
-        metadata = task_model.refIdentifier.metadata
-        # add the required target metadata:
-        metadata["_t"] = task_model.refIdentifier.target
+        ##metadata = task_model.refIdentifier.metadata
+        ### add the required target metadata:
+        ##metadata["_t"] = task_model.refIdentifier.target
+        metadata = task_model.refIdentifier.toLegacy()
         self.log.info("UPDATE: %s", id_str)
 
         # Retrieve the existing metadata from N2T
@@ -78,7 +80,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         if len(m) > 0:
             impl.noid_egg.setElements(id_str, m)
 
-    def delete(self, task_model):
+    def delete(self, task_model: ezidapp.models.async_queue.BinderQueue):
         id_str = task_model.refIdentifier.identifier
         impl.noid_egg.deleteIdentifier(id_str)
 
