@@ -50,9 +50,9 @@ p.big { font-size: 200%% }
 </head>
 <body>
 %s<p class="big">%s</p>
-<p>EZID's regularly scheduled maintenance window is Sunday <a
-href="http://www.thetimezoneconverter.com/?t=8:00am&amp;tz=Oakland">8:00am</a>&ndash;<a
-href="http://www.thetimezoneconverter.com/?t=9:00am&amp;tz=Oakland">9:00am</a>
+<p>EZID's regularly scheduled maintenance window is Thursday <a
+href="http://www.thetimezoneconverter.com/?t=5:00am&amp;tz=Oakland">5:00am</a>&ndash;<a
+href="http://www.thetimezoneconverter.com/?t=6:00am&amp;tz=Oakland">6:00am</a>
 Pacific time.</p>
 </body>
 </html>
@@ -137,7 +137,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
             if d > 0:
                 self.send_header("Retry-After", str(d))
         self.end_headers()
-        self.wfile.write(content)
+        self.wfile.write(content.encode())
         self.wfile.flush()
 
     def do_GET(self):
