@@ -104,6 +104,18 @@ import impl.util
 
 HTTP_DATE_FORMAT = "%a, %d %b %Y %H:%M:%S GMT"
 
+
+def _parseAccept(request):
+    '''
+    Parse request Accept header and return a list of types
+    in order of preference
+    '''
+    # From django-rest-framework/negotiation
+    header = request.META.get('HTTP_ACCEPT', '*/*')
+    tokens = [token.strip() for token in header.split(',')]
+    
+    pass
+
 def _readInput(request):
     if not is_text_plain_utf8(request):
         return (
@@ -173,6 +185,7 @@ def _validateOptions(request, options):
             )
     return d
 
+
 STATUS_CODE_MAP = [
     ("success:", 200),
     ("error: bad request", 400),
@@ -183,6 +196,7 @@ STATUS_CODE_MAP = [
     ("error: concurrency limit exceeded", 503),
 ]
 
+
 def _statusMapping(content, createRequest):
     '''
     Map a response string to a response status code.
@@ -192,7 +206,7 @@ def _statusMapping(content, createRequest):
     '''
     for test, code in STATUS_CODE_MAP:
         if content.startswith(test):
-            if code==200 and createRequest:
+            if code == 200 and createRequest:
                 # per API docs, successful create returns 201
                 return 201
             return code
@@ -520,20 +534,26 @@ def pause(request):
     else:
         assert False, "unhandled case"
 
-def resolveDoiIdentifier(request, identifier:str) -> django.http.HttpResponse:
-    identifier = f"doi:{identifier}"
 
-    # request has a double ??
-    if request.META.get("QUERY_STRING", "") == "?":
-        s, r = impl.ezid.getMetadata(
-            identifier, prefixMatch=False
-        )
+def _isInflectionRequest(request: django.http.HttpRequest) -> bool:
+    # request has a double ?? or ?info
+    if request.META.get("QUERY_STRING", "") in ["?", "info"]:
+        return True
+    return False
+
+
+def resolveDoiIdentifier(
+    request: django.http.HttpRequest, identifier: str
+) -> django.http.HttpResponse:
+    identifier = f"doi:{identifier}"
+    if _isInflectionRequest(request):
+        s, r = impl.ezid.getMetadata(identifier, prefixMatch=False)
         return _response(s, anvlBody=impl.anvl.format(r))
-    msg = {"id":identifier}
+    msg = {"id": identifier}
     try:
         res = impl.ezid.resolveIdentifier(identifier)
-        #c = json.dumps(res, indent=2)
-        #return django.http.HttpResponseRedirect(res.resolverTarget, content=c, content_type="application/json; charset=utf-8")
+        # c = json.dumps(res, indent=2)
+        # return django.http.HttpResponseRedirect(res.resolverTarget, content=c, content_type="application/json; charset=utf-8")
         return django.http.HttpResponseRedirect(res.resolverTarget)
     except ValueError:
         # invalid identifier
@@ -542,10 +562,14 @@ def resolveDoiIdentifier(request, identifier:str) -> django.http.HttpResponse:
         # identifier not found here
         msg["error"] = "Not found."
         msg["alternate"] = f"https://n2t.net/{identifier}"
-    return django.http.HttpResponseNotFound(json.dumps(msg),content_type="application/json; charset=utf-8")
+    return django.http.HttpResponseNotFound(
+        json.dumps(msg), content_type="application/json; charset=utf-8"
+    )
 
 
-def resolveArkIdentifier(request, identifier:str) -> django.http.HttpResponse:
+def resolveArkIdentifier(
+    request: django.http.HttpRequest, identifier: str
+) -> django.http.HttpResponse:
     '''
     Performs ARK identifier resolution.
 
@@ -583,31 +607,31 @@ def resolveArkIdentifier(request, identifier:str) -> django.http.HttpResponse:
       alternate: A suggested alternate location to try (N2T url)
     '''
     identifier = f"ark:{identifier}"
-    # request has a double ??
-    if request.META.get("QUERY_STRING", "") == "?":
-        s, r = impl.ezid.getMetadata(
-            identifier, prefixMatch=False
-        )
+    if _isInflectionRequest(request):
+        s, r = impl.ezid.getMetadata(identifier, prefixMatch=False)
         return _response(s, anvlBody=impl.anvl.format(r))
-    msg = {"id":identifier}
+    msg = {"id": identifier}
     try:
         res = impl.ezid.resolveIdentifier(identifier)
         t_modified = datetime.datetime.fromtimestamp(res.updateTime, tz=datetime.timezone.utc)
-        headers = {
-            "Last-Modified": t_modified.strftime(HTTP_DATE_FORMAT)
-        }
+        headers = {"Last-Modified": t_modified.strftime(HTTP_DATE_FORMAT)}
         if res.isReserved:
             raise Exception
         msg["id"] = res.identifier
         qstr = ""
-        if len(request.META.get("QUERY_STRING",'')) > 0:
+        if len(request.META.get("QUERY_STRING", '')) > 0:
             qstr = f"?{request.META.get('QUERY_STRING','')}"
         full_request_str = f"{identifier}{qstr}"
         msg["suffix"] = full_request_str.replace(res.identifier, '')
         msg['location'] = f"{res.resolverTarget}{msg['suffix']}"
         msg['modified'] = t_modified.isoformat()
         _body = json.dumps(msg, indent=2)
-        return django.http.HttpResponseRedirect(msg["location"], headers=headers, content=_body, content_type="application/json; charset=utf-8")
+        return django.http.HttpResponseRedirect(
+            msg["location"],
+            headers=headers,
+            content=_body,
+            content_type="application/json; charset=utf-8",
+        )
     except ValueError:
         # invalid identifier
         msg["error"] = "Invalid or unrecognized identifier."
@@ -617,5 +641,6 @@ def resolveArkIdentifier(request, identifier:str) -> django.http.HttpResponse:
         msg["alternate"] = f"https://n2t.net/{identifier}"
     except:
         msg["error"] = "Not found."
-    return django.http.HttpResponseNotFound(json.dumps(msg),content_type="application/json; charset=utf-8")
-
+    return django.http.HttpResponseNotFound(
+        json.dumps(msg), content_type="application/json; charset=utf-8"
+    )
