@@ -1,10 +1,28 @@
 # EZID Identifier Resolution
 
-EZID supports minting identifiers, the binding of an identifier to a target, and resolution of the target given an identifier.
+EZID supports minting identifiers, the binding of an identifier to a target, and resolving an identifier to its target. This document describes EZID identifier resolution.
 
-The EZID resolver endpoint is the base URL of the EZID service. For example, the base URL of the production EZID instance is `https://ezid.cdlib.org/`, so production identifiers may be resolved using the pattern `https://ezid.cdlib.org/{IDENTIFIER}` where `{IDENTIFIER}` is an identifier value such as `ark:/99999/fk43n3kd35`. 
+A resolution request is made by sending a HTTP GET request to the EZID resolver service, and including the identifier in the request URL as a path parameter. The EZID resolver service endpoint is the base URL of the EZID service. For example, the base URL of the EZID staging instance is:
 
-The resolver service supports suffix pass-through. A suffix appended to an identifier is "passed through" to the resolved target URL. For example, given a registered identifier of `ark:99999/fk4foo` bound to `https://example.org/test/`, a request such as:
+```
+https://ezid-stg.cdlib.org/
+```
+
+Hence, identifiers in the staging environment may be resolved using the pattern:
+
+```
+https://ezid-stg.cdlib.org/{IDENTIFIER}
+```
+
+where `{IDENTIFIER}` is an identifier value such as `ark:/99999/fk43n3kd35` or `doi:10.12345/fk48823`. 
+
+ARK identifier resolution is handled by the EZID service. Resolution requests for ARK identifiers not registered with the EZID service are forwarded to N2T for resolution.
+
+DOI identifier resolution requests are handled by delegating to the DOI service resolver, https://doi.org/.
+
+## Suffix pass-through
+
+The EZID resolver service supports suffix pass-through whereby a suffix appended to an identifier is "passed through" to the resolved target URL. For example, given a registered identifier of `ark:99999/fk4foo` bound to `https://example.org/test/`, a request such as:
 
 ```
 https://ezid.cdlib.org/ark:99999/fk4fooExtra?portion=hello
@@ -16,7 +34,19 @@ would resolve to:
 https://example.org/test/Extra?portion=hello
 ```
 
-## Resolution
+Since the extra characters `Extra?portion=hello` are not part of the identifier and so form the suffix for the pass-through.
+
+
+## Inflection
+
+The service supports inflection to provide metadata about the identifier or portion thereof. Inflection is invoked by appending `?info` or two question characters (i.e. `??`) in a request to the resolver url. The response is the same as a request to the `/id/` endpoint of the EZID service. Inflection is supported for both ARK and DOI identifiers registered through EZID.
+
+## Content negotiation
+
+The EZID service is currently agnostic with respect to content negotiation requests since there is no distinction recorded in EZID for target urls and content type. Such capability may be offered by the resolved target.
+
+
+## Resolution technical description
 
 A complete description of the resolve service behavior follows.
 
@@ -27,7 +57,7 @@ Given a request:
 
 the following parts are parsed:
 ```
-{request_identifier} = {scheme} + ":" + {value} [+ {suffix}] [+"??"]
+{request_identifier} = {scheme} + ":" + {value} [+ {suffix}] [+ "?info" | "??"]
 ```
 
 where:
@@ -35,19 +65,22 @@ where:
 `scheme` is one of `ark` or `doi`<br />
 `value` is an identifier value in EZID<br />
 `suffix` 0..n characters after the `value`<br />
-`??` signifies an inflection request<br />
+`?info` or `??` signifies an inflection request<br />
 
 Resolution proceeds in the following manner:
 
-1. `request_identifier` is normalized to `normalized_identifier_request` according the rules of `scheme`
-2. If `normalized_identifier_request` does not appear to be a valid identifier, a `404 Not Found` response is returned.
-3. A prefix search is performed to determine the `registered_identifier` that matches the start of `normalized_identifier_request`
-4. If a `registered_identifier` is not found, a `404 Not Found` error is returned.
-5. If `registered_identifier` has `RESERVED` status, a `404 Not Found` error i s returned.
-6. If `registered_identifier` has an `UNAVAILABLE` status, a HTTP 302 Temporary Redirect is returned with `Location` being the tombstone page for the identifier.
-7. `suffix` is the string remaining after subtracting `identifier` from the start of the string. This may include a query portion, i.e. key-value pairs.
-8. `Location` is constructed as `identifier.target + suffix`
-9. A HTTP `302 Temporary Redirect` response is returned, with `Location`. A response body of `JSON` is included, and the `Last-Modified` response header is set to the time that the record was last updated.
+1. `request_identifier` is split to `{scheme}`, `{identifier_value}`, and `{scheme}` is converted to lowercase.
+2. If `{request_identifier}` ends with `?info` or `??` the 
+3. If `scheme` is `"doi"` a 302 redirect with location `"https://doi.org/{value}/{suffix}"` is returned. 
+4. `request_identifier` is normalized to `normalized_identifier_request` according the rules of `scheme`
+5. If `normalized_identifier_request` does not appear to be a valid identifier, a `404 Not Found` response is returned.
+6. A prefix search is performed to determine the `registered_identifier` that matches the start of `normalized_identifier_request`
+7. If a `registered_identifier` is not found, a `404 Not Found` error is returned.
+8. If `registered_identifier` has `RESERVED` status, a `404 Not Found` error i s returned.
+9. If `registered_identifier` has an `UNAVAILABLE` status, a HTTP 302 Temporary Redirect is returned with `Location` being the tombstone page for the identifier.
+10. `suffix` is the string remaining after subtracting `identifier` from the start of the string. This may include a query portion, i.e. key-value pairs.
+11. `Location` is constructed as `identifier.target + suffix`
+12. A HTTP `302 Temporary Redirect` response is returned, with `Location`. A response body of `JSON` is included, and the `Last-Modified` response header is set to the time that the record was last updated.
 
 
 
