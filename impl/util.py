@@ -1,7 +1,8 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-"""Utility functions
+"""Utility functions.
+
 """
 
 import base64
@@ -18,13 +19,17 @@ import typing
 import types
 import xml.sax.saxutils
 
+import django.conf
 import lxml.etree
 
 maxIdentifierLength = 255
 
 _doiPattern = re.compile('10\\.[1-9]\\d{3,4}/[!"$->@-~]+$')
+# A more general pattern for resolver
+_general_doi_pattern = re.compile('10\\.[1-9]\\d{3,6}/[!"$->@-~]+$')
 
 logger = logging.getLogger(__name__)
+
 
 
 def validateDoi(doi:str, assert_length:bool=True):
@@ -115,10 +120,15 @@ def validateArk(ark, assert_length:bool=True):
 
     assert isinstance(ark, str)
 
-    logger.debug('validateArk(): {}'.format(ark))
+    _mname = ""
+    if django.conf.settings.DEBUG:
+        _mname = f"{__name__}.{sys._getframe().f_code.co_name}"
+        logger.debug("%s: %s", _mname, ark)
 
     m = _arkPattern1.match(ark)
     if not m or ark[-1] == "\n":
+        if django.conf.settings.DEBUG:
+            logger.debug("%s: %s Failed pattern 1 match", _mname, ark)
         return None
     p = m.group(1)
     s = m.group(2)
@@ -126,20 +136,28 @@ def validateArk(ark, assert_length:bool=True):
     s = s.replace("-", "")
     # Dissimilar adjacent structural characters are not allowed.
     if _arkPattern2.search(s):
+        if django.conf.settings.DEBUG:
+            logger.debug("%s: %s Failed pattern 2 match", _mname, ark)
         return None
     # Consolidate adjacent structural characters.
     s = _arkPattern3.sub("\\1", s)
     # Eliminate leading and trailing structural characters.
     s = _arkPattern4.sub("", s)
     if len(s) == 0:
+        if django.conf.settings.DEBUG:
+            logger.debug("%s: %s Failed pattern 4 match", _mname, ark)
         return None
     # Normalize percent-encodings.
     try:
         s = _arkPattern5.sub(_normalizeArkPercentEncoding, s)
     except AssertionError:
+        if django.conf.settings.DEBUG:
+            logger.debug("%s: %s Failed percent encoding test", _mname, ark)
         return None
     if assert_length:
         if len(p) + len(s) > maxIdentifierLength - 5:
+            if django.conf.settings.DEBUG:
+                logger.debug("%s: %s Failed max length test", _mname, ark)
             return None
     return p + s
 
@@ -168,7 +186,8 @@ def validateIdentifier(identifier:str, assert_length:bool=True)->typing.Optional
 
     Otherwise, returns None.
     """
-    logger.debug('validateIdentifier(): {}'.format(identifier))
+    if django.conf.settings.DEBUG:
+        logger.debug("%s.%s: %s", __name__, sys._getframe().f_code.co_name, identifier)
 
     if identifier.startswith("ark:/"):
         s = validateArk(identifier[5:], assert_length=assert_length)
@@ -329,8 +348,12 @@ def normalizeIdentifier(id_str:str, assert_length:bool=True)->typing.Optional[st
     However, if the identifier is a shadow ARK, this function instead
     returns (the canonical form of) the shadowed identifier. On any
     kind of error, returns None.
+
+    Note: 2023 - this method does not actually normalize an identifier, it's just a
+    wrapper around the identifier validation.
     """
-    logger.debug('normalizeIdentifier(): {}'.format(id_str))
+    if django.conf.settings.DEBUG:
+        logger.debug("%s.%s: %s", __name__, sys._getframe().f_code.co_name, id_str)
 
     id_str = validateIdentifier(id_str, assert_length=assert_length)
     if id_str is None:
@@ -350,6 +373,43 @@ def normalizeIdentifier(id_str:str, assert_length:bool=True)->typing.Optional[st
     else:
         return id_str
 
+def normalize_doi_value(pid:str) -> dict:
+    parts = pid.split("/")
+    return {
+        "scheme": "doi",
+        "prefix": parts[0],
+        "suffix": pid
+    }
+
+
+def normalize_ark_value(pid:str) -> dict:
+    parts = pid.split("/")
+    naan = parts[0].lower()
+    suffix = None
+    if len(parts) > 1:
+        suffix = parts[1].replace("-","")
+    return {
+        "scheme":"ark",
+        "value":"/".join((naan, suffix,))
+    }
+    pass
+
+
+def actually_normalize_identifier(pid: str) -> str:
+    """Normalizes an identifier according to the corresponding scheme rules.
+    """
+    if django.conf.settings.DEBUG:
+        logger.debug("%s.%s: %s", __name__, sys._getframe().f_code.co_name, pid)
+    parts = pid.split(":",1)
+    scheme = parts[0].lower()
+    value = parts[1].strip()
+    value = value.lstrip("/")
+    if scheme == "doi":
+        return normalize_doi_value(value)
+    if scheme == "ark":
+        return normalize_ark_value(value)
+    raise ValueError(f"{pid} is not an ark or doi.")
+
 
 def explodePrefixes(id_str:str)->typing.Sequence[str]:
     """Given a normalized, qualified identifier (e.g., "ark:/12345/x/yz"),
@@ -358,21 +418,25 @@ def explodePrefixes(id_str:str)->typing.Sequence[str]:
     "ark:/12345/x/yz"])."""
     if id_str.startswith("ark:/"):
         id = id_str[5:]
-        predicate = validateArk
+        validator_method = validateArk
         prefix = "ark:/"
     elif id_str.startswith("doi:"):
         id = id_str[4:]
-        predicate = validateDoi
+        validator_method = validateDoi
         prefix = "doi:"
     elif id_str.startswith("uuid:"):
         id = id_str[5:]
-        predicate = validateUuid
+        validator_method = validateUuid
         prefix = "uuid:"
     else:
-        assert False, "unhandled case"
+        raise ValueError("explodePrefixes, unhandled case")
     l = []
-    for i in range(3, min(len(id), maxIdentifierLength) + 1):
-        if predicate(id[:i]) == id[:i]:
+    # position of the "/" plus the next char
+    slash_pos = id.find("/") + 2
+    if slash_pos < 3:
+        slash_pos = 3
+    for i in range(slash_pos, min(len(id), maxIdentifierLength) + 1):
+        if validator_method(id[:i]) == id[:i]:
             l.append(prefix + id[:i])
     return l
 

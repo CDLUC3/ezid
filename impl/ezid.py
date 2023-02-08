@@ -319,6 +319,10 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
 def resolveIdentifier(identifier:str)->typing.Union[str, ezidapp.models.identifier.Identifier]:
     '''
     '''
+    L = logging.getLogger()
+    if django.conf.settings.DEBUG:
+        L.debug("%s.%s: %s", __name__, sys._getframe().f_code.co_name, identifier)
+
     nqidentifier = impl.util.normalizeIdentifier(identifier, assert_length=False)
     if nqidentifier is None:
         #TODO: verify this causes a 404

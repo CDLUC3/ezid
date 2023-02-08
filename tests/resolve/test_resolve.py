@@ -23,21 +23,26 @@ def call_resolve(identifier, accept=None):
     }
     if accept is not None:
         headers['Accept'] = accept
-    response = requests.get(url, headers=headers, timeout=TIMEOUT_SEC)
+    response = requests.get(url, headers=headers, timeout=TIMEOUT_SEC, allow_redirects=False)
     return {
         'status': response.status_code,
         'media-type': response.headers.get('content-type', None),
         'text': response.text,
+        'location': response.headers.get("Location"),
     }
 
 
 @pytest.mark.parametrize("val,expected",[
-    ('ark:/87607/c7gf0pc7k',(200,"","")),
-    ('ark:/87607/c7gf0pc7k?', (200, "", "")),
+    ('ark:/87607/',(404,"","")),
+    ('ark:/87607/c7gf0pc7',(404,"","")),
+    ('ark:/87607/c7gf0pc7k',(302,"","")),
+    ('ark:/87607/c7gf0pc7k?', (302, "", "")),
     ('ark:/87607/c7gf0pc7k??', (200, "", "")),
-    ('ark:/87607/c7gf0pc7k?info', (200, "", ""))
+    ('ark:/87607/c7gf0pc7k?info', (200, "", "")),
+    ('ark:/87607/c7gf0pc7k_extra', (302, "", "")),
+    ('ark:/87607/c7gf0pc7k%20extra', (302, "", "")),
 ])
 def test_existing(val,expected):
     res = call_resolve(val)
     assert res['status'] == expected[0]
-    _L.debug(res['text'])
+    _L.debug(res['location'])
