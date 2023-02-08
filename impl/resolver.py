@@ -69,7 +69,7 @@ class ArkIdentifierStruct(IdentifierStruct):
             return f"{self.scheme}:/{self.prefix}/{self.suffix}"
         return f"{self.scheme}:/{self.prefix}/"
 
-    def potential_matches(self) -> list[str]:
+    def potential_matches(self) -> typing.List[str]:
         res = []
         if self.suffix is None:
             return res
