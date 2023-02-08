@@ -32,7 +32,7 @@ class IdentifierStruct:
             return f"{self.prefix}/{self.suffix}"
         return f"{self.prefix}/"
 
-    def potential_matches(self) -> list[str]:
+    def potential_matches(self) -> typing.List[str]:
         res = []
         if self.suffix is None:
             return res
@@ -43,7 +43,7 @@ class IdentifierStruct:
             res.append(f"{self.scheme}{sep}{self.prefix}/{self.suffix[:i]}")
         return res
 
-    def find_record(self, fields:typing.Optional[list[str]]=None) -> ezidapp.models.identifier.Identifier:
+    def find_record(self, fields:typing.Optional[typing.List[str]]=None) -> ezidapp.models.identifier.Identifier:
         _matches = ezidapp.models.identifier.Identifier.objects.filter(
                 identifier__in=self.potential_matches()
             )
