@@ -1195,6 +1195,7 @@ def resolveIdentifier(identifier:str)->Identifier:
 
     Prefix matching is always applied to support suffix pass through.
     """
+
     _l = list(
         Identifier.objects.filter(
             identifier__in=impl.util.explodePrefixes(identifier)
