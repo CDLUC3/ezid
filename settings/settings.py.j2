@@ -230,7 +230,7 @@ logging.config.dictConfig(
         },
         'handlers': {
             'console': {
-                'level': 'DEBUG',
+                'level': '{{ log_level }}',
                 'class': 'logging.StreamHandler',
                 'formatter': 'verbose',
                 'stream': sys.stdout,
