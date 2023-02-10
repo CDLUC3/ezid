@@ -236,19 +236,19 @@ logging.config.dictConfig(
                 'stream': sys.stdout,
             },
             'request_log': {
-                'level': 'DEBUG',
+                'level': '{{ log_level }}',
                 'class': 'logging.FileHandler',
                 'filename': LOG_DIR / 'request.log',
                 'formatter': 'simple',
             },
             'trace_log': {
-                'level': 'DEBUG',
+                'level': '{{ log_level }}',
                 'class': 'logging.FileHandler',
                 'filename': LOG_DIR / 'trace.log',
                 'formatter': 'trace',
             },
             'ecs_json': {
-                'level': 'DEBUG',
+                'level': '{{ log_level }}',
                 'class': 'logging.FileHandler',
                 'filename': LOG_DIR / 'ecs_json.log',
                 'formatter': "ecs_logging",
@@ -262,17 +262,15 @@ logging.config.dictConfig(
             '': {
                 'handlers': ['request_log', 'trace_log', 'ecs_json'],
                 'propagate': True,
-                'level': 'DEBUG',
+                'level': '{{ log_level }}',
             },
             # Increase logging level on loggers that are noisy at debug level
             # Note: django.server logs at warning level for 404s.
             'django.server': {
-                # 'level': 'DEBUG',
                 'level': 'ERROR',
                 'handlers': ['mail_admins']
             },
             'django.db': {
-                # 'level': 'DEBUG',
                 'level': 'ERROR',
                 'handlers': ['mail_admins']
             },
