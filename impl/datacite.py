@@ -301,9 +301,9 @@ def validateDcmsRecord(identifier, record, schemaValidate=True):
         i.attrib["identifierType"] = type
     i.text = identifier
     root.attrib["{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"] = (
-        "http://datacite.org/schema/kernel-%s "
-        "http://schema.datacite.org/meta/kernel-{}/metadata.xsd".format(version, version)
-    )
+        "http://datacite.org/schema/kernel-{} "
+        "http://schema.datacite.org/meta/kernel-{}/metadata.xsd"
+    ).format(version, version)
     try:
         # We re-sanitize the document because unacceptable characters can
         # be (and have been) introduced via XML character entities.
