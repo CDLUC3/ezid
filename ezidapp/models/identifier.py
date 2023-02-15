@@ -1193,9 +1193,11 @@ class RefIdentifier(IdentifierBase):
 def resolveIdentifier(identifier:str)->Identifier:
     """Returns the target for the specified identifier.
 
+    Separate from getIdentifier below for slight performance boost by avoiding joins.
+
     Prefix matching is always applied to support suffix pass through.
     """
-
+    #TODO: resolve-300: This method is only used in diag-identifier
     _l = list(
         Identifier.objects.filter(
             identifier__in=impl.util.explodePrefixes(identifier)
@@ -1207,6 +1209,8 @@ def resolveIdentifier(identifier:str)->Identifier:
 
 
 def getIdentifier(identifier:str, prefixMatch:bool=False)->Identifier:
+    """Returns Identifier with related entities.
+    """
     if prefixMatch:
         l = list(
             Identifier.objects.select_related(
