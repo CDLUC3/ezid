@@ -5,29 +5,24 @@ Implements test cases for the resolve functionality.
 '''
 
 import logging
-import requests
+import django.test.client
 import pytest
 
-TIMEOUT_SEC = 500.0
-EZID_SERVICE = "http://localhost:8000/"
 _L = logging.getLogger('test_resolve')
-
-def create_resolve_url(service, identifier):
-    return f"{service}{identifier}"
 
 
 def call_resolve(identifier, accept=None):
-    url = create_resolve_url(EZID_SERVICE, identifier)
+    url = f"/{identifier}"
     headers = {
         "Accept": "*/*"
     }
     if accept is not None:
         headers['Accept'] = accept
-    response = requests.get(url, headers=headers, timeout=TIMEOUT_SEC, allow_redirects=False)
+    response = django.test.client.Client().get(url, headers=headers, allow_redirects=False)
     return {
         'status': response.status_code,
         'media-type': response.headers.get('content-type', None),
-        'text': response.text,
+        'text': response.content,
         'location': response.headers.get("Location"),
     }
 

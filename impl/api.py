@@ -590,7 +590,11 @@ def resolveDoiIdentifier(
     try:
         # DOI requests just get redirected to doi.org for resolution
         # Let DOI handle any issues with invalid identifiers etc.
-        return django.http.HttpResponseRedirect(f"https://doi.org/{identifier_info.prefix}/{identifier_info.suffix}{identifier_info.extra}")
+        try:
+            doi_resolver = django.conf.settings.RESOLVER_DOI
+        except:
+            doi_resolver = "https://doi.org/"
+        return django.http.HttpResponseRedirect(f"{doi_resolver}{identifier_info.prefix}/{identifier_info.suffix}{identifier_info.extra}")
     except ValueError:
         # invalid identifier
         msg["error"] = "Invalid or unrecognized identifier."
