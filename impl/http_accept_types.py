@@ -28,6 +28,9 @@ valid_mime_type = re.compile(
 # Matches the 'q=1.23' from the parameters of an Accept mime type
 q_match = re.compile(r'(?:^|;)\s*q=([0-9.-]+)(?:$|;)')
 
+MEDIA_HTML = ('text/html', 'application/xhtml+xml',)
+MEDIA_JSON = ('application/json', 'text/json',)
+MEDIA_TEXT = ('text/plain', '*/*')
 
 class AcceptableType:
     mime_type = None
