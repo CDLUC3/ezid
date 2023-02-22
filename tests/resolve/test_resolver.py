@@ -96,9 +96,9 @@ def test_parse(val, expected):
 @pytest.mark.parametrize(
     "val,expected",
     [
-        ("ark:/88122/zqkg0067", ("ark:/88122/zqkg0067", "https://www.industrydocuments.ucsf.edu/docs/zqkg0067")),
-        ("ark:/88122/zqkg0067_extra", ("ark:/88122/zqkg0067", "https://www.industrydocuments.ucsf.edu/docs/zqkg0067")),
-        ("ark:88122/zq-kg-00-67_extra", ("ark:/88122/zqkg0067", "https://www.industrydocuments.ucsf.edu/docs/zqkg0067")),
+        ("ark:/88122/zqfw0190", ("ark:/88122/zqfw0190", "https://www.industrydocuments.ucsf.edu/docs/zqfw0190")),
+        ("ark:/88122/zqfw0190_extra", ("ark:/88122/zqfw0190", "https://www.industrydocuments.ucsf.edu/docs/zqfw0190")),
+        ("ark:88122/zq-fw-01-90_extra", ("ark:/88122/zqfw0190", "https://www.industrydocuments.ucsf.edu/docs/zqfw0190")),
         ("ark:/88122/", (ezidapp.models.identifier.Identifier.DoesNotExist())),
     ],
 )
