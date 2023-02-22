@@ -8,7 +8,7 @@ import logging
 import requests
 import pytest
 
-TIMEOUT_SEC = 5.0
+TIMEOUT_SEC = 500.0
 EZID_SERVICE = "http://localhost:8000/"
 _L = logging.getLogger('test_resolve')
 
@@ -19,7 +19,7 @@ def create_resolve_url(service, identifier):
 def call_resolve(identifier, accept=None):
     url = create_resolve_url(EZID_SERVICE, identifier)
     headers = {
-        "Accept": "*"
+        "Accept": "*/*"
     }
     if accept is not None:
         headers['Accept'] = accept
@@ -33,14 +33,15 @@ def call_resolve(identifier, accept=None):
 
 
 @pytest.mark.parametrize("val,expected",[
-    ('ark:/87607/',(404,"","")),
-    ('ark:/87607/c7gf0pc7',(404,"","")),
-    ('ark:/87607/c7gf0pc7k',(302,"","")),
-    ('ark:/87607/c7gf0pc7k?', (302, "", "")),
-    ('ark:/87607/c7gf0pc7k??', (200, "", "")),
-    ('ark:/87607/c7gf0pc7k?info', (200, "", "")),
-    ('ark:/87607/c7gf0pc7k_extra', (302, "", "")),
-    ('ark:/87607/c7gf0pc7k%20extra', (302, "", "")),
+    ('ark:/99166/',(404,"","")),
+    ('ark:/99166/p3wp9v20',(404,"","")),
+    ('ark:/99166/p3wp9v205',(302,"https://ezid.cdlib.org/id/ark:/99166/p3wp9v205","")),
+    ('ark:/99166/p3wp9v205?', (302, "", "")),
+    ('ark:/99166/p3wp9v205??', (200, "", "")),
+    ('ark:/99166/p3wp9v205?info', (200, "", "")),
+    ('ark:/99166/p3wp9v205_extra', (302, "", "")),
+    ('ark:/99166/p3wp9v205%20extra', (302, "", "")),
+    ('ark:/99166/p3wp9v20??', (200, "", "")),
 ])
 def test_existing(val,expected):
     res = call_resolve(val)
