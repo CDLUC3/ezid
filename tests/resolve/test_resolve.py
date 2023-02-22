@@ -23,7 +23,7 @@ def call_resolve(identifier, accept=None):
         'status': response.status_code,
         'media-type': response.headers.get('content-type', None),
         'text': response.content,
-        'location': response.headers.get("Location"),
+        'location': response.headers.get("Location", ""),
     }
 
 
@@ -31,14 +31,14 @@ def call_resolve(identifier, accept=None):
     ('ark:/99166/',(404,"","")),
     ('ark:/99166/p3wp9v20',(404,"","")),
     ('ark:/99166/p3wp9v205',(302,"https://ezid.cdlib.org/id/ark:/99166/p3wp9v205","")),
-    ('ark:/99166/p3wp9v205?', (302, "", "")),
+    ('ark:/99166/p3wp9v205?', (302, "https://ezid.cdlib.org/id/ark:/99166/p3wp9v205", "")),
     ('ark:/99166/p3wp9v205??', (200, "", "")),
     ('ark:/99166/p3wp9v205?info', (200, "", "")),
-    ('ark:/99166/p3wp9v205_extra', (302, "", "")),
-    ('ark:/99166/p3wp9v205%20extra', (302, "", "")),
+    ('ark:/99166/p3wp9v205_extra', (302, "https://ezid.cdlib.org/id/ark:/99166/p3wp9v205_extra", "")),
+    ('ark:/99166/p3wp9v205%20extra', (302, "https://ezid.cdlib.org/id/ark:/99166/p3wp9v205%20extra", "")),
     ('ark:/99166/p3wp9v20??', (200, "", "")),
 ])
 def test_existing(val,expected):
     res = call_resolve(val)
     assert res['status'] == expected[0]
-    _L.debug(res['location'])
+    assert res['location'] == expected[1]

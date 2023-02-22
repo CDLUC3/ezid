@@ -87,6 +87,7 @@ import json
 import logging
 import sys
 import time
+import urllib.parse
 
 import django.conf
 import django.http
@@ -539,75 +540,7 @@ def pause(request):
         assert False, "unhandled case"
 
 
-def _isInflectionRequest(request: django.http.HttpRequest) -> bool:
-    # request has a double ?? or ?info
-    if request.META.get("QUERY_STRING", "") in ["?", "info"]:
-        return True
-    return False
-
-
-#TODO: resolve-300: refactor this to use resolver.IdentifierParser
-def resolveDoiIdentifier(
-    request: django.http.HttpRequest, identifier: str
-) -> django.http.HttpResponse:
-    # Compare the extracted identifier with the full request string to see if there's
-    # inflection chars present.
-    _full_request_path = request.get_full_path()
-    _extras_position = _full_request_path.find(identifier) + len(identifier)
-
-    # Add the "doi:" portion back to the identifier
-    identifier = "doi:" + identifier
-
-    msg = {"request_id": identifier}
-
-    # append any extra chars to the extracted identifier
-    identifier = identifier + _full_request_path[_extras_position:]
-
-    # construct an identifier parser
-    identifier_info = impl.resolver.IdentifierParser.parse(identifier)
-
-    if identifier_info.inflection:
-        user = impl.userauth.authenticateRequest(request)
-        try:
-            pid_record = identifier_info.find_record()
-            if not impl.policy.authorizeView(user, pid_record):
-                # not authorized
-                msg["error"] = "Not authorized"
-                return django.http.HttpResponseForbidden(json.dumps(msg), content_type="application/json; charset=utf-8")
-            return django.http.JsonResponse(pid_record.metadata, json_dumps_params={"indent":2})
-
-            #s, r = impl.ezid.getMetadata(str(identifier_info), prefixMatch=True)
-            #return _response(s, anvlBody=impl.anvl.format(r))
-        except ezidapp.models.identifier.Identifier.DoesNotExist:
-            # identifier not found here
-            msg["error"] = "Not found."
-            msg["alternate"] = f"https://n2t.net/{identifier}"
-        except Exception as e:
-            msg["error"] = "Invalid or unrecognized identifier"
-        return django.http.HttpResponseNotFound(
-            json.dumps(msg), content_type="application/json; charset=utf-8"
-        )
-    try:
-        # DOI requests just get redirected to doi.org for resolution
-        # Let DOI handle any issues with invalid identifiers etc.
-        try:
-            doi_resolver = django.conf.settings.RESOLVER_DOI
-        except:
-            doi_resolver = "https://doi.org/"
-        return django.http.HttpResponseRedirect(f"{doi_resolver}{identifier_info.prefix}/{identifier_info.suffix}{identifier_info.extra}")
-    except ValueError:
-        # invalid identifier
-        msg["error"] = "Invalid or unrecognized identifier."
-    except ezidapp.models.identifier.Identifier.DoesNotExist:
-        # identifier not found here
-        msg["error"] = "Not found."
-        msg["alternate"] = f"https://n2t.net/{identifier}"
-    return django.http.HttpResponseNotFound(
-        json.dumps(msg), content_type="application/json; charset=utf-8"
-    )
-
-
-def resolveArkIdentifier(
+def resolveIdentifier(
     request: django.http.HttpRequest, identifier: str
 ) -> django.http.HttpResponse:
     '''
@@ -652,17 +585,10 @@ def resolveArkIdentifier(
         L.debug("%s.%s: %s", __name__, sys._getframe().f_code.co_name, identifier)
     L.debug(request.get_full_path())
 
-    # Compare the extracted identifier with the full request string to see if there's
-    # inflection chars present.
-    _full_request_path = request.get_full_path()
-    _extras_position = _full_request_path.find(identifier) + len(identifier)
-
-    # Add the "ark:" portion back to the identifier
-    identifier = "ark:" + identifier
+    # Use the request full path to get the requested identifier
+    # Note that this requires the resolver operation is located at the service root.
+    identifier = request.get_full_path().lstrip("/")
     msg = {"request_id": identifier}
-
-    # append any extra chars to the extracted identifier
-    identifier = identifier + _full_request_path[_extras_position:]
 
     # construct an identifier parser
     identifier_info = impl.resolver.IdentifierParser.parse(identifier)
@@ -717,6 +643,15 @@ def resolveArkIdentifier(
         return django.http.HttpResponseNotFound(
             json.dumps(msg), content_type="application/json; charset=utf-8"
         )
+    # Handle resolve request
+    # If the identifier is a DOI, then redirect to the registered DOI resolver
+    if identifier_info.scheme == impl.resolver.SCHEME_DOI:
+        try:
+            doi_resolver = django.conf.settings.RESOLVER_DOI
+        except:
+            doi_resolver = "https://doi.org/"
+        return django.http.HttpResponseRedirect(f"{doi_resolver}{identifier_info.prefix}/{identifier_info.suffix}{identifier_info.extra}")
+    # ARK identifier resolution
     try:
         # Populate the identifier structure but with minimal field info, enough to
         # service the redirect

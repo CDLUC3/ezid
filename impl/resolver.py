@@ -9,6 +9,8 @@ import impl.util
 
 _L = logging.getLogger(__name__)
 
+SCHEME_DOI = "doi"
+SCHEME_ARK = "ark"
 
 def convert_match_upper(match: re.match) -> str:
     return match.group().upper()
@@ -27,7 +29,7 @@ class IdentifierStruct:
     '''
 
     scheme: str
-    '''The scheme of the identifier, e.g. "ark:"'''
+    '''The scheme of the identifier, always lower case. e.g. "ark:"'''
     prefix: str
     '''The portion between the scheme and the suffix'''
     suffix: typing.Optional[str] = None
@@ -95,7 +97,7 @@ class IdentifierStruct:
 
 class ArkIdentifierStruct(IdentifierStruct):
     def __init__(self, prefix: str, suffix: str = None, inflection: bool = False):
-        super().__init__(scheme="ark", prefix=prefix, suffix=suffix, inflection=inflection)
+        super().__init__(scheme=SCHEME_ARK, prefix=prefix, suffix=suffix, inflection=inflection)
 
     def __str__(self):
         if self.suffix is not None:
@@ -116,7 +118,7 @@ class ArkIdentifierStruct(IdentifierStruct):
 
 class DoiIdentifierStruct(IdentifierStruct):
     def __init__(self, prefix: str, suffix: str = None, inflection: bool = False):
-        super().__init__(scheme="doi", prefix=prefix, suffix=suffix, inflection=inflection)
+        super().__init__(scheme=SCHEME_DOI, prefix=prefix, suffix=suffix, inflection=inflection)
 
 
 @dataclasses.dataclass
@@ -144,7 +146,7 @@ class ArkIdentifierValueParser(IdentifierValueParser):
     INFLECTION_MATCH = re.compile("\?info|\?{2}|\?$")
 
     @classmethod
-    def parse_value(cls, value: str, scheme: str = "ark") -> IdentifierStruct:
+    def parse_value(cls, value: str, scheme: str = SCHEME_ARK) -> IdentifierStruct:
         inflection = False
         # Remove leading and trailing "/"
         value = value.strip("/")
@@ -174,7 +176,7 @@ class DoiIdentifierValueParser(IdentifierValueParser):
     INFLECTION_MATCH = re.compile("\?info|\?{2}|\?$")
 
     @classmethod
-    def parse_value(cls, value: str, scheme: str = "doi") -> IdentifierStruct:
+    def parse_value(cls, value: str, scheme: str = SCHEME_DOI) -> IdentifierStruct:
         inflection = False
         value, n_matches = cls.INFLECTION_MATCH.subn("", value)
         if n_matches > 0:
@@ -191,8 +193,8 @@ class IdentifierParser:
 
     value_parsers = {
         "__default__": IdentifierValueParser,
-        "ark": ArkIdentifierValueParser,
-        "doi": DoiIdentifierValueParser,
+        SCHEME_ARK: ArkIdentifierValueParser,
+        SCHEME_DOI: DoiIdentifierValueParser,
     }
 
     @classmethod
