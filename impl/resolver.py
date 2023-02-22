@@ -16,14 +16,31 @@ def convert_match_upper(match: re.match) -> str:
 
 @dataclasses.dataclass
 class IdentifierStruct:
+    '''Represents a wild identifier structure.
+
+    A "wild" identifier is one retrieved from an outside source, and
+    so initially we only have the information parsed from the
+    identifier string that was sent to us in a HTTP request.
+
+    This class provides options for finding a matching identifier
+    in our catalog.
+    '''
+
     scheme: str
+    '''The scheme of the identifier, e.g. "ark:"'''
     prefix: str
+    '''The portion between the scheme and the suffix'''
     suffix: typing.Optional[str] = None
+    '''The portion after the prefix '''
     inflection: bool = False
+    '''True if the identifier string included a pattern indicating that '''
+    extra: str = ''
+    '''Any characters in provided identifier that extend beyond resolved 
+       identifier. Not set until find_record() is called.'''
 
     def __str__(self):
         if self.suffix is not None:
-            return f"{self.scheme}:{self.prefix}/{self.suffix}"
+            return f"{self.scheme}:{self.prefix}/{self.suffix}{self.extra}"
         return f"{self.scheme}:{self.prefix}/"
 
     @property
@@ -31,6 +48,16 @@ class IdentifierStruct:
         if self.suffix is not None:
             return f"{self.prefix}/{self.suffix}"
         return f"{self.prefix}/"
+
+    def align_with_found(self, found_record:str):
+        '''
+        Sets suffix and extra so that suffix matches the suffix portion of the
+        found identifier, and extra contains any extra characters beyond the suffix.
+        '''
+        self_str = str(self)
+        self.extra = self_str[len(found_record):]
+        if len(self.extra) > 0:
+            self.suffix = self.suffix[:-len(self.extra)]
 
     def potential_matches(self) -> typing.List[str]:
         res = []
@@ -51,13 +78,19 @@ class IdentifierStruct:
             _matches = _matches.only(*fields)
         result = list(_matches)
         if len(result) > 0:
-            return max(result, key=lambda si: len(si.identifier))
+            matching_record =  max(result, key=lambda si: len(si.identifier))
+            self.align_with_found(matching_record.identifier)
+            return matching_record
         #try:
         #    res = ezidapp.models.shoulder.getLongestShoulderMatch(str(self))
         #    return res
         #except:
         #    pass
         raise ezidapp.models.identifier.Identifier.DoesNotExist()
+
+    def find_shoulder(self) -> ezidapp.models.shoulder.Shoulder:
+        result = ezidapp.models.shoulder.getLongestShoulderMatch(str(self))
+        return result
 
 
 class ArkIdentifierStruct(IdentifierStruct):
@@ -113,13 +146,18 @@ class ArkIdentifierValueParser(IdentifierValueParser):
     @classmethod
     def parse_value(cls, value: str, scheme: str = "ark") -> IdentifierStruct:
         inflection = False
+        # Remove leading and trailing "/"
         value = value.strip("/")
+        # Remove hyphens
         value = value.replace("-", "")
+        # Convert percent encoded to upper case
         value = cls.PERCENT_MATCH.sub(convert_match_upper, value)
+        # Deal with path hacks
         value = cls.STRUCTURAL_MATCH_1.sub("/", value)
         value = cls.STRUCTURAL_MATCH_2.sub(".", value)
         value = cls.STRUCTURAL_MATCH_3.sub(".", value)
         value = cls.STRUCTURAL_MATCH_4.sub("/", value)
+        # Asking for identifier metadata?
         value, n_matches = cls.INFLECTION_MATCH.subn("", value)
         if n_matches > 0:
             inflection = True
@@ -133,9 +171,14 @@ class ArkIdentifierValueParser(IdentifierValueParser):
 
 
 class DoiIdentifierValueParser(IdentifierValueParser):
+    INFLECTION_MATCH = re.compile("\?info|\?{2}|\?$")
+
     @classmethod
     def parse_value(cls, value: str, scheme: str = "doi") -> IdentifierStruct:
         inflection = False
+        value, n_matches = cls.INFLECTION_MATCH.subn("", value)
+        if n_matches > 0:
+            inflection = True
         parts = value.split("/", 1)
         prefix = parts[0]
         suffix = None
