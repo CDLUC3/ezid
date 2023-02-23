@@ -316,25 +316,6 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
         _releaseIdentifierLock(normalizedIdentifier, user.username)
 
 
-def resolveIdentifier(identifier:str)->typing.Union[str, ezidapp.models.identifier.Identifier]:
-    '''
-    '''
-    L = logging.getLogger()
-    if django.conf.settings.DEBUG:
-        L.debug("%s.%s: %s", __name__, sys._getframe().f_code.co_name, identifier)
-
-    nqidentifier = impl.util.normalizeIdentifier(identifier, assert_length=False)
-    if nqidentifier is None:
-        #TODO: verify this causes a 404
-        raise ValueError(f"Invalid identifier: {identifier}")
-        return "error: bad request - invalid identifier"
-    try:
-        return ezidapp.models.identifier.resolveIdentifier(nqidentifier)
-    except ezidapp.models.identifier.Identifier.DoesNotExist as e:
-        raise e
-        return "error: bad request - no such identifier"
-
-
 def getMetadata(identifier, user=ezidapp.models.user.AnonymousUser, prefixMatch=False):
     """Return all metadata for a given qualified identifier, e.g.,
     "doi:10.5060/FOO". 'user' is the requestor and should be an authenticated
