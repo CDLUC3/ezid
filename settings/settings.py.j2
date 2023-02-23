@@ -209,6 +209,9 @@ LOGGING_CONFIG = None
 # Disable EZID's logging config (would be performed in impl.log)
 LOGGING_CONFIG_FILE = None
 
+# Default log_level to DEBUG if not specified.
+{% if log_level is not defined %}{% set log_level = 'DEBUG' %}{% endif %}
+
 # Configure logging directly, overriding any existing config
 logging.config.dictConfig(
     {
