@@ -30,7 +30,12 @@ q_match = re.compile(r'(?:^|;)\s*q=([0-9.-]+)(?:$|;)')
 
 MEDIA_HTML = ('text/html', 'application/xhtml+xml',)
 MEDIA_JSON = ('application/json', 'text/json',)
-MEDIA_TEXT = ('text/plain', '*/*')
+MEDIA_JSONLD = ('application/ld+json',)
+MEDIA_TEXT = ('text/plain', '*/*',)
+MEDIA_XML = ('text/xml', 'application/xml',)
+# Inflection requests
+MEDIA_INFLECTION = MEDIA_HTML + MEDIA_TEXT + MEDIA_JSON
+MEDIA_ALL = MEDIA_HTML + MEDIA_JSON + MEDIA_JSONLD + MEDIA_TEXT + MEDIA_XML
 
 class AcceptableType:
     mime_type = None
