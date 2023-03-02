@@ -12,6 +12,7 @@ _L = logging.getLogger(__name__)
 SCHEME_DOI = "doi"
 SCHEME_ARK = "ark"
 
+
 def convert_match_upper(match: re.match) -> str:
     return match.group().upper()
 
@@ -27,6 +28,7 @@ class IdentifierStruct:
     This class provides options for finding a matching identifier
     in our catalog.
     '''
+
     original: str
     '''The original, unparsed identifier string'''
     scheme: str
@@ -52,15 +54,15 @@ class IdentifierStruct:
             return f"{self.prefix}/{self.suffix}"
         return f"{self.prefix}/"
 
-    def align_with_found(self, found_record:str):
+    def align_with_found(self, found_record: str):
         '''
         Sets suffix and extra so that suffix matches the suffix portion of the
         found identifier, and extra contains any extra characters beyond the suffix.
         '''
         self_str = str(self)
-        self.extra = self_str[len(found_record):]
+        self.extra = self_str[len(found_record) :]
         if len(self.extra) > 0:
-            self.suffix = self.suffix[:-len(self.extra)]
+            self.suffix = self.suffix[: -len(self.extra)]
 
     def potential_matches(self) -> typing.List[str]:
         res = []
@@ -73,21 +75,23 @@ class IdentifierStruct:
             res.append(f"{self.scheme}{sep}{self.prefix}/{self.suffix[:i]}")
         return res
 
-    def find_record(self, fields:typing.Optional[typing.List[str]]=None) -> ezidapp.models.identifier.Identifier:
+    def find_record(
+        self, fields: typing.Optional[typing.List[str]] = None
+    ) -> ezidapp.models.identifier.Identifier:
         _matches = ezidapp.models.identifier.Identifier.objects.filter(
-                identifier__in=self.potential_matches()
-            )
+            identifier__in=self.potential_matches()
+        )
         if fields is not None:
             _matches = _matches.only(*fields)
         result = list(_matches)
         if len(result) > 0:
-            matching_record =  max(result, key=lambda si: len(si.identifier))
+            matching_record = max(result, key=lambda si: len(si.identifier))
             self.align_with_found(matching_record.identifier)
             return matching_record
-        #try:
+        # try:
         #    res = ezidapp.models.shoulder.getLongestShoulderMatch(str(self))
         #    return res
-        #except:
+        # except:
         #    pass
         raise ezidapp.models.identifier.Identifier.DoesNotExist()
 
@@ -97,8 +101,14 @@ class IdentifierStruct:
 
 
 class ArkIdentifierStruct(IdentifierStruct):
-    def __init__(self, original:str, prefix: str, suffix: str = None, inflection: bool = False):
-        super().__init__(original=original, scheme=SCHEME_ARK, prefix=prefix, suffix=suffix, inflection=inflection)
+    def __init__(self, original: str, prefix: str, suffix: str = None, inflection: bool = False):
+        super().__init__(
+            original=original,
+            scheme=SCHEME_ARK,
+            prefix=prefix,
+            suffix=suffix,
+            inflection=inflection,
+        )
 
     def __str__(self):
         if self.suffix is not None:
@@ -118,8 +128,14 @@ class ArkIdentifierStruct(IdentifierStruct):
 
 
 class DoiIdentifierStruct(IdentifierStruct):
-    def __init__(self, original:str, prefix: str, suffix: str = None, inflection: bool = False):
-        super().__init__(original=original, scheme=SCHEME_DOI, prefix=prefix, suffix=suffix, inflection=inflection)
+    def __init__(self, original: str, prefix: str, suffix: str = None, inflection: bool = False):
+        super().__init__(
+            original=original,
+            scheme=SCHEME_DOI,
+            prefix=prefix,
+            suffix=suffix,
+            inflection=inflection,
+        )
 
 
 @dataclasses.dataclass
@@ -131,8 +147,10 @@ class IdentifierValueStruct:
 
 class IdentifierValueParser:
     @classmethod
-    def parse_value(cls, original:str, value: str, scheme: str) -> IdentifierStruct:
-        return IdentifierStruct(original=original, scheme=scheme, prefix=value, suffix=None, inflection=False)
+    def parse_value(cls, original: str, value: str, scheme: str) -> IdentifierStruct:
+        return IdentifierStruct(
+            original=original, scheme=scheme, prefix=value, suffix=None, inflection=False
+        )
 
 
 class ArkIdentifierValueParser(IdentifierValueParser):
@@ -147,7 +165,7 @@ class ArkIdentifierValueParser(IdentifierValueParser):
     INFLECTION_MATCH = re.compile("\?info|\?{2}|\?$")
 
     @classmethod
-    def parse_value(cls, original:str, value: str, scheme: str = SCHEME_ARK) -> IdentifierStruct:
+    def parse_value(cls, original: str, value: str, scheme: str = SCHEME_ARK) -> IdentifierStruct:
         inflection = False
         # Remove leading and trailing "/"
         value = value.strip("/")
@@ -170,14 +188,16 @@ class ArkIdentifierValueParser(IdentifierValueParser):
         prefix = prefix.lower()
         if len(parts) > 1:
             suffix = parts[1]
-        return ArkIdentifierStruct(original=original, prefix=prefix, suffix=suffix, inflection=inflection)
+        return ArkIdentifierStruct(
+            original=original, prefix=prefix, suffix=suffix, inflection=inflection
+        )
 
 
 class DoiIdentifierValueParser(IdentifierValueParser):
     INFLECTION_MATCH = re.compile("\?info|\?{2}|\?$")
 
     @classmethod
-    def parse_value(cls, original:str, value: str, scheme: str = SCHEME_DOI) -> IdentifierStruct:
+    def parse_value(cls, original: str, value: str, scheme: str = SCHEME_DOI) -> IdentifierStruct:
         inflection = False
         value, n_matches = cls.INFLECTION_MATCH.subn("", value)
         if n_matches > 0:
@@ -187,7 +207,9 @@ class DoiIdentifierValueParser(IdentifierValueParser):
         suffix = None
         if len(parts) > 1:
             suffix = parts[1]
-        return DoiIdentifierStruct(original=original, prefix=prefix, suffix=suffix, inflection=inflection)
+        return DoiIdentifierStruct(
+            original=original, prefix=prefix, suffix=suffix, inflection=inflection
+        )
 
 
 class IdentifierParser:
