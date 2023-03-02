@@ -93,6 +93,7 @@ import django.conf
 import django.http
 
 import ezidapp.models.identifier
+import ezidapp.models.model_util
 import ezidapp.models.shoulder
 
 import impl.anvl
@@ -540,13 +541,123 @@ def pause(request):
         assert False, "unhandled case"
 
 
+def identifier_metadata(identifier_record:ezidapp.models.identifier.Identifier)->dict:
+    '''Given an identifier record, generate a dict that may be serialized to ANVL or JSON.
+
+    This method is separate from ezid.getMetadata because that method assumes input of
+    an identifier string and performs validation and so forth.
+    '''
+    def date_convert(dt_str: str)->datetime.datetime:
+        return datetime.datetime.fromtimestamp(int(dt_str))
+
+    meta_dict = identifier_record.toLegacy()
+    ezidapp.models.model_util.convertLegacyToExternal(meta_dict)
+    try:
+        meta_dict["id created"] = date_convert(meta_dict.pop("_created"))
+    except Exception as e:
+        logging.error(e)
+    try:
+        meta_dict["id updated"] = date_convert(meta_dict.pop("_updated"))
+    except Exception as e:
+        logging.error(e)
+    return meta_dict
+
+
+def generate_response(message:dict, content_type:str, status:int=200)->django.http.HttpResponse:
+    if content_type in impl.http_accept_types.MEDIA_JSON:
+        return django.http.JsonResponse(
+            message,
+            status=status,
+            content_type="application/json; charset=utf-8",
+            json_dumps_params={"indent": 2}
+        )
+    return django.http.HttpResponse(impl.anvl.format(message), status=status, content_type="text/plain; charset=utf-8")
+
+def resolveInflection(
+        request: django.http.HttpRequest,
+        identifier_info:impl.resolver.IdentifierStruct
+)->django.http.HttpResponse:
+    '''"inflection" is a request for information about the identifier.
+
+    This is similar to the /id/ (getMetadata) operation in EZID, but here the
+    ANVL output is more aligned with that produced by N2T and the response may
+    also be provided in JSON is requested through content negotiation.
+    '''
+    L = logging.getLogger()
+    # Check for requested response format
+    # Default response is text/plain
+    accept_type = impl.http_accept_types.get_best_match(
+        request.headers.get('Accept', 'text/plain'),
+        impl.http_accept_types.MEDIA_INFLECTION
+    )
+    L.debug("Accept = %s", accept_type)
+    user = impl.userauth.authenticateRequest(request)
+    msg = {}
+    if isinstance(user, str):
+        # This follows legacy behavior, with methods exhibiting a confusing, obfuscated duality
+        # In this case, if user is a str, then it's some sort of error condition
+        status = _statusMapping(user, False)
+        msg_parts = user.split(":",1)
+        # Python preserves dict item order, which is helpful if the
+        # response is anvl
+        msg = {
+            "error":msg_parts[1],
+            "identifier": identifier_info.original
+        }
+        return generate_response(msg, accept_type, status=status)
+    # No user is same as anonymous
+    if user is None:
+        user = ezidapp.models.user.AnonymousUser
+    try:
+        # Get the database entry. This will throw if not found
+        pid_record = identifier_info.find_record()
+        if not impl.policy.authorizeView(user, pid_record):
+            # not authorized
+            msg = {
+                "error": "unauthorized",
+                "identifier": identifier_info.original,
+            }
+            return generate_response(msg, accept_type, status=401)
+        pid_metadata = identifier_metadata(pid_record)
+        return generate_response(pid_metadata, content_type=accept_type, status=200)
+
+    except ezidapp.models.identifier.Identifier.DoesNotExist:
+        # identifier not found here
+        # Let's try matching a shoulder
+        shoulder_record = identifier_info.find_shoulder()
+        if shoulder_record is None:
+            msg = {
+                "error": "not found",
+                "identifier": identifier_info.original,
+                "alternate": f"https://n2t.net/{identifier_info.original}"
+            }
+            return generate_response(msg, content_type=accept_type, status=404)
+        msg = {
+            "id":shoulder_record.prefix,
+            "erc.who": shoulder_record.name,
+            "erc.what": shoulder_record.shoulder_type.shoulder_type,
+            "erc.when": shoulder_record.date.isoformat(),
+            "agency": shoulder_record.registration_agency.registration_agency
+        }
+        return generate_response(msg, content_type=accept_type, status=200)
+    except Exception as e:
+        L.error("resolveInflection error: %s", e)
+        msg = {
+            "error": "unable to parse",
+            "identifier": identifier_info.original
+        }
+    return generate_response(msg, content_type=accept_type, status=400)
+
+
 def resolveIdentifier(
     request: django.http.HttpRequest, identifier: str
 ) -> django.http.HttpResponse:
     '''
-    Performs ARK identifier resolution.
+    Performs identifier resolution.
 
-    identifier is the path portion of the request after 'ark:'.
+    identifier is the path portion of the request after 'ark:' or 'doi:',
+    however note that identifier is not used, but instead the full path of
+    the request is evaluated.
 
     If an EZID identifier, shoulder, or super shoulder matches the start of
     the identifier string, then:
@@ -579,7 +690,7 @@ def resolveIdentifier(
       error: "Not found."
       alternate: A suggested alternate location to try (N2T url)
     '''
-    L = logging.getLogger()
+    L = logging.getLogger(__name__)
     if django.conf.settings.DEBUG:
         # This is an expensive call so hide it unless debugging
         L.debug("%s.%s: %s", __name__, sys._getframe().f_code.co_name, identifier)
@@ -588,61 +699,13 @@ def resolveIdentifier(
     # Use the request full path to get the requested identifier
     # Note that this requires the resolver operation is located at the service root.
     identifier = request.get_full_path().lstrip("/")
-    msg = {"request_id": identifier}
 
     # construct an identifier parser
     identifier_info = impl.resolver.IdentifierParser.parse(identifier)
     if identifier_info.inflection:
-        '''
-        Inflection request. 
-        Return the metadata about the identifier.        
-        '''
-        accept_type = impl.http_accept_types.get_best_match(
-            request.headers.get('Accept', 'text/plain'),
-            impl.http_accept_types.MEDIA_HTML + impl.http_accept_types.MEDIA_JSON + impl.http_accept_types.MEDIA_TEXT
-        )
-        user = impl.userauth.authenticateRequest(request)
-        if isinstance(user, str):
-            # This follows legacy behavior, with methods exhibiting a confusing, obfuscated duality
-            return _response(user)
-        if user is None:
-            user = ezidapp.models.user.AnonymousUser
-        try:
-            pid_record = identifier_info.find_record()
-            if not impl.policy.authorizeView(user, pid_record):
-                # not authorized
-                msg["error"] = "Not authorized"
-                return django.http.HttpResponseForbidden(json.dumps(msg), content_type="application/json; charset=utf-8")
-            pid_metadata = pid_record.toLegacy()
-            # wtf? convertLegacyToExternal modifies the dict in place...
-            ezidapp.models.model_util.convertLegacyToExternal(pid_metadata)
-            if accept_type in impl.http_accept_types.MEDIA_JSON:
-                return django.http.JsonResponse(pid_metadata, json_dumps_params={"indent":2})
-            anvl = impl.anvl.format(pid_metadata)
-            return django.http.HttpResponse(anvl, content_type="text/plain")
+        return resolveInflection(request, identifier_info)
 
-        except ezidapp.models.identifier.Identifier.DoesNotExist:
-            # identifier not found here
-            # Let's try matching a shoulder
-            shoulder_record = identifier_info.find_shoulder()
-            if shoulder_record is None:
-                msg["error"] = "Not found."
-                msg["alternate"] = f"https://n2t.net/{identifier}"
-                return django.http.HttpResponseNotFound(msg, content_type="application/json; charset=utf-8")
-            msg["id"] = shoulder_record.prefix
-            msg["erc.who"] = shoulder_record.name
-            msg["erc.what"] = shoulder_record.shoulder_type.shoulder_type
-            msg["erc.when"] = shoulder_record.date.isoformat()
-            msg["agency"] = shoulder_record.registration_agency.registration_agency
-            if accept_type in impl.http_accept_types.MEDIA_JSON:
-                return django.http.JsonResponse(msg, json_dumps_params={"indent":2})
-            anvl = impl.anvl.format(msg)
-            return django.http.HttpResponse(anvl)
-        except Exception as e:
-            msg["error"] = "Invalid or unrecognized identifier"
-        return django.http.HttpResponseNotFound(
-            json.dumps(msg), content_type="application/json; charset=utf-8"
-        )
+    msg = {"request_id": identifier}
     # Handle resolve request
     # If the identifier is a DOI, then redirect to the registered DOI resolver
     if identifier_info.scheme == impl.resolver.SCHEME_DOI:
