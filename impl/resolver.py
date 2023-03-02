@@ -27,7 +27,8 @@ class IdentifierStruct:
     This class provides options for finding a matching identifier
     in our catalog.
     '''
-
+    original: str
+    '''The original, unparsed identifier string'''
     scheme: str
     '''The scheme of the identifier, always lower case. e.g. "ark:"'''
     prefix: str
@@ -96,8 +97,8 @@ class IdentifierStruct:
 
 
 class ArkIdentifierStruct(IdentifierStruct):
-    def __init__(self, prefix: str, suffix: str = None, inflection: bool = False):
-        super().__init__(scheme=SCHEME_ARK, prefix=prefix, suffix=suffix, inflection=inflection)
+    def __init__(self, original:str, prefix: str, suffix: str = None, inflection: bool = False):
+        super().__init__(original=original, scheme=SCHEME_ARK, prefix=prefix, suffix=suffix, inflection=inflection)
 
     def __str__(self):
         if self.suffix is not None:
@@ -117,8 +118,8 @@ class ArkIdentifierStruct(IdentifierStruct):
 
 
 class DoiIdentifierStruct(IdentifierStruct):
-    def __init__(self, prefix: str, suffix: str = None, inflection: bool = False):
-        super().__init__(scheme=SCHEME_DOI, prefix=prefix, suffix=suffix, inflection=inflection)
+    def __init__(self, original:str, prefix: str, suffix: str = None, inflection: bool = False):
+        super().__init__(original=original, scheme=SCHEME_DOI, prefix=prefix, suffix=suffix, inflection=inflection)
 
 
 @dataclasses.dataclass
@@ -130,8 +131,8 @@ class IdentifierValueStruct:
 
 class IdentifierValueParser:
     @classmethod
-    def parse_value(cls, value: str, scheme: str) -> IdentifierStruct:
-        return IdentifierStruct(scheme=scheme, prefix=value, suffix=None, inflection=False)
+    def parse_value(cls, original:str, value: str, scheme: str) -> IdentifierStruct:
+        return IdentifierStruct(original=original, scheme=scheme, prefix=value, suffix=None, inflection=False)
 
 
 class ArkIdentifierValueParser(IdentifierValueParser):
@@ -146,7 +147,7 @@ class ArkIdentifierValueParser(IdentifierValueParser):
     INFLECTION_MATCH = re.compile("\?info|\?{2}|\?$")
 
     @classmethod
-    def parse_value(cls, value: str, scheme: str = SCHEME_ARK) -> IdentifierStruct:
+    def parse_value(cls, original:str, value: str, scheme: str = SCHEME_ARK) -> IdentifierStruct:
         inflection = False
         # Remove leading and trailing "/"
         value = value.strip("/")
@@ -169,14 +170,14 @@ class ArkIdentifierValueParser(IdentifierValueParser):
         prefix = prefix.lower()
         if len(parts) > 1:
             suffix = parts[1]
-        return ArkIdentifierStruct(prefix=prefix, suffix=suffix, inflection=inflection)
+        return ArkIdentifierStruct(original=original, prefix=prefix, suffix=suffix, inflection=inflection)
 
 
 class DoiIdentifierValueParser(IdentifierValueParser):
     INFLECTION_MATCH = re.compile("\?info|\?{2}|\?$")
 
     @classmethod
-    def parse_value(cls, value: str, scheme: str = SCHEME_DOI) -> IdentifierStruct:
+    def parse_value(cls, original:str, value: str, scheme: str = SCHEME_DOI) -> IdentifierStruct:
         inflection = False
         value, n_matches = cls.INFLECTION_MATCH.subn("", value)
         if n_matches > 0:
@@ -186,7 +187,7 @@ class DoiIdentifierValueParser(IdentifierValueParser):
         suffix = None
         if len(parts) > 1:
             suffix = parts[1]
-        return DoiIdentifierStruct(prefix=prefix, suffix=suffix, inflection=inflection)
+        return DoiIdentifierStruct(original=original, prefix=prefix, suffix=suffix, inflection=inflection)
 
 
 class IdentifierParser:
@@ -209,4 +210,4 @@ class IdentifierParser:
         value_parser = IdentifierParser.value_parsers.get(
             scheme, IdentifierParser.value_parsers.get("__default__")
         )
-        return value_parser.parse_value(value)
+        return value_parser.parse_value(identifier, value)
