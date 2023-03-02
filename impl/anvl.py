@@ -5,7 +5,7 @@
 
 <http://wiki.ucop.edu/display/Curation/Anvl>.
 """
-
+import datetime
 import re
 
 
@@ -44,6 +44,8 @@ def _decode(s):
 def formatPair(label, value):
     """Format a label and value into an ANVL element
     """
+    if isinstance(value, datetime.datetime):
+        value = value.strftime("%Y.%m.%d_%H:%M:%S")
     return f"{_encodeLabel(label)}: {_encodeValue(value)}\n"
 
 
