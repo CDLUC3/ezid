@@ -550,7 +550,10 @@ def identifier_metadata(identifier_record:ezidapp.models.identifier.Identifier)-
     def date_convert(dt_str: str)->datetime.datetime:
         return datetime.datetime.fromtimestamp(int(dt_str))
 
+    L = logging.getLogger("identifier_metadata")
+    L.debug("pid metadata: %s", identifier_record.metadata)
     meta_dict = identifier_record.toLegacy()
+    L.debug("as legacy: %s", meta_dict)
     ezidapp.models.model_util.convertLegacyToExternal(meta_dict)
     try:
         meta_dict["id created"] = date_convert(meta_dict.pop("_created"))
@@ -624,8 +627,9 @@ def resolveInflection(
     except ezidapp.models.identifier.Identifier.DoesNotExist:
         # identifier not found here
         # Let's try matching a shoulder
-        shoulder_record = identifier_info.find_shoulder()
-        if shoulder_record is None:
+        try:
+            shoulder_record = identifier_info.find_shoulder()
+        except ezidapp.models.shoulder.Shoulder.DoesNotExist:
             msg = {
                 "error": "not found",
                 "identifier": identifier_info.original,
@@ -700,7 +704,7 @@ def resolveIdentifier(
     # Note that this requires the resolver operation is located at the service root.
     identifier = request.get_full_path().lstrip("/")
 
-    # construct an identifier parser
+    # Use the IdentifierParser to parse and get an identifier structure
     identifier_info = impl.resolver.IdentifierParser.parse(identifier)
     if identifier_info.inflection:
         return resolveInflection(request, identifier_info)
@@ -711,6 +715,8 @@ def resolveIdentifier(
     if identifier_info.scheme == impl.resolver.SCHEME_DOI:
         try:
             doi_resolver = django.conf.settings.RESOLVER_DOI
+            if doi_resolver[-1] != "/":
+                doi_resolver = doi_resolver + "/"
         except:
             doi_resolver = "https://doi.org/"
         return django.http.HttpResponseRedirect(f"{doi_resolver}{identifier_info.prefix}/{identifier_info.suffix}{identifier_info.extra}")

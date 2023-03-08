@@ -65,6 +65,11 @@ class IdentifierStruct:
             self.suffix = self.suffix[: -len(self.extra)]
 
     def potential_matches(self) -> typing.List[str]:
+        '''Return a list of strings for prefix matching.
+
+        The list of strings is used for an efficient search on the identifier
+        string match without the use of wildcards (approx 2^10 faster).
+        '''
         res = []
         if self.suffix is None:
             return res
@@ -78,6 +83,12 @@ class IdentifierStruct:
     def find_record(
         self, fields: typing.Optional[typing.List[str]] = None
     ) -> ezidapp.models.identifier.Identifier:
+        '''Return longest matching Identifier record.
+
+        The catalog is searched for the longest existing identifier that
+        matches this identifier structure. A DoesNotExits exception is
+        raised if there are no matches.
+        '''
         _matches = ezidapp.models.identifier.Identifier.objects.filter(
             identifier__in=self.potential_matches()
         )
@@ -96,11 +107,19 @@ class IdentifierStruct:
         raise ezidapp.models.identifier.Identifier.DoesNotExist()
 
     def find_shoulder(self) -> ezidapp.models.shoulder.Shoulder:
+        '''Return the shoulder that best matches self.
+
+        Raises a DoesNotExist exception if a match is not found.
+        '''
         result = ezidapp.models.shoulder.getLongestShoulderMatch(str(self))
+        if result is None:
+            raise ezidapp.models.shoulder.Shoulder.DoesNotExist()
         return result
 
 
 class ArkIdentifierStruct(IdentifierStruct):
+    '''Represents an ARK identifier structure.
+    '''
     def __init__(self, original: str, prefix: str, suffix: str = None, inflection: bool = False):
         super().__init__(
             original=original,
@@ -128,6 +147,8 @@ class ArkIdentifierStruct(IdentifierStruct):
 
 
 class DoiIdentifierStruct(IdentifierStruct):
+    '''Represents a DOI identifier structure.
+    '''
     def __init__(self, original: str, prefix: str, suffix: str = None, inflection: bool = False):
         super().__init__(
             original=original,
@@ -138,16 +159,13 @@ class DoiIdentifierStruct(IdentifierStruct):
         )
 
 
-@dataclasses.dataclass
-class IdentifierValueStruct:
-    prefix: str
-    suffix: typing.Optional[str]
-    inflection: bool = False
-
-
 class IdentifierValueParser:
+    '''A base class for parsers for various identifier schemes.
+    '''
     @classmethod
     def parse_value(cls, original: str, value: str, scheme: str) -> IdentifierStruct:
+        '''Override this method to parse different kinds of identifiers.
+        '''
         return IdentifierStruct(
             original=original, scheme=scheme, prefix=value, suffix=None, inflection=False
         )
@@ -213,6 +231,11 @@ class DoiIdentifierValueParser(IdentifierValueParser):
 
 
 class IdentifierParser:
+    '''Factory for producing an identifier structure from an identifier string.
+
+    The dict of `value_parsers` is used to associate an identifier scheme
+    with the corresponding identifier parser.
+    '''
 
     value_parsers = {
         "__default__": IdentifierValueParser,
@@ -232,4 +255,4 @@ class IdentifierParser:
         value_parser = IdentifierParser.value_parsers.get(
             scheme, IdentifierParser.value_parsers.get("__default__")
         )
-        return value_parser.parse_value(identifier, value)
+        return value_parser.parse_value(identifier, value, scheme)
