@@ -451,20 +451,15 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             else:
                 salutation = ""
             message = (
-                "%sThank you for using EZID to easily create and manage "
+                f"{salutation}Thank you for using EZID to easily create and manage "
                 "your identifiers. The batch download you requested is available "
                 "at:\n\n"
-                "%s/download/%s.%s\n\n"
+                f"{django.conf.settings.EZID_BASE_URL}/download/{r.filename}.{self._fileSuffix(r)}\n\n"
                 "The download will be deleted in 1 week.\n\n"
                 "Best,\n"
                 "EZID Team\n\n"
-                "This is an automated email. Please do not reply.\n".format(
-                    salutation,
-                    django.conf.settings.EZID_BASE_URL,
-                    r.filename,
-                    self._fileSuffix(r),
+                "This is an automated email. Please do not reply.\n"
                 )
-            )
             try:
                 django.core.mail.send_mail(
                     "Your EZID batch download link",
