@@ -61,7 +61,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         #     ^---------
         doi: str = ref_id.identifier[4:]
         metadata = ref_id.metadata
-        metadata['_p'] = str(ref_id.profile)
+        metadata['_profile'] = str(ref_id.profile)
         datacenter = str(ref_id.datacenter)
         r = impl.datacite.uploadMetadata(doi, {}, metadata, True, datacenter)
         # r can be:
