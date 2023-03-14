@@ -27,6 +27,8 @@ def _encodeLabel(s):
 
 
 def _encodeValue(s):
+    if not isinstance(s, str):
+        s = str(s)
     return _encode(_pattern2, s)
 
 
