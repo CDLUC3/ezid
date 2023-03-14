@@ -81,12 +81,14 @@ Identifier inflection (introspection):
   GET /{identifier}? or ??
   response body as for View an identifier
 """
+import ast
 import cgi
 import datetime
 import json
 import logging
 import sys
 import time
+import typing
 import urllib.parse
 
 import django.conf
@@ -546,35 +548,114 @@ def identifier_metadata(identifier_record:ezidapp.models.identifier.Identifier)-
 
     This method is separate from ezid.getMetadata because that method assumes input of
     an identifier string and performs validation and so forth.
+
+    Also, here we try to represent the different metadata serializations in a way that
+    can conform with the requested media type by returning a metadata dict that can be
+    serialzied to ANVL or JSON.
     '''
     def date_convert(dt_str: str)->datetime.datetime:
         return datetime.datetime.fromtimestamp(int(dt_str))
 
     L = logging.getLogger("identifier_metadata")
-    L.debug("pid metadata: %s", identifier_record.metadata)
     meta_dict = identifier_record.toLegacy()
-    L.debug("as legacy: %s", meta_dict)
+    # Make the metadata a standalone dict
+    _profile = identifier_record.profile.label
+    L.debug("profile: %s", _profile)
+    L.debug("metadata: %s", meta_dict)
+    if "erc" in meta_dict:
+        _tmp = impl.anvl.parse(meta_dict.pop('erc'))
+        meta_dict["erc"] = _tmp
+    #_tmp_dict = {}
+    #for k,v in meta_dict.items():
+    #    kparts = k.split(".", 1)
+    #    if len(kparts) > 1:
+    #        if kparts[0] not in _tmp_dict:
+    #            _tmp_dict[kparts[0]] = {}
+    #        _tmp_dict[kparts[0]][kparts[1]] = v
+    #    else:
+    #        _tmp_dict[k] = v
+    
+    if not _profile in meta_dict:
+        # The metadata exists as "profile.key" entries
+        # Restructure to make it a dict under a profile key
+        _tmp_dict = {_profile:{}}
+        if _profile != "erc":
+            _tmp_dict["erc"] = {}
+        if _profile != "dc":
+            _tmp_dict["dc"] = {}
+        _test = f"{_profile}."
+        _test_len = len(_test)
+        for k in meta_dict:
+            if k.startswith(f"{_profile}."):
+                v = meta_dict[k]
+                _tmp_dict[_profile][k[_test_len:]] = v
+            elif k.startswith("erc."):
+                _tmp_dict["erc"][k[4:]] = meta_dict[k]
+            elif k.startswith("dc."):
+                _tmp_dict["erc"][k[3:]] = meta_dict[k]
+            else:
+                _tmp_dict[k] = meta_dict[k]
+        if len(_tmp_dict["erc"]) == 0:
+            _tmp_dict.pop("erc")
+        if len(_tmp_dict["dc"]) == 0:
+            _tmp_dict.pop("dc")
+        if len(_tmp_dict.get(_profile, {})) > 0:
+            meta_dict = _tmp_dict
+    else:
+        if identifier_record.usesSchemaOrgProfile: #schema_org
+            # The metadata is a dict but not stored according to json spec
+            if _profile in meta_dict:
+                try:
+                    _tmp = ast.literal_eval(meta_dict.pop('schema_org'))
+                    meta_dict['schema_org'] = _tmp
+                except Exception as e:
+                    L.warning("Unable to parse schema_org metadata for %s", identifier_record.identifier)
     ezidapp.models.model_util.convertLegacyToExternal(meta_dict)
     try:
         meta_dict["id created"] = date_convert(meta_dict.pop("_created"))
     except Exception as e:
-        logging.error(e)
+        L.error(e)
     try:
         meta_dict["id updated"] = date_convert(meta_dict.pop("_updated"))
     except Exception as e:
-        logging.error(e)
+        L.error(e)
     return meta_dict
 
 
-def generate_response(message:dict, content_type:str, status:int=200)->django.http.HttpResponse:
+def generate_response(
+        request: django.http.HttpRequest,
+        message:dict,
+        status:int=200,
+        headers:typing.Optional[dict]=None
+    )->django.http.HttpResponse:
+    L = logging.getLogger()
+    # Check for requested response format
+    # Default response is text/plain
+    content_type = impl.http_accept_types.get_best_match(
+        request.headers.get('Accept', 'text/plain'),
+        impl.http_accept_types.MEDIA_INFLECTION
+    )
+    L.debug("Accept = %s", content_type)
     if content_type in impl.http_accept_types.MEDIA_JSON:
         return django.http.JsonResponse(
             message,
             status=status,
             content_type="application/json; charset=utf-8",
-            json_dumps_params={"indent": 2}
+            json_dumps_params={"indent": 2},
+            headers=headers
         )
-    return django.http.HttpResponse(impl.anvl.format(message), status=status, content_type="text/plain; charset=utf-8")
+    _message = {}
+    for k,v in message.items():
+        if isinstance(v, dict):
+            if k == "schema_org":
+                _message[k] = json.dumps(v)
+            else:
+                for tk,tv in v.items():
+                    _message[f"{k}.{tk}"] = tv
+        else:
+            _message[k] = v
+    return django.http.HttpResponse(impl.anvl.format(_message), status=status, content_type="text/plain; charset=utf-8", headers=headers)
+
 
 def resolveInflection(
         request: django.http.HttpRequest,
@@ -587,13 +668,6 @@ def resolveInflection(
     also be provided in JSON is requested through content negotiation.
     '''
     L = logging.getLogger()
-    # Check for requested response format
-    # Default response is text/plain
-    accept_type = impl.http_accept_types.get_best_match(
-        request.headers.get('Accept', 'text/plain'),
-        impl.http_accept_types.MEDIA_INFLECTION
-    )
-    L.debug("Accept = %s", accept_type)
     user = impl.userauth.authenticateRequest(request)
     msg = {}
     if isinstance(user, str):
@@ -607,7 +681,7 @@ def resolveInflection(
             "error":msg_parts[1],
             "identifier": identifier_info.original
         }
-        return generate_response(msg, accept_type, status=status)
+        return generate_response(request, msg, status=status)
     # No user is same as anonymous
     if user is None:
         user = ezidapp.models.user.AnonymousUser
@@ -620,9 +694,16 @@ def resolveInflection(
                 "error": "unauthorized",
                 "identifier": identifier_info.original,
             }
-            return generate_response(msg, accept_type, status=401)
+            return generate_response(request, msg, status=401)
         pid_metadata = identifier_metadata(pid_record)
-        return generate_response(pid_metadata, content_type=accept_type, status=200)
+        t_modified = datetime.datetime.fromtimestamp(pid_record.updateTime, tz=datetime.timezone.utc)
+        headers = {"Last-Modified": t_modified.strftime(HTTP_DATE_FORMAT)}
+        return generate_response(
+            request,
+            pid_metadata,
+            status=200,
+            headers=headers
+        )
 
     except ezidapp.models.identifier.Identifier.DoesNotExist:
         # identifier not found here
@@ -635,7 +716,7 @@ def resolveInflection(
                 "identifier": identifier_info.original,
                 "alternate": f"https://n2t.net/{identifier_info.original}"
             }
-            return generate_response(msg, content_type=accept_type, status=404)
+            return generate_response(request, msg, status=404)
         msg = {
             "id":shoulder_record.prefix,
             "erc.who": shoulder_record.name,
@@ -643,32 +724,62 @@ def resolveInflection(
             "erc.when": shoulder_record.date.isoformat(),
             "agency": shoulder_record.registration_agency.registration_agency
         }
-        return generate_response(msg, content_type=accept_type, status=200)
+        # Note there is no date-modified for shoulders
+        return generate_response(request, msg, status=200)
     except Exception as e:
         L.error("resolveInflection error: %s", e)
         msg = {
             "error": "unable to parse",
             "identifier": identifier_info.original
         }
-    return generate_response(msg, content_type=accept_type, status=400)
+    return generate_response(request, msg, status=400)
 
 
 def resolveIdentifier(
     request: django.http.HttpRequest, identifier: str
 ) -> django.http.HttpResponse:
     '''
-    Performs identifier resolution.
+    Performs identifier resolution and inflection.
 
     identifier is the path portion of the request after 'ark:' or 'doi:',
-    however note that identifier is not used, but instead the full path of
-    the request is evaluated.
+    however, note that identifier string is not used here, but instead the
+    full path of the request is evaluated. This is because the full path
+    may contain additional information (inflection and suffix for passthrough)
+    that will normally be stripped out by the Django variable parsing mechanism.
 
-    If an EZID identifier, shoulder, or super shoulder matches the start of
-    the identifier string, then:
-      if the request query contains a single "?"
-        return infection info on the matched entry
-      else
-        return a redirect to the identifier.
+    This following steps are performed:
+
+    1. The identifier is parsed to an IdentifierStruct.
+    2. If the request is an inflection request then:
+    2.1. If the identifier is in the database then:
+    2.1.1. Metadata is retrieved
+    2.1.2. Response as ANVL or JSON according to content negotiation
+    2.2. If the identifier matches a shoulder then:
+    2.2.1. Shoulder metadata constructed
+    2.2.2. Returned as ANVL or JSON according to content negotiation
+    2.3. A not found error is returned
+    3. The request is a resolve request
+    4. If the identifier is a DOI:
+    4.1. Redirect to the DOI resover service
+    5. If the identifier is not in the database:
+    5.1. An HTTP 404 Not Found error is returned
+    6. If the identifier is in the database:
+    6.1. If the identifier is reserved:
+    6.1.1. Return a 404 http status
+    6.2. Gather minimal metadata about the identifier
+    6.3. Return a redirect response containing the minimal metadata as a body. If
+         the identifier is flagged as unavailable, then the tombstone page is the
+         redirect target.
+
+    Response from this method is one of:
+
+    - http redirect to target
+    - response body containing metadata associated with the identifier
+    - A 404 not found error
+    - A 401 not authorized error
+
+    An inflection request versus a redirect request is distinguished by the
+    presence of terminating "?", "??", or "?info" characters on the full path.
 
     The redirect URL is the request "identifier [+ querystring]" appended to the
     identifier target. If the identifier is flagged as unavailable, then the
@@ -689,7 +800,7 @@ def resolveIdentifier(
       error: A brief description of the reason
 
     If the identifier is valid but not present or reserved, a 404 response is
-    returned with a JSON body contining the keys:
+    returned with a JSON body containing the keys:
       id: The requested identifier value
       error: "Not found."
       alternate: A suggested alternate location to try (N2T url)
@@ -731,9 +842,6 @@ def resolveIdentifier(
         t_modified = datetime.datetime.fromtimestamp(res.updateTime, tz=datetime.timezone.utc)
         headers = {"Last-Modified": t_modified.strftime(HTTP_DATE_FORMAT)}
         msg["id"] = res.identifier
-        msg["scheme"] = identifier_info.scheme
-        msg["prefix"] = identifier_info.prefix
-        msg["suffix"] = identifier_info.suffix
         msg["extra"] = identifier_info.extra
         # identifier.resolverTarget checks for unavailable status and returns
         # the appropriate URL for the identifier target. e.g. the tombstone address vs. registered location
@@ -751,7 +859,10 @@ def resolveIdentifier(
     except ezidapp.models.identifier.Identifier.DoesNotExist:
         # identifier not found here
         msg["error"] = "Not found."
-        msg["alternate"] = f"https://n2t.net/{identifier}"
+        _arkresolver = django.conf.settings.RESOLVER_ARK
+        if not _arkresolver.endswith("/"):
+            _arkresolver += "/"
+        msg["alternate"] = f"{_arkresolver}{identifier}"
     except Exception as e:
         L.error(e)
         msg["error"] = "Not found."
