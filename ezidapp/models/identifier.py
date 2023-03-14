@@ -453,6 +453,24 @@ class IdentifierBase(django.db.models.Model):
     def usesErcProfile(self):
         return self.profile.label == "erc"
 
+    # Note: These properties are unpleasant - they should be defined
+    # as enums though the values are stored in the database.
+    @property
+    def usesSchemaOrgProfile(self):
+        return self.profile.label == "schema_org"
+
+    @property
+    def usesArkProfile(self):
+        return self.profile.label == "ark"
+
+    @property
+    def usesEZIDProfile(self):
+        return self.profile.label == "ezid"
+
+    @property
+    def usesNIHdcProfile(self):
+        return self.profile.label == "NIHdc"
+
     # All of the identifier's citation metadata as a dictionary of
     # name/value pairs, e.g., { "erc.who": "Proust, Marcel", ... }.
     cm = django.db.models.BinaryField(default=dict)
