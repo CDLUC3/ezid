@@ -113,17 +113,6 @@ import impl.http_accept_types
 HTTP_DATE_FORMAT = "%a, %d %b %Y %H:%M:%S GMT"
 
 
-def _parseAccept(request):
-    '''
-    Parse request Accept header and return a list of types
-    in order of preference
-    '''
-    # From django-rest-framework/negotiation
-    header = request.META.get('HTTP_ACCEPT', '*/*')
-    tokens = [token.strip() for token in header.split(',')]
-    
-    pass
-
 def _readInput(request):
     if not is_text_plain_utf8(request):
         return (
@@ -760,16 +749,19 @@ def resolveIdentifier(
     2.3. A not found error is returned
     3. The request is a resolve request
     4. If the identifier is a DOI:
-    4.1. Redirect to the DOI resover service
+    4.1. If No-Redirect is not requested (default):
+    4.1.1. Redirect to the DOI resolver service
     5. If the identifier is not in the database:
     5.1. An HTTP 404 Not Found error is returned
     6. If the identifier is in the database:
     6.1. If the identifier is reserved:
     6.1.1. Return a 404 http status
     6.2. Gather minimal metadata about the identifier
-    6.3. Return a redirect response containing the minimal metadata as a body. If
+    6.3. If No-redirect is not requested (default)
+    6.3.1. Return a redirect response containing the minimal metadata as a body. If
          the identifier is flagged as unavailable, then the tombstone page is the
          redirect target.
+    6.4. Return the minimal metadata about the identifier
 
     Response from this method is one of:
 
@@ -804,6 +796,10 @@ def resolveIdentifier(
       id: The requested identifier value
       error: "Not found."
       alternate: A suggested alternate location to try (N2T url)
+
+    If the client issues a request with the custom header "No-Redirect", then
+    the response is either an ANVL or JSON (by content-negotiation) representation
+    of the minimal metadata about the identifier.
     '''
     L = logging.getLogger(__name__)
     if django.conf.settings.DEBUG:
@@ -820,18 +816,21 @@ def resolveIdentifier(
     if identifier_info.inflection:
         return resolveInflection(request, identifier_info)
 
+    # Check to see if client has requested no-redirects through the custom No-redirect header
+    follow_redirect = not impl.util.truthy_to_boolean(request.headers.get("No-Redirect", False))
     msg = {"request_id": identifier}
     # Handle resolve request
     # If the identifier is a DOI, then redirect to the registered DOI resolver
-    if identifier_info.scheme == impl.resolver.SCHEME_DOI:
+    # Don't even bother to look for
+    if identifier_info.scheme == impl.resolver.SCHEME_DOI and follow_redirect:
         try:
             doi_resolver = django.conf.settings.RESOLVER_DOI
-            if doi_resolver[-1] != "/":
+            if not doi_resolver.endswith("/"):
                 doi_resolver = doi_resolver + "/"
         except:
             doi_resolver = "https://doi.org/"
         return django.http.HttpResponseRedirect(f"{doi_resolver}{identifier_info.prefix}/{identifier_info.suffix}{identifier_info.extra}")
-    # ARK identifier resolution
+    # Retrieve the identifier info to support redirection or inspection of metadata about the identifier
     try:
         # Populate the identifier structure but with minimal field info, enough to
         # service the redirect
@@ -846,6 +845,12 @@ def resolveIdentifier(
         # identifier.resolverTarget checks for unavailable status and returns
         # the appropriate URL for the identifier target. e.g. the tombstone address vs. registered location
         msg['location'] = f"{res.resolverTarget}{identifier_info.extra}"
+        msg['modified'] = t_modified
+        # Check for custom No-Redirect header value
+        if not follow_redirect:
+            headers["Location"] = msg["location"]
+            return generate_response(request, msg, status=200, headers=headers)
+        # Convert date time to a string for the redirect body
         msg['modified'] = t_modified.isoformat()
         return django.http.HttpResponseRedirect(
             msg["location"],
