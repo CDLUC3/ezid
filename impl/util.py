@@ -30,6 +30,19 @@ _general_doi_pattern = re.compile('10\\.[1-9]\\d{3,6}/[!"$->@-~]+$')
 
 logger = logging.getLogger(__name__)
 
+def truthy_to_boolean(v)->bool:
+    '''Given any v, return True or False
+    '''
+    if isinstance(v, bool):
+        return v
+    if v is None:
+        return False
+    if isinstance(v, str):
+        v = v.strip().lower()
+        if v in ["yes", "true", "ok"]:
+            return True
+        return False
+    return bool(v)
 
 
 def validateDoi(doi:str, assert_length:bool=True):
@@ -372,43 +385,6 @@ def normalizeIdentifier(id_str:str, assert_length:bool=True)->typing.Optional[st
             return id_str
     else:
         return id_str
-
-def normalize_doi_value(pid:str) -> dict:
-    parts = pid.split("/")
-    return {
-        "scheme": "doi",
-        "prefix": parts[0],
-        "suffix": pid
-    }
-
-
-def normalize_ark_value(pid:str) -> dict:
-    parts = pid.split("/")
-    naan = parts[0].lower()
-    suffix = None
-    if len(parts) > 1:
-        suffix = parts[1].replace("-","")
-    return {
-        "scheme":"ark",
-        "value":"/".join((naan, suffix,))
-    }
-    pass
-
-
-def actually_normalize_identifier(pid: str) -> str:
-    """Normalizes an identifier according to the corresponding scheme rules.
-    """
-    if django.conf.settings.DEBUG:
-        logger.debug("%s.%s: %s", __name__, sys._getframe().f_code.co_name, pid)
-    parts = pid.split(":",1)
-    scheme = parts[0].lower()
-    value = parts[1].strip()
-    value = value.lstrip("/")
-    if scheme == "doi":
-        return normalize_doi_value(value)
-    if scheme == "ark":
-        return normalize_ark_value(value)
-    raise ValueError(f"{pid} is not an ark or doi.")
 
 
 def explodePrefixes(id_str:str)->typing.Sequence[str]:
