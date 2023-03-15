@@ -626,6 +626,13 @@ def generate_response(
     )
     L.debug("Accept = %s", content_type)
     if content_type in impl.http_accept_types.MEDIA_JSON:
+        if status >=300 and status < 400:
+            return django.http.HttpResponseRedirect(
+                message["location"],
+                headers=headers,
+                content=json.dumps(message, indent=2),
+                content_type="application/json; charset=utf-8",
+            )
         return django.http.JsonResponse(
             message,
             status=status,
@@ -643,6 +650,13 @@ def generate_response(
                     _message[f"{k}.{tk}"] = tv
         else:
             _message[k] = v
+    if status >= 300 and status < 400:
+        return django.http.HttpResponseRedirect(
+            message["location"],
+            headers=headers,
+            content=impl.anvl.format(_message),
+            content_type="text/plain; charset=utf-8",
+        )
     return django.http.HttpResponse(impl.anvl.format(_message), status=status, content_type="text/plain; charset=utf-8", headers=headers)
 
 
@@ -736,7 +750,7 @@ def resolveIdentifier(
     may contain additional information (inflection and suffix for passthrough)
     that will normally be stripped out by the Django variable parsing mechanism.
 
-    This following steps are performed:
+    The following steps are performed:
 
     1. The identifier is parsed to an IdentifierStruct.
     2. If the request is an inflection request then:
@@ -852,12 +866,13 @@ def resolveIdentifier(
             return generate_response(request, msg, status=200, headers=headers)
         # Convert date time to a string for the redirect body
         msg['modified'] = t_modified.isoformat()
-        return django.http.HttpResponseRedirect(
-            msg["location"],
-            headers=headers,
-            content= json.dumps(msg, indent=2),
-            content_type="application/json; charset=utf-8",
-        )
+        return generate_response(request, msg, status=302, headers=headers)
+        #return django.http.HttpResponseRedirect(
+        #    msg["location"],
+        #    headers=headers,
+        #    content= json.dumps(msg, indent=2),
+        #    content_type="application/json; charset=utf-8",
+        #)
     except ValueError:
         # invalid identifier
         msg["error"] = "Invalid, unrecognized, or reserved identifier."
