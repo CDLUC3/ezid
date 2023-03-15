@@ -37,9 +37,9 @@ version = m.group(1)
 outfile = infile[:-3] + "html"
 
 t = tempfile.NamedTemporaryFile()
-if subprocess.call(["rst2html", infile, t.name]) != 0:
+if subprocess.call(["rst2html.py", infile, t.name]) != 0:
   error("subprocess call failed")
-m = re.search("//BEGIN//</p>\n(.*)<p>//END//", t.read(), re.S)
+m = re.search("//BEGIN//</p>\n(.*)<p>//END//", t.read().decode(), re.S)
 if not m: error("error parsing rst2html.py output")
 body = m.group(1)
 t.close()
