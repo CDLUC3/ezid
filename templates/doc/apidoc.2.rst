@@ -484,9 +484,9 @@ registered with the identifier.
 The resolve identifier service is located at the EZID Base URL, and
 is invoked using HTTP GET.
 
-For example given the identifier ``ark:/81431/p3p26q92v``, an inflection
+For example given the identifier ``ark:/87278/s63x8hrv``, a resolve
 request can be made by sending a HTTP GET request to
-``{BaseURL}/ark:/81431/p3p26q92v`` such as in the ``curl`` example
+``{BaseURL}/ark:/87278/s63x8hrv`` such as in the ``curl`` example
 below:
 
 .. parsed-literal::
@@ -604,7 +604,7 @@ A live demo of the resolve operation is provided below. Enter an identifier, and
        "cache": "no-cache"
      })
      .then((response) => {
-       let msg = `Request:\nGET ${response.url}\n\nResponse:\n\nstatus: ${response.status}`;
+       let msg = `Request:\nGET ${response.url}\n\nResponse:\nstatus: ${response.status}\n`;
        if (as_json) {
          response.json()
          .then((data) => {
