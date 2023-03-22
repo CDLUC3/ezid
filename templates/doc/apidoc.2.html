@@ -11,9 +11,9 @@
 {% block content %}
 {% learn_breadcrumb _("API Guide") %}
 <div class="container api vertical-buffer-20"><div class="smallfont line-block">
-<div class="line"><strong>This version:</strong> <a class="reference external" href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.2.html">{{ request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.2.html</a></div>
-<div class="line"><strong>Latest version:</strong> <a class="reference external" href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.html">{{ request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.html</a></div>
-<div class="line"><strong>Previous version:</strong> <a class="reference external" href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.1.html">{{ request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.1.html</a></div>
+<div class="line"><strong>This version:</strong> <a class="reference external" href="{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.2.html">{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.2.html</a></div>
+<div class="line"><strong>Latest version:</strong> <a class="reference external" href="{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.html">{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.html</a></div>
+<div class="line"><strong>Previous version:</strong> <a class="reference external" href="{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.1.html">{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.1.html</a></div>
 </div>
 <p>EZID (easy-eye-dee) provides an easy way to obtain, describe, and
 manage long-term identifiers for digital objects.  It can be accessed
@@ -425,12 +425,12 @@ identifier in EZID and redirecting the client to the <tt class="docutils literal
 registered with the identifier.</p>
 <p>The resolve identifier service is located at the EZID Base URL, and
 is invoked using HTTP GET.</p>
-<p>For example given the identifier <tt class="docutils literal"><span class="pre">ark:/81431/p3p26q92v</span></tt>, an inflection
+<p>For example given the identifier <tt class="docutils literal"><span class="pre">ark:/87278/s63x8hrv</span></tt>, a resolve
 request can be made by sending a HTTP GET request to
-<tt class="docutils literal"><span class="pre">{BaseURL}/ark:/81431/p3p26q92v</span></tt> such as in the <tt class="docutils literal">curl</tt> example
+<tt class="docutils literal"><span class="pre">{BaseURL}/ark:/87278/s63x8hrv</span></tt> such as in the <tt class="docutils literal">curl</tt> example
 below:</p>
 <pre class="literal-block">
-$ curl -v &quot;{{ request.scheme }}://{{ request.META.HTTP_HOST }}/ark:/87278/s63x8hrv&quot;
+$ curl -v &quot;{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/ark:/87278/s63x8hrv&quot;
 
 &gt; GET /ark:/87278/s63x8hrv HTTP/1.1
 &gt; Host: localhost:8000
@@ -478,7 +478,7 @@ requesting that media type. For example:</p>
 <pre class="literal-block">
 $ curl -v -H &quot;No-Redirect: true&quot; \
     -H &quot;Accept: application/json&quot; \
-    &quot;{{ request.scheme }}://{{ request.META.HTTP_HOST }}/ark:/87278/s63x8hrv&quot;
+    &quot;{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/ark:/87278/s63x8hrv&quot;
 
 &gt; GET /ark:/87278/s63x8hrv HTTP/1.1
 &gt; Host: localhost:8000
@@ -538,7 +538,7 @@ function doInflection() {
     "cache": "no-cache"
   })
   .then((response) => {
-    let msg = `Request:\nGET ${response.url}\n\nResponse:\n\nstatus: ${response.status}`;
+    let msg = `Request:\nGET ${response.url}\n\nResponse:\nstatus: ${response.status}\n`;
     if (as_json) {
       response.json()
       .then((data) => {
@@ -575,7 +575,7 @@ request can be made by sending a HTTP GET request to:</p>
 </pre>
 <p>such as in the <tt class="docutils literal">curl</tt> example below:</p>
 <pre class="literal-block">
-$ curl &quot;{{ request.scheme }}://{{ request.META.HTTP_HOST }}/ark:/87278/s63x8hrv?info&quot;
+$ curl &quot;{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/ark:/87278/s63x8hrv?info&quot;
 
 erc.what: Sophonisba : or, Hannibal's overthrow
 erc.note: CONTENTdm to Rosetta workflow
@@ -592,7 +592,7 @@ id updated: 2013.10.15_10:30:39
 through content negotiation, for example:</p>
 <pre class="literal-block">
 $ curl -H &quot;Accept: application/json&quot; \
-    &quot;{{ request.scheme }}://{{ request.META.HTTP_HOST }}/ark:/87278/s63x8hrv?info&quot;
+    &quot;{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/ark:/87278/s63x8hrv?info&quot;
 {
   &quot;erc&quot;: {
     &quot;what&quot;: &quot;Sophonisba : or, Hannibal's overthrow&quot;,
@@ -615,7 +615,7 @@ providing the metadata.</p>
 and other profiles may be used. A DataCite example (truncated here for brevity):</p>
 <pre class="literal-block">
 $ curl -H &quot;Accept: application/json&quot; \
-    &quot;{{ request.scheme }}://{{ request.META.HTTP_HOST }}/ark:/13030/m5qz2bmh?info&quot;
+    &quot;{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/ark:/13030/m5qz2bmh?info&quot;
 
 {
   &quot;datacite&quot;: &quot;&lt;?xml version=&quot;1.0&quot;?&gt;n&lt;resource xmlns=&quot;http://datacite.org/schema/kernel-3&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd&quot;&gt;&lt;identifier identifierType=&quot;ARK&quot;&gt;13030/m5qz2bmh&lt;/identifier&gt;&lt;creators&gt;&lt;creator&gt;&lt;creatorName&gt;Zhang, Yu&lt;/creatorName&gt;&lt;/creator&gt;&lt;/creators&gt;&lt;titles&gt;&lt;title&gt;Patterns of age-related water diffusion changes in human brain by concordance and discordance analysis.&lt;/title&gt;&lt;/titles&gt;&lt;publisher&gt;University of California, San Francisco&lt;/publisher&gt;&lt;publicationYear&gt;2012&lt;/publicationYear&gt;&lt;contributors&gt;&lt;contributor contributorType=&quot;ResearchGroup&quot;&gt;&lt;contributorName&gt;UCSF Center for Imaging of Neurodegenerative Diseases&lt;/contributorName&gt;&lt;/contributor&gt;&lt;/contributors&gt;&lt;resourceType resourceTypeGeneral=&quot;Dataset&quot;&gt;Dataset&lt;/resourceType&gt;&lt;descriptions&gt;&lt;description descriptionType=&quot;Abstract&quot;&gt;In diffusion tensor imaging (DTI), interpreting changes in terms ...&lt;/description&gt;&lt;/descriptions&gt;&lt;/resource&gt;&quot;,
@@ -639,7 +639,7 @@ $ curl -H &quot;Accept: application/json&quot; \
 metadata value, for example (truncated here for brevity):</p>
 <pre class="literal-block">
 $ curl -H &quot;Accept: application/json&quot; \
-    &quot;{{ request.scheme }}://{{ request.META.HTTP_HOST }}/ark:/13030/m5qz2bmh?info&quot; | jq -r '.datacite' | xml fo
+    &quot;{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/ark:/13030/m5qz2bmh?info&quot; | jq -r '.datacite' | xml fo
 
 &lt;?xml version=&quot;1.0&quot;?&gt;
 &lt;resource xmlns=&quot;http://datacite.org/schema/kernel-3&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd&quot;&gt;
