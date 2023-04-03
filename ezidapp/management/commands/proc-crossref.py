@@ -29,7 +29,6 @@ import lxml.etree
 
 import ezidapp.management.commands.proc_base
 import ezidapp.models.async_queue
-import ezidapp.models.async_queue
 import ezidapp.models.identifier
 import ezidapp.models.user
 import ezidapp.models.util
