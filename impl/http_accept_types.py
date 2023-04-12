@@ -28,14 +28,25 @@ valid_mime_type = re.compile(
 # Matches the 'q=1.23' from the parameters of an Accept mime type
 q_match = re.compile(r'(?:^|;)\s*q=([0-9.-]+)(?:$|;)')
 
-MEDIA_HTML = ('text/html', 'application/xhtml+xml',)
-MEDIA_JSON = ('application/json', 'text/json',)
+MEDIA_HTML = (
+    'text/html',
+    'application/xhtml+xml',
+)
+MEDIA_JSON = (
+    'application/json',
+    'text/json',
+)
 MEDIA_JSONLD = ('application/ld+json',)
-MEDIA_TEXT = ('text/plain', '*/*',)
-MEDIA_XML = ('text/xml', 'application/xml',)
+MEDIA_TEXT = ('text/plain',)
+MEDIA_XML = (
+    'text/xml',
+    'application/xml',
+)
+MEDIA_ANY = ('*/*',)
 # Inflection requests
-MEDIA_INFLECTION = MEDIA_HTML + MEDIA_TEXT + MEDIA_JSON
-MEDIA_ALL = MEDIA_HTML + MEDIA_JSON + MEDIA_JSONLD + MEDIA_TEXT + MEDIA_XML
+MEDIA_INFLECTION = MEDIA_JSON + MEDIA_TEXT + MEDIA_HTML + MEDIA_ANY
+MEDIA_ALL = MEDIA_HTML + MEDIA_JSON + MEDIA_JSONLD + MEDIA_TEXT + MEDIA_XML + MEDIA_ANY
+
 
 class AcceptableType:
     mime_type = None
