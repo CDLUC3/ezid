@@ -532,7 +532,7 @@ def pause(request):
         assert False, "unhandled case"
 
 
-def identifier_metadata(identifier_record:ezidapp.models.identifier.Identifier)->dict:
+def identifier_metadata(identifier_record: ezidapp.models.identifier.Identifier) -> dict:
     '''Given an identifier record, generate a dict that may be serialized to ANVL or JSON.
 
     This method is separate from ezid.getMetadata because that method assumes input of
@@ -542,7 +542,8 @@ def identifier_metadata(identifier_record:ezidapp.models.identifier.Identifier)-
     can conform with the requested media type by returning a metadata dict that can be
     serialzied to ANVL or JSON.
     '''
-    def date_convert(dt_str: str)->datetime.datetime:
+
+    def date_convert(dt_str: str) -> datetime.datetime:
         return datetime.datetime.fromtimestamp(int(dt_str))
 
     L = logging.getLogger("identifier_metadata")
@@ -554,8 +555,8 @@ def identifier_metadata(identifier_record:ezidapp.models.identifier.Identifier)-
     if "erc" in meta_dict:
         _tmp = impl.anvl.parse(meta_dict.pop('erc'))
         meta_dict["erc"] = _tmp
-    #_tmp_dict = {}
-    #for k,v in meta_dict.items():
+    # _tmp_dict = {}
+    # for k,v in meta_dict.items():
     #    kparts = k.split(".", 1)
     #    if len(kparts) > 1:
     #        if kparts[0] not in _tmp_dict:
@@ -563,11 +564,11 @@ def identifier_metadata(identifier_record:ezidapp.models.identifier.Identifier)-
     #        _tmp_dict[kparts[0]][kparts[1]] = v
     #    else:
     #        _tmp_dict[k] = v
-    
+
     if not _profile in meta_dict:
         # The metadata exists as "profile.key" entries
         # Restructure to make it a dict under a profile key
-        _tmp_dict = {_profile:{}}
+        _tmp_dict = {_profile: {}}
         if _profile != "erc":
             _tmp_dict["erc"] = {}
         if _profile != "dc":
@@ -591,14 +592,16 @@ def identifier_metadata(identifier_record:ezidapp.models.identifier.Identifier)-
         if len(_tmp_dict.get(_profile, {})) > 0:
             meta_dict = _tmp_dict
     else:
-        if identifier_record.usesSchemaOrgProfile: #schema_org
+        if identifier_record.usesSchemaOrgProfile:  # schema_org
             # The metadata is a dict but not stored according to json spec
             if _profile in meta_dict:
                 try:
                     _tmp = ast.literal_eval(meta_dict.pop('schema_org'))
                     meta_dict['schema_org'] = _tmp
                 except Exception as e:
-                    L.warning("Unable to parse schema_org metadata for %s", identifier_record.identifier)
+                    L.warning(
+                        "Unable to parse schema_org metadata for %s", identifier_record.identifier
+                    )
     ezidapp.models.model_util.convertLegacyToExternal(meta_dict)
     try:
         meta_dict["id created"] = date_convert(meta_dict.pop("_created"))
@@ -612,21 +615,20 @@ def identifier_metadata(identifier_record:ezidapp.models.identifier.Identifier)-
 
 
 def generate_response(
-        request: django.http.HttpRequest,
-        message: dict,
-        status: int = 200,
-        headers: typing.Optional[dict] = None
-    ) -> django.http.HttpResponse:
+    request: django.http.HttpRequest,
+    message: dict,
+    status: int = 200,
+    headers: typing.Optional[dict] = None,
+) -> django.http.HttpResponse:
     L = logging.getLogger()
     # Check for requested response format
     # Default response is text/plain
     content_type = impl.http_accept_types.get_best_match(
-        request.headers.get('Accept', 'application/json'),
-        impl.http_accept_types.MEDIA_INFLECTION
+        request.headers.get('Accept', 'application/json'), impl.http_accept_types.MEDIA_INFLECTION
     )
     L.debug("Accept = %s", content_type)
     if content_type in (impl.http_accept_types.MEDIA_JSON + impl.http_accept_types.MEDIA_ANY):
-        if status >=300 and status < 400:
+        if status >= 300 and status < 400:
             return django.http.HttpResponseRedirect(
                 message["location"],
                 headers=headers,
@@ -638,7 +640,7 @@ def generate_response(
             status=status,
             content_type="application/json; charset=utf-8",
             json_dumps_params={"indent": 2},
-            headers=headers
+            headers=headers,
         )
     _message = {}
     for k, v in message.items():
@@ -656,12 +658,16 @@ def generate_response(
             content=impl.anvl.format(_message),
             content_type="text/plain; charset=utf-8",
         )
-    return django.http.HttpResponse(impl.anvl.format(_message), status=status, content_type="text/plain; charset=utf-8", headers=headers)
+    return django.http.HttpResponse(
+        impl.anvl.format(_message),
+        status=status,
+        content_type="text/plain; charset=utf-8",
+        headers=headers,
+    )
 
 
 def resolveInflection(
-        request: django.http.HttpRequest,
-        identifier_info: impl.resolver.IdentifierStruct
+    request: django.http.HttpRequest, identifier_info: impl.resolver.IdentifierStruct
 ) -> django.http.HttpResponse:
     '''"inflection" is a request for information about the identifier.
 
@@ -676,13 +682,10 @@ def resolveInflection(
         # This follows legacy behavior, with methods exhibiting a confusing, obfuscated duality
         # In this case, if user is a str, then it's some sort of error condition
         status = _statusMapping(user, False)
-        msg_parts = user.split(":",1)
+        msg_parts = user.split(":", 1)
         # Python preserves dict item order, which is helpful if the
         # response is anvl
-        msg = {
-            "error":msg_parts[1],
-            "identifier": identifier_info.original
-        }
+        msg = {"error": msg_parts[1], "identifier": identifier_info.original}
         return generate_response(request, msg, status=status)
     # No user is same as anonymous
     if user is None:
@@ -698,14 +701,11 @@ def resolveInflection(
             }
             return generate_response(request, msg, status=401)
         pid_metadata = identifier_metadata(pid_record)
-        t_modified = datetime.datetime.fromtimestamp(pid_record.updateTime, tz=datetime.timezone.utc)
-        headers = {"Last-Modified": t_modified.strftime(HTTP_DATE_FORMAT)}
-        return generate_response(
-            request,
-            pid_metadata,
-            status=200,
-            headers=headers
+        t_modified = datetime.datetime.fromtimestamp(
+            pid_record.updateTime, tz=datetime.timezone.utc
         )
+        headers = {"Last-Modified": t_modified.strftime(HTTP_DATE_FORMAT)}
+        return generate_response(request, pid_metadata, status=200, headers=headers)
 
     except ezidapp.models.identifier.Identifier.DoesNotExist:
         # identifier not found here
@@ -726,8 +726,8 @@ def resolveInflection(
                 return generate_response(request, msg, status=200)
             except ezidapp.models.shoulder.Shoulder.DoesNotExist:
                 pass
-            #naans = ezidapp.models.shoulder.list_naans(shoulder_type="ARK")
-            #print(naans)
+            # naans = ezidapp.models.shoulder.list_naans(shoulder_type="ARK")
+            # print(naans)
             msg = {
                 "error": "not found",
                 "identifier": identifier_info.original,
@@ -735,20 +735,17 @@ def resolveInflection(
             }
             return generate_response(request, msg, status=404)
         msg = {
-            "id":shoulder_record.prefix,
+            "id": shoulder_record.prefix,
             "erc.who": shoulder_record.name,
             "erc.what": shoulder_record.shoulder_type.shoulder_type,
             "erc.when": shoulder_record.date.isoformat(),
-            "agency": shoulder_record.registration_agency.registration_agency
+            "agency": shoulder_record.registration_agency.registration_agency,
         }
         # Note there is no date-modified for shoulders
         return generate_response(request, msg, status=200)
     except Exception as e:
         L.error("resolveInflection error: %s", e)
-        msg = {
-            "error": "unable to parse",
-            "identifier": identifier_info.original
-        }
+        msg = {"error": "unable to parse", "identifier": identifier_info.original}
     return generate_response(request, msg, status=400)
 
 
@@ -857,12 +854,14 @@ def resolveIdentifier(
                 doi_resolver = doi_resolver + "/"
         except:
             doi_resolver = "https://doi.org/"
-        return django.http.HttpResponseRedirect(f"{doi_resolver}{identifier_info.prefix}/{identifier_info.suffix}{identifier_info.extra}")
+        return django.http.HttpResponseRedirect(
+            f"{doi_resolver}{identifier_info.prefix}/{identifier_info.suffix}{identifier_info.extra}"
+        )
     # Retrieve the identifier info to support redirection or inspection of metadata about the identifier
     try:
         # Populate the identifier structure but with minimal field info, enough to
         # service the redirect
-        res = identifier_info.find_record(fields=["identifier","updateTime","target","status"])
+        res = identifier_info.find_record(fields=["identifier", "updateTime", "target", "status"])
         if res.isReserved:
             # A reserved identifier is not resolvable
             raise ValueError
@@ -881,12 +880,12 @@ def resolveIdentifier(
         # Convert date time to a string for the redirect body
         msg['modified'] = t_modified.isoformat()
         return generate_response(request, msg, status=302, headers=headers)
-        #return django.http.HttpResponseRedirect(
+        # return django.http.HttpResponseRedirect(
         #    msg["location"],
         #    headers=headers,
         #    content= json.dumps(msg, indent=2),
         #    content_type="application/json; charset=utf-8",
-        #)
+        # )
     except ValueError:
         # invalid identifier
         msg["error"] = "Invalid, unrecognized, or reserved identifier."
