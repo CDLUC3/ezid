@@ -613,19 +613,19 @@ def identifier_metadata(identifier_record:ezidapp.models.identifier.Identifier)-
 
 def generate_response(
         request: django.http.HttpRequest,
-        message:dict,
-        status:int=200,
-        headers:typing.Optional[dict]=None
-    )->django.http.HttpResponse:
+        message: dict,
+        status: int = 200,
+        headers: typing.Optional[dict] = None
+    ) -> django.http.HttpResponse:
     L = logging.getLogger()
     # Check for requested response format
     # Default response is text/plain
     content_type = impl.http_accept_types.get_best_match(
-        request.headers.get('Accept', 'text/plain'),
+        request.headers.get('Accept', 'application/json'),
         impl.http_accept_types.MEDIA_INFLECTION
     )
     L.debug("Accept = %s", content_type)
-    if content_type in impl.http_accept_types.MEDIA_JSON:
+    if content_type in (impl.http_accept_types.MEDIA_JSON + impl.http_accept_types.MEDIA_ANY):
         if status >=300 and status < 400:
             return django.http.HttpResponseRedirect(
                 message["location"],
@@ -641,13 +641,12 @@ def generate_response(
             headers=headers
         )
     _message = {}
-    for k,v in message.items():
+    for k, v in message.items():
         if isinstance(v, dict):
             if k == "schema_org":
                 _message[k] = json.dumps(v)
             else:
-                for tk,tv in v.items():
-                    _message[f"{k}.{tk}"] = tv
+                _message[k] = v
         else:
             _message[k] = v
     if status >= 300 and status < 400:
@@ -662,8 +661,8 @@ def generate_response(
 
 def resolveInflection(
         request: django.http.HttpRequest,
-        identifier_info:impl.resolver.IdentifierStruct
-)->django.http.HttpResponse:
+        identifier_info: impl.resolver.IdentifierStruct
+) -> django.http.HttpResponse:
     '''"inflection" is a request for information about the identifier.
 
     This is similar to the /id/ (getMetadata) operation in EZID, but here the
@@ -714,10 +713,25 @@ def resolveInflection(
         try:
             shoulder_record = identifier_info.find_shoulder()
         except ezidapp.models.shoulder.Shoulder.DoesNotExist:
+            # OK, let's look for the NAAN and report the shoulders.
+            try:
+                shoulders = identifier_info.find_shoulders()
+                msg = {}
+                for shoulder in shoulders:
+                    msg[shoulder.prefix] = {
+                        "erc.who": shoulder.name,
+                        "erc.what": shoulder.type,
+                        "erc.when": shoulder.date,
+                    }
+                return generate_response(request, msg, status=200)
+            except ezidapp.models.shoulder.Shoulder.DoesNotExist:
+                pass
+            #naans = ezidapp.models.shoulder.list_naans(shoulder_type="ARK")
+            #print(naans)
             msg = {
                 "error": "not found",
                 "identifier": identifier_info.original,
-                "alternate": f"https://n2t.net/{identifier_info.original}"
+                "alternate": f"https://n2t.net/{identifier_info.original}",
             }
             return generate_response(request, msg, status=404)
         msg = {
