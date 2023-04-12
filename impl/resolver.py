@@ -54,6 +54,10 @@ class IdentifierStruct:
             return f"{self.prefix}/{self.suffix}"
         return f"{self.prefix}/"
 
+    @property
+    def scheme_prefix(self):
+        return f"{self.scheme}:{self.prefix}"
+
     def align_with_found(self, found_record: str):
         '''
         Sets suffix and extra so that suffix matches the suffix portion of the
@@ -116,6 +120,13 @@ class IdentifierStruct:
             raise ezidapp.models.shoulder.Shoulder.DoesNotExist()
         return result
 
+    def find_shoulders(self) -> typing.List[ezidapp.models.shoulder.Shoulder]:
+        '''Return shoulders that match this prefix.'''
+        if self.prefix is None or self.prefix == "":
+            raise ezidapp.models.shoulder.Shoulder.DoesNotExist
+        shoulders = ezidapp.models.shoulder.Shoulder.objects.filter(prefix__startswith=self.scheme_prefix)
+        return shoulders
+
 
 class ArkIdentifierStruct(IdentifierStruct):
     '''Represents an ARK identifier structure.
@@ -133,6 +144,11 @@ class ArkIdentifierStruct(IdentifierStruct):
         if self.suffix is not None:
             return f"{self.scheme}:/{self.prefix}/{self.suffix}"
         return f"{self.scheme}:/{self.prefix}/"
+
+    @property
+    def scheme_prefix(self):
+        return f"{self.scheme}:/{self.prefix}"
+
 
     def potential_matches(self) -> typing.List[str]:
         res = []
