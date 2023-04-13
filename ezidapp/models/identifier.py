@@ -33,24 +33,6 @@ import impl.util2
 MAX_SEARCHABLE_TARGET_LENGTH = 255
 
 
-def getIdentifier(identifier, prefixMatch=False):
-    if prefixMatch:
-        l = list(
-            Identifier.objects.select_related(
-                "owner", "owner__group", "ownergroup", "datacenter", "profile"
-            ).filter(identifier__in=impl.util.explodePrefixes(identifier))
-        )
-        if len(l) > 0:
-            return max(l, key=lambda si: len(si.identifier))
-        else:
-            raise Identifier.DoesNotExist()
-    else:
-        # TODO: Combine with the select_related above and apply filter in separate step
-        # if prefixmatch.
-        return Identifier.objects.select_related(
-            "owner", "owner__group", "ownergroup", "datacenter", "profile"
-        ).get(identifier=identifier)
-
 
 def getDefaultProfileLabel(identifier):
     """Return the label of the default metadata profile for a given qualified identifier."""
@@ -357,6 +339,7 @@ class IdentifierBase(django.db.models.Model):
     # exporting it to external indexing and harvesting services.
     # Although this flag may be set independently of the status, in fact
     # it has effect only if the status is public.
+    # This field is toggled by the index field in demo/advanced
     exported = django.db.models.BooleanField(default=True)
 
     # datacenter = django.db.models.ForeignKey(datacenter.Datacenter,
@@ -469,6 +452,24 @@ class IdentifierBase(django.db.models.Model):
     @property
     def usesErcProfile(self):
         return self.profile.label == "erc"
+
+    # Note: These properties are unpleasant - they should be defined
+    # as enums though the values are stored in the database.
+    @property
+    def usesSchemaOrgProfile(self):
+        return self.profile.label == "schema_org"
+
+    @property
+    def usesArkProfile(self):
+        return self.profile.label == "ark"
+
+    @property
+    def usesEZIDProfile(self):
+        return self.profile.label == "ezid"
+
+    @property
+    def usesNIHdcProfile(self):
+        return self.profile.label == "NIHdc"
 
     # All of the identifier's citation metadata as a dictionary of
     # name/value pairs, e.g., { "erc.who": "Proust, Marcel", ... }.
@@ -1205,3 +1206,43 @@ class RefIdentifier(IdentifierBase):
         # default='',
         # null=True,
     )
+
+
+def resolveIdentifier(identifier:str)->Identifier:
+    """Returns the target for the specified identifier.
+
+    Separate from getIdentifier below for slight performance boost by avoiding joins.
+
+    Prefix matching is always applied to support suffix pass through.
+    """
+    #TODO: resolve-300: This method is only used in diag-identifier
+    _l = list(
+        Identifier.objects.filter(
+            identifier__in=impl.util.explodePrefixes(identifier)
+        )
+    )
+    if len(_l) > 0:
+        return max(_l, key=lambda si: len(si.identifier))
+    raise Identifier.DoesNotExist()
+
+
+def getIdentifier(identifier:str, prefixMatch:bool=False)->Identifier:
+    """Returns Identifier with related entities.
+    """
+    if prefixMatch:
+        l = list(
+            Identifier.objects.select_related(
+                "owner", "owner__group", "ownergroup", "datacenter", "profile"
+            ).filter(identifier__in=impl.util.explodePrefixes(identifier))
+        )
+        if len(l) > 0:
+            return max(l, key=lambda si: len(si.identifier))
+        else:
+            raise Identifier.DoesNotExist()
+    else:
+        # TODO: Combine with the select_related above and apply filter in separate step
+        # if prefixmatch.
+        return Identifier.objects.select_related(
+            "owner", "owner__group", "ownergroup", "datacenter", "profile"
+        ).get(identifier=identifier)
+
