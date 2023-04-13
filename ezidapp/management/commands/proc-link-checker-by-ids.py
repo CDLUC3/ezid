@@ -10,77 +10,115 @@ The link checker tests a target URL by performing a GET request on the URL. A ti
 200 response equates to success.
 
 """
-
+import sys
 import http.client
 import http.cookiejar
 import logging
-import os
 import re
-import threading
 import urllib.error
 import urllib.parse
 import urllib.request
-import time
+import requests
+import datetime
+import csv
 
 import django.apps
 import django.conf
 import django.core.management
 
-import ezidapp.management.commands.proc_base
-import ezidapp.models.async_queue
-import ezidapp.models.identifier
-
-# import ezidapp.models.link_checker
-import ezidapp.models.user
 import impl
 import impl.nog.util
 import impl.util
 
 log = logging.getLogger(__name__)
 
-class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
+HEADER = ['Identifier',
+          'URL', 
+          'In SI', 
+          'In LC', 
+          'URL updated', 
+          'SI URL', 
+          'Return Code', 
+          'Is Bad',
+          'error']
+
+class Command(django.core.management.BaseCommand):
     help = __doc__
     name = __name__
-    setting = 'DAEMONS_LINKCHECKER_ENABLED'
 
     def add_arguments(self, parser):
         super().add_arguments(parser)
-        parser.add_argument('--id_file', type=str, help='identifier file', required=True)
+        parser.add_argument('-i', '--id_file', type=str, help='Identifier file', required=True)
+        parser.add_argument('-u', '--url', action='store_true', help='Check by target URLs')
+        parser.add_argument('-o', '--output_file', type=str, help='Output file')
+        parser.add_argument('--debug', action='store_true', help='Debug level logging')
 
-    def run(self):
-        if self.opt.id_file:
-            self.check_by_ids(self.opt.id_file)
+    def handle(self, *args, **opt):
+        impl.nog.util.log_setup(__name__, opt.get('debug'))
 
-    def now(self):
-        return time.time()
+        if opt.get('output_file'):
+            o_file = open(opt.get('output_file'), 'w')
+        else:
+            o_file = sys.stdout
+ 
+        if opt.get('id_file'):
+            id_list, url_list = self.loadIdFile(opt.get('id_file'))
+            print (id_list)
+            print(url_list)
+            csv_writer = csv.DictWriter(o_file, fieldnames=HEADER)
+            csv_writer.writeheader()
+            if opt.get('url') and url_list:
+                self.check_by_urls(url_list, csv_writer)
+            else:
+                self.check_by_ids(id_list, csv_writer)
 
-    def check_by_ids(self, id_file):
-        start = self.now()
-        log.info(f"begin processing by ids: {start}")
-        id_list = self.loadIdFile(id_file)
+    def check_by_ids(self, id_list, csv_writer):
+        start = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
+        log.info(f"begin link checker by ids: {start}")
+        
         if id_list and len(id_list) > 0:
             si_id_url_dict = self.create_id_url_dict(id_list, 'SearchIdentifier')
             lc_id_url_dict = self.create_id_url_dict(id_list, 'LinkChecker')
 
             for id in id_list:
                 output_dict = {}
-                output_dict["identifier"] = id
+                output_dict['Identifier'] = id
                 if id not in si_id_url_dict:
-                    output_dict["Not in SearchIdentifier"] = "Yes"
+                    output_dict['In SI'] = "No"
                 if id not in lc_id_url_dict:
-                    output_dict["Not in LinkChecker"] = "Yes"
+                    output_dict['In LC'] = "No"
                 si_url = si_id_url_dict.get(id)
                 lc_url = lc_id_url_dict.get(id)
                 if si_url and lc_url and si_url.strip() != lc_url.strip():
-                    output_dict["URL updated"] = "Yes"
+                    output_dict['URL updated'] = "Yes"
                 if si_url:
-                    output_dict["SearchIdentifier URL"] = si_url
-                    ret_code, success = self.check_url(si_url)
-                    print(f"return code: {ret_code}, status: {success}")
+                    output_dict['SI URL'] = si_url
+                    ret_code, success, err_msg = self.check_url(si_url)
+                    log.info(f"{id}: return code: {ret_code}, success status: {success}")
+                    output_dict['Return Code'] = ret_code
+                    output_dict['error'] = err_msg
                     if not success:
-                        output_dict["URL check Failed"] = "Failed"
+                        output_dict['Is Bad'] = "1"
                 
-                print(output_dict)
+                log.info(output_dict)
+                csv_writer.writerow(output_dict)
+
+    def check_by_urls(self, url_list, csv_writer):
+        start = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
+        log.info(f"begin link checker by urls: {start}")
+        
+        for url in url_list:
+            output_dict = {}
+            output_dict['URL'] = url
+            ret_code, success, err_msg = self.check_url(url)
+            log.info(f"{id}: return code: {ret_code}, success status: {success}")
+            output_dict['Return Code'] = ret_code
+            output_dict['error'] = err_msg
+            if not success:
+                output_dict['Is Bad'] = "1"
+            
+            log.info(output_dict)
+            csv_writer.writerow(output_dict)
 
     def create_id_url_dict(self, id_list, model_name):
         model = django.apps.apps.get_model('ezidapp', model_name)
@@ -95,19 +133,45 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         if filename is None:
             return
         id_list = []
-        with open(filename) as f:
-            lines = f.readlines()
-            for line in lines:
-                if line.strip() == "" or line.startswith("#"):
-                    continue
-                id = line.strip()
-                id_list.append(id)
+        url_list = []
+        with open(filename) as file:
+            csvreader = csv.DictReader(file, delimiter='\t')
+            for line in csvreader:
+                identifier =  line.get('identifier')
+                url = line.get('url')
+                if identifier:
+                    id_list.append(identifier)
+                if url:
+                    url_list.append(url)
   
         log.info("identifier file successfully loaded")
-        return id_list
+        return id_list, url_list
 
 
-    def check_url(self, target):
+    def check_url(self, url):
+        success = False
+        returnCode = -1
+        err_msg = ""
+        try:
+            r = requests.get(
+                url=url,
+                headers={
+                    "User-Agent": django.conf.settings.LINKCHECKER_USER_AGENT,
+                    "Accept": "*/*",
+                },
+                timeout=django.conf.settings.LINKCHECKER_CHECK_TIMEOUT,
+            )
+            returnCode = r.status_code
+            print(f"before:{r.status_code}")
+            r.raise_for_status()
+            success = True
+        except requests.exceptions.RequestException as e:
+            err_msg = "HTTPError: " + str(e)[:100]
+            log.exception(err_msg)
+
+        return returnCode, success, err_msg
+
+    def check_url_0(self, target):
         o = urllib.request.build_opener(
             urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()),
             MyHTTPErrorProcessor(),
