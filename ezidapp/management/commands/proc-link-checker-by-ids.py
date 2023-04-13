@@ -21,6 +21,7 @@ import urllib.request
 import requests
 import datetime
 import csv
+import random
 
 import django.apps
 import django.conf
@@ -40,6 +41,8 @@ HEADER = ['Identifier',
           'SI URL', 
           'Return Code', 
           'Is Bad',
+          'mimeType',
+          'size',
           'error']
 
 class Command(django.core.management.BaseCommand):
@@ -63,12 +66,13 @@ class Command(django.core.management.BaseCommand):
  
         if opt.get('id_file'):
             id_list, url_list = self.loadIdFile(opt.get('id_file'))
-            print (id_list)
-            print(url_list)
+            random.shuffle(url_list)
+
             csv_writer = csv.DictWriter(o_file, fieldnames=HEADER)
             csv_writer.writeheader()
+
             if opt.get('url') and url_list:
-                self.check_by_urls(url_list, csv_writer)
+                self.check_by_urls(url_list[:100], csv_writer)
             else:
                 self.check_by_ids(id_list, csv_writer)
 
@@ -93,12 +97,8 @@ class Command(django.core.management.BaseCommand):
                     output_dict['URL updated'] = "Yes"
                 if si_url:
                     output_dict['SI URL'] = si_url
-                    ret_code, success, err_msg = self.check_url(si_url)
-                    log.info(f"{id}: return code: {ret_code}, success status: {success}")
-                    output_dict['Return Code'] = ret_code
-                    output_dict['error'] = err_msg
-                    if not success:
-                        output_dict['Is Bad'] = "1"
+                    ret = self.check_url(si_url)
+                    self.update_output_dict(output_dict, ret)
                 
                 log.info(output_dict)
                 csv_writer.writerow(output_dict)
@@ -110,15 +110,20 @@ class Command(django.core.management.BaseCommand):
         for url in url_list:
             output_dict = {}
             output_dict['URL'] = url
-            ret_code, success, err_msg = self.check_url(url)
-            log.info(f"{id}: return code: {ret_code}, success status: {success}")
-            output_dict['Return Code'] = ret_code
-            output_dict['error'] = err_msg
-            if not success:
-                output_dict['Is Bad'] = "1"
-            
+            ret = self.check_url(url)
+            self.update_output_dict(output_dict, ret)
             log.info(output_dict)
             csv_writer.writerow(output_dict)
+
+    def update_output_dict(self, output_dict, ret):
+        (ret_code, success, mimeType, content, err_msg) = ret
+        log.info(f"{id}: return code: {ret_code}, success status: {success}")
+        output_dict['Return Code'] = ret_code
+        output_dict['mimeType'] = mimeType
+        output_dict['size'] = len(content)
+        output_dict['error'] = err_msg
+        if not success:
+            output_dict['Is Bad'] = "1"
 
     def create_id_url_dict(self, id_list, model_name):
         model = django.apps.apps.get_model('ezidapp', model_name)
@@ -151,6 +156,8 @@ class Command(django.core.management.BaseCommand):
     def check_url(self, url):
         success = False
         returnCode = -1
+        mimeType = ""
+        content = ""
         err_msg = ""
         try:
             r = requests.get(
@@ -165,11 +172,13 @@ class Command(django.core.management.BaseCommand):
             print(f"before:{r.status_code}")
             r.raise_for_status()
             success = True
+            mimeType = ""
+            content = ""
         except requests.exceptions.RequestException as e:
             err_msg = "HTTPError: " + str(e)[:100]
             log.exception(err_msg)
 
-        return returnCode, success, err_msg
+        return returnCode, success, mimeType, content, err_msg
 
     def check_url_0(self, target):
         o = urllib.request.build_opener(
