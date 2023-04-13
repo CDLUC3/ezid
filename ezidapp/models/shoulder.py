@@ -232,13 +232,3 @@ def _getShoulder(s):
     except Shoulder.DoesNotExist as e:
         logger.warning(f'Shoulder does not exist: {s}')
 
-
-def listNaans(shoulder_type: str = "ARK") -> list[str]:
-    '''Return a list of naan values for the specified identifier type.'''
-    matches = (
-        Shoulder.objects.filter(type=shoulder_type)
-        .annotate(naan=django.db.models.functions.Substr('prefix', 6, 5))
-        .values("naan")
-        .distinct()
-    )
-    return [n["naan"] for n in matches]
