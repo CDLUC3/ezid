@@ -66,13 +66,12 @@ class Command(django.core.management.BaseCommand):
  
         if opt.get('id_file'):
             id_list, url_list = self.loadIdFile(opt.get('id_file'))
-            random.shuffle(url_list)
 
             csv_writer = csv.DictWriter(o_file, fieldnames=HEADER)
             csv_writer.writeheader()
 
             if opt.get('url') and url_list:
-                self.check_by_urls(url_list[:100], csv_writer)
+                self.check_by_urls(url_list, csv_writer)
             else:
                 self.check_by_ids(id_list, csv_writer)
 
@@ -156,27 +155,44 @@ class Command(django.core.management.BaseCommand):
     def check_url(self, url):
         success = False
         returnCode = -1
-        mimeType = ""
-        content = ""
+        mimeType = "unknown"
+        content = b""
         err_msg = ""
+        chunk_size = 1024*1024*10   #10MB
+
         try:
-            r = requests.get(
+            response = requests.get(
                 url=url,
                 headers={
                     "User-Agent": django.conf.settings.LINKCHECKER_USER_AGENT,
                     "Accept": "*/*",
                 },
                 timeout=django.conf.settings.LINKCHECKER_CHECK_TIMEOUT,
+                stream=True,
             )
-            returnCode = r.status_code
-            print(f"before:{r.status_code}")
-            r.raise_for_status()
+            returnCode = response.status_code
+            mimeType = response.headers.get("Content-Type")
+            response.raise_for_status()
+
+            size = 0
+            for chunk in response.iter_content(chunk_size=chunk_size):
+                if chunk:
+                    content += chunk
+                    size += chunk_size
+                if size > django.conf.settings.LINKCHECKER_MAX_READ:
+                    log.info("Content size exceeded LINKCHECKER_MAX_READ")
+                    break
+            
             success = True
-            mimeType = ""
-            content = ""
         except requests.exceptions.RequestException as e:
             err_msg = "HTTPError: " + str(e)[:100]
-            log.exception(err_msg)
+            if mimeType.startswith("text/html") and re.search(
+                "</\s*html\s*>\s*$", str(content, 'utf-8'), re.I
+            ):
+                success = True
+                log.info("Success with " + err_msg)
+            else:
+                log.exception(err_msg)
 
         return returnCode, success, mimeType, content, err_msg
 
