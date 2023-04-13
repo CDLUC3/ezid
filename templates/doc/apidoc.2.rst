@@ -45,8 +45,8 @@ The EZID API, Version 2
 
 | **This version:** `SCHEME://HOSTNAME/doc/apidoc.2.html
   <SCHEME://HOSTNAME/doc/apidoc.2.html>`_
-| **Latest version:** `SCHEME://HOSTNAME/doc/apidoc.html
-  <SCHEME://HOSTNAME/doc/apidoc.html>`_
+| **Latest version:** `SCHEME://HOSTNAME/doc/apidoc.2.html
+  <SCHEME://HOSTNAME/doc/apidoc.2.html>`_
 | **Previous version:** `SCHEME://HOSTNAME/doc/apidoc.1.html
   <SCHEME://HOSTNAME/doc/apidoc.1.html>`_
 
@@ -745,6 +745,32 @@ metadata value, for example (truncated here for brevity):
         <description descriptionType="Abstract">In diffusion tensor imaging (DTI), interpreting ...</description>
       </descriptions>
     </resource>
+
+If an exact match for an identifier is not found then matching shoulders are presented (truncated for brevity):
+
+.. parsed-literal::
+
+    $ curl -H "Accept: application/json" \\
+        "SCHEME://HOSTNAME/ark:/13030/nonexistent?info"
+
+    {
+      "ark:/13030/p8": {
+        "erc.who": "Open Access Policy",
+        "erc.what": "ARK",
+        "erc.when": "2015-04-06"
+      },
+      "ark:/13030/fq": {
+        "erc.who": "DPR Legacy",
+        "erc.what": "ARK",
+        "erc.when": "2011-12-13"
+      },
+      "ark:/13030/ft": {
+        "erc.who": "Online Archive of California (OAC) Legacy ft",
+        "erc.what": "ARK",
+        "erc.when": "2007-06-01"
+      },
+      ...
+
 
 A live demo of the inflection operation is provided below. Enter an identifier, and click
 "Get Metadata" to show the request and response.

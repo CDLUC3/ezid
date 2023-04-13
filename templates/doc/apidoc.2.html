@@ -12,7 +12,7 @@
 {% learn_breadcrumb _("API Guide") %}
 <div class="container api vertical-buffer-20"><div class="smallfont line-block">
 <div class="line"><strong>This version:</strong> <a class="reference external" href="{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.2.html">{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.2.html</a></div>
-<div class="line"><strong>Latest version:</strong> <a class="reference external" href="{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.html">{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.html</a></div>
+<div class="line"><strong>Latest version:</strong> <a class="reference external" href="{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.2.html">{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.2.html</a></div>
 <div class="line"><strong>Previous version:</strong> <a class="reference external" href="{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.1.html">{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.1.html</a></div>
 </div>
 <p>EZID (easy-eye-dee) provides an easy way to obtain, describe, and
@@ -664,6 +664,29 @@ $ curl -H &quot;Accept: application/json&quot; \
     &lt;description descriptionType=&quot;Abstract&quot;&gt;In diffusion tensor imaging (DTI), interpreting ...&lt;/description&gt;
   &lt;/descriptions&gt;
 &lt;/resource&gt;
+</pre>
+<p>If an exact match for an identifier is not found then matching shoulders are presented (truncated for brevity):</p>
+<pre class="literal-block">
+$ curl -H &quot;Accept: application/json&quot; \
+    &quot;{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/ark:/13030/nonexistent?info&quot;
+
+{
+  &quot;ark:/13030/p8&quot;: {
+    &quot;erc.who&quot;: &quot;Open Access Policy&quot;,
+    &quot;erc.what&quot;: &quot;ARK&quot;,
+    &quot;erc.when&quot;: &quot;2015-04-06&quot;
+  },
+  &quot;ark:/13030/fq&quot;: {
+    &quot;erc.who&quot;: &quot;DPR Legacy&quot;,
+    &quot;erc.what&quot;: &quot;ARK&quot;,
+    &quot;erc.when&quot;: &quot;2011-12-13&quot;
+  },
+  &quot;ark:/13030/ft&quot;: {
+    &quot;erc.who&quot;: &quot;Online Archive of California (OAC) Legacy ft&quot;,
+    &quot;erc.what&quot;: &quot;ARK&quot;,
+    &quot;erc.when&quot;: &quot;2007-06-01&quot;
+  },
+  ...
 </pre>
 <p>A live demo of the inflection operation is provided below. Enter an identifier, and click
 &quot;Get Metadata&quot; to show the request and response.</p>
