@@ -193,6 +193,10 @@ def test_parse(val, expected):
             ("ark:/88122/zqfw0190", "https://www.industrydocuments.ucsf.edu/docs/zqfw0190"),
         ),
         ("ark:/88122/", (ezidapp.models.identifier.Identifier.DoesNotExist())),
+        (
+                "ark:/88122/zqfw",
+                (ezidapp.models.identifier.Identifier.DoesNotExist()),
+        ),
     ],
 )
 def test_resolve(val, expected):
@@ -203,6 +207,28 @@ def test_resolve(val, expected):
         print(res)
         assert res.identifier == expected[0]
         assert res.target == expected[1]
+        return
+    except Exception as e:
+        assert isinstance(e, expected.__class__)
+
+@pytest.mark.parametrize(
+    "val,expected",
+    [
+        ("ark:/00122/", (ezidapp.models.identifier.Identifier.DoesNotExist())),
+        ("ark:/88122/", (("ark:/88122/zqfw", "ark:/88122/", ))),
+        (
+                "ark:/88122/zqfw",
+                (("ark:/88122/zqfw", "ark:/88122/", )),
+        ),
+    ],
+)
+def test_findshoulders(val, expected):
+    pid_info = impl.resolver.IdentifierParser.parse(val)
+    try:
+        res = pid_info.find_shoulders()
+        for item in res:
+            print(item.prefix)
+            assert(item.prefix in expected[0])
         return
     except Exception as e:
         assert isinstance(e, expected.__class__)
