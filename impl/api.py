@@ -71,24 +71,46 @@ Request a batch download:
   POST /download_request   [authentication required]
   request body: application/x-www-form-urlencoded
   response body: status line
+
+Resolve an identifier:
+  GET /{identifier}
+  response status: 302
+  response body: json document with target info
+
+Identifier inflection (introspection):
+  GET /{identifier}? or ??
+  response body as for View an identifier
 """
+import ast
 import cgi
+import datetime
+import json
 import logging
+import sys
 import time
+import typing
+import urllib.parse
 
 import django.conf
 import django.http
+
+import ezidapp.models.identifier
+import ezidapp.models.model_util
+import ezidapp.models.shoulder
 
 import impl.anvl
 import impl.datacite
 import impl.download
 import impl.ezid
 import impl.noid_egg
+import impl.resolver
 import impl.search_util
 import impl.statistics
 import impl.userauth
 import impl.util
+import impl.http_accept_types
 
+HTTP_DATE_FORMAT = "%a, %d %b %Y %H:%M:%S GMT"
 
 
 def _readInput(request):
@@ -160,6 +182,7 @@ def _validateOptions(request, options):
             )
     return d
 
+
 STATUS_CODE_MAP = [
     ("success:", 200),
     ("error: bad request", 400),
@@ -170,6 +193,7 @@ STATUS_CODE_MAP = [
     ("error: concurrency limit exceeded", 503),
 ]
 
+
 def _statusMapping(content, createRequest):
     '''
     Map a response string to a response status code.
@@ -179,7 +203,7 @@ def _statusMapping(content, createRequest):
     '''
     for test, code in STATUS_CODE_MAP:
         if content.startswith(test):
-            if code==200 and createRequest:
+            if code == 200 and createRequest:
                 # per API docs, successful create returns 201
                 return 201
             return code
@@ -506,3 +530,375 @@ def pause(request):
         )
     else:
         assert False, "unhandled case"
+
+
+def identifier_metadata(identifier_record: ezidapp.models.identifier.Identifier) -> dict:
+    '''Given an identifier record, generate a dict that may be serialized to ANVL or JSON.
+
+    This method is separate from ezid.getMetadata because that method assumes input of
+    an identifier string and performs validation and so forth.
+
+    Also, here we try to represent the different metadata serializations in a way that
+    can conform with the requested media type by returning a metadata dict that can be
+    serialzied to ANVL or JSON.
+    '''
+
+    def date_convert(dt_str: str) -> datetime.datetime:
+        return datetime.datetime.fromtimestamp(int(dt_str))
+
+    L = logging.getLogger("identifier_metadata")
+    meta_dict = identifier_record.toLegacy()
+    # Make the metadata a standalone dict
+    _profile = identifier_record.profile.label
+    L.debug("profile: %s", _profile)
+    L.debug("metadata: %s", meta_dict)
+    if "erc" in meta_dict:
+        _tmp = impl.anvl.parse(meta_dict.pop('erc'))
+        meta_dict["erc"] = _tmp
+    # _tmp_dict = {}
+    # for k,v in meta_dict.items():
+    #    kparts = k.split(".", 1)
+    #    if len(kparts) > 1:
+    #        if kparts[0] not in _tmp_dict:
+    #            _tmp_dict[kparts[0]] = {}
+    #        _tmp_dict[kparts[0]][kparts[1]] = v
+    #    else:
+    #        _tmp_dict[k] = v
+
+    if not _profile in meta_dict:
+        # The metadata exists as "profile.key" entries
+        # Restructure to make it a dict under a profile key
+        _tmp_dict = {_profile: {}}
+        if _profile != "erc":
+            _tmp_dict["erc"] = {}
+        if _profile != "dc":
+            _tmp_dict["dc"] = {}
+        _test = f"{_profile}."
+        _test_len = len(_test)
+        for k in meta_dict:
+            if k.startswith(f"{_profile}."):
+                v = meta_dict[k]
+                _tmp_dict[_profile][k[_test_len:]] = v
+            elif k.startswith("erc."):
+                _tmp_dict["erc"][k[4:]] = meta_dict[k]
+            elif k.startswith("dc."):
+                _tmp_dict["erc"][k[3:]] = meta_dict[k]
+            else:
+                _tmp_dict[k] = meta_dict[k]
+        if len(_tmp_dict["erc"]) == 0:
+            _tmp_dict.pop("erc")
+        if len(_tmp_dict["dc"]) == 0:
+            _tmp_dict.pop("dc")
+        if len(_tmp_dict.get(_profile, {})) > 0:
+            meta_dict = _tmp_dict
+    else:
+        if identifier_record.usesSchemaOrgProfile:  # schema_org
+            # The metadata is a dict but not stored according to json spec
+            if _profile in meta_dict:
+                try:
+                    _tmp = ast.literal_eval(meta_dict.pop('schema_org'))
+                    meta_dict['schema_org'] = _tmp
+                except Exception as e:
+                    L.warning(
+                        "Unable to parse schema_org metadata for %s", identifier_record.identifier
+                    )
+    ezidapp.models.model_util.convertLegacyToExternal(meta_dict)
+    try:
+        meta_dict["id created"] = date_convert(meta_dict.pop("_created"))
+    except Exception as e:
+        L.error(e)
+    try:
+        meta_dict["id updated"] = date_convert(meta_dict.pop("_updated"))
+    except Exception as e:
+        L.error(e)
+    return meta_dict
+
+
+def generate_response(
+    request: django.http.HttpRequest,
+    message: dict,
+    status: int = 200,
+    headers: typing.Optional[dict] = None,
+) -> django.http.HttpResponse:
+    L = logging.getLogger()
+    # Check for requested response format
+    # Default response is text/plain
+    content_type = impl.http_accept_types.get_best_match(
+        request.headers.get('Accept', 'application/json'), impl.http_accept_types.MEDIA_INFLECTION
+    )
+    L.debug("Accept = %s", content_type)
+    if content_type in (impl.http_accept_types.MEDIA_JSON + impl.http_accept_types.MEDIA_ANY):
+        if status >= 300 and status < 400:
+            return django.http.HttpResponseRedirect(
+                message["location"],
+                headers=headers,
+                content=json.dumps(message, indent=2),
+                content_type="application/json; charset=utf-8",
+            )
+        return django.http.JsonResponse(
+            message,
+            status=status,
+            content_type="application/json; charset=utf-8",
+            json_dumps_params={"indent": 2},
+            headers=headers,
+        )
+    _message = {}
+    for k, v in message.items():
+        if isinstance(v, dict):
+            if k == "schema_org":
+                _message[k] = json.dumps(v)
+            else:
+                _message[k] = v
+        else:
+            _message[k] = v
+    if status >= 300 and status < 400:
+        return django.http.HttpResponseRedirect(
+            message["location"],
+            headers=headers,
+            content=impl.anvl.format(_message),
+            content_type="text/plain; charset=utf-8",
+        )
+    return django.http.HttpResponse(
+        impl.anvl.format(_message),
+        status=status,
+        content_type="text/plain; charset=utf-8",
+        headers=headers,
+    )
+
+
+def resolveInflection(
+    request: django.http.HttpRequest, identifier_info: impl.resolver.IdentifierStruct
+) -> django.http.HttpResponse:
+    '''"inflection" is a request for information about the identifier.
+
+    This is similar to the /id/ (getMetadata) operation in EZID, but here the
+    ANVL output is more aligned with that produced by N2T and the response may
+    also be provided in JSON is requested through content negotiation.
+    '''
+    L = logging.getLogger()
+    user = impl.userauth.authenticateRequest(request)
+    msg = {}
+    if isinstance(user, str):
+        # This follows legacy behavior, with methods exhibiting a confusing, obfuscated duality
+        # In this case, if user is a str, then it's some sort of error condition
+        status = _statusMapping(user, False)
+        msg_parts = user.split(":", 1)
+        # Python preserves dict item order, which is helpful if the
+        # response is anvl
+        msg = {"error": msg_parts[1], "identifier": identifier_info.original}
+        return generate_response(request, msg, status=status)
+    # No user is same as anonymous
+    if user is None:
+        user = ezidapp.models.user.AnonymousUser
+    try:
+        # Get the database entry. This will throw if not found
+        pid_record = identifier_info.find_record()
+        if not impl.policy.authorizeView(user, pid_record):
+            # not authorized
+            msg = {
+                "error": "unauthorized",
+                "identifier": identifier_info.original,
+            }
+            return generate_response(request, msg, status=401)
+        pid_metadata = identifier_metadata(pid_record)
+        t_modified = datetime.datetime.fromtimestamp(
+            pid_record.updateTime, tz=datetime.timezone.utc
+        )
+        headers = {"Last-Modified": t_modified.strftime(HTTP_DATE_FORMAT)}
+        return generate_response(request, pid_metadata, status=200, headers=headers)
+
+    except ezidapp.models.identifier.Identifier.DoesNotExist:
+        # identifier not found here
+        # Let's try matching a shoulder
+        try:
+            shoulder_record = identifier_info.find_shoulder()
+        except ezidapp.models.shoulder.Shoulder.DoesNotExist:
+            # OK, let's look for the NAAN and report the shoulders.
+            try:
+                shoulders = identifier_info.find_shoulders()
+                msg = {}
+                for shoulder in shoulders:
+                    msg[shoulder.prefix] = {
+                        "erc.who": shoulder.name,
+                        "erc.what": shoulder.type,
+                        "erc.when": shoulder.date,
+                    }
+                return generate_response(request, msg, status=200)
+            except ezidapp.models.shoulder.Shoulder.DoesNotExist:
+                pass
+            # naans = ezidapp.models.shoulder.list_naans(shoulder_type="ARK")
+            # print(naans)
+            msg = {
+                "error": "not found",
+                "identifier": identifier_info.original,
+                "alternate": f"https://n2t.net/{identifier_info.original}",
+            }
+            return generate_response(request, msg, status=404)
+        msg = {
+            "id": shoulder_record.prefix,
+            "erc.who": shoulder_record.name,
+            "erc.what": shoulder_record.shoulder_type.shoulder_type,
+            "erc.when": shoulder_record.date.isoformat(),
+            "agency": shoulder_record.registration_agency.registration_agency,
+        }
+        # Note there is no date-modified for shoulders
+        return generate_response(request, msg, status=200)
+    except Exception as e:
+        L.error("resolveInflection error: %s", e)
+        msg = {"error": "unable to parse", "identifier": identifier_info.original}
+    return generate_response(request, msg, status=400)
+
+
+def resolveIdentifier(
+    request: django.http.HttpRequest, identifier: str
+) -> django.http.HttpResponse:
+    '''
+    Performs identifier resolution and inflection.
+
+    identifier is the path portion of the request after 'ark:' or 'doi:',
+    however, note that identifier string is not used here, but instead the
+    full path of the request is evaluated. This is because the full path
+    may contain additional information (inflection and suffix for passthrough)
+    that will normally be stripped out by the Django variable parsing mechanism.
+
+    The following steps are performed:
+
+    1. The identifier is parsed to an IdentifierStruct.
+    2. If the request is an inflection request then:
+    2.1. If the identifier is in the database then:
+    2.1.1. Metadata is retrieved
+    2.1.2. Response as ANVL or JSON according to content negotiation
+    2.2. If the identifier matches a shoulder then:
+    2.2.1. Shoulder metadata constructed
+    2.2.2. Returned as ANVL or JSON according to content negotiation
+    2.3. A not found error is returned
+    3. The request is a resolve request
+    4. If the identifier is a DOI:
+    4.1. If No-Redirect is not requested (default):
+    4.1.1. Redirect to the DOI resolver service
+    5. If the identifier is not in the database:
+    5.1. An HTTP 404 Not Found error is returned
+    6. If the identifier is in the database:
+    6.1. If the identifier is reserved:
+    6.1.1. Return a 404 http status
+    6.2. Gather minimal metadata about the identifier
+    6.3. If No-redirect is not requested (default)
+    6.3.1. Return a redirect response containing the minimal metadata as a body. If
+         the identifier is flagged as unavailable, then the tombstone page is the
+         redirect target.
+    6.4. Return the minimal metadata about the identifier
+
+    Response from this method is one of:
+
+    - http redirect to target
+    - response body containing metadata associated with the identifier
+    - A 404 not found error
+    - A 401 not authorized error
+
+    An inflection request versus a redirect request is distinguished by the
+    presence of terminating "?", "??", or "?info" characters on the full path.
+
+    The redirect URL is the request "identifier [+ querystring]" appended to the
+    identifier target. If the identifier is flagged as unavailable, then the
+    tombstone page is the redirect target.
+
+    The Last-Modified header of the response is set to the date updated of the
+    matching identifier.
+
+    The response content body is a JSON block containing the keys:
+      id: The matched identifier value
+      suffix: The suffix portion of the request, including query string if any
+      location: The redirection target URL
+      modified: The identifier date updated value
+
+    If the identifier is invalid, then a 404 response is returned, with a JSON body
+    with the keys:
+      id: The requested identifier value
+      error: A brief description of the reason
+
+    If the identifier is valid but not present or reserved, a 404 response is
+    returned with a JSON body containing the keys:
+      id: The requested identifier value
+      error: "Not found."
+      alternate: A suggested alternate location to try (N2T url)
+
+    If the client issues a request with the custom header "No-Redirect", then
+    the response is either an ANVL or JSON (by content-negotiation) representation
+    of the minimal metadata about the identifier.
+    '''
+    L = logging.getLogger(__name__)
+    if django.conf.settings.DEBUG:
+        # This is an expensive call so hide it unless debugging
+        L.debug("%s.%s: %s", __name__, sys._getframe().f_code.co_name, identifier)
+    L.debug(request.get_full_path())
+
+    # Use the request full path to get the requested identifier
+    # Note that this requires the resolver operation is located at the service root.
+    identifier = request.get_full_path().lstrip("/")
+
+    # Use the IdentifierParser to parse and get an identifier structure
+    identifier_info = impl.resolver.IdentifierParser.parse(identifier)
+    if identifier_info.inflection:
+        return resolveInflection(request, identifier_info)
+
+    # Check to see if client has requested no-redirects through the custom No-redirect header
+    follow_redirect = not impl.util.truthy_to_boolean(request.headers.get("No-Redirect", False))
+    msg = {"request_id": identifier}
+    # Handle resolve request
+    # If the identifier is a DOI, then redirect to the registered DOI resolver
+    # Don't even bother to look for
+    if identifier_info.scheme == impl.resolver.SCHEME_DOI and follow_redirect:
+        try:
+            doi_resolver = django.conf.settings.RESOLVER_DOI
+            if not doi_resolver.endswith("/"):
+                doi_resolver = doi_resolver + "/"
+        except:
+            doi_resolver = "https://doi.org/"
+        return django.http.HttpResponseRedirect(
+            f"{doi_resolver}{identifier_info.prefix}/{identifier_info.suffix}{identifier_info.extra}"
+        )
+    # Retrieve the identifier info to support redirection or inspection of metadata about the identifier
+    try:
+        # Populate the identifier structure but with minimal field info, enough to
+        # service the redirect
+        res = identifier_info.find_record(fields=["identifier", "updateTime", "target", "status"])
+        if res.isReserved:
+            # A reserved identifier is not resolvable
+            raise ValueError
+        t_modified = datetime.datetime.fromtimestamp(res.updateTime, tz=datetime.timezone.utc)
+        headers = {"Last-Modified": t_modified.strftime(HTTP_DATE_FORMAT)}
+        msg["id"] = res.identifier
+        msg["extra"] = identifier_info.extra
+        # identifier.resolverTarget checks for unavailable status and returns
+        # the appropriate URL for the identifier target. e.g. the tombstone address vs. registered location
+        msg['location'] = f"{res.resolverTarget}{identifier_info.extra}"
+        msg['modified'] = t_modified
+        # Check for custom No-Redirect header value
+        if not follow_redirect:
+            headers["Location"] = msg["location"]
+            return generate_response(request, msg, status=200, headers=headers)
+        # Convert date time to a string for the redirect body
+        msg['modified'] = t_modified.isoformat()
+        return generate_response(request, msg, status=302, headers=headers)
+        # return django.http.HttpResponseRedirect(
+        #    msg["location"],
+        #    headers=headers,
+        #    content= json.dumps(msg, indent=2),
+        #    content_type="application/json; charset=utf-8",
+        # )
+    except ValueError:
+        # invalid identifier
+        msg["error"] = "Invalid, unrecognized, or reserved identifier."
+    except ezidapp.models.identifier.Identifier.DoesNotExist:
+        # identifier not found here
+        msg["error"] = "Not found."
+        _arkresolver = django.conf.settings.RESOLVER_ARK
+        if not _arkresolver.endswith("/"):
+            _arkresolver += "/"
+        msg["alternate"] = f"{_arkresolver}{identifier}"
+    except Exception as e:
+        L.error(e)
+        msg["error"] = "Not found."
+    return django.http.HttpResponseNotFound(
+        json.dumps(msg), content_type="application/json; charset=utf-8"
+    )

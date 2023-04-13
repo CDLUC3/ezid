@@ -70,6 +70,7 @@ urlpatterns = [
     django.urls.re_path("^login$",                         impl.dispatch.d,                    {"uiFunction": impl.ui_account.login,  "apiFunction": impl.api.login},),
     django.urls.re_path("^logout$",                        impl.dispatch.d,                    {"uiFunction": impl.ui_account.logout, "apiFunction": impl.api.logout},),
     # API
+    django.urls.re_path("^(ark:|doi:)(?P<identifier>.*)$", impl.api.resolveIdentifier,         name="api.resolveIdentifier"),
     django.urls.re_path("^shoulder/",                      impl.api.mintIdentifier,            name="api.mintIdentifier"),
     django.urls.re_path("^status$",                        impl.api.getStatus,                 name="api.getStatus"),
     django.urls.re_path("^version$",                       impl.api.getVersion,                name="api.getVersion"),

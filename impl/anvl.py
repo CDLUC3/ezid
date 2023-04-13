@@ -5,7 +5,7 @@
 
 <http://wiki.ucop.edu/display/Curation/Anvl>.
 """
-
+import datetime
 import re
 
 
@@ -27,6 +27,8 @@ def _encodeLabel(s):
 
 
 def _encodeValue(s):
+    if not isinstance(s, str):
+        s = str(s)
     return _encode(_pattern2, s)
 
 
@@ -41,18 +43,23 @@ def _decode(s):
     return _pattern3.sub(_decodeRewriter, s)
 
 
-def formatPair(label, value):
+def formatPair(label, value, indent=""):
     """Format a label and value into an ANVL element
     """
-    return f"{_encodeLabel(label)}: {_encodeValue(value)}\n"
+    if isinstance(value, datetime.datetime):
+        value = value.strftime("%Y.%m.%d_%H:%M:%S")
+    elif isinstance(value, dict):
+        value = format(value, indent=indent+4*" ")
+        return f"{_encodeLabel(label)}:\n{value}"
+    return f"{indent}{_encodeLabel(label)}: {_encodeValue(value)}\n"
 
 
-def format(d):
+def format(d, indent=""):
     """Format a dictionary into an ANVL string
 
     Labels and values are suitably percent-encoded.
     """
-    return "".join(formatPair(k, v) for k, v in list(d.items()))
+    return "".join(formatPair(k, v, indent=indent) for k, v in list(d.items()))
 
 
 def parse(s):
