@@ -15,7 +15,7 @@ Identifier,URL,In SI,In LC,URL updated,SI URL,Return Code,Is Bad,mimeType,size,e
 ,https://www.industrydocuments.ucsf.edu/docs/ypvm0000,,,,,200,,text/html;charset=UTF-8,132167,,0,,text/html;charset=UTF-8,132167,
 ,http://datamares.ucsd.edu/stories/cual-es-el-estado-de-explotacion-de-los-recursos-pesqueros-en-el-golfo-de-california/?lang=es,,,,,-1,1,unknown,0,"HTTPError: HTTPSConnectionPool(host='datamares.orgstories', port=443): Max retries exceeded with url: /cual-es-",-1,1,unknown,0,"Exception: <urlopen error [Errno 8] nodename nor servname provided, or not known>"
 ,https://massive.ucsd.edu/ProteoSAFe/dataset.jsp?accession=MSV000084093,,,,,500,1,text/html;charset=utf-8,0,HTTPError: 500 Server Error: Internal Server Error for url: https://massive.ucsd.edu/ProteoSAFe/dataset.jsp?acc,500,1,unknown,0,HTTPError: HTTP Error 500: Internal Server Error
-,https://dataverse.ucla.edu/file.xhtml?persistentId=doi:10.25346/S6/4UFIHX/T9IUWE,,,,,503,1,text/html; charset=iso-8859-1,0,HTTPError: 503 Server Error: Service Unavailable for url: https://dataverse.ucla.edu/file.xhtml?persistentId=do,503,1,unknown,0,HTTPError: HTTP Error 503: Service Unavailable
+,https://dataverse.ucla.edu/file.xhtml?persistentId=doi:10.25346/S6/4UFIHX/T9IUWE,,,,,404,1,application/xhtml+xml;charset=UTF-8,0,HTTPError: 404 Client Error: Not Found for url: https://dataverse.ucla.edu/file.xhtml?persistentId=doi:10.25346,404,1,unknown,0,HTTPError: HTTP Error 404: Not Found
 ,https://massive.ucsd.edu/ProteoSAFe/dataset.jsp?accession=MSV000091548,,,,,500,1,text/html;charset=utf-8,0,HTTPError: 500 Server Error: Internal Server Error for url: https://massive.ucsd.edu/ProteoSAFe/dataset.jsp?acc,500,1,unknown,0,HTTPError: HTTP Error 500: Internal Server Error
 ,http://content.cdlib.org/ark:/13030/c82r40bq,,,,,200,,text/html;charset=UTF-8,22481,,0,,text/html;charset=UTF-8,22481,
 ,http://content.cdlib.org/ark:/13030/c86h4r4z,,,,,200,,text/html;charset=UTF-8,23773,,0,,text/html;charset=UTF-8,23773,
@@ -51,12 +51,12 @@ Identifier,URL,In SI,In LC,URL updated,SI URL,Return Code,Is Bad,mimeType,size,e
 ,https://dc.library.northwestern.edu/items/112fe738-acdd-4efb-9cfd-df0270c8cd4e,,,,,200,,text/html; charset=utf-8,5694,,0,,text/html; charset=utf-8,5694,
 ,http://MorphoSource.org/index.php/Detail/MediaDetail/Show/media_file_id/85463,,,,,200,,text/html; charset=utf-8,36722,,0,,text/html; charset=utf-8,36722,
 ,https://repository.duke.edu/id/ark:/87924/r4s46n71b,,,,,500,1,text/html; charset=UTF-8,0,HTTPError: 500 Server Error: Internal Server Error for url: https://repository.duke.edu/dc/dukechapel/dcrau0021,500,1,unknown,0,HTTPError: HTTP Error 500: Internal Server Error
-,https://arc.lib.montana.edu/milburn-lincoln-wilson/item/4835,,,,,200,,text/html; charset=UTF-8,33420,,0,,text/html; charset=UTF-8,1243,
-,http://pudl.princeton.edu/objects/xd07gw55g,,,,,-1,1,unknown,0,HTTPError: Exceeded 30 redirects.,301,1,unknown,0,"HTTPError: HTTP Error 301: The HTTP server returned a redirect error that would lead to an infinite loop.
+,https://arc.lib.montana.edu/milburn-lincoln-wilson/item/4835,,,,,200,,text/html; charset=UTF-8,33141,,0,,text/html; charset=UTF-8,1243,
+,http://pudl.princeton.edu/objects/xd07gw55g,,,,,301,1,unknown,0,HTTPError: Exceeded 30 redirects.,301,1,unknown,0,"HTTPError: HTTP Error 301: The HTTP server returned a redirect error that would lead to an infinite loop.
 The l"
-,http://pudl.princeton.edu/objects/z890rx11q,,,,,-1,1,unknown,0,HTTPError: Exceeded 30 redirects.,301,1,unknown,0,"HTTPError: HTTP Error 301: The HTTP server returned a redirect error that would lead to an infinite loop.
+,http://pudl.princeton.edu/objects/z890rx11q,,,,,301,1,unknown,0,HTTPError: Exceeded 30 redirects.,301,1,unknown,0,"HTTPError: HTTP Error 301: The HTTP server returned a redirect error that would lead to an infinite loop.
 The l"
-,http://pudl.princeton.edu/objects/zc77ss97j,,,,,-1,1,unknown,0,HTTPError: Exceeded 30 redirects.,301,1,unknown,0,"HTTPError: HTTP Error 301: The HTTP server returned a redirect error that would lead to an infinite loop.
+,http://pudl.princeton.edu/objects/zc77ss97j,,,,,301,1,unknown,0,HTTPError: Exceeded 30 redirects.,301,1,unknown,0,"HTTPError: HTTP Error 301: The HTTP server returned a redirect error that would lead to an infinite loop.
 The l"
 ,https://media.northwestern.edu/media_objects/5h73pw048/section/9g54xh64n,,,,,410,1,text/html; charset=utf-8,0,HTTPError: 410 Client Error: Gone for url: https://media.northwestern.edu/media_objects/5h73pw048/section/9g54x,410,1,unknown,0,HTTPError: HTTP Error 410: Gone
 ,http://media.northwestern.edu/media_objects/5h73pw048,,,,,410,1,text/html; charset=utf-8,0,HTTPError: 410 Client Error: Gone for url: https://media.northwestern.edu:443/media_objects/5h73pw048,410,1,unknown,0,HTTPError: HTTP Error 410: Gone
@@ -64,9 +64,9 @@ The l"
 ,http://ark.cdlib.org/ark:/13030/tf896nb4v3,,,,,404,1,text/html; charset=utf-8,0,HTTPError: 404 Client Error: Not Found for url: https://calisphere.org/item/ark:/13030/tf896nb4v3/%3F/,404,1,unknown,0,HTTPError: HTTP Error 404: Not Found
 ,https://osf.io/vsmka,,,,,200,,text/html; charset=utf-8,7071,,308,1,unknown,0,HTTPError: HTTP Error 308: PERMANENT REDIRECT
 ,https://osf.io/z74xh,,,,,200,,text/html; charset=utf-8,7071,,308,1,unknown,0,HTTPError: HTTP Error 308: PERMANENT REDIRECT
-,http://content.cdlib.org/ark:/13030/c8ks708z,,,,,-1,1,unknown,0,HTTPError: Exceeded 30 redirects.,302,1,unknown,0,"HTTPError: HTTP Error 302: The HTTP server returned a redirect error that would lead to an infinite loop.
+,http://content.cdlib.org/ark:/13030/c8ks708z,,,,,302,1,unknown,0,HTTPError: Exceeded 30 redirects.,302,1,unknown,0,"HTTPError: HTTP Error 302: The HTTP server returned a redirect error that would lead to an infinite loop.
 The l"
-,http://pudl.princeton.edu/objects/qj72pb00k,,,,,-1,1,unknown,0,HTTPError: Exceeded 30 redirects.,301,1,unknown,0,"HTTPError: HTTP Error 301: The HTTP server returned a redirect error that would lead to an infinite loop.
+,http://pudl.princeton.edu/objects/qj72pb00k,,,,,301,1,unknown,0,HTTPError: Exceeded 30 redirects.,301,1,unknown,0,"HTTPError: HTTP Error 301: The HTTP server returned a redirect error that would lead to an infinite loop.
 The l"
-,http://pudl.princeton.edu/objects/qr46r369k,,,,,-1,1,unknown,0,HTTPError: Exceeded 30 redirects.,301,1,unknown,0,"HTTPError: HTTP Error 301: The HTTP server returned a redirect error that would lead to an infinite loop.
+,http://pudl.princeton.edu/objects/qr46r369k,,,,,301,1,unknown,0,HTTPError: Exceeded 30 redirects.,301,1,unknown,0,"HTTPError: HTTP Error 301: The HTTP server returned a redirect error that would lead to an infinite loop.
 The l"

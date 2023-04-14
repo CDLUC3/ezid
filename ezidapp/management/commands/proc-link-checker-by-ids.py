@@ -203,6 +203,8 @@ class Command(django.core.management.BaseCommand):
             
             success = True
         except requests.exceptions.RequestException as e:
+            if hasattr(e, 'response') and e.response is not None:
+                returnCode = e.response.status_code
             err_msg = "HTTPError: " + str(e)[:100]
             if mimeType.startswith("text/html") and re.search(
                 "</\s*html\s*>\s*$", str(content, 'utf-8'), re.I
