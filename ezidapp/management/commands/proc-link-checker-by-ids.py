@@ -105,7 +105,6 @@ class Command(django.core.management.BaseCommand):
                     ret = self.check_url(si_url)
                     self.update_output_dict(output_dict, ret)
                 
-                log.info(output_dict)
                 csv_writer.writerow(output_dict)
 
     def check_by_urls(self, url_list, csv_writer):
@@ -119,7 +118,6 @@ class Command(django.core.management.BaseCommand):
             ret_0 = self.check_url_0(url)
             self.update_output_dict(output_dict, ret)
             self.update_output_dict_0(output_dict, ret_0)
-            log.info(output_dict)
             csv_writer.writerow(output_dict)
 
     def update_output_dict(self, output_dict, ret):
