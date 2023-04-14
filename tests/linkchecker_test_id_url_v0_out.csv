@@ -51,7 +51,7 @@ Identifier,URL,In SI,In LC,URL updated,SI URL,Return Code,Is Bad,mimeType,size,e
 ,https://dc.library.northwestern.edu/items/112fe738-acdd-4efb-9cfd-df0270c8cd4e,,,,,200,,text/html; charset=utf-8,5694,
 ,http://MorphoSource.org/index.php/Detail/MediaDetail/Show/media_file_id/85463,,,,,200,,text/html; charset=utf-8,36722,
 ,https://repository.duke.edu/id/ark:/87924/r4s46n71b,,,,,500,1,text/html; charset=UTF-8,0,HTTPError: 500 Server Error: Internal Server Error for url: https://repository.duke.edu/dc/dukechapel/dcrau0021
-,https://arc.lib.montana.edu/milburn-lincoln-wilson/item/4835,,,,,200,,text/html; charset=UTF-8,33021,
+,https://arc.lib.montana.edu/milburn-lincoln-wilson/item/4835,,,,,200,,text/html; charset=UTF-8,33140,
 ,http://pudl.princeton.edu/objects/xd07gw55g,,,,,-1,1,unknown,0,HTTPError: Exceeded 30 redirects.
 ,http://pudl.princeton.edu/objects/z890rx11q,,,,,-1,1,unknown,0,HTTPError: Exceeded 30 redirects.
 ,http://pudl.princeton.edu/objects/zc77ss97j,,,,,-1,1,unknown,0,HTTPError: Exceeded 30 redirects.
@@ -59,3 +59,8 @@ Identifier,URL,In SI,In LC,URL updated,SI URL,Return Code,Is Bad,mimeType,size,e
 ,http://media.northwestern.edu/media_objects/5h73pw048,,,,,410,1,text/html; charset=utf-8,0,HTTPError: 410 Client Error: Gone for url: https://media.northwestern.edu:443/media_objects/5h73pw048
 ,https://media.northwestern.edu/media_objects/7m01bm37q/section/dr26xz01p,,,,,410,1,text/html; charset=utf-8,0,HTTPError: 410 Client Error: Gone for url: https://media.northwestern.edu/media_objects/7m01bm37q/section/dr26x
 ,http://ark.cdlib.org/ark:/13030/tf896nb4v3,,,,,404,1,text/html; charset=utf-8,0,HTTPError: 404 Client Error: Not Found for url: https://calisphere.org/item/ark:/13030/tf896nb4v3/%3F/
+,https://osf.io/vsmka,,,,,200,,text/html; charset=utf-8,7071,
+,https://osf.io/z74xh,,,,,200,,text/html; charset=utf-8,7071,
+,http://content.cdlib.org/ark:/13030/c8ks708z,,,,,-1,1,unknown,0,HTTPError: Exceeded 30 redirects.
+,http://pudl.princeton.edu/objects/qj72pb00k,,,,,-1,1,unknown,0,HTTPError: Exceeded 30 redirects.
+,http://pudl.princeton.edu/objects/qr46r369k,,,,,-1,1,unknown,0,HTTPError: Exceeded 30 redirects.

@@ -205,6 +205,7 @@ class Command(django.core.management.BaseCommand):
         mimeType = "unknown"
         returnCode = 0
         success = True
+        err_msg = ""
         try:
             # This should probably be considered a Python bug, but urllib2
             # fails if the URL contains Unicode characters. Encoding the
@@ -236,20 +237,23 @@ class Command(django.core.management.BaseCommand):
             else:
                 success = False
                 returnCode = -1
+                err_msg = "IncompleteRead: " + str(e)[:100]
         except urllib.error.HTTPError as e:
             log.exception('HTTPError')
             success = False
             returnCode = e.code
+            err_msg = "HTTPError: " + str(e)[:100]
         except Exception as e:
             log.exception('Exception')
             success = False
             returnCode = -1
+            err_msg = "Exception: " + str(e)[:100]
         else:
             success = True
         finally:
             if c:
                 c.close()
-            return returnCode, success
+            return returnCode, success, mimeType, content, err_msg
 
 
 class MyHTTPErrorProcessor(urllib.request.HTTPErrorProcessor):
