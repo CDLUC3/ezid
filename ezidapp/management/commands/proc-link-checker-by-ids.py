@@ -43,7 +43,13 @@ HEADER = ['Identifier',
           'Is Bad',
           'mimeType',
           'size',
-          'error']
+          'error',
+          'returnCode_0', 
+          'isBad_0',
+          'mimeType_0',
+          'size_0',
+          'error_0',
+          ]
 
 class Command(django.core.management.BaseCommand):
     help = __doc__
@@ -110,19 +116,31 @@ class Command(django.core.management.BaseCommand):
             output_dict = {}
             output_dict['URL'] = url
             ret = self.check_url(url)
+            ret_0 = self.check_url_0(url)
             self.update_output_dict(output_dict, ret)
+            self.update_output_dict_0(output_dict, ret_0)
             log.info(output_dict)
             csv_writer.writerow(output_dict)
 
     def update_output_dict(self, output_dict, ret):
         (ret_code, success, mimeType, content, err_msg) = ret
-        log.info(f"{id}: return code: {ret_code}, success status: {success}")
+        log.info(f"return code: {ret_code}, success status: {success}")
         output_dict['Return Code'] = ret_code
         output_dict['mimeType'] = mimeType
         output_dict['size'] = len(content)
         output_dict['error'] = err_msg
         if not success:
             output_dict['Is Bad'] = "1"
+
+    def update_output_dict_0(self, output_dict, ret):
+        (ret_code, success, mimeType, content, err_msg) = ret
+        log.info(f"return code: {ret_code}, success status: {success}")
+        output_dict['returnCode_0'] = ret_code
+        output_dict['mimeType_0'] = mimeType
+        output_dict['size_0'] = len(content)
+        output_dict['error_0'] = err_msg
+        if not success:
+            output_dict['isBad_0'] = "1"
 
     def create_id_url_dict(self, id_list, model_name):
         model = django.apps.apps.get_model('ezidapp', model_name)
@@ -205,6 +223,7 @@ class Command(django.core.management.BaseCommand):
         mimeType = "unknown"
         returnCode = 0
         success = True
+        content = ""
         err_msg = ""
         try:
             # This should probably be considered a Python bug, but urllib2
