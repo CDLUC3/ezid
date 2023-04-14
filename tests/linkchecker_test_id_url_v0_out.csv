@@ -1,0 +1,61 @@
+Identifier,URL,In SI,In LC,URL updated,SI URL,Return Code,Is Bad,mimeType,size,error
+,http://digitalcollections.ucsc.edu:80/cdm/ref/collection/p265101coll10/id/476,,,,,400,1,text/html; charset=iso-8859-1,0,HTTPError: 400 Client Error: Bad Request for url: https://digitalcollections.library.ucsc.edu/cdm/ref/collectio
+,http://www.cdlib.org/services/uc3/webinars/was/analyze/lib/playback.html,,,,,404,1,text/html; charset=UTF-8,0,HTTPError: 404 Client Error: Not Found for url: https://cdlib.org/services/uc3/webinars/was/analyze/lib/playbac
+,http://content.cdlib.org/ark:/13030/c8348pqj,,,,,404,1,text/html; charset=utf-8,0,HTTPError: 404 Client Error: Not Found for url: https://calisphere.org/item/ark:/13030/c8348pqj/%3F/
+,http://dataup.cdlib.org,,,,,-1,1,unknown,0,"HTTPError: HTTPConnectionPool(host='dataup.cdlib.org', port=80): Max retries exceeded with url: / (Caused by Ne"
+,https://merritt.cdlib.org/d/ark%3A%2F13030%2Fm5mw754f/1/producer%2Frobots_archive_request.doc,,,,,200,,application/msword,37376,
+,https://merritt.cdlib.org/d/ark%3A%2F13030%2Fm5090t80/1/producer%2Fwas_rights_management.pdf,,,,,200,,application/pdf,29884,
+,http://escholarship.org/uc/item/3306j983,,,,,404,1,text/html;charset=utf-8,0,HTTPError: 404 Client Error: Not Found for url: https://escholarship.org/uc/item/3306j983
+,http://escholarship.org/uc/item/7zf4h1c0,,,,,404,1,text/html;charset=utf-8,0,HTTPError: 404 Client Error: Not Found for url: https://escholarship.org/uc/item/7zf4h1c0
+,http://escholarship.org/uc/item/8jp444t6,,,,,404,1,text/html;charset=utf-8,0,HTTPError: 404 Client Error: Not Found for url: https://escholarship.org/uc/item/8jp444t6
+,http://merritt-aws.cdlib.org/m/ark%3A%2F13030%2Fqt5xv8c3pt,,,,,401,1,text/html; charset=utf-8,0,HTTPError: 401 Client Error: Unauthorized for url: https://merritt-aws.cdlib.org/m/ark%3A%2F13030%2Fqt5xv8c3pt
+,http://www.coredu.fr/repository/OAIHandler?verb=GetRecord&metadataPrefix=lom&identifier=oai:editors.coredu.fr:35363,,,,,-1,1,unknown,0,"HTTPError: HTTPConnectionPool(host='www.coredu.fr', port=80): Max retries exceeded with url: /repository/OAIHan"
+,http://MorphoSource.org/index.php/Detail/MediaDetail/Show/media_file_id/44208,,,,,200,,text/html; charset=utf-8,35558,
+,https://www.industrydocuments.ucsf.edu/docs/ynnk0023,,,,,200,,text/html;charset=UTF-8,132167,
+,https://www.industrydocuments.ucsf.edu/docs/ypvm0000,,,,,200,,text/html;charset=UTF-8,132167,
+,http://datamares.ucsd.edu/stories/cual-es-el-estado-de-explotacion-de-los-recursos-pesqueros-en-el-golfo-de-california/?lang=es,,,,,-1,1,unknown,0,"HTTPError: HTTPSConnectionPool(host='datamares.orgstories', port=443): Max retries exceeded with url: /cual-es-"
+,https://massive.ucsd.edu/ProteoSAFe/dataset.jsp?accession=MSV000084093,,,,,500,1,text/html;charset=utf-8,0,HTTPError: 500 Server Error: Internal Server Error for url: https://massive.ucsd.edu/ProteoSAFe/dataset.jsp?acc
+,https://dataverse.ucla.edu/file.xhtml?persistentId=doi:10.25346/S6/4UFIHX/T9IUWE,,,,,404,1,application/xhtml+xml;charset=UTF-8,0,HTTPError: 404 Client Error: Not Found for url: https://dataverse.ucla.edu/file.xhtml?persistentId=doi:10.25346
+,https://massive.ucsd.edu/ProteoSAFe/dataset.jsp?accession=MSV000091548,,,,,500,1,text/html;charset=utf-8,0,HTTPError: 500 Server Error: Internal Server Error for url: https://massive.ucsd.edu/ProteoSAFe/dataset.jsp?acc
+,http://content.cdlib.org/ark:/13030/c82r40bq,,,,,200,,text/html;charset=UTF-8,22481,
+,http://content.cdlib.org/ark:/13030/c86h4r4z,,,,,200,,text/html;charset=UTF-8,23773,
+,https://osf.io/4watk,,,,,200,,text/html; charset=utf-8,7071,
+,https://osf.io/bfuw9,,,,,200,,text/html; charset=utf-8,7071,
+,http://dataup.cdlib.org,,,,,-1,1,unknown,0,"HTTPError: HTTPConnectionPool(host='dataup.cdlib.org', port=80): Max retries exceeded with url: / (Caused by Ne"
+,https://merritt.cdlib.org/d/ark%3A%2F13030%2Fm5mw754f/1/producer%2Frobots_archive_request.doc,,,,,200,,application/msword,37376,
+,https://merritt.cdlib.org/d/ark%3A%2F13030%2Fm5090t80/1/producer%2Fwas_rights_management.pdf,,,,,200,,application/pdf,29884,
+,https://berkeley.box.com/shared/static/6pwon8qu7exx340vtqckfxzhrcnunb61.wav,,,,,404,1,text/html; charset=utf-8,0,HTTPError: 404 Client Error: Not Found for url: https://berkeley.app.box.com/public/static/6pwon8qu7exx340vtqck
+,http://escholarship.org/uc/item/3306j983,,,,,404,1,text/html;charset=utf-8,0,HTTPError: 404 Client Error: Not Found for url: https://escholarship.org/uc/item/3306j983
+,http://merritt-aws.cdlib.org/m/ark%3A%2F13030%2Fqt5xv8c3pt,,,,,401,1,text/html; charset=utf-8,0,HTTPError: 401 Client Error: Unauthorized for url: https://merritt-aws.cdlib.org/m/ark%3A%2F13030%2Fqt5xv8c3pt
+,http://www.coredu.fr/repository/OAIHandler?verb=GetRecord&metadataPrefix=lom&identifier=oai:editors.coredu.fr:35363,,,,,-1,1,unknown,0,"HTTPError: HTTPConnectionPool(host='www.coredu.fr', port=80): Max retries exceeded with url: /repository/OAIHan"
+,http://digitalassets.lib.berkeley.edu/physicscoll/ucb/video/9-12-16Birgeneau.mp4,,,,,200,,video/mp4,115343360,
+,http://digitalcollections.ucsc.edu:80/cdm/ref/collection/p265101coll30/id/1864,,,,,400,1,text/html; charset=iso-8859-1,0,HTTPError: 400 Client Error: Bad Request for url: https://digitalcollections.library.ucsc.edu/cdm/ref/collectio
+,http://opensky.ucar.edu/islandora/object/archives:8359,,,,,200,,text/html; charset=utf-8,25367,
+,http://content.lib.utah.edu/cdm/ref/collection/UT-ArchSite/id/143020,,,,,401,1,text/html,0,HTTPError: 401 Client Error: Unauthorized for url: https://dha.lib.utah.edu/details?oldid=UT-ArchSite+143020
+,http://udn.lib.utah.edu/cdm/ref/collection/slt2/id/18820,,,,,200,,text/html; charset=UTF-8,18164,
+,http://dataspace.princeton.edu/jspui/handle/88435/dsp019w0324464,,,,,200,,text/html;charset=UTF-8,19112,
+,http://dataspace.princeton.edu/jspui/handle/88435/dsp01k643b1551,,,,,200,,text/html;charset=UTF-8,18501,
+,https://data.piscoweb.org/catalog/d1/mn/v1/object/doi:10.6085/AA/LOV001_017MTBD016R00_20051212.40.1,,,,,404,1,text/xml,0,HTTPError: 404 Client Error: 404 for url: https://data.piscoweb.org/metacat/d1/mn/v1/object/doi:10.6085/AA/LOV0
+,http://content.lib.utah.edu/cdm/ref/collection/Art/id/2013,,,,,401,1,text/html; charset=UTF-8,0,HTTPError: 401 Client Error: Unauthorized for url: https://collections.lib.utah.edu/details?id=27371
+,http://content.lib.utah.edu/cdm/ref/collection/VE_Photos/id/7901,,,,,200,,text/html; charset=UTF-8,16645,
+,https://uic.cuadra.com/star/findingaids/MSHjor67.xml,,,,,200,,application/xml,13874,
+,https://media.northwestern.edu/media_objects/ng451j138,,,,,401,1,text/html; charset=utf-8,0,HTTPError: 401 Client Error: Unauthorized for url: https://media.northwestern.edu/media_objects/ng451j138
+,http://opensky.ucar.edu/islandora/object/articles:20120,,,,,200,,text/html; charset=utf-8,27811,
+,http://bibnum.univ-lyon1.fr/nuxeo/nxfile/default/02e2b387-0dfa-42a5-bb40-986d60430ffa/blobholder:0/Mk_2017_GLADYS_Lucie.pdf,,,,,200,,application/pdf,4001375,
+,https://identifiers.globus.org/ark:/57799/b91DmyafMOveE9N/landingpage,,,,,-1,1,unknown,0,"HTTPError: HTTPSConnectionPool(host='identifiers.globus.org', port=443): Max retries exceeded with url: /ark:/5"
+,https://repository.duke.edu/id/ark:/87924/r4dn43f2w,,,,,500,1,text/html; charset=UTF-8,0,HTTPError: 500 Server Error: Internal Server Error for url: https://repository.duke.edu/id/ark:/87924/r4dn43f2w
+,https://identifiers.globus.org/ark:/57799/b919ttVpArnKSAl,,,,,-1,1,unknown,0,"HTTPError: HTTPSConnectionPool(host='identifiers.globus.org', port=443): Max retries exceeded with url: /ark:/5"
+,https://massive.ucsd.edu/ProteoSAFe/dataset.jsp?accession=MSV000083400,,,,,500,1,text/html;charset=utf-8,0,HTTPError: 500 Server Error: Internal Server Error for url: https://massive.ucsd.edu/ProteoSAFe/dataset.jsp?acc
+,https://repository.duke.edu/id/ark:/87924/r4b27tk40,,,,,500,1,text/html; charset=UTF-8,0,HTTPError: 500 Server Error: Internal Server Error for url: https://repository.duke.edu/id/ark:/87924/r4b27tk40
+,http://MorphoSource.org/index.php/Detail/MediaDetail/Show/media_file_id/71479,,,,,-1,1,unknown,0,"HTTPError: HTTPSConnectionPool(host='www.morphosource.org', port=443): Read timed out. (read timeout=30)"
+,https://dc.library.northwestern.edu/items/112fe738-acdd-4efb-9cfd-df0270c8cd4e,,,,,200,,text/html; charset=utf-8,5694,
+,http://MorphoSource.org/index.php/Detail/MediaDetail/Show/media_file_id/85463,,,,,200,,text/html; charset=utf-8,36722,
+,https://repository.duke.edu/id/ark:/87924/r4s46n71b,,,,,500,1,text/html; charset=UTF-8,0,HTTPError: 500 Server Error: Internal Server Error for url: https://repository.duke.edu/dc/dukechapel/dcrau0021
+,https://arc.lib.montana.edu/milburn-lincoln-wilson/item/4835,,,,,200,,text/html; charset=UTF-8,33021,
+,http://pudl.princeton.edu/objects/xd07gw55g,,,,,-1,1,unknown,0,HTTPError: Exceeded 30 redirects.
+,http://pudl.princeton.edu/objects/z890rx11q,,,,,-1,1,unknown,0,HTTPError: Exceeded 30 redirects.
+,http://pudl.princeton.edu/objects/zc77ss97j,,,,,-1,1,unknown,0,HTTPError: Exceeded 30 redirects.
+,https://media.northwestern.edu/media_objects/5h73pw048/section/9g54xh64n,,,,,410,1,text/html; charset=utf-8,0,HTTPError: 410 Client Error: Gone for url: https://media.northwestern.edu/media_objects/5h73pw048/section/9g54x
+,http://media.northwestern.edu/media_objects/5h73pw048,,,,,410,1,text/html; charset=utf-8,0,HTTPError: 410 Client Error: Gone for url: https://media.northwestern.edu:443/media_objects/5h73pw048
+,https://media.northwestern.edu/media_objects/7m01bm37q/section/dr26xz01p,,,,,410,1,text/html; charset=utf-8,0,HTTPError: 410 Client Error: Gone for url: https://media.northwestern.edu/media_objects/7m01bm37q/section/dr26x
+,http://ark.cdlib.org/ark:/13030/tf896nb4v3,,,,,404,1,text/html; charset=utf-8,0,HTTPError: 404 Client Error: Not Found for url: https://calisphere.org/item/ark:/13030/tf896nb4v3/%3F/
