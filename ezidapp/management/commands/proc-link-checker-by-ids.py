@@ -3,8 +3,7 @@
 
 """Check target links
 
-Link checker that tests EZID target URLs. Only non-default target URLs of public, real
-identifiers are tested.
+Link checker that tests EZID target URLs provided by an input file.
 
 The link checker tests a target URL by performing a GET request on the URL. A timely
 200 response equates to success.
@@ -21,7 +20,6 @@ import urllib.request
 import requests
 import datetime
 import csv
-import random
 
 import django.apps
 import django.conf
