@@ -3,7 +3,7 @@
 
 """Check target links
 
-Link checker that tests EZID target URLs provided by an input file.
+Link checker that tests EZID target URLs provided by an input file with EZID identifiers and/or URLs.
 
 The link checker tests a target URL by performing a GET request on the URL. A timely
 200 response equates to success.
