@@ -119,11 +119,11 @@ class Command(django.core.management.BaseCommand):
             csv_writer.writerow(output_dict)
 
     def update_output_dict(self, output_dict, ret):
-        (ret_code, success, mimeType, content, err_msg) = ret
+        (ret_code, success, mimeType, content_size, err_msg) = ret
         log.info(f"return code: {ret_code}, success status: {success}")
         output_dict['Return Code'] = ret_code
         output_dict['mimeType'] = mimeType
-        output_dict['size'] = len(content)
+        output_dict['size'] = content_size
         output_dict['error'] = err_msg
         if not success:
             output_dict['Is Bad'] = "1"
@@ -172,7 +172,8 @@ class Command(django.core.management.BaseCommand):
         mimeType = "unknown"
         content = b""
         err_msg = ""
-        chunk_size = 1024*1024*10   #10MB
+        content_size = 0
+        chunk_size = 1024*1024  # 1MB
 
         try:
             response = requests.get(
@@ -184,33 +185,45 @@ class Command(django.core.management.BaseCommand):
                 timeout=django.conf.settings.LINKCHECKER_CHECK_TIMEOUT,
                 stream=True,
             )
+            response.raise_for_status()
             returnCode = response.status_code
             mimeType = response.headers.get("Content-Type")
-            response.raise_for_status()
+            content_size = response.headers.get("Content-Length")
 
-            size = 0
-            for chunk in response.iter_content(chunk_size=chunk_size):
-                if chunk:
-                    content += chunk
-                    size += chunk_size
-                if size > django.conf.settings.LINKCHECKER_MAX_READ:
-                    log.info("Content size exceeded LINKCHECKER_MAX_READ")
-                    break
-            
+            if content_size is None or content_size == 0:
+                for chunk in response.iter_content(chunk_size=chunk_size):
+                    if chunk:
+                        content += chunk
+                    if len(content) > django.conf.settings.LINKCHECKER_MAX_READ:
+                        log.info("Content size exceeded LINKCHECKER_MAX_READ")
+                        break
+            content_size = len(content)
             success = True
         except requests.exceptions.RequestException as e:
+            err_msg = "RequestExceptio: " + str(e)[:200]
             if hasattr(e, 'response') and e.response is not None:
                 returnCode = e.response.status_code
-            err_msg = "HTTPError: " + str(e)[:100]
+                mimeType = e.response.headers.get("Content-Type")
+                content_size = e.response.headers.get("Content-Length")
+                if content_size is None:
+                    content_size = 0
+
+            # Note and code from ezid v.3.0
+            # Some servers deliver a complete HTML document, but,
+            # apparently expecting further requests from a web browser
+            # that never arrive, hold the connection open and ultimately
+            # deliver a read failure. We consider these cases successes.
             if mimeType.startswith("text/html") and re.search(
                 "</\s*html\s*>\s*$", str(content, 'utf-8'), re.I
             ):
                 success = True
-                log.info("Success with " + err_msg)
+                log.info("Received complete HTML page when error occurred: " + err_msg)
             else:
                 log.exception(err_msg)
+        except Exception as e:
+            err_msg = "Exception: " + str(e)[:200]
 
-        return returnCode, success, mimeType, content, err_msg
+        return returnCode, success, mimeType, content_size, err_msg
 
     def check_url_0(self, target):
         o = urllib.request.build_opener(
@@ -219,7 +232,7 @@ class Command(django.core.management.BaseCommand):
         )
         c = None
         mimeType = "unknown"
-        returnCode = 0
+        returnCode = 200
         success = True
         content = ""
         err_msg = ""
@@ -254,17 +267,17 @@ class Command(django.core.management.BaseCommand):
             else:
                 success = False
                 returnCode = -1
-                err_msg = "IncompleteRead: " + str(e)[:100]
+                err_msg = "IncompleteRead: " + str(e)[:200]
         except urllib.error.HTTPError as e:
             log.exception('HTTPError')
             success = False
             returnCode = e.code
-            err_msg = "HTTPError: " + str(e)[:100]
+            err_msg = "HTTPError: " + str(e)[:200]
         except Exception as e:
             log.exception('Exception')
             success = False
             returnCode = -1
-            err_msg = "Exception: " + str(e)[:100]
+            err_msg = "Exception: " + str(e)[:200]
         else:
             success = True
         finally:
