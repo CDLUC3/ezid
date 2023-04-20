@@ -20,6 +20,7 @@ import urllib.request
 import requests
 import datetime
 import csv
+from typing import List, IO, Dict, Tuple, Union
 
 import django.apps
 import django.conf
@@ -37,7 +38,7 @@ HEADER = ['Identifier',
           'In LC', 
           'URL updated', 
           'SI URL', 
-          'Return Code', 
+          'returnCode', 
           'Is Bad',
           'mimeType',
           'size',
@@ -79,7 +80,13 @@ class Command(django.core.management.BaseCommand):
             else:
                 self.check_by_ids(id_list, csv_writer)
 
-    def check_by_ids(self, id_list, csv_writer):
+    def check_by_ids(self, id_list: List[str], csv_writer: IO[str]) -> None:
+        """_summary_
+
+        Args:
+            id_list (List[str]): _description_
+            csv_writer (IO[str]): _description_
+        """
         start = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
         log.info(f"begin link checker by ids: {start}")
         
@@ -105,7 +112,13 @@ class Command(django.core.management.BaseCommand):
                 
                 csv_writer.writerow(output_dict)
 
-    def check_by_urls(self, url_list, csv_writer):
+    def check_by_urls(self, url_list: List[str], csv_writer: IO[str])-> None:
+        """_summary_
+
+        Args:
+            url_list (List[str]): _description_
+            csv_writer (IO[str]): _description_
+        """
         start = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
         log.info(f"begin link checker by urls: {start}")
         
@@ -118,27 +131,49 @@ class Command(django.core.management.BaseCommand):
             self.update_output_dict_0(output_dict, ret_0)
             csv_writer.writerow(output_dict)
 
-    def update_output_dict(self, output_dict, ret):
-        (ret_code, success, mimeType, content_size, err_msg) = ret
+    def update_output_dict(self, output_dict: Dict[str, Union[str, int]], ret: Dict[str, Union[str, int]])-> None:
+        """_summary_
+
+        Args:
+            output_dict (Dict[str, Union[str, int]]): _description_
+            ret (Dict[str, Union[str, int]]): _description_
+
+        Returns:
+            _type_: _description_
+        """
+        ret_code = ret.get('returnCode')
+        success = ret.get('success')
         log.info(f"return code: {ret_code}, success status: {success}")
-        output_dict['Return Code'] = ret_code
-        output_dict['mimeType'] = mimeType
-        output_dict['size'] = content_size
-        output_dict['error'] = err_msg
+        output_dict['returnCode'] = ret_code
+        output_dict['mimeType'] = ret.get('mimeType')
+        output_dict['size'] = ret.get('content_size')
+        output_dict['error'] = ret.get('err_msg')
+        success = ret.get('success')
         if not success and ret_code not in [401]:
             output_dict['Is Bad'] = "1"
 
     def update_output_dict_0(self, output_dict, ret):
-        (ret_code, success, mimeType, content, err_msg) = ret
+        ret_code = ret.get('returnCode')
+        success = ret.get('success')
+        content = ret.get('content')
         log.info(f"return code: {ret_code}, success status: {success}")
         output_dict['returnCode_0'] = ret_code
-        output_dict['mimeType_0'] = mimeType
+        output_dict['mimeType_0'] = ret.get('mimeType')
         output_dict['size_0'] = len(content)
-        output_dict['error_0'] = err_msg
+        output_dict['error_0'] = ret.get('err_msg')
         if not success:
             output_dict['isBad_0'] = "1"
 
-    def create_id_url_dict(self, id_list, model_name):
+    def create_id_url_dict(self, id_list: List[str], model_name: str)-> Dict[str, str]:
+        """_summary_
+
+        Args:
+            id_list (List[str]): _description_
+            model_name (str): _description_
+
+        Returns:
+            Dict[str, str]: _description_
+        """
         model = django.apps.apps.get_model('ezidapp', model_name)
         query_set = model.objects.filter(identifier__in=id_list).order_by("identifier")
         id_url_dict = {}
@@ -147,7 +182,7 @@ class Command(django.core.management.BaseCommand):
         return id_url_dict
 
  
-    def loadIdFile(self, filename):
+    def loadIdFile(self, filename: str)-> Tuple[List[str], List[str]]:
         if filename is None:
             return
         id_list = []
@@ -166,7 +201,7 @@ class Command(django.core.management.BaseCommand):
         return id_list, url_list
 
 
-    def check_url(self, url):
+    def check_url(self, url: str)->Dict[str, Union[str, int]]:
         success = False
         returnCode = -1
         mimeType = "unknown"
@@ -223,7 +258,14 @@ class Command(django.core.management.BaseCommand):
         except Exception as e:
             err_msg = "Exception: " + str(e)[:200]
 
-        return returnCode, success, mimeType, content_size, err_msg
+        ret_dict = {
+            'returnCode': returnCode,
+            'success': success,
+            'mimeType': mimeType,
+            'content_size': content_size,
+            'err_msg': err_msg,
+        }
+        return ret_dict
 
     def check_url_0(self, target):
         o = urllib.request.build_opener(
@@ -283,7 +325,14 @@ class Command(django.core.management.BaseCommand):
         finally:
             if c:
                 c.close()
-            return returnCode, success, mimeType, content, err_msg
+            ret_dict = {
+                'returnCode': returnCode,
+                'success': success,
+                'mimeType': mimeType,
+                'content': content,
+                'err_msg': err_msg,
+            }
+            return ret_dict
 
 
 class MyHTTPErrorProcessor(urllib.request.HTTPErrorProcessor):
