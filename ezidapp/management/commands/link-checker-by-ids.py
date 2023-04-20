@@ -81,11 +81,11 @@ class Command(django.core.management.BaseCommand):
                 self.check_by_ids(id_list, csv_writer)
 
     def check_by_ids(self, id_list: List[str], csv_writer: IO[str]) -> None:
-        """_summary_
+        """Check target urls by EZID identifiers.
 
         Args:
-            id_list (List[str]): _description_
-            csv_writer (IO[str]): _description_
+            id_list (List[str]): list of EZID identifiers
+            csv_writer (IO[str]): file handler for an output file
         """
         start = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
         log.info(f"begin link checker by ids: {start}")
@@ -113,11 +113,11 @@ class Command(django.core.management.BaseCommand):
                 csv_writer.writerow(output_dict)
 
     def check_by_urls(self, url_list: List[str], csv_writer: IO[str])-> None:
-        """_summary_
+        """Check target urls.
 
         Args:
-            url_list (List[str]): _description_
-            csv_writer (IO[str]): _description_
+            url_list (List[str]): list of URLs
+            csv_writer (IO[str]): file handler for an output file
         """
         start = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
         log.info(f"begin link checker by urls: {start}")
@@ -132,14 +132,13 @@ class Command(django.core.management.BaseCommand):
             csv_writer.writerow(output_dict)
 
     def update_output_dict(self, output_dict: Dict[str, Union[str, int]], ret: Dict[str, Union[str, int]])-> None:
-        """_summary_
+        """Update output dict with URL checking results.
 
         Args:
-            output_dict (Dict[str, Union[str, int]]): _description_
-            ret (Dict[str, Union[str, int]]): _description_
+            output_dict (Dict[str, Union[str, int]]): original output dict
+            ret (Dict[str, Union[str, int]]): dict with URL checking results
 
-        Returns:
-            _type_: _description_
+        Returns: None
         """
         ret_code = ret.get('returnCode')
         success = ret.get('success')
@@ -147,8 +146,8 @@ class Command(django.core.management.BaseCommand):
         output_dict['returnCode'] = ret_code
         output_dict['mimeType'] = ret.get('mimeType')
         output_dict['size'] = ret.get('content_size')
-        output_dict['error'] = ret.get('err_msg')
-        success = ret.get('success')
+        output_dict['error'] = ret.get('error')
+    
         if not success and ret_code not in [401]:
             output_dict['Is Bad'] = "1"
 
@@ -160,19 +159,19 @@ class Command(django.core.management.BaseCommand):
         output_dict['returnCode_0'] = ret_code
         output_dict['mimeType_0'] = ret.get('mimeType')
         output_dict['size_0'] = len(content)
-        output_dict['error_0'] = ret.get('err_msg')
+        output_dict['error_0'] = ret.get('error')
         if not success:
             output_dict['isBad_0'] = "1"
 
     def create_id_url_dict(self, id_list: List[str], model_name: str)-> Dict[str, str]:
-        """_summary_
+        """Retrive ID and target URL from EZID database.
 
         Args:
-            id_list (List[str]): _description_
-            model_name (str): _description_
+            id_list (List[str]): list of EZID identifiers
+            model_name (str): database model name
 
         Returns:
-            Dict[str, str]: _description_
+            Dict[str, str]: dict with EZID identifier as key and target url as value
         """
         model = django.apps.apps.get_model('ezidapp', model_name)
         query_set = model.objects.filter(identifier__in=id_list).order_by("identifier")
@@ -183,6 +182,16 @@ class Command(django.core.management.BaseCommand):
 
  
     def loadIdFile(self, filename: str)-> Tuple[List[str], List[str]]:
+        """Read IDs and URLs from a CSV file.
+            IDs are listed in the 'identifer' column;
+            URLs are listed in the 'url' comumn.
+
+        Args:
+            filename (str): input filename
+
+        Returns:
+            Tuple[List[str], List[str]]: list if IDs and list of urls read from input file
+        """
         if filename is None:
             return
         id_list = []
@@ -202,11 +211,27 @@ class Command(django.core.management.BaseCommand):
 
 
     def check_url(self, url: str)->Dict[str, Union[str, int]]:
+        """Tests a target URL by performing a GET request on the URL.
+         
+            A timely non-excptional response equates to success.
+            Redirection is allowed by using the allow_redirect default setting.
+
+        Args:
+            url (str): target url to check
+
+        Returns:
+            Dict[str, Union[str, int]]: dict with folllowing keys to indicate for url checking status:
+                'returnCode',
+                'success',
+                'mimeType',
+                'content_size',
+                'error',
+        """
         success = False
         returnCode = -1
         mimeType = "unknown"
         content = b""
-        err_msg = ""
+        error = ""
         content_size = 0
         chunk_size = 1024*1024  # 1MB
 
@@ -235,7 +260,7 @@ class Command(django.core.management.BaseCommand):
             content_size = len(content)
             success = True
         except requests.exceptions.RequestException as e:
-            err_msg = "RequestExceptio: " + str(e)[:200]
+            error = "RequestExceptio: " + str(e)[:200]
             if hasattr(e, 'response') and e.response is not None:
                 returnCode = e.response.status_code
                 mimeType = e.response.headers.get("Content-Type")
@@ -252,18 +277,18 @@ class Command(django.core.management.BaseCommand):
                 "</\s*html\s*>\s*$", str(content, 'utf-8'), re.I
             ):
                 success = True
-                log.info("Received complete HTML page when error occurred: " + err_msg)
+                log.info("Received complete HTML page when error occurred: " + error)
             else:
-                log.exception(err_msg)
+                log.exception(error)
         except Exception as e:
-            err_msg = "Exception: " + str(e)[:200]
+            error = "Exception: " + str(e)[:200]
 
         ret_dict = {
             'returnCode': returnCode,
             'success': success,
             'mimeType': mimeType,
             'content_size': content_size,
-            'err_msg': err_msg,
+            'error': error,
         }
         return ret_dict
 
@@ -277,7 +302,7 @@ class Command(django.core.management.BaseCommand):
         returnCode = 200
         success = True
         content = ""
-        err_msg = ""
+        error = ""
         try:
             # This should probably be considered a Python bug, but urllib2
             # fails if the URL contains Unicode characters. Encoding the
@@ -309,17 +334,17 @@ class Command(django.core.management.BaseCommand):
             else:
                 success = False
                 returnCode = -1
-                err_msg = "IncompleteRead: " + str(e)[:200]
+                error = "IncompleteRead: " + str(e)[:200]
         except urllib.error.HTTPError as e:
             log.exception('HTTPError')
             success = False
             returnCode = e.code
-            err_msg = "HTTPError: " + str(e)[:200]
+            error = "HTTPError: " + str(e)[:200]
         except Exception as e:
             log.exception('Exception')
             success = False
             returnCode = -1
-            err_msg = "Exception: " + str(e)[:200]
+            error = "Exception: " + str(e)[:200]
         else:
             success = True
         finally:
@@ -330,7 +355,7 @@ class Command(django.core.management.BaseCommand):
                 'success': success,
                 'mimeType': mimeType,
                 'content': content,
-                'err_msg': err_msg,
+                'error': error,
             }
             return ret_dict
 
