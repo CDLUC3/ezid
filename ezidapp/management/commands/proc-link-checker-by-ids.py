@@ -125,7 +125,7 @@ class Command(django.core.management.BaseCommand):
         output_dict['mimeType'] = mimeType
         output_dict['size'] = content_size
         output_dict['error'] = err_msg
-        if not success:
+        if not success and ret_code not in [401]:
             output_dict['Is Bad'] = "1"
 
     def update_output_dict_0(self, output_dict, ret):
