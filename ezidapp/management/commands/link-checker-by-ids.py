@@ -87,9 +87,9 @@ class Command(django.core.management.BaseCommand):
             id_list (List[str]): list of EZID identifiers
             csv_writer (IO[str]): file handler for an output file
         """
-        start = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
-        log.info(f"begin link checker by ids: {start}")
-        
+        start = datetime.datetime.now(tz=datetime.timezone.utc)
+        log.info(f"begin link checker by ids: {start.strftime('%Y-%m-%d %H:%M:%S %Z')}")
+
         if id_list and len(id_list) > 0:
             si_id_url_dict = self.create_id_url_dict(id_list, 'SearchIdentifier')
             lc_id_url_dict = self.create_id_url_dict(id_list, 'LinkChecker')
@@ -111,6 +111,10 @@ class Command(django.core.management.BaseCommand):
                     self.update_output_dict(output_dict, ret)
                 
                 csv_writer.writerow(output_dict)
+        
+        end = datetime.datetime.now(tz=datetime.timezone.utc)
+        log.info(f"end link checker by ids: {end.strftime('%Y-%m-%d %H:%M:%S %Z')}")
+        log.info(f"URLs checked: {len(id_list)}, time taken: {end-start}")
 
     def check_by_urls(self, url_list: List[str], csv_writer: IO[str])-> None:
         """Check target urls.
@@ -119,9 +123,9 @@ class Command(django.core.management.BaseCommand):
             url_list (List[str]): list of URLs
             csv_writer (IO[str]): file handler for an output file
         """
-        start = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
-        log.info(f"begin link checker by urls: {start}")
-        
+        start = datetime.datetime.now(tz=datetime.timezone.utc) 
+        log.info(f"begin link checker by urls: {start.strftime('%Y-%m-%d %H:%M:%S %Z')}")
+
         for url in url_list:
             output_dict = {}
             output_dict['URL'] = url
@@ -130,7 +134,11 @@ class Command(django.core.management.BaseCommand):
             self.update_output_dict(output_dict, ret)
             self.update_output_dict_0(output_dict, ret_0)
             csv_writer.writerow(output_dict)
-
+        
+        end = datetime.datetime.now(tz=datetime.timezone.utc)
+        log.info(f"end link checker by urls: {end.strftime('%Y-%m-%d %H:%M:%S %Z')}")
+        log.info(f"URLs checked: {len(url_list)}, time taken: {end-start}")
+    
     def update_output_dict(self, output_dict: Dict[str, Union[str, int]], ret: Dict[str, Union[str, int]])-> None:
         """Update output dict with URL checking results.
 
