@@ -41,7 +41,15 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         # add the required target metadata:
         ##metadata["_t"] = task_model.refIdentifier.target
         metadata = task_model.refIdentifier.toLegacy()
-        impl.noid_egg.setElements(id_str, metadata)
+        try:
+            impl.noid_egg.setElements(id_str, metadata)
+            task_model.status = self.queue.SUCCESS
+        except AssertionError as e:
+            task_model.status = self.queue.FAILURE
+            self.log.error("CREATE: %s", id_str, e)
+        except Exception as e:
+            task_model.status = self.queue.FAILURE
+            self.log.error("CREATE: %s", id_str, e)
 
     def update(self, task_model: ezidapp.models.async_queue.BinderQueue):
         '''
@@ -78,11 +86,27 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 m[k] = ""
         self.log.debug("UPDATE: %s m = %s", id_str, m)
         if len(m) > 0:
-            impl.noid_egg.setElements(id_str, m)
+            try:
+                impl.noid_egg.setElements(id_str, m)
+                task_model.status = self.queue.SUCCESS
+            except AssertionError as e:
+                task_model.status = self.queue.FAILURE
+                self.log.error("UPDATE: %s", id_str, e)
+            except Exception as e:
+                task_model.status = self.queue.FAILURE
+                self.log.error("UPDATE: %s", id_str, e)
 
     def delete(self, task_model: ezidapp.models.async_queue.BinderQueue):
         id_str = task_model.refIdentifier.identifier
-        impl.noid_egg.deleteIdentifier(id_str)
+        try:
+            impl.noid_egg.deleteIdentifier(id_str)
+            task_model.status = self.queue.SUCCESS
+        except AssertionError as e:
+            task_model.status = self.queue.FAILURE
+            self.log.error("DELETE: %s", id_str, e)
+        except Exception as e:
+            task_model.status = self.queue.FAILURE
+            self.log.error("DELETE: %s", id_str, e)
 
     def batchCreate(self, batch):
         impl.noid_egg.batchSetElements(batch)
