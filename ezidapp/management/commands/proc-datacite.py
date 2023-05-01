@@ -13,9 +13,9 @@ import logging
 
 import ezidapp.management.commands.proc_base
 import ezidapp.models.async_queue
+import ezidapp.models.identifier
 import impl.datacite
 import impl.nog.util
-import ezidapp.models.identifier
 
 log = logging.getLogger(__name__)
 
@@ -53,6 +53,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         is_eligible = task_model.refIdentifier.isDatacite and not task_model.refIdentifier.isTest
         if not is_eligible:
             log.debug(f'Skipping ineligible task: {task_model}')
+            task_model.status = self.queue.IGNORED
         return is_eligible
 
     def _create_or_update(self, task_model: ezidapp.models.async_queue.DataciteQueue):
@@ -63,6 +64,10 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         metadata = ref_id.metadata
         metadata['_profile'] = str(ref_id.profile)
         datacenter = str(ref_id.datacenter)
+        metadata_upload = False
+
+        target_url_upload = False
+
         r = impl.datacite.uploadMetadata(doi, {}, metadata, True, datacenter)
         # r can be:
         # None == success
@@ -72,9 +77,12 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         #
         if r is not None:
             log.error("datacite.uploadMetadata returned: %s", r)
+            task_model.status = self.queue.FAILURE
             if isinstance(r, str):
                 raise ezidapp.management.commands.proc_base.AsyncProcessingRemoteError(r)
             raise ezidapp.management.commands.proc_base.AsyncProcessingError(r)
+        else:
+            metadata_upload = True
 
         # This should set the datacite target url to identifier.resolverTarget
         # to take into consideration reserved or unavailable status.
@@ -86,9 +94,16 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         #   a thrown exception on other error.
         if r is not None:
             log.error("datacite.setTargetUrl returned: %s", r)
+            task_model.status = self.queue.FAILURE
             if isinstance(r, str):
                 raise ezidapp.management.commands.proc_base.AsyncProcessingRemoteError(r)
             raise ezidapp.management.commands.proc_base.AsyncProcessingError(r)
+        else:
+            target_url_upload = True
+
+        if metadata_upload and target_url_upload:
+            task_model.status = self.queue.SUCCESS
+
         # check for non-public and adjust to suit
         if metadata.get("_is", "public") != "public" or metadata.get("_x", "yes") != "yes":
             r = impl.datacite.deactivateIdentifier(doi, datacenter)
