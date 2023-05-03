@@ -1,0 +1,66 @@
+identifier	url	returnCode	from_unixtime(lastChecktime)	numFailures
+ark:/38305/f12j68s8	http://digitalcollections.ucsc.edu:80/cdm/ref/collection/p265101coll10/id/476	400	4/12/23 15:43	111
+ark:/13030/c7d79593b	http://www.cdlib.org/services/uc3/webinars/was/analyze/lib/playback.html	404	4/11/23 21:10	109
+ark:/13030/c8348pqj	http://content.cdlib.org/ark:/13030/c8348pqj	404	4/13/23 0:17	1
+ark:/13030/c74t6f285	http://dataup.cdlib.org	-1	4/11/23 21:09	109
+ark:/13030/c7qj77x6t	https://merritt.cdlib.org/d/ark%3A%2F13030%2Fm5mw754f/1/producer%2Frobots_archive_request.doc	308	4/11/23 21:10	109
+ark:/13030/c7v97zr06	https://merritt.cdlib.org/d/ark%3A%2F13030%2Fm5090t80/1/producer%2Fwas_rights_management.pdf	308	4/11/23 21:10	109
+ark:/13030/m551434t	http://escholarship.org/uc/item/3306j983	-1	4/12/23 13:11	101
+ark:/13030/m55t50m5	http://escholarship.org/uc/item/7zf4h1c0	500	4/12/23 16:39	98
+ark:/13030/m5kd3bzm	http://escholarship.org/uc/item/8jp444t6	-1	4/12/23 13:13	87
+ark:/13030/qt5xv8c3pt	http://merritt-aws.cdlib.org/m/ark%3A%2F13030%2Fqt5xv8c3pt	500	4/12/23 2:25	1
+ark:/19153/b2000038	http://www.coredu.fr/repository/OAIHandler?verb=GetRecord&metadataPrefix=lom&identifier=oai:editors.coredu.fr:35363	-1	4/12/23 12:14	112
+ark:/87602/m4/M44208	http://MorphoSource.org/index.php/Detail/MediaDetail/Show/media_file_id/44208	503	4/12/23 1:44	1
+ark:/88122/ynnk0023	https://www.industrydocuments.ucsf.edu/docs/ynnk0023	502	4/11/23 19:40	1
+ark:/88122/ypvm0000	https://www.industrydocuments.ucsf.edu/docs/ypvm0000	502	4/12/23 12:40	1
+doi:10.13022/M36Q0G	http://datamares.ucsd.edu/stories/cual-es-el-estado-de-explotacion-de-los-recursos-pesqueros-en-el-golfo-de-california/?lang=es	-1	4/11/23 17:59	112
+doi:10.25345/C51S95	https://massive.ucsd.edu/ProteoSAFe/dataset.jsp?accession=MSV000084093	500	4/12/23 12:16	98
+doi:10.25346/S6/4UFIHX/T9IUWE	https://dataverse.ucla.edu/file.xhtml?persistentId=doi:10.25346/S6/4UFIHX/T9IUWE	503	4/12/23 2:55	10
+doi:10.25345/C5CZ32F68	https://massive.ucsd.edu/ProteoSAFe/dataset.jsp?accession=MSV000091548	500	4/12/23 13:04	7
+ark:/13030/c82r40bq	http://content.cdlib.org/ark:/13030/c82r40bq	302	4/11/23 17:59	1
+ark:/13030/c86h4r4z	http://content.cdlib.org/ark:/13030/c86h4r4z	302	4/11/23 18:00	1
+doi:10.32942/OSF.IO/4WATK	https://osf.io/4watk	308	4/11/23 17:59	33
+doi:10.32942/OSF.IO/BFUW9	https://osf.io/bfuw9	308	4/11/23 17:59	33
+ark:/13030/c74t6f285	http://dataup.cdlib.org	-1	4/14/23 1:57	
+ark:/13030/c7qj77x6t	https://merritt.cdlib.org/d/ark%3A%2F13030%2Fm5mw754f/1/producer%2Frobots_archive_request.doc	308	4/14/23 1:58	
+ark:/13030/c7v97zr06	https://merritt.cdlib.org/d/ark%3A%2F13030%2Fm5090t80/1/producer%2Fwas_rights_management.pdf	308	4/14/23 1:58	
+ark:/13030/k60r9prj	https://berkeley.box.com/shared/static/6pwon8qu7exx340vtqckfxzhrcnunb61.wav	404	4/13/23 7:43	
+ark:/13030/m551434t	http://escholarship.org/uc/item/3306j983	-1	4/12/23 13:11	
+ark:/13030/qt5xv8c3pt	http://merritt-aws.cdlib.org/m/ark%3A%2F13030%2Fqt5xv8c3pt	200	4/14/23 6:59	
+ark:/19153/b2000038	http://www.coredu.fr/repository/OAIHandler?verb=GetRecord&metadataPrefix=lom&identifier=oai:editors.coredu.fr:35363	-1	4/12/23 12:14	
+ark:/28722/bk0016z067f	http://digitalassets.lib.berkeley.edu/physicscoll/ucb/video/9-12-16Birgeneau.mp4	200	4/10/23 5:08	
+ark:/38305/f1z60m5p	http://digitalcollections.ucsc.edu:80/cdm/ref/collection/p265101coll30/id/1864	400	4/13/23 3:24	
+ark:/85065/d7vd70xs	http://opensky.ucar.edu/islandora/object/archives:8359	200	4/10/23 1:05	
+ark:/87278/s63z0w70	http://content.lib.utah.edu/cdm/ref/collection/UT-ArchSite/id/143020	200	1/2/23 3:11	
+ark:/87278/s6j402cm	http://udn.lib.utah.edu/cdm/ref/collection/slt2/id/18820	NULL	12/31/69 16:00	
+ark:/88435/dsp019w0324464	http://dataspace.princeton.edu/jspui/handle/88435/dsp019w0324464	NULL	12/31/69 16:00	
+ark:/88435/dsp01k643b1551	http://dataspace.princeton.edu/jspui/handle/88435/dsp01k643b1551	200	8/21/22 1:29	
+doi:10.6085/AA/LOV001_017MTBD016R00_20051212.40.1	https://data.piscoweb.org/catalog/d1/mn/v1/object/doi:10.6085/AA/LOV001_017MTBD016R00_20051212.40.1	404	4/13/23 15:06	
+ark:/87278/s67t0zk5	http://content.lib.utah.edu/cdm/ref/collection/Art/id/2013	NULL	12/31/69 16:00	
+ark:/87278/s6934b74	http://content.lib.utah.edu/cdm/ref/collection/VE_Photos/id/7901	NULL	12/31/69 16:00	
+ark:/81984/c80s4c	https://uic.cuadra.com/star/findingaids/MSHjor67.xml	200	4/8/23 15:22	
+ark:/81985/n2039t	https://media.northwestern.edu/media_objects/ng451j138	200	4/12/23 15:17	
+ark:/85065/d72n54mx	http://opensky.ucar.edu/islandora/object/articles:20120	200	4/9/23 3:16	
+ark:/47881/m670809z	http://bibnum.univ-lyon1.fr/nuxeo/nxfile/default/02e2b387-0dfa-42a5-bb40-986d60430ffa/blobholder:0/Mk_2017_GLADYS_Lucie.pdf	200	4/9/23 13:21	
+ark:/57799/b91DmyafMOveE9N	https://identifiers.globus.org/ark:/57799/b91DmyafMOveE9N/landingpage	-1	4/14/23 6:10	
+ark:/87924/r4dn43f2w	https://repository.duke.edu/id/ark:/87924/r4dn43f2w	500	4/13/23 14:19	
+ark:/57799/b919ttVpArnKSAl	https://identifiers.globus.org/ark:/57799/b919ttVpArnKSAl	-1	4/12/23 11:38	
+doi:10.25345/C5MK80	https://massive.ucsd.edu/ProteoSAFe/dataset.jsp?accession=MSV000083400	500	4/12/23 12:14	
+ark:/87924/r4b27tk40	https://repository.duke.edu/id/ark:/87924/r4b27tk40	500	4/12/23 13:09	
+ark:/87602/m4/M71479	http://MorphoSource.org/index.php/Detail/MediaDetail/Show/media_file_id/71479	-1	4/12/23 15:20	
+ark:/81985/n2xs5jw1b	https://dc.library.northwestern.edu/items/112fe738-acdd-4efb-9cfd-df0270c8cd4e	503	4/12/23 12:09	
+ark:/87602/m4/M85463	http://MorphoSource.org/index.php/Detail/MediaDetail/Show/media_file_id/85463	200	4/14/23 6:14	
+ark:/87924/r4s46n71b	https://repository.duke.edu/id/ark:/87924/r4s46n71b	500	4/12/23 14:45	
+ark:/75788/m4d21rk8m	https://arc.lib.montana.edu/milburn-lincoln-wilson/item/4835	-1	4/14/23 3:58	
+ark:/88435/xd07gw55g	http://pudl.princeton.edu/objects/xd07gw55g	301	2023-04-12 19:31:47	104
+ark:/88435/z890rx11q	http://pudl.princeton.edu/objects/z890rx11q	301	2023-04-13 01:03:47	104
+ark:/88435/zc77ss97j	http://pudl.princeton.edu/objects/zc77ss97j	301	2023-04-13 11:46:12	104
+ark:/81985/n2bc7x	https://media.northwestern.edu/media_objects/5h73pw048/section/9g54xh64n	410	2023-04-12 12:14:34	107
+ark:/81985/n2kw2c	http://media.northwestern.edu/media_objects/5h73pw048	410	2023-04-12 19:46:33	107
+ark:/81985/n20m2b	https://media.northwestern.edu/media_objects/7m01bm37q/section/dr26xz01p	410	2023-04-12 12:15:39	111
+ark:/13030/tf896nb4v3	http://ark.cdlib.org/ark:/13030/tf896nb4v3	504	2023-04-14 05:25:23	3
+doi:10.32942/OSF.IO/VSMKA	https://osf.io/vsmka	308	4/13/23 22:38
+doi:10.32942/OSF.IO/Z74XH	https://osf.io/z74xh	308	4/13/23 22:39
+ark:/13030/c8ks708z	http://content.cdlib.org/ark:/13030/c8ks708z	302	4/13/23 22:38
+ark:/88435/qj72pb00k	http://pudl.princeton.edu/objects/qj72pb00k	301	4/14/23 7:23
+ark:/88435/qr46r369k	http://pudl.princeton.edu/objects/qr46r369k	301	4/12/23 3:47
