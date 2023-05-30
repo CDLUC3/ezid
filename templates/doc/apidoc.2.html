@@ -11,9 +11,9 @@
 {% block content %}
 {% learn_breadcrumb _("API Guide") %}
 <div class="container api vertical-buffer-20"><div class="smallfont line-block">
-<div class="line"><strong>This version:</strong> <a class="reference external" href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.2.html">{{ request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.2.html</a></div>
-<div class="line"><strong>Latest version:</strong> <a class="reference external" href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.html">{{ request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.html</a></div>
-<div class="line"><strong>Previous version:</strong> <a class="reference external" href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.1.html">{{ request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.1.html</a></div>
+<div class="line"><strong>This version:</strong> <a class="reference external" href="{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.2.html">{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.2.html</a></div>
+<div class="line"><strong>Latest version:</strong> <a class="reference external" href="{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.2.html">{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.2.html</a></div>
+<div class="line"><strong>Previous version:</strong> <a class="reference external" href="{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.1.html">{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/doc/apidoc.1.html</a></div>
 </div>
 <p>EZID (easy-eye-dee) provides an easy way to obtain, describe, and
 manage long-term identifiers for digital objects.  It can be accessed
@@ -34,6 +34,8 @@ only) to ask questions or report problems:</p>
 <li><a class="reference internal" href="#authentication">Authentication</a></li>
 <li><a class="reference internal" href="#request-response-bodies">Request &amp; response bodies</a></li>
 <li><a class="reference internal" href="#error-reporting">Error reporting</a></li>
+<li><a class="reference internal" href="#operation-resolve-identifier-ezid-v3-1">Operation: resolve identifier (EZID v3.1)</a></li>
+<li><a class="reference internal" href="#operation-get-identifier-metadata-ezid-v3-1">Operation: get identifier metadata (EZID v3.1)</a></li>
 <li><a class="reference internal" href="#operation-get-identifier-metadata">Operation: get identifier metadata</a></li>
 <li><a class="reference internal" href="#operation-create-identifier">Operation: create identifier</a></li>
 <li><a class="reference internal" href="#operation-mint-identifier">Operation: mint identifier</a></li>
@@ -412,6 +414,326 @@ if (c.getResponseCode() &lt; 400) {
 // read from s...
 </pre>
 </div>
+<div class="section" id="operation-resolve-identifier-ezid-v3-1">
+<h1>Operation: resolve identifier (EZID v3.1)</h1>
+<p>EZID 3.1 and later supports identifier resolution, which is a service
+that provides the location of a resource referenced by a persistent
+identifier such as an ARK or DOI.</p>
+<p>EZID forwards DOI identifier resolution to the <tt class="docutils literal">doi.org</tt> service.</p>
+<p>ARK identifier resolution is handled by finding the longest matching
+identifier in EZID and redirecting the client to the <tt class="docutils literal">location</tt>
+registered with the identifier.</p>
+<p>The resolve identifier service is located at the EZID Base URL, and
+is invoked using HTTP GET.</p>
+<p>For example given the identifier <tt class="docutils literal"><span class="pre">ark:/87278/s63x8hrv</span></tt>, a resolve
+request can be made by sending a HTTP GET request to
+<tt class="docutils literal"><span class="pre">{BaseURL}/ark:/87278/s63x8hrv</span></tt> such as in the <tt class="docutils literal">curl</tt> example
+below:</p>
+<pre class="literal-block">
+$ curl -v &quot;{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/ark:/87278/s63x8hrv&quot;
+
+&gt; GET /ark:/87278/s63x8hrv HTTP/1.1
+&gt; Host: localhost:8000
+&gt; User-Agent: curl/7.86.0
+&gt; Accept: <em>/</em>
+&gt;
+&lt; HTTP/1.1 302 Found
+&lt; Date: Wed, 15 Mar 2023 13:32:40 GMT
+&lt; Server: WSGIServer/0.2 CPython/3.9.5
+&lt; Last-Modified: Tue, 15 Oct 2013 17:30:39 GMT
+&lt; Content-Type: text/plain; charset=utf-8
+&lt; Location: <a class="reference external" href="http://content.lib.utah.edu/cdm/ref/collection/cjt/id/4791">http://content.lib.utah.edu/cdm/ref/collection/cjt/id/4791</a>
+&lt; Vary: Accept-Language
+&lt; Content-Language: en
+&lt; Content-Length: 206
+&lt;
+request_id: ark:/87278/s63x8hrv
+id: ark:/87278/s63x8hrv
+extra:
+location: http://content.lib.utah.edu/cdm/ref/collection/cjt/id/4791
+modified: 2013-10-15T17:30:39+00:00
+</pre>
+<p>The 302 status of the response indicates the client is to be redirected
+to the URL listed in the <tt class="docutils literal">Location:</tt> response header, in this case:
+<a class="reference external" href="http://content.lib.utah.edu/cdm/ref/collection/cjt/id/4791">http://content.lib.utah.edu/cdm/ref/collection/cjt/id/4791</a>. Note that
+a brief body is included in the response to provide some minimal
+metadata about the identifier. The properties are:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal">request_id</tt></dt>
+<dd>The identifier in the resolve request URL.</dd>
+<dt><tt class="docutils literal">id</tt></dt>
+<dd>The matching identifier found in EZID.</dd>
+<dt><tt class="docutils literal">extra</tt></dt>
+<dd>Any additional characters in the <tt class="docutils literal">request_id</tt> beyond the found <tt class="docutils literal">id</tt>.</dd>
+<dt><tt class="docutils literal">location</tt></dt>
+<dd>The registered location of the identifier target.</dd>
+<dt><tt class="docutils literal">modified</tt></dt>
+<dd>Time stmap indicating when the identifier was last modified.</dd>
+</dl>
+<p>For security reasons, this body is not normally accessible to a browser based
+client, though a programmatic client may access this info by including a
+non-standard header <tt class="docutils literal"><span class="pre">No-Redirect:</span> true</tt> in the request. The default format
+of the body is ANVL, however the metadata may also be serialized in JSON by
+requesting that media type. For example:</p>
+<pre class="literal-block">
+$ curl -v -H &quot;No-Redirect: true&quot; \
+    -H &quot;Accept: application/json&quot; \
+    &quot;{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/ark:/87278/s63x8hrv&quot;
+
+&gt; GET /ark:/87278/s63x8hrv HTTP/1.1
+&gt; Host: localhost:8000
+&gt; User-Agent: curl/7.86.0
+&gt; Accept: application/json
+&gt; No-redirect: true
+&gt;
+&lt; HTTP/1.1 200 OK
+&lt; Date: Wed, 15 Mar 2023 13:54:01 GMT
+&lt; Server: WSGIServer/0.2 CPython/3.9.5
+&lt; Last-Modified: Tue, 15 Oct 2013 17:30:39 GMT
+&lt; Location: http://content.lib.utah.edu/cdm/ref/collection/cjt/id/4791
+&lt; Content-Type: application/json; charset=utf-8
+&lt; Vary: Accept-Language
+&lt; Content-Language: en
+&lt; Content-Length: 201
+&lt;
+{
+  &quot;request_id&quot;: &quot;ark:/87278/s63x8hrv&quot;,
+  &quot;id&quot;: &quot;ark:/87278/s63x8hrv&quot;,
+  &quot;extra&quot;: &quot;&quot;,
+  &quot;location&quot;: &quot;http://content.lib.utah.edu/cdm/ref/collection/cjt/id/4791&quot;,
+  &quot;modified&quot;: &quot;2013-10-15T17:30:39Z&quot;
+}
+</pre>
+<p>A live demo of the resolve operation is provided below. Enter an identifier, and click
+&quot;Resolve&quot; to show the request and response.</p>
+<input id="rinp_pid" type="text" size="80" placeholder="identifier" value="ark:/87278/s63x8hrv"></input>
+<span><input id="rcb_format" type="checkbox" checked="true" />
+<label for="rcb_format">As JSON</label></span>
+<span><input id="rcb_follow" type="checkbox" />
+<label for="rcb_format">Follow link</label></span>
+<br /><button id="rbt_pid">Resolve</button>
+<pre id="rpre_pid" style="white-space:pre-wrap">
+</pre>
+<script>
+function doInflection() {
+  document.getElementById("rpre_pid").innerText = "Wait...";
+  let pid = document.getElementById("rinp_pid").value;
+  const url = `/${pid}`;
+  if (document.getElementById("rcb_follow").checked) {
+      document.getElementById("rpre_pid").innerText = "";
+     window.location = url + "?_nocache=" + (new Date()).getTime();
+     return;
+  }
+  let headers = {
+     "Accept":"text/plain",
+     "No-Redirect": "true"
+  };
+  let as_json = false;
+  if (document.getElementById("rcb_format").checked) {
+    as_json = true;
+    headers["Accept"] = "application/json";
+  }
+  fetch(url, {
+    "headers": headers,
+    "cache": "no-cache"
+  })
+  .then((response) => {
+    let msg = `Request:\nGET ${response.url}\n\nResponse:\nstatus: ${response.status}\n`;
+    if (as_json) {
+      response.json()
+      .then((data) => {
+        document.getElementById("rpre_pid").innerText = msg + JSON.stringify(data,null,2);
+     })
+     .catch((err) => {
+         document.getElementById("rpre_pid").innerText = `${msg}Error:\n${err}`;
+     });
+    } else {
+      response.text()
+      .then((text) => {
+         document.getElementById("rpre_pid").innerText = msg + text;
+      });
+    }
+  })
+  .catch((response) => {
+     alert(response.status);
+ });
+}
+document.getElementById("rbt_pid").onclick = doInflection;
+</script></div>
+<div class="section" id="operation-get-identifier-metadata-ezid-v3-1">
+<h1>Operation: get identifier metadata (EZID v3.1)</h1>
+<p>As part of the identifier resolution support for EZID version 3.1,
+&quot;inflection&quot; as described in the <a class="reference external" href="https://arks.org/about/ark-features/">ARK documentation</a> is implemented
+with additional support for JSON representation when requested by
+content negotiation.</p>
+<p>An inflection request is invoked by appending &quot;<tt class="docutils literal"><span class="pre">??</span></tt>&quot; or &quot;<tt class="docutils literal"><span class="pre">?info</span></tt>&quot; to
+the end of a GET request URL to the EZID <tt class="docutils literal">resolve</tt> service endpoint.</p>
+<p>For example given the identifier <tt class="docutils literal"><span class="pre">ark:/87278/s63x8hrv</span></tt>, an inflection
+request can be made by sending a HTTP GET request to:</p>
+<pre class="literal-block">
+{BaseURL}/ark:/87278/s63x8hrv?info
+</pre>
+<p>such as in the <tt class="docutils literal">curl</tt> example below:</p>
+<pre class="literal-block">
+$ curl &quot;{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/ark:/87278/s63x8hrv?info&quot;
+
+erc.what: Sophonisba : or, Hannibal's overthrow
+erc.note: CONTENTdm to Rosetta workflow
+_owner: uofutah
+_ownergroup: uofutah
+_profile: erc
+_target: http://content.lib.utah.edu/cdm/ref/collection/cjt/id/4791
+_status: public
+_export: yes
+id created: 2013.10.15_10:30:39
+id updated: 2013.10.15_10:30:39
+</pre>
+<p>The default response is in ANVL, though a JSON response may be requested
+through content negotiation, for example:</p>
+<pre class="literal-block">
+$ curl -H &quot;Accept: application/json&quot; \
+    &quot;{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/ark:/87278/s63x8hrv?info&quot;
+{
+  &quot;erc&quot;: {
+    &quot;what&quot;: &quot;Sophonisba : or, Hannibal's overthrow&quot;,
+    &quot;note&quot;: &quot;CONTENTdm to Rosetta workflow&quot;
+  },
+  &quot;_owner&quot;: &quot;uofutah&quot;,
+  &quot;_ownergroup&quot;: &quot;uofutah&quot;,
+  &quot;_profile&quot;: &quot;erc&quot;,
+  &quot;_target&quot;: &quot;http://content.lib.utah.edu/cdm/ref/collection/cjt/id/4791&quot;,
+  &quot;_status&quot;: &quot;public&quot;,
+  &quot;_export&quot;: &quot;yes&quot;,
+  &quot;id created&quot;: &quot;2013-10-15T10:30:39&quot;,
+  &quot;id updated&quot;: &quot;2013-10-15T10:30:39&quot;
+}
+</pre>
+<p>Identifier records may use different metadata profiles. The example above uses the <tt class="docutils literal">erc</tt>
+profile (indicated by the <tt class="docutils literal">_profile</tt> key value and the corresponding <tt class="docutils literal">erc</tt> key value
+providing the metadata.</p>
+<p>Similarly, Dublin Core (<tt class="docutils literal">dc</tt>), DataCite (<tt class="docutils literal">datacite</tt>), schema.org (<tt class="docutils literal">schema_org</tt>),
+and other profiles may be used. A DataCite example (truncated here for brevity):</p>
+<pre class="literal-block">
+$ curl -H &quot;Accept: application/json&quot; \
+    &quot;{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/ark:/13030/m5qz2bmh?info&quot;
+
+{
+  &quot;datacite&quot;: &quot;&lt;?xml version=&quot;1.0&quot;?&gt;n&lt;resource xmlns=&quot;http://datacite.org/schema/kernel-3&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd&quot;&gt;&lt;identifier identifierType=&quot;ARK&quot;&gt;13030/m5qz2bmh&lt;/identifier&gt;&lt;creators&gt;&lt;creator&gt;&lt;creatorName&gt;Zhang, Yu&lt;/creatorName&gt;&lt;/creator&gt;&lt;/creators&gt;&lt;titles&gt;&lt;title&gt;Patterns of age-related water diffusion changes in human brain by concordance and discordance analysis.&lt;/title&gt;&lt;/titles&gt;&lt;publisher&gt;University of California, San Francisco&lt;/publisher&gt;&lt;publicationYear&gt;2012&lt;/publicationYear&gt;&lt;contributors&gt;&lt;contributor contributorType=&quot;ResearchGroup&quot;&gt;&lt;contributorName&gt;UCSF Center for Imaging of Neurodegenerative Diseases&lt;/contributorName&gt;&lt;/contributor&gt;&lt;/contributors&gt;&lt;resourceType resourceTypeGeneral=&quot;Dataset&quot;&gt;Dataset&lt;/resourceType&gt;&lt;descriptions&gt;&lt;description descriptionType=&quot;Abstract&quot;&gt;In diffusion tensor imaging (DTI), interpreting changes in terms ...&lt;/description&gt;&lt;/descriptions&gt;&lt;/resource&gt;&quot;,
+  &quot;mrt.creator&quot;: &quot;ucsf_datashare&quot;,
+  &quot;erc&quot;: {
+    &quot;who&quot;: &quot;Zhang, Yu&quot;,
+    &quot;what&quot;: &quot;Patterns of age-related water diffusion changes in human brain by concordance and discordance analysis.&quot;,
+    &quot;where&quot;: &quot;ark:/13030/m5qz2bmh&quot;
+  },
+  &quot;_owner&quot;: &quot;merritt&quot;,
+  &quot;_ownergroup&quot;: &quot;merritt&quot;,
+  &quot;_profile&quot;: &quot;datacite&quot;,
+  &quot;_target&quot;: &quot;http://merritt.cdlib.org/m/ark%3a%2fb7272%2fq67p8w9z&quot;,
+  &quot;_status&quot;: &quot;public&quot;,
+  &quot;_export&quot;: &quot;yes&quot;,
+  &quot;id created&quot;: &quot;2012-07-09T08:33:53&quot;,
+  &quot;id updated&quot;: &quot;2017-01-23T16:45:09&quot;
+}
+</pre>
+<p>The JSON format is convenient for further processing with tools such a <tt class="docutils literal">jq</tt> to extract the
+metadata value, for example (truncated here for brevity):</p>
+<pre class="literal-block">
+$ curl -H &quot;Accept: application/json&quot; \
+    &quot;{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/ark:/13030/m5qz2bmh?info&quot; | jq -r '.datacite' | xml fo
+
+&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;resource xmlns=&quot;http://datacite.org/schema/kernel-3&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd&quot;&gt;
+  &lt;identifier identifierType=&quot;ARK&quot;&gt;13030/m5qz2bmh&lt;/identifier&gt;
+  &lt;creators&gt;
+    &lt;creator&gt;
+      &lt;creatorName&gt;Zhang, Yu&lt;/creatorName&gt;
+    &lt;/creator&gt;
+  &lt;/creators&gt;
+  &lt;titles&gt;
+    &lt;title&gt;Patterns of age-related water diffusion changes in human brain by concordance and discordance analysis.&lt;/title&gt;
+  &lt;/titles&gt;
+  &lt;publisher&gt;University of California, San Francisco&lt;/publisher&gt;
+  &lt;publicationYear&gt;2012&lt;/publicationYear&gt;
+  &lt;contributors&gt;
+    &lt;contributor contributorType=&quot;ResearchGroup&quot;&gt;
+      &lt;contributorName&gt;UCSF Center for Imaging of Neurodegenerative Diseases&lt;/contributorName&gt;
+    &lt;/contributor&gt;
+  &lt;/contributors&gt;
+  &lt;resourceType resourceTypeGeneral=&quot;Dataset&quot;&gt;Dataset&lt;/resourceType&gt;
+  &lt;descriptions&gt;
+    &lt;description descriptionType=&quot;Abstract&quot;&gt;In diffusion tensor imaging (DTI), interpreting ...&lt;/description&gt;
+  &lt;/descriptions&gt;
+&lt;/resource&gt;
+</pre>
+<p>If an exact match for an identifier is not found then matching shoulders are presented (truncated for brevity):</p>
+<pre class="literal-block">
+$ curl -H &quot;Accept: application/json&quot; \
+    &quot;{{ request.META.HTTP_X_FORWARDED_PROTO|default:request.scheme }}://{{ request.META.HTTP_HOST }}/ark:/13030/nonexistent?info&quot;
+
+{
+  &quot;ark:/13030/p8&quot;: {
+    &quot;erc.who&quot;: &quot;Open Access Policy&quot;,
+    &quot;erc.what&quot;: &quot;ARK&quot;,
+    &quot;erc.when&quot;: &quot;2015-04-06&quot;
+  },
+  &quot;ark:/13030/fq&quot;: {
+    &quot;erc.who&quot;: &quot;DPR Legacy&quot;,
+    &quot;erc.what&quot;: &quot;ARK&quot;,
+    &quot;erc.when&quot;: &quot;2011-12-13&quot;
+  },
+  &quot;ark:/13030/ft&quot;: {
+    &quot;erc.who&quot;: &quot;Online Archive of California (OAC) Legacy ft&quot;,
+    &quot;erc.what&quot;: &quot;ARK&quot;,
+    &quot;erc.when&quot;: &quot;2007-06-01&quot;
+  },
+  ...
+</pre>
+<p>A live demo of the inflection operation is provided below. Enter an identifier, and click
+&quot;Get Metadata&quot; to show the request and response.</p>
+<input id="inp_pid" type="text" size="80" placeholder="identifier" value="ark:/87278/s63x8hrv"></input>
+<span><input id="cb_format" type="checkbox" checked="true" />
+<label for="cb_format">As JSON</label></span>
+<br /><button id="bt_pid">Get Metadata</button>
+<pre id="pre_pid" style="white-space:pre-wrap">
+</pre>
+<script>
+function doInflection() {
+  document.getElementById("pre_pid").innerText = "Wait...";
+  let pid = document.getElementById("inp_pid").value;
+  const url = `/${pid}?info`
+  let headers = {"Accept":"text/plain"};
+  let as_json = false;
+  if (document.getElementById("cb_format").checked) {
+    as_json = true;
+    headers = {"Accept":"application/json"};
+  }
+  fetch(url, {
+    "headers": headers,
+    "cache": "no-cache"
+  })
+  .then((response) => {
+    let msg = `Request:\nGET ${response.url}\n\nResponse:\nstatus: ${response.status}\n`;
+    if (as_json) {
+      response.json()
+      .then((data) => {
+        document.getElementById("pre_pid").innerText = msg + JSON.stringify(data,null,2);
+     })
+     .catch((err) => {
+         document.getElementById("pre_pid").innerText = `${msg}Error:\n${err}`;
+     });
+    } else {
+      response.text()
+      .then((text) => {
+         document.getElementById("pre_pid").innerText = msg + text;
+      });
+    }
+  })
+  .catch((response) => {
+     alert(response.status);
+ });
+}
+document.getElementById("bt_pid").onclick = doInflection;
+</script></div>
 <div class="section" id="operation-get-identifier-metadata">
 <h1>Operation: get identifier metadata</h1>
 <p>Metadata can be retrieved for any existing identifier; no

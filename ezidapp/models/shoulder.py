@@ -16,6 +16,7 @@ import django.conf
 import django.core.exceptions
 import django.db
 import django.db.models
+import django.db.models.functions
 import django.db.transaction
 
 # import ezidapp.models.datacenter
@@ -230,3 +231,4 @@ def _getShoulder(s):
         return Shoulder.objects.select_related("datacenter").get(prefix=s)
     except Shoulder.DoesNotExist as e:
         logger.warning(f'Shoulder does not exist: {s}')
+

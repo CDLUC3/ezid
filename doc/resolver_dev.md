@@ -1,20 +1,172 @@
-# Resolver Development
+# EZID Identifier Resolution
 
-Notes on design and implementation of identifier resolution 
-capability within the EZID application. These notes are for 
-design purposes. Actual implementation may vary.
+EZID supports minting identifiers, the binding of an identifier to a target, and resolving an identifier to its target. This document describes EZID identifier resolution.
+
+## Resolution
+
+A resolution request is made by sending a HTTP GET request to the EZID resolver service, and including the identifier in the request URL as a path parameter. The EZID resolver service endpoint is the base URL of the EZID service. For example, the base URL of the EZID staging instance is:
+
+```
+https://ezid-stg.cdlib.org/
+```
+
+Hence, identifiers in the staging environment may be resolved using the pattern:
+
+```
+https://ezid-stg.cdlib.org/{IDENTIFIER}
+```
+
+where `{IDENTIFIER}` is an identifier value such as `ark:/99999/fk43n3kd35` or `doi:10.12345/fk48823`. 
+
+ARK identifier resolution is handled by the EZID service. Resolution requests for ARK identifiers not registered with the EZID service result in a `404 Not Found` HTTP response.
+
+DOI identifier resolution requests are handled by delegating to the DOI service resolver, https://doi.org/. Error responses are consequently those provided by the DOI service provider. Note that currently (early 2023), DataCite does not return a 404 HTTP response for unknown DOIs, a behavior which may be confusing for programmatic clients.
+
+### Exact identifier match
 
 
-## Goal 
 
-To support resolution of any identifier minted by the EZID application.
+### Provided identifier is longer than any matching EZID identifier
 
-Identifier resolution is currently handled by N2T.net. The EZID application 
-should provide at least equivalent capability for identifiers minted through 
-the application.
+This is known as "suffix pass-through".
 
-N2T reports approximately one resolution per second on average for 
-EZID identifiers over several months. The burst rate is not currently known.
+A search is performed for the longest EZID identifier matching the start of the provided identifier. If a matching EZID identifier is found, then a redirect to the registered location is created, and the extra characters included in the provided identifier are appended to the registered location.
+
+If no matching identifier is found, then a `404 Not Found` status is returned.
+
+For example, given a registered identifier of `ark:99999/fk4foo` bound to `https://example.org/test/`, a request such as:
+
+```
+https://ezid.cdlib.org/ark:99999/fk4fooExtra?portion=hello
+```
+
+would resolve to:
+
+```
+https://example.org/test/Extra?portion=hello
+```
+
+Since the extra characters `Extra?portion=hello` are not part of the identifier and so form the suffix for the pass-through.
+
+### Provided identifier is shorter than any matching EZID identifier
+
+A search across NAANs, super-shoulders, and shoulders is performed, and the longest match
+The longest matching NAAN, super-shoulder, or shoulder 
+
+## Inflection or Introspection
+
+The service supports inflection to provide metadata about the identifier or portion thereof. A request for identifier metadata may be invoked by several mechanisms:
+
+1. Two question characters (i.e. `??`) appended to the request
+2. Appending `?info` to the request
+3. Specifying an `Accept` header of 
+is invoked by appending `?info` or two question characters (i.e. `??`) in a request to the resolver url. The response is the same as a request to the `/id/` endpoint of the EZID service. Inflection is supported for both ARK and DOI identifiers registered through EZID.
+
+## Content negotiation
+
+The EZID service is currently agnostic with respect to content negotiation of `resolve` requests since there is no distinction recorded in EZID for target urls and content type. Such capability may be offered by the resolved target.
+
+Content negotiation of 
+
+
+## Resolution technical description
+
+A complete description of the resolve service behavior follows.
+
+Given a request:
+```
+{BASE_URL}/{request_identifier}
+```
+
+1. If `{request_identifier}` ends with `??` or `?info` then the request is considered an *inflection*. Otherwise, the request is considered a *resolve* request.
+
+*Resolve Request Sequence*
+
+2. If `{request_identifier}` starts with `ark:` (case insensitive), then `{request_identifier}` is handled as an ARK identifier. If `{request_identifier}` starts with `doi:` (case insensitive), then `{request_identifier}` is handled as an DOI identifier.
+
+*DOI Identifier Resolution*
+3. DOI identifier. The first 4 characters ("doi:") are removed from `{request_identifier}` and the remainder are appended to the DOI resolver URL `https://doi.org/` to create `{location}`. A HTTP `302 temporary redirect` is returned with a `Location:` header set to `{location}`.
+
+*ARK Identifier Resolution*
+3. ARK identifier. The first 4 characters ("ark:") are removed from `{request_identifier}`. The remainder is called `{request_ark_value}`.
+2. `{request_ark_value}` is normalized according to the ARK specification (e.g. hyphens are removed, percent encoding expanded), yielding `{normalized_request_ark_value`}`.
+4. A search is performed to find the longest EZID `ARK` identifier that is not `RESERVED` matching the start of `{normalized_request_ark_value}`. If no match is found, a `404 Not Found` status is returned. 
+5. If a match is found, then `{location}` is set to the registered target of the matched identifier. Any if the matched identifier is shorter than `{normalized_request_ark_value}` then the remaining characters are appended to `{location}`, and a `302 temporary redirect` is returned with the `Location:` header set to `{location}`. Note that the `{location}` for identifiers flagged as `UNAVAILABLE` will be the tombstone page for the identifier. 
+
+*Inflection Request Sequence*
+
+1. The first 4 characters (i.e. "ark:" or "doi:") are removed from `{request_identifier}` yielding `{request_value}`.
+2. 
+
+the following parts are parsed:
+```
+{request_identifier} = {scheme} + ":" + {value} [+ {suffix}] [+ "?info" | "??"]
+```
+
+where:
+
+`scheme` is one of `ark` or `doi`<br />
+`value` is an identifier value in EZID<br />
+`suffix` 0..n characters after the `value`<br />
+`?info` or `??` signifies an inflection request<br />
+
+Resolution proceeds in the following manner:
+
+1. `request_identifier` is split to `{scheme}`, `{identifier_value}`, and `{scheme}` is converted to lowercase.
+2. If `{request_identifier}` ends with `?info` or `??` the 
+3. If `scheme` is `"doi"` a 302 redirect with location `"https://doi.org/{value}/{suffix}"` is returned. 
+4. `request_identifier` is normalized to `normalized_identifier_request` according the rules of `scheme`
+5. If `normalized_identifier_request` does not appear to be a valid identifier, a `404 Not Found` response is returned.
+6. A prefix search is performed to determine the `registered_identifier` that matches the start of `normalized_identifier_request`
+7. If a `registered_identifier` is not found, a `404 Not Found` error is returned.
+8. If `registered_identifier` has `RESERVED` status, a `404 Not Found` error i s returned.
+9. If `registered_identifier` has an `UNAVAILABLE` status, a HTTP 302 Temporary Redirect is returned with `Location` being the tombstone page for the identifier.
+10. `suffix` is the string remaining after subtracting `identifier` from the start of the string. This may include a query portion, i.e. key-value pairs.
+11. `Location` is constructed as `identifier.target + suffix`
+12. A HTTP `302 Temporary Redirect` response is returned, with `Location`. A response body of `JSON` is included, and the `Last-Modified` response header is set to the time that the record was last updated.
+
+
+
+
+
+
+If the identifier scheme is "doi", the client is redirected to:
+
+```
+https://dx.doi.net/{value}
+```
+
+If the identifier scheme is "ark":
+
+```
+{value} = ["/"] + {NAAN} + ["/" + {suffix}]
+```
+
+If the value is not an EZID shoulder, the client is redirected to:
+
+```
+https://n2t.net/{identifier}
+```
+
+If the value is a shoulder managed by EZID:
+
+If the status is "R" ("Reserved"), a status code of 403 Forbidden is returned.
+
+If the status is "U" ("Unavailable"), a status code of 308 Permanent Redirect is returned with a Location header containing the tombstone page for that identifier. The tombstone page will typically be:
+
+```
+{BASE_URL}/tombstone/id/{identifier}
+```
+
+If the status is "P" ("Public"), a status code of 307 Temporary Redirect is returned with a Location header containing the registered Location value.
+
+
+
+### Inflection
+
+Identifier introspection provides metadata about the identifier rather than the identified resource.
+
+
 
 ## Initial Design
 

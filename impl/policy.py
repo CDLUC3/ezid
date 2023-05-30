@@ -21,6 +21,10 @@ def authorizeView(user, identifier):
     'user' is the requestor and should be an authenticated User
     object. 'identifier' is the identifier in question; it should be a
     Identifier object.
+
+    Basically:
+      Any user can view metadata for a PID if it is not an agent PID.
+      Super user can view any PID.
     """
     # In EZID, essentially all identifier metadata is public.
     logger.debug(f'Checking if user can view identifier. user="{user}" identifier="{identifier}"')
