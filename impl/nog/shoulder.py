@@ -122,6 +122,21 @@ def create_shoulder(
         if (is_super_shoulder):
             minterVal = ''
 
+        # get the corresponding agency
+        # choice of 3
+        # select * from ezidapp_registrationAgency;
+        agency_code = "ezid"
+        if ns.scheme.upper() == "DOI":
+            agency_code = "datacite"
+            if is_crossref:
+                agency_code = "crossref"
+        agency = ezidapp.models.shoulder.RegistrationAgency.objects.get(registration_agency=agency_code)
+        print(agency)
+        # Only one type of shoulder, "shoulder"
+        # see: select * from ezidapp_shouldertype;
+        shoulder_type = ezidapp.models.shoulder.ShoulderType.objects.get(shoulder_type="shoulder")
+        print(shoulder_type)
+
         ezidapp.models.shoulder.Shoulder.objects.create(
             prefix=ns,
             type=ns.scheme.upper(),
@@ -135,6 +150,8 @@ def create_shoulder(
             prefix_shares_datacenter=is_sharing_datacenter,
             date=datetime.date.today(),
             active=True,
+            registration_agency=agency,
+            shoulder_type=shoulder_type
         )
     except django.db.utils.IntegrityError as e:
         raise django.core.management.CommandError(
