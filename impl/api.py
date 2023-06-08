@@ -737,9 +737,13 @@ def resolveInflection(
         msg = {
             "id": shoulder_record.prefix,
             "erc.who": shoulder_record.name,
-            "erc.what": "shoulder" if shoulder_record.shoulder_type is None else shoulder_record.shoulder_type.shoulder_type,
+            "erc.what": "shoulder"
+            if shoulder_record.shoulder_type is None
+            else shoulder_record.shoulder_type.shoulder_type,
             "erc.when": shoulder_record.date.isoformat(),
-            "agency": "ezid" if shoulder_record.registration_agency is None else shoulder_record.registration_agency.registration_agency,
+            "agency": "ezid"
+            if shoulder_record.registration_agency is None
+            else shoulder_record.registration_agency.registration_agency,
         }
         # Note there is no date-modified for shoulders
         return generate_response(request, msg, status=200)
