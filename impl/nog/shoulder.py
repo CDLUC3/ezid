@@ -58,9 +58,7 @@ def assert_super_shoulder_slash(ns, is_super_shoulder, is_force):
         return
     if not str(ns).endswith('/'):
         if is_force:
-            log.info(
-                'Accepting super-shoulder not ending with "/" due to --skip-checks'
-            )
+            log.info('Accepting super-shoulder not ending with "/" due to --skip-checks')
         else:
             raise django.core.management.CommandError(
                 'Super-shoulder normally ends with "/". Use --skip-checks to skip this check '
@@ -69,18 +67,14 @@ def assert_super_shoulder_slash(ns, is_super_shoulder, is_force):
 
 
 def assert_valid_datacenter(datacenter_str):
-    datacenter_set = {
-        x.symbol for x in ezidapp.models.datacenter.Datacenter.objects.all()
-    }
+    datacenter_set = {x.symbol for x in ezidapp.models.datacenter.Datacenter.objects.all()}
     if datacenter_str not in datacenter_set:
         log.error(
             'Datacenter must be one of:\n{}'.format(
                 '\n'.join('  {}'.format(x) for x in sorted(datacenter_set))
             )
         )
-        raise django.core.management.CommandError(
-            'Invalid datacenter: {}'.format(datacenter_str)
-        )
+        raise django.core.management.CommandError('Invalid datacenter: {}'.format(datacenter_str))
 
 
 def dump_shoulders():
@@ -117,10 +111,27 @@ def create_shoulder(
     # Add new shoulder row to the shoulder table.
     try:
         minterVal = "ezid:/{}".format(
-                '/'.join(bdb_path.parts[-3:-1]),
-            )
-        if (is_super_shoulder):
+            '/'.join(bdb_path.parts[-3:-1]),
+        )
+        if is_super_shoulder:
             minterVal = ''
+
+        # get the corresponding agency
+        # choice of 3
+        # select * from ezidapp_registrationAgency;
+        agency_code = "ezid"
+        if ns.scheme.upper() == "DOI":
+            agency_code = "datacite"
+            if is_crossref:
+                agency_code = "crossref"
+        agency = ezidapp.models.shoulder.RegistrationAgency.objects.get(
+            registration_agency=agency_code
+        )
+        print(agency)
+        # Only one type of shoulder, "shoulder"
+        # see: select * from ezidapp_shouldertype;
+        shoulder_type = ezidapp.models.shoulder.ShoulderType.objects.get(shoulder_type="shoulder")
+        print(shoulder_type)
 
         ezidapp.models.shoulder.Shoulder.objects.create(
             prefix=ns,
@@ -135,6 +146,8 @@ def create_shoulder(
             prefix_shares_datacenter=is_sharing_datacenter,
             date=datetime.date.today(),
             active=True,
+            registration_agency=agency,
+            shoulder_type=shoulder_type,
         )
     except django.db.utils.IntegrityError as e:
         raise django.core.management.CommandError(
