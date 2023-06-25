@@ -50,6 +50,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         except Exception as e:
             task_model.status = self.queue.FAILURE
             self.log.error("CREATE: %s", id_str, e)
+        task_model.save()
 
     def update(self, task_model: ezidapp.models.async_queue.BinderQueue):
         '''
@@ -95,6 +96,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             except Exception as e:
                 task_model.status = self.queue.FAILURE
                 self.log.error("UPDATE: %s", id_str, e)
+        task_model.save()
 
     def delete(self, task_model: ezidapp.models.async_queue.BinderQueue):
         id_str = task_model.refIdentifier.identifier
@@ -107,6 +109,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         except Exception as e:
             task_model.status = self.queue.FAILURE
             self.log.error("DELETE: %s", id_str, e)
+        task_model.save()
 
     def batchCreate(self, batch):
         impl.noid_egg.batchSetElements(batch)

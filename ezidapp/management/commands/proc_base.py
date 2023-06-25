@@ -107,7 +107,7 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
 
         while not self.terminated():
             qs = self.queue.objects.filter(status=self.queue.UNSUBMITTED,).order_by(
-                "seq"
+                "-seq"
             )[: django.conf.settings.DAEMONS_MAX_BATCH_SIZE]
             if not qs:
                 self.sleep(django.conf.settings.DAEMONS_IDLE_SLEEP)
@@ -116,6 +116,7 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
             for task_model in qs:
                 try:
                     self.do_task(task_model)
+                    task_model.status = self.queue.SUCCESS
                 except AsyncProcessingIgnored:
                     task_model.status = self.queue.IGNORED
                 except Exception as e:
@@ -134,7 +135,6 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
                     task_model.errorIsPermanent = True
                     # raise
                 else:
-                    task_model.status = self.queue.SUBMITTED
                     task_model.submitTime = self.now_int()
 
                 task_model.save()

@@ -103,6 +103,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
         if metadata_upload and target_url_upload:
             task_model.status = self.queue.SUCCESS
+        task_model.save()
 
         # check for non-public and adjust to suit
         if metadata.get("_is", "public") != "public" or metadata.get("_x", "yes") != "yes":
