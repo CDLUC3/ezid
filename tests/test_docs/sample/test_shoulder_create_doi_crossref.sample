@@ -16,8 +16,8 @@ at [MEMORY-ADDRESS]>,
   'name': '91101/r01 test org',
   'prefix': 'doi:10.9111/R01',
   'prefix_shares_datacenter': False,
-  'registration_agency': None,
-  'shoulder_type': None,
+  'registration_agency': <RegistrationAgency: RegistrationAgency object (3)>,
+  'shoulder_type': <ShoulderType: ShoulderType object (1)>,
   'type': 'DOI',
   'user_set': <django.db.models.fields.related_descriptors.create_forward_many_to_many_manager.<locals>.ManyRelatedManager object
 at [MEMORY-ADDRESS]>}
