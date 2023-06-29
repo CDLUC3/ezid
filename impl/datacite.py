@@ -148,7 +148,8 @@ def registerIdentifier(doi, targetUrl, datacenter=None):
         finally:
             if c:
                 c.close()
-        time.sleep(django.conf.settings.DATACITE_REATTEMPT_DELAY)
+        # increase reattempt delay as a magnitude of DATACITE_NUM_ATTEMPTS
+        time.sleep(django.conf.settings.DATACITE_REATTEMPT_DELAY + (60 * (i + 1)))
     return None
 
 
@@ -205,7 +206,8 @@ def getTargetUrl(doi, datacenter=None):
         finally:
             if c:
                 c.close()
-        time.sleep(django.conf.settings.DATACITE_REATTEMPT_DELAY)
+        # increase reattempt delay as a magnitude of DATACITE_NUM_ATTEMPTS
+        time.sleep(django.conf.settings.DATACITE_REATTEMPT_DELAY + (60 * (i + 1)))
 
 
 def validateDcmsRecord(identifier, record, schemaValidate=True):
@@ -479,7 +481,8 @@ def uploadMetadata(doi, current, delta, forceUpload=False, datacenter=None):
         finally:
             if c:
                 c.close()
-        time.sleep(django.conf.settings.DATACITE_REATTEMPT_DELAY)
+        # increase reattempt delay as a magnitude of DATACITE_NUM_ATTEMPTS
+        time.sleep(django.conf.settings.DATACITE_REATTEMPT_DELAY + (60 * (i + 1)))
 
 
 def deactivateIdentifier(doi, datacenter=None):
@@ -585,7 +588,8 @@ def pingDataciteOnly():
         finally:
             if c:
                 c.close()
-        time.sleep(django.conf.settings.DATACITE_REATTEMPT_DELAY)
+        # increase reattempt delay as a magnitude of DATACITE_NUM_ATTEMPTS
+        time.sleep(django.conf.settings.DATACITE_REATTEMPT_DELAY + (60 * (i + 1)))
 
 
 def dcmsRecordToHtml(record):
@@ -779,7 +783,8 @@ def _deactivate(doi, datacenter):
         finally:
             if c:
                 c.close()
-        time.sleep(django.conf.settings.DATACITE_REATTEMPT_DELAY)
+        # increase reattempt delay as a magnitude of DATACITE_NUM_ATTEMPTS
+        time.sleep(django.conf.settings.DATACITE_REATTEMPT_DELAY + (60 * (i + 1)))
 
 
 def _authorization(doi, datacenter=None):

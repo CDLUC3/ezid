@@ -121,6 +121,7 @@ if DAEMONS_ENABLED == 'auto':
 # - False: The daemon cannot run.
 # - See the DAEMONS_ENABLED setting above.
 DAEMONS_BINDER_ENABLED = True
+DAEMONS_QUEUE_CLEANUP_ENABLED = True
 DAEMONS_CROSSREF_ENABLED = True
 DAEMONS_DATACITE_ENABLED = True
 DAEMONS_DOWNLOAD_ENABLED = True
@@ -157,6 +158,11 @@ DAEMONS_MAX_BATCH_SIZE = 100
 # This value is used by proc_* http clients to avoid a hang.
 # Note, for legacy reasons, datacite uses DATACITE_TIMEOUT
 DAEMONS_HTTP_CLIENT_TIMEOUT = 30 #seconds
+# Default timestamp for checking status of identifier records in async queues
+# This value is used by proc_cleanup_async_queues to filter records in the queue
+# for the past week.
+DAEMONS_CHECK_IDENTIFIER_ASYNC_STATUS_TIMESTAMP = 60 * 60 * 24 * 7
+
 
 # Daemons: Individual settings
 DAEMONS_DOWNLOAD_PROCESSING_IDLE_SLEEP = 10
@@ -307,7 +313,7 @@ logging.info(f'DEBUG MODE (settings.DEBUG) = {DEBUG}')
 # Server instance
 
 EZID_BASE_URL = '{{ ezid_base_url }}'
-DEFAULT_TARGET_BASE_URL = 'https://ezid.cdlib.org'
+DEFAULT_TARGET_BASE_URL = '{{ ezid_base_url }}'
 ALLOWED_HOSTS = ['*']
 SECRET_KEY = '{{ secret_key }}'
 

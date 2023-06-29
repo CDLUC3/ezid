@@ -87,7 +87,8 @@ def _issue(method, operations):
             if c:
                 c.close()
         # noinspection PyTypeChecker
-        time.sleep(django.conf.settings.BINDER_REATTEMPT_DELAY)
+        # increase reattempt delay as a magnitude of BINDER_NUM_ATTEMPTS
+        time.sleep(django.conf.settings.BINDER_REATTEMPT_DELAY + (60 * (i + 1)))
 
     return s
 

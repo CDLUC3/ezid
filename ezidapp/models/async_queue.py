@@ -58,6 +58,7 @@ class AsyncQueueBase(django.db.models.Model):
     # End states.
     WARNING = "W"
     FAILURE = "F"
+    TRANSIENT_FAILURE = "T"
     IGNORED = "I"
     SUCCESS = "O"
     STATUS_CODE_TO_LABEL_DICT = {
@@ -66,6 +67,7 @@ class AsyncQueueBase(django.db.models.Model):
         SUBMITTED: 'Submitted',
         WARNING: 'Registered with warning',
         FAILURE: 'Registration failed',
+        TRANSIENT_FAILURE: 'Registration attempt unsuccessful',
         IGNORED: 'Ignored (operation not applicable)',
         SUCCESS: 'Completed successfully',
     }
