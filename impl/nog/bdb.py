@@ -12,6 +12,7 @@ import bsddb3
 import django.conf
 import django.core
 import django.db
+import json
 import hjson
 
 import ezidapp.models.shoulder
@@ -61,13 +62,17 @@ def dump_full(bdb_path):
 
     with impl.nog.bdb_wrapper.Bdb(bdb_path) as bdb:
         # noinspection PyProtectedMember
+        d = dict(bdb.bdb_dict)
+        d_1 = {}
+        for key, value in d.items():
+            d_1[key.decode("utf-8")] = value.decode("utf-8")
         print(
             (
-                hjson.dumps(
-                    dict(bdb.bdb_dict),
+                json.dumps(
+                    d_1,
                     sort_keys=True,
                     indent=2,
-                    item_sort_key=_sort_key,
+                    #item_sort_key=_sort_key,
                 )
             )
         )

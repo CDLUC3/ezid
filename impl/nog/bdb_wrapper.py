@@ -5,6 +5,7 @@ import logging
 import pathlib
 
 import json
+import hjson
 
 import impl.nog.bdb
 
@@ -190,13 +191,23 @@ class Bdb:
 
     def __enter__(self):
         self._bdb_obj = impl.nog.bdb.open_bdb(self._bdb_path, self._is_new)
-        d_1 = dict(self._bdb_obj)
-        bdb_json = json.dumps(d_1, indent=2)
-        print(f"bdb_obj: {self._bdb_ob}")
-        print(f"bdb_dict_1: {d_1}")
+        d = dict(self._bdb_obj)
+        d_1 = {}
+        for key, value in d.items():
+            d_1[key.decode("utf-8")] = value.decode("utf-8")
+
+        bdb_json = json.dumps(d_1)
+        print(f"#### bdb_obj: {self._bdb_obj}")
+        print(f"#### bdb_dict: {d}")
+        print(f"#### bdb_dict_1: {d_1}")
         print(f"bdb_json: {bdb_json}")
+        d_3 = {}
         d_2 = json.loads(bdb_json)
-        self.bdb_dict = d_2
+        print("#### debug - after json.loads")
+        for key, value in d_2.items():
+            d_3[key.encode("utf-8")] = value.encode("utf-8")
+
+        self.bdb_dict = d_3
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
