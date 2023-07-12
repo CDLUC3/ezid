@@ -749,10 +749,13 @@ class DateForm(django.forms.Form):
         ("Submitted", _("Submitted")),
         ("Updated", _("Updated")),
         ("Valid", _("Valid")),
+        ("Withdrawn", _("Withdrawn")),
+        ("Other", _("Other"))
     )
     dateType = django.forms.ChoiceField(
         required=False, label=_("Type"), choices=DATE_TYPES
     )
+    dateInformation = django.forms.CharField(required=False, label=_("Date Information"))
 
 
 class AltIdForm(django.forms.Form):
@@ -989,6 +992,7 @@ class FundingRefForm(django.forms.Form):
             ("ISNI", "ISNI"),
             ("GRID", "GRID"),
             ("Crossref Funder ID", _("Crossref Funder")),
+            ("ROR", "ROR"),
             ("Other", "Other"),
         )
         self.fields["funderIdentifier-funderIdentifierType"] = django.forms.ChoiceField(

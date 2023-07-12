@@ -413,6 +413,7 @@ def temp_mockFormElements():
         'creators-creator-0-nameIdentifier_1-schemeURI': '',
         'dates-date-0-date': '',
         'dates-date-0-dateType': '',
+        'dates-date-0-dateInformation': '',
         'descriptions-description-0-description': '',
         'descriptions-description-0-descriptionType': '',
         'descriptions-description-0-{http://www.w3.org/XML/1998/namespace}lang': '',
