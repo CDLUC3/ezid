@@ -12,6 +12,7 @@ Z*
 \.old[0-9]*$
 \.project$
 \.pydevproject$
+.test-venv
 db
 dev/css/*
 dev/legacy-scss/css/*
