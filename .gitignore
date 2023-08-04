@@ -34,3 +34,4 @@ templates/info/
 *\.egg-info/
 \.pytest_cache/
 .eggs/
+pytest.ini
