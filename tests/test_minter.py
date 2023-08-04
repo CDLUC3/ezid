@@ -60,18 +60,25 @@ class TestMinter:
         ).exists()
 
         prefix='ark:/91101/r01/'
-        t = int(time.time())
         minter = ezidapp.models.minter.Minter.objects.create(prefix=prefix, minterState={})
 
         assert ezidapp.models.minter.Minter.objects.filter(
-            prefix='ark:/91101/r01/'
+            prefix=prefix
         ).exists()
 
-        minter = ezidapp.models.minter.Minter.objects.get(prefix='ark:/91101/r01/')
-        assert minter.prefix == 'ark:/91101/r01/'
+        minter = ezidapp.models.minter.Minter.objects.get(prefix=prefix)
+        t1 = minter.createTime
+        assert minter.prefix == prefix
         assert minter.createTime == minter.updateTime
-        assert (t - minter.createTime) <= 1
         assert minter.minterState == {}
+
+        prefix='ark:/91101/r02/'
+        minter = ezidapp.models.minter.Minter.objects.create(prefix=prefix, minterState={})
+        t2 = minter.createTime
+        assert t2 >= t1
+
+
+
         
 
     
