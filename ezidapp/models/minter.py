@@ -3,7 +3,7 @@
 
 """Object Relational Mapper (ORM) models for the minters
 """
-
+import time
 import logging
 
 import django.db.models
@@ -14,9 +14,13 @@ import impl.util
 
 logger = logging.getLogger(__name__)
 
+def default_time():
+    return int(time.time())
+
 class Minter(django.db.models.Model):
-    # Description
-    # 
+    # Class for the Minters. 
+    # Minters are uniquely identified by a prefix/shoulder;
+    # Each minter maintains its own state which is stored in the minterState field.
 
     # The shoulder itself, qualified and normalized, e.g., "ark:/12345/"
     # or "doi:10.1234/FOO".
@@ -35,8 +39,7 @@ class Minter(django.db.models.Model):
     # The time the identifier was created as a Unix timestamp. If not
     # specified, the current time is used.
     createTime = django.db.models.IntegerField(
-        blank=True,
-        default="",
+        default=default_time(),
         validators=[django.core.validators.MinValueValidator(0)],
         db_index=True,
     )
@@ -44,17 +47,19 @@ class Minter(django.db.models.Model):
     # The time the minter was last updated as a Unix timestamp. If
     # not specified, the current time is used.
     updateTime = django.db.models.IntegerField(
-        blank=True,
-        default="",
+        default=default_time(),
         validators=[django.core.validators.MinValueValidator(0)],
         db_index=True,
     )
-
-    def clean(self):
-        pass
- 
+    
     def __str__(self):
-        return f"({self.prefix})"
+        return (
+            f'{self.__class__.__name__}('
+            f'prefix={self.prefix}, '
+            f'minterState={self.minterState}'
+            f')'
+        )
+    
 
 
 
