@@ -50,6 +50,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     name = __name__
     setting = 'DAEMONS_CROSSREF_ENABLED'
     queue = ezidapp.models.async_queue.CrossrefQueue
+    refIdentifier = ezidapp.models.identifier.RefIdentifier
 
     def run(self):
         """Run async processing loop forever.
@@ -307,6 +308,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         else:
             task_model.status = self.queue.FAILURE
             id_status = ezidapp.models.identifier.Identifier.CR_FAILURE
+            msg_str = self._oneLine(t[1]).strip()
 
         task_model.message = msg_str
 
@@ -324,7 +326,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             assert s.startswith('success:'), f'ezid.setMetadata failed: {s}'
 
         if task_model.status in (self.queue.WARNING, self.queue.FAILURE):
-            u = ezidapp.models.util.getUserByPid(task_model.owner)
+            refOwner = ref_id.owner_id
+            u = ezidapp.models.util.getUserById(refOwner)
             if u.crossrefEmail:
                 self._sendEmail(u.crossrefEmail, task_model)
 

@@ -63,7 +63,8 @@ class IdentifierBase(django.db.models.Model):
             f'isDOI={self.isDoi}, '
             f'isDataCite={self.isDatacite}, '
             f'isCrossref={self.isCrossref}, '
-            f'target={self.target}'
+            f'target={self.target}, '
+            f'ownerId={self.owner_id}'
             f')'
         )
 
