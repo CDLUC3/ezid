@@ -35,3 +35,4 @@ templates/info/
 \.pytest_cache/
 .eggs/
 pytest.ini
+.test-venv
