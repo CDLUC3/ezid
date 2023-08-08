@@ -39,7 +39,7 @@ class Minter(django.db.models.Model):
     # The time the identifier was created as a Unix timestamp. If not
     # specified, the current time is used.
     createTime = django.db.models.IntegerField(
-        default=default_time(),
+        default=default_time,
         validators=[django.core.validators.MinValueValidator(0)],
         db_index=True,
     )
@@ -47,7 +47,7 @@ class Minter(django.db.models.Model):
     # The time the minter was last updated as a Unix timestamp. If
     # not specified, the current time is used.
     updateTime = django.db.models.IntegerField(
-        default=default_time(),
+        default=default_time,
         validators=[django.core.validators.MinValueValidator(0)],
         db_index=True,
     )

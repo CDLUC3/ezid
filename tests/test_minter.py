@@ -5,6 +5,7 @@
 """
 import pytest
 import logging
+import time
 from django.core.exceptions import ValidationError
 
 import ezidapp.models.minter
@@ -55,22 +56,38 @@ class TestMinter:
         ).exists()
 
         prefix='ark:/91101/r01/'
-        minter = ezidapp.models.minter.Minter.objects.create(prefix=prefix, minterState={})
+        ezidapp.models.minter.Minter.objects.create(prefix=prefix, minterState={})
 
         assert ezidapp.models.minter.Minter.objects.filter(
             prefix=prefix
         ).exists()
 
         minter = ezidapp.models.minter.Minter.objects.get(prefix=prefix)
-        t1 = minter.createTime
+        create_t1 = minter.createTime
+        update_t1 = minter.updateTime
         assert minter.prefix == prefix
-        assert minter.createTime == minter.updateTime
+        assert create_t1 == update_t1
         assert minter.minterState == {}
 
+        time.sleep(1)
+
+        # update the same record
+        t = int(time.time())
+        ezidapp.models.minter.Minter.objects.update(prefix=prefix, updateTime=t)
+        minter = ezidapp.models.minter.Minter.objects.get(prefix=prefix)
+        create_t2 = minter.createTime
+        update_t2 = minter.updateTime
+        assert create_t1 == create_t2
+        assert update_t2 == t
+        assert update_t2 > update_t1
+
+        # create a new record
         prefix='ark:/91101/r02/'
-        minter = ezidapp.models.minter.Minter.objects.create(prefix=prefix, minterState={})
-        t2 = minter.createTime
-        assert t2 >= t1
+        ezidapp.models.minter.Minter.objects.create(prefix=prefix, minterState={})
+        minter = ezidapp.models.minter.Minter.objects.get(prefix=prefix)
+        create_t3 = minter.createTime
+        assert create_t3 > create_t1
+
 
 
 
