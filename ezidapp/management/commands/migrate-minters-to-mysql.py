@@ -67,9 +67,16 @@ class Command(django.core.management.BaseCommand):
         impl.nog.util.log_setup(__name__, opt.debug)
 
         log.info('Migrating minters...')
+        dry_run = opt.dry_run
+        output_filename = opt.output_file
+
+        if not dry_run:
+            answer = input("Dry run without updating MySQL database: enter yes or no: ") 
+            if answer == "yes": 
+                dry_run = True
 
         try:
-            self.migrate_minters(opt.output_file, opt.dry_run)
+            self.migrate_minters(output_filename, dry_run)
         except Exception as e:
             log.error(f'Error: {str(e)}')
 
@@ -121,10 +128,10 @@ class Command(django.core.management.BaseCommand):
                 minter_count += 1
                 if missing_keys > 0:
                     missing_key_count += missing_key_count
-                if bdb_json:
-                    if outfile:
-                        outfile.write(bdb_json + "\n")
-                    minter = ezidapp.models.minter.Minter(prefix=s.prefix, minterState=bdb_json)
+                if outfile:
+                    outfile.write(bdb_json + "\n")
+                minter = ezidapp.models.minter.Minter(prefix=s.prefix, minterState=bdb_json)
+                if not dry_run:
                     try:
                         minter.full_clean()
                     except ValidationError as exc_info:
@@ -144,7 +151,8 @@ class Command(django.core.management.BaseCommand):
         log.info(f"Minters without BDB file: {missing_bdb_count}")
         log.info(f"Minters with missing required keys: {missing_key_count}")
         log.info(f"Minter validation errors: {validation_err_count}")
-        log.info(f"Minters are saved in JSON file: {output_filename}")
+        log.info(f"Dry run without updating MySQL: {'yes' if dry_run else 'no'}")
+        log.info(f"JSON minters file: {output_filename}")
 
     def minter_to_json(self, bdb_path):
         bdb_obj = impl.nog.bdb.open_bdb(bdb_path)
