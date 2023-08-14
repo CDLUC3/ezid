@@ -18,8 +18,10 @@ import django.conf
 import django.contrib.auth.models
 import django.core.management
 import django.db.transaction
+from django.core.exceptions import ValidationError
 
 import ezidapp.models.shoulder
+import ezidapp.models.minter
 import impl.nog.bdb
 import impl.nog.minter
 import impl.nog.util
@@ -79,16 +81,28 @@ class Command(django.core.management.BaseCommand):
         minter_count = 0
         missing_bdb_count = 0
         missing_key_count = 0
+        validation_err_count = 0
+        outfile = None
 
         if output_filename:
             outfile = open(output_filename, "w")
 
         for s in ezidapp.models.shoulder.Shoulder.objects.all():
             total_count += 1
-
+            minter_flag = ""
             if not s.minter.strip():
+                minter_flag = ', '.join(
+                    [
+                        '{}={}'.format(k, 'yes' if v is True else 'no' if v is False else v)
+                        for k, v in (
+                            ('active', s.active),
+                            ('supershoulder', s.isSupershoulder),
+                            ('test', s.isTest),
+                        )
+                    ]
+                )
                 log.warning(
-                    f'Shoulder does not specify a minter (supershoulder?). prefix="{s.prefix}" name="{s.name}"'
+                    f'Shoulder does not specify a minter. prefix="{s.prefix}" name="{s.name}" flag="{minter_flag}"'
                 )
                 unspecified_count += 1
                 continue
@@ -103,26 +117,36 @@ class Command(django.core.management.BaseCommand):
 
             if pathlib.Path(bdb_path).exists():
                 log.info(f'Minter with BDB file: prefix="{s.prefix}" name="{s.name}"')
-                bdb_dict, bdb_json, missing_keys = self.minter_to_json_2(bdb_path, False)
+                bdb_json, missing_keys = self.minter_to_json(bdb_path)
                 minter_count += 1
                 if missing_keys > 0:
                     missing_key_count += missing_key_count
-                if bdb_json and outfile:
-                    outfile.write(bdb_json + "\n")
+                if bdb_json:
+                    if outfile:
+                        outfile.write(bdb_json + "\n")
+                    minter = ezidapp.models.minter.Minter(prefix=s.prefix, minterState=bdb_json)
+                    try:
+                        minter.full_clean()
+                    except ValidationError as exc_info:
+                        validation_err_count += 1
+                        log.error(f'Validation error: prefix="{s.prefix}" name="{s.name}" error: {exc_info}')
+                        continue
+                    ezidapp.models.minter.Minter.objects.create(prefix=s.prefix, minterState=bdb_json)
             else:
                 log.warning(f'Minter without DBD file: prefix="{s.prefix}" name="{s.name}"')
                 missing_bdb_count += 1
 
         if outfile:
             outfile.close()
-        log.info(f'Total number of shoulders: {total_count}')
-        log.info(f'Shoulders with unspecified minters: {unspecified_count}')
-        log.info(f'Minters with BDB file: {minter_count}')
-        log.info(f'Minters without BDB file: {missing_bdb_count}')
-        log.info(f'Minters with mising required keys: {missing_key_count}')
+        log.info(f"Total number of shoulders: {total_count}")
+        log.info(f"Shoulders with unspecified minters: {unspecified_count}")
+        log.info(f"Minters with BDB file: {minter_count}")
+        log.info(f"Minters without BDB file: {missing_bdb_count}")
+        log.info(f"Minters with missing required keys: {missing_key_count}")
+        log.info(f"Minter validation errors: {validation_err_count}")
         log.info(f"Minters are saved in JSON file: {output_filename}")
 
-    def minter_to_json_2(self, bdb_path, compact=True):
+    def minter_to_json(self, bdb_path):
         bdb_obj = impl.nog.bdb.open_bdb(bdb_path)
         
         def b2s(b):
@@ -133,8 +157,8 @@ class Command(django.core.management.BaseCommand):
         bdb_dict = {b2s(k): b2s(v) for (k, v) in bdb_obj.items()}
        
         missing_key_count = self.check_keys(bdb_dict)
-        d_json = json.dumps(bdb_dict)
-        return bdb_dict, d_json, missing_key_count
+        bdb_json = json.dumps(bdb_dict)
+        return bdb_json, missing_key_count
     
     def check_keys(self, bdb_dict):
         """check missing keys
