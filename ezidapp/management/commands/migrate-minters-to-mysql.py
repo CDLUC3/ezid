@@ -48,12 +48,12 @@ class Command(django.core.management.BaseCommand):
             '--dry-run', '-d',
             dest='dry_run',
             action='store_true',
-            help='Do not write to disk',
+            help='Dry run without updating MySQL database',
         )
         parser.add_argument(
             '--output-file', '-o',
             dest='output_file',
-            help='Output filename for minters in JSON',
+            help='Filename to save minters in JSON',
         )
         # Misc
         parser.add_argument(
@@ -71,8 +71,8 @@ class Command(django.core.management.BaseCommand):
         output_filename = opt.output_file
 
         if not dry_run:
-            answer = input("Dry run without updating MySQL database: enter yes or no: ") 
-            if answer == "yes": 
+            answer = input('Dry run without updating MySQL database: enter yes or no: ') 
+            if answer == 'yes': 
                 dry_run = True
 
         try:
@@ -91,13 +91,13 @@ class Command(django.core.management.BaseCommand):
         validation_err_count = 0
         outfile = None
 
-        if output_filename:
+        if output_filename is not None:
             outfile = open(output_filename, "w")
 
         for s in ezidapp.models.shoulder.Shoulder.objects.all():
             total_count += 1
             minter_flag = ""
-            if not s.minter.strip():
+            if s.minter.strip() == '':
                 minter_flag = ', '.join(
                     [
                         '{}={}'.format(k, 'yes' if v is True else 'no' if v is False else v)
@@ -143,16 +143,17 @@ class Command(django.core.management.BaseCommand):
                 log.warning(f'Minter without DBD file: prefix="{s.prefix}" name="{s.name}"')
                 missing_bdb_count += 1
 
-        if outfile:
+        if outfile is not None:
             outfile.close()
-        log.info(f"Total number of shoulders: {total_count}")
-        log.info(f"Shoulders with unspecified minters: {unspecified_count}")
-        log.info(f"Minters with BDB file: {minter_count}")
-        log.info(f"Minters without BDB file: {missing_bdb_count}")
-        log.info(f"Minters with missing required keys: {missing_key_count}")
-        log.info(f"Minter validation errors: {validation_err_count}")
-        log.info(f"Dry run without updating MySQL: {'yes' if dry_run else 'no'}")
-        log.info(f"JSON minters file: {output_filename}")
+        
+        log.info(f'Total number of shoulders: {total_count}')
+        log.info(f'Shoulders with unspecified minters: {unspecified_count}')
+        log.info(f'Minters with BDB file: {minter_count}')
+        log.info(f'Minters without BDB file: {missing_bdb_count}')
+        log.info(f'Minters with missing required keys: {missing_key_count}')
+        log.info(f'Minter validation errors: {validation_err_count}')
+        log.info(f'Dry run without updating MySQL: {"yes" if dry_run else "no"}')
+        log.info(f'JSON minters file: {output_filename}')
 
     def minter_to_json(self, bdb_path):
         bdb_obj = impl.nog.bdb.open_bdb(bdb_path)
