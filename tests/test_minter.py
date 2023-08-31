@@ -51,11 +51,11 @@ class TestMinter:
 
     def test_3_default_values(self, caplog):
         """Validate default values"""
+        prefix='ark:/91101/r01/'
         assert not ezidapp.models.minter.Minter.objects.filter(
-            prefix='ark:/91101/r01/'
+            prefix=prefix
         ).exists()
 
-        prefix='ark:/91101/r01/'
         ezidapp.models.minter.Minter.objects.create(prefix=prefix, minterState={})
 
         assert ezidapp.models.minter.Minter.objects.filter(
@@ -73,7 +73,7 @@ class TestMinter:
 
         # update the same record
         t = int(time.time())
-        ezidapp.models.minter.Minter.objects.update(prefix=prefix, updateTime=t)
+        ezidapp.models.minter.Minter.objects.filter(prefix=prefix).update(updateTime=t)
         minter = ezidapp.models.minter.Minter.objects.get(prefix=prefix)
         create_t2 = minter.createTime
         update_t2 = minter.updateTime
