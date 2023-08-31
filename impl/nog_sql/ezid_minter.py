@@ -158,15 +158,13 @@ def create_minter_database(shoulder_ns, root_path=None, mask_str='eedk'):
     shoulder_ns = impl.nog.id_ns.IdNamespace.from_str(shoulder_ns)
     prefix = '/'.join([f'{shoulder_ns.scheme}:', shoulder_ns.naan_prefix, shoulder_ns.shoulder])
     print(prefix)
-    #minter = ezidapp.models.minter.Minter.objects.get(prefix=prefix)
-    minter = None
-    if minter is not None:
-        raise Exception(f"Mintor error: prefix already exists: {prefix}")
-    
-    with EzidMinter(prefix, is_new=True, dry_run=False) as minter:
-        if minter is not None:
-            minter.create(prefix, mask_str)
 
+    if ezidapp.models.minter.Minter.objects.filter(prefix=prefix).exists():
+        raise Exception(f"Minter with this prefix already exists. Prefix: {prefix}")
+        
+    with EzidMinter(prefix, is_new=True, dry_run=False) as minter:
+        minter.create(prefix, mask_str)
+   
     return prefix
 
 
@@ -286,7 +284,7 @@ class EzidMinter:
         # saved minterState to MySQL DB
         minterState = self._minterState
         #minterState = json.dumps(minterState)
-        print("minterState")
+        print("in __exit__: minterState")
         print(minterState)
         if self._minter is None:
             print("create a minter db entry")
@@ -566,20 +564,18 @@ class EzidMinter:
         return self.get(key_str).split()
     
     def get_minter_from_db(self):
-        try:
-            minter = ezidapp.models.minter.Minter.objects.get(prefix=self._prefix)
-            if self._is_new == True:
-                if minter is not None:
-                    raise Exception("Unable to create new minter. Minter already exists")
+        minter = ezidapp.models.minter.Minter.objects.filter(prefix=self._prefix)
+        if minter.exists():
+            if self._is_new:
+                raise Exception(f"Minter with this prefix already exists. Prefix: {self._prefix}")
             else:
-                if minter is None:
-                    raise Exception("Unable to create new minter. Minter already exists")
-                self._minter = minter
+                self._minter = minter.first()
                 self._minterState = minter.minterState
-        except Exception as e:
-            log.error(f"Minter error: {e}")
-        finally:
-            return self 
+        else:
+            if self._is_new == False:
+                raise Exception(f"Minter with this prefix does not exist. Prefix: {self._prefix}")
+ 
+        return self 
         
 
 class _Drand48:

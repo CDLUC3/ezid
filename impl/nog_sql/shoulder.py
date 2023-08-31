@@ -105,9 +105,17 @@ def create_shoulder(
     assert_shoulder_type_available(organization_name_str, ns.scheme)
     assert_super_shoulder_slash(ns, is_super_shoulder, is_force)
     log.info('Creating minter for {} shoulder: {}'.format(ns.scheme.upper(), ns))
-    # Create the minter BerkeleyDB.
-    bdb_path = impl.nog_sql.ezid_minter.create_minter_database(ns)
-    log.debug(f'Minter BerkeleyDB created at: {bdb_path}')
+    # Add new minter to the minter table  with intial state.
+    try:
+        prefix = impl.nog_sql.ezid_minter.create_minter_database(ns)
+        log.debug(f'Minter created for prefix: {prefix}')
+    except Exception as e:
+        if is_debug:
+            raise
+        raise django.core.management.CommandError(
+            'Unable to create database record for minter. Error: {}'.format(str(e))
+        )
+    
     # Add new shoulder row to the shoulder table.
     try:
         minterVal = "ezid-minter"
