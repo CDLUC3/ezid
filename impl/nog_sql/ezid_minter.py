@@ -156,14 +156,17 @@ def create_minter_database(shoulder_ns, root_path=None, mask_str='eedk'):
     Returns (path): Absolute path to the new bdb file.
     """
     print(shoulder_ns)
-    prefix = impl.nog.id_ns.IdNamespace.from_str(shoulder_ns)
+    shoulder_ns = impl.nog.id_ns.IdNamespace.from_str(shoulder_ns)
+    prefix = str(shoulder_ns)
     print(prefix)
+    full_shoulder_str = '/'.join([shoulder_ns.naan_prefix, shoulder_ns.shoulder])
+    print(f"full_shoulder_str {full_shoulder_str}")
 
     if ezidapp.models.minter.Minter.objects.filter(prefix=prefix).exists():
         raise Exception(f"Minter with this prefix already exists. Prefix: {prefix}")
         
     with EzidMinter(prefix, is_new=True, dry_run=False) as minter:
-        minter.create(prefix, mask_str)
+        minter.create(full_shoulder_str, mask_str)
    
     return prefix
 
@@ -306,12 +309,15 @@ class EzidMinter:
         self._assert_mask_matches_template()
 
         fmt_str = re.sub('{.*}', '{}', self.template_str)
+        print(f"template_str: {self.template_str}")
+        print(f"fmt_str: {fmt_str}")
         for _ in range(id_count):
             if self.combined_count == self.max_combined_count:
                 self._extend_template()
             compounded_counter = self._next_state()
             self.combined_count += 1
             xdig_str = self._get_xdig_str(compounded_counter)
+            print(f"xdig_str: {xdig_str}")
             if self.mask_str.endswith("k"):
                 minted_id = fmt_str.format(xdig_str)
                 print(f"minted_id: {minted_id}")

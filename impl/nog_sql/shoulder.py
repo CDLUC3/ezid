@@ -118,7 +118,7 @@ def create_shoulder(
     
     # Add new shoulder row to the shoulder table.
     try:
-        minterVal = "ezid-minter"
+        minterVal = prefix
         if is_super_shoulder:
             minterVal = ''
 
