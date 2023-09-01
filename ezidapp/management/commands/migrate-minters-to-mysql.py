@@ -4,7 +4,7 @@
 """Migrate BerkeleyDB minters to MySQL database.
    Convert each minter to a JSON object and store it in the ezidapp_minter table identified by the prefix/shoulder.
    Command options:
-     --dry-run, -d: optional, perform minter to JSON conversion but do not save the object to the database.
+     --dry-run, -d: optional, perform BDB minter to JSON conversion but do not save the object to the database.
      --output-file, -o: optional, save the JSON format minters to the specified file.
 """
 
@@ -124,13 +124,13 @@ class Command(django.core.management.BaseCommand):
 
             if pathlib.Path(bdb_path).exists():
                 log.info(f'Minter with BDB file: prefix="{s.prefix}" name="{s.name}"')
-                bdb_json, missing_keys = self.minter_to_json(bdb_path)
+                bdb_dict, missing_keys = self.minter_to_dict(bdb_path)
                 minter_count += 1
                 if missing_keys > 0:
                     missing_key_count += missing_key_count
                 if outfile:
-                    outfile.write(bdb_json + "\n")
-                minter = ezidapp.models.minter.Minter(prefix=s.prefix, minterState=bdb_json)
+                    outfile.write(json.dumps(bdb_dict) + "\n")
+                minter = ezidapp.models.minter.Minter(prefix=s.prefix, minterState=bdb_dict)
                 if not dry_run:
                     try:
                         minter.full_clean()
@@ -138,7 +138,7 @@ class Command(django.core.management.BaseCommand):
                         validation_err_count += 1
                         log.error(f'Validation error: prefix="{s.prefix}" name="{s.name}" error: {exc_info}')
                         continue
-                    ezidapp.models.minter.Minter.objects.create(prefix=s.prefix, minterState=bdb_json)
+                    ezidapp.models.minter.Minter.objects.create(prefix=s.prefix, minterState=bdb_dict)
             else:
                 log.warning(f'Minter without DBD file: prefix="{s.prefix}" name="{s.name}"')
                 missing_bdb_count += 1
@@ -155,19 +155,26 @@ class Command(django.core.management.BaseCommand):
         log.info(f'Dry run without updating MySQL: {"yes" if dry_run else "no"}')
         log.info(f'JSON minters file: {output_filename}')
 
-    def minter_to_json(self, bdb_path):
+    def minter_to_dict(self, bdb_path):
         bdb_obj = impl.nog.bdb.open_bdb(bdb_path)
         
         def b2s(b):
             if isinstance(b, bytes):
                 return b.decode('utf-8')
             return b
-
-        bdb_dict = {b2s(k): b2s(v) for (k, v) in bdb_obj.items()}
+        
+        # remove prefix ":/" from the keys
+        # for example: 
+        #   ":/c0/top" -> "c0/top", 
+        #   ":/saclist" -> "saclist"
+        def remove_prefix(s):
+            return re.sub('^(:/)', '', s)
+ 
+        bdb_dict = {remove_prefix(b2s(k)): b2s(v) for (k, v) in bdb_obj.items()}
        
         missing_key_count = self.check_keys(bdb_dict)
         bdb_json = json.dumps(bdb_dict)
-        return bdb_json, missing_key_count
+        return bdb_dict, missing_key_count
     
     def check_keys(self, bdb_dict):
         """check missing keys
