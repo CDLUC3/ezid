@@ -155,8 +155,8 @@ def create_minter_database(shoulder_ns, root_path=None, mask_str='eedk'):
 
     Returns (path): Absolute path to the new bdb file.
     """
-    shoulder_ns = impl.nog.id_ns.IdNamespace.from_str(shoulder_ns)
-    prefix = '/'.join([f'{shoulder_ns.scheme}:', shoulder_ns.naan_prefix, shoulder_ns.shoulder])
+    print(shoulder_ns)
+    prefix = impl.nog.id_ns.IdNamespace.from_str(shoulder_ns)
     print(prefix)
 
     if ezidapp.models.minter.Minter.objects.filter(prefix=prefix).exists():
@@ -570,7 +570,7 @@ class EzidMinter:
                 raise Exception(f"Minter with this prefix already exists. Prefix: {self._prefix}")
             else:
                 self._minter = minter.first()
-                self._minterState = minter.minterState
+                self._minterState = minter.first().minterState
         else:
             if self._is_new == False:
                 raise Exception(f"Minter with this prefix does not exist. Prefix: {self._prefix}")
