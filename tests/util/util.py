@@ -10,7 +10,7 @@ import urllib.request
 import urllib.response
 
 import ezidapp.models.shoulder
-import impl.nog.minter
+import impl.nog_sql.ezid_minter
 import impl.util
 
 
@@ -75,7 +75,7 @@ def create_shoulder(
         active=True,
         manager='ezid',
     )
-    impl.nog.minter.create_minter_database(namespace_str, root_path, mask_str)
+    impl.nog_sql.ezid_minter.create_minter_database(namespace_str, root_path, mask_str)
     return shoulder_model
 
 
