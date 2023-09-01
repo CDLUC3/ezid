@@ -6,7 +6,7 @@ import logging
 import freezegun
 
 import impl.datacite
-import impl.nog.util
+#import impl.nog.util
 import impl.util
 import tests.util.anvl
 import tests.util.metadata_generator

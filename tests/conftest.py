@@ -37,8 +37,8 @@ import ezidapp.models.shoulder
 import ezidapp.models.user
 import ezidapp.models.util
 import impl.nog.filesystem
-import impl.nog.minter
-import impl.nog.shoulder
+import impl.nog_sql.ezid_minter
+import impl.nog_sql.shoulder
 import tests.util.metadata_generator
 import tests.util.sample
 import tests.util.util
@@ -462,7 +462,7 @@ def minters(tmp_bdb_root, namespace, meta_type):
     multiple times, creating minters that are the combinatorial product of the two.
     """
     ns, arg_tup = namespace
-    impl.nog.shoulder.create_shoulder(
+    impl.nog_sql.shoulder.create_shoulder(
         ns,
         'test org for shoulder {}'.format(str(ns)),
         datacenter_model=(

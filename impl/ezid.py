@@ -29,7 +29,7 @@ import ezidapp.models.user
 import ezidapp.models.util
 import impl.enqueue
 import impl.log
-import impl.nog.minter
+import impl.nog_sql.ezid_minter
 import impl.policy
 import impl.util
 import impl.util2
@@ -185,7 +185,7 @@ def _mintIdentifier(shoulder, user, metadata={}):
             impl.log.badRequest(tid)
             return "error: bad request - shoulder does not support minting"
 
-        identifier = impl.nog.minter.mint_id(shoulder_model)
+        identifier = impl.nog_sql.ezid_minter.mint_id(shoulder_model)
         logger.debug('Minter returned identifier: {}'.format(identifier))
 
         # proto super shoulder check
