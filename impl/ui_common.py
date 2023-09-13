@@ -40,6 +40,8 @@ def render(request, template, context={}):
         "feed_cache": [],  # ezidapp.management.commands.newsfeed.getLatestItems(),
         "google_analytics_id": django.conf.settings.GOOGLE_ANALYTICS_ID,
         "debug": django.conf.settings.DEBUG,
+        "matomo_site_url": django.conf.settings.MATOMO_SITE_URL,
+        "matomo_site_id": django.conf.settings.MATOMO_SITE_ID,
     }
     ctx.update(context)
     templ = django.template.loader.get_template(f'{template}.html')
@@ -140,6 +142,8 @@ def error(request, code, content_custom=None):
         "feed_cache": [],  # ezidapp.management.commands.newsfeed.getLatestItems(),
         "google_analytics_id": django.conf.settings.GOOGLE_ANALYTICS_ID,
         "content_custom": content_custom,
+        "matomo_site_url": django.conf.settings.MATOMO_SITE_URL,
+        "matomo_site_id": django.conf.settings.MATOMO_SITE_ID,
     }
     # TODO: Remove this temporary workaround and modify dynamically generated HTML
     # instead.
