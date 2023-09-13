@@ -73,14 +73,6 @@
     _paq.push(['trackPageView']);
     _paq.push(['enableLinkTracking']);
 
-    if (messages) {
-      for (m in messages) {
-        if (m.extra_tags) {
-          _paq.push([m.extra_tags]);
-        }
-      }
-    }
-
     (function() {
       var u='{{ matomo_site_url }}';
       _paq.push(['setTrackerUrl', u+'matomo.php']);
