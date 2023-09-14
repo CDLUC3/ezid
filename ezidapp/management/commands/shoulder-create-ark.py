@@ -59,6 +59,8 @@ class Command(django.core.management.BaseCommand):
         self.opt = opt = argparse.Namespace(**opt)
         impl.nog.util.log_setup(__name__, opt.debug)
 
+        print(self.opt)
+
         try:
             return self._handle(self.opt)
         except impl.nog.exc.MinterError as e:
@@ -78,7 +80,8 @@ class Command(django.core.management.BaseCommand):
             is_test=opt.is_test,
             is_super_shoulder=opt.is_super_shoulder,
             is_sharing_datacenter=False,
-            is_force=opt.is_force,
+            #is_force=opt.is_force,
+            is_force=opt.skip_checks,
             is_debug=opt.debug,
         )
 
