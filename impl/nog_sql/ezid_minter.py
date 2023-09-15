@@ -153,7 +153,6 @@ def create_minter_database(shoulder_ns, root_path=None, mask_str='eedk'):
         root_path:
         mask_str:
 
-    Returns (path): Absolute path to the new bdb file.
     """
     print(shoulder_ns)
     shoulder_ns = impl.nog.id_ns.IdNamespace.from_str(shoulder_ns)
@@ -167,8 +166,6 @@ def create_minter_database(shoulder_ns, root_path=None, mask_str='eedk'):
         
     with EzidMinter(prefix, is_new=True, dry_run=False) as minter:
         minter.create(full_shoulder_str, mask_str)
-   
-    return prefix
 
 
 class EzidMinter:
