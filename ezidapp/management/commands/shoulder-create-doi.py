@@ -96,7 +96,7 @@ class Command(django.core.management.BaseCommand):
         if opt.is_crossref:
             datacenter_model = None
         else:
-            impl.nog.shoulder.assert_valid_datacenter(opt.datacenter_str)
+            impl.nog_sql.shoulder.assert_valid_datacenter(opt.datacenter_str)
             datacenter_model = ezidapp.models.datacenter.Datacenter.objects.get(
                 symbol=opt.datacenter_str
             )
@@ -109,7 +109,8 @@ class Command(django.core.management.BaseCommand):
             is_test=opt.is_test,
             is_super_shoulder=opt.is_super_shoulder,
             is_sharing_datacenter=opt.is_sharing_datacenter,
-            is_force=opt.is_force,
+            #is_force=opt.is_force,
+            is_force=opt.skip_checks,
             is_debug=opt.debug,
         )
 
