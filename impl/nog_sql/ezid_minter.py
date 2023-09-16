@@ -179,9 +179,10 @@ class EzidMinter:
     def __enter__(self):
         self.get_minter_from_db()
         if self._is_new:
-            return self._init_new()
-        else:
-            return self._init_existing()
+            self._init_new()
+        
+        self._setup_minter_variables()
+        return self
 
     def _init_new(self):
         b = self._minterState
@@ -219,9 +220,8 @@ class EzidMinter:
         b['unbounded'] = 1
         b['version'] = '0.1.0'
        
-        return self._init_existing()
 
-    def _init_existing(self):
+    def _setup_minter_variables(self):
         bdb = self._minterState
         self.base_count = int(bdb.get('basecount'))
         print(f"base_count: {bdb.get('basecount')}")
@@ -250,7 +250,7 @@ class EzidMinter:
                 break
             i += 1
         print(f"counter_list: {self.counter_list}")
-        return self
+
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self._dry_run:
@@ -577,8 +577,6 @@ class EzidMinter:
         else:
             if self._is_new == False:
                 raise Exception(f"Minter with this prefix does not exist. Prefix: {self._prefix}")
- 
-        return self 
         
 
 class _Drand48:
