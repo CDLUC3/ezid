@@ -49,10 +49,10 @@ BerkeleyDB keys (EZID names / N2T names):
 import logging
 import re
 
-import impl.nog.bdb
-import impl.nog.bdb_wrapper
-import impl.nog.exc
-import impl.nog.id_ns
+import impl.nog_bdb.bdb
+import impl.nog_bdb.bdb_wrapper
+import impl.nog_sql.exc
+import impl.nog_sql.id_ns
 
 # fmt:off
 XDIG_DICT = {
@@ -151,8 +151,8 @@ def create_minter_database(shoulder_ns, root_path=None, mask_str='eedk'):
 
     Returns (path): Absolute path to the new bdb file.
     """
-    shoulder_ns = impl.nog.id_ns.IdNamespace.from_str(shoulder_ns)
-    bdb_path = impl.nog.bdb.get_path(shoulder_ns, root_path, is_new=True)
+    shoulder_ns = impl.nog_sql.id_ns.IdNamespace.from_str(shoulder_ns)
+    bdb_path = impl.nog_bdb.bdb.get_path(shoulder_ns, root_path, is_new=True)
 
     with Minter(bdb_path, is_new=True, dry_run=False) as minter:
         full_shoulder_str = '/'.join([shoulder_ns.naan_prefix, shoulder_ns.shoulder])
@@ -161,7 +161,7 @@ def create_minter_database(shoulder_ns, root_path=None, mask_str='eedk'):
     return bdb_path
 
 
-class Minter(impl.nog.bdb_wrapper.BdbWrapper):
+class Minter(impl.nog_bdb.bdb_wrapper.BdbWrapper):
     def __init__(self, bdb_path, is_new=False, dry_run=False):
         super(Minter, self).__init__(bdb_path, is_new, dry_run)
         self._dry_run = dry_run

@@ -9,10 +9,10 @@ import logging
 
 import django.core.management
 
-import impl.nog.exc
-import impl.nog.id_ns
-import impl.nog.shoulder
-import impl.nog.util
+import impl.nog_sql.exc
+import impl.nog_sql.id_ns
+import impl.nog_bdb.shoulder
+import impl.nog_sql.util
 
 log = logging.getLogger(__name__)
 
@@ -57,20 +57,20 @@ class Command(django.core.management.BaseCommand):
 
     def handle(self, *_, **opt):
         self.opt = opt = argparse.Namespace(**opt)
-        impl.nog.util.log_setup(__name__, opt.debug)
+        impl.nog_sql.util.log_setup(__name__, opt.debug)
 
         try:
             return self._handle(self.opt)
-        except impl.nog.exc.MinterError as e:
+        except impl.nog_sql.exc.MinterError as e:
             raise django.core.management.CommandError('Minter error: {}'.format(str(e)))
 
     def _handle(self, opt):
         try:
-            ns = impl.nog.id_ns.IdNamespace.split_ark_namespace(opt.ns_str)
-        except impl.nog.id_ns.IdentifierError as e:
+            ns = impl.nog_sql.id_ns.IdNamespace.split_ark_namespace(opt.ns_str)
+        except impl.nog_sql.id_ns.IdentifierError as e:
             raise django.core.management.CommandError(str(e))
 
-        impl.nog.shoulder.create_shoulder(
+        impl.nog_bdb.shoulder.create_shoulder(
             ns=ns,
             organization_name_str=opt.org_name_str,
             datacenter_model=None,
