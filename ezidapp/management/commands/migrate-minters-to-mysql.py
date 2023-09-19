@@ -64,7 +64,7 @@ class Command(django.core.management.BaseCommand):
 
     def handle(self, *_, **opt):
         self.opt = opt = argparse.Namespace(**opt)
-        impl.nog.util.log_setup(__name__, opt.debug)
+        impl.nog_sql.util.log_setup(__name__, opt.debug)
 
         log.info('Migrating minters...')
         dry_run = opt.dry_run
@@ -116,8 +116,8 @@ class Command(django.core.management.BaseCommand):
 
             naan_str, shoulder_str = re.split(r'[/:.]', s.minter)[-2:]
             try:
-                bdb_path = impl.nog.bdb._get_bdb_path(naan_str, shoulder_str, root_path=None)
-            except impl.nog.exc.MinterError as e:
+                bdb_path = impl.nog_bdb.bdb._get_bdb_path(naan_str, shoulder_str, root_path=None)
+            except impl.nog_sql.exc.MinterError as e:
                 log.info(f'get_bdb_path failed: prefix="{s.prefix}" name="{s.name}"')
                 log.warning(f"error msg: {e}")
                 continue
@@ -156,7 +156,7 @@ class Command(django.core.management.BaseCommand):
         log.info(f'JSON minters file: {output_filename}')
 
     def minter_to_dict(self, bdb_path):
-        bdb_obj = impl.nog.bdb.open_bdb(bdb_path)
+        bdb_obj = impl.nog_bdb.bdb.open_bdb(bdb_path)
         
         def b2s(b):
             if isinstance(b, bytes):
