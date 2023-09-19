@@ -15,14 +15,14 @@ import django.db
 import hjson
 
 import ezidapp.models.shoulder
-import impl.nog.bdb_wrapper
-import impl.nog.exc
-import impl.nog.filesystem
-import impl.nog.id_ns
+import impl.nog_bdb.bdb_wrapper
+import impl.nog_sql.exc
+import impl.nog_sql.filesystem
+import impl.nog_sql.id_ns
 
 log = logging.getLogger(__name__)
 
-MINTER_TEMPLATE_PATH = impl.nog.filesystem.abs_path("../../etc/minter_template.hjson")
+MINTER_TEMPLATE_PATH = impl.nog_sql.filesystem.abs_path("../../etc/minter_template.hjson")
 
 
 def dump_by_ns(ns, root_path=None, compact=True):
@@ -59,7 +59,7 @@ def dump_full(bdb_path):
             return 0, "{:04d}{}".format(int(m.group(1)), m.group(2))
         return 1, k
 
-    with impl.nog.bdb_wrapper.Bdb(bdb_path) as bdb:
+    with impl.nog_bdb.bdb_wrapper.Bdb(bdb_path) as bdb:
         # noinspection PyProtectedMember
         print(
             (
@@ -87,7 +87,7 @@ def as_dict(bdb_path, compact=True):
 
     Only the fields used by EZID are included.
     """
-    with impl.nog.bdb_wrapper.BdbWrapper(bdb_path, dry_run=False) as w:
+    with impl.nog_bdb.bdb_wrapper.BdbWrapper(bdb_path, dry_run=False) as w:
         return w.as_dict(compact)
 
 
@@ -108,21 +108,21 @@ def open_bdb(bdb_path, is_new=False):
 
     if is_new:
         if bdb_path.exists():
-            raise impl.nog.exc.MinterError(
+            raise impl.nog_sql.exc.MinterError(
                 append_path('Unable to create new BerkeleyDB. Path already exists')
             )
         log.debug(append_path('Creating new BerkeleyDB'))
-        impl.nog.filesystem.create_missing_directories_for_file(bdb_path)
+        impl.nog_sql.filesystem.create_missing_directories_for_file(bdb_path)
         flags_str = "c"
     else:
         if not bdb_path.exists():
-            raise impl.nog.exc.MinterError(append_path('Invalid BerkeleyDB path'))
+            raise impl.nog_sql.exc.MinterError(append_path('Invalid BerkeleyDB path'))
         log.debug(append_path('Opening BerkeleyDB'))
         flags_str = "rw"
     try:
         return bsddb3.btopen(bdb_path.as_posix(), flags_str)
     except bsddb3.db.DBError as e:
-        raise impl.nog.exc.MinterError(
+        raise impl.nog_sql.exc.MinterError(
             '{}. error="{}"'.format(
                 append_path('Unable to open BerkeleyDB file'), str(e)
             )
@@ -147,7 +147,7 @@ def iter_bdb(root_path=None):
                     for z in y.iterdir():
                         if z.suffix == '.bdb':
                             bdb_path = _get_bdb_path(x.name, y.name, root_path)
-                            with impl.nog.bdb_wrapper.Bdb(
+                            with impl.nog_bdb.bdb_wrapper.Bdb(
                                 bdb_path, dry_run=True
                             ) as bdb:
                                 yield x.name, y.name, bdb
@@ -191,7 +191,7 @@ def get_path(ns, root_path=None, is_new=False):
     """
 
     # This performs basic validation of the DOI or ARK.
-    ns = impl.nog.id_ns.IdNamespace.from_str(ns)
+    ns = impl.nog_sql.id_ns.IdNamespace.from_str(ns)
     if is_new:
         if ns.scheme == 'doi':
             prefix_str = doi_prefix_to_naan(ns.naan_prefix)
@@ -209,16 +209,16 @@ def get_path(ns, root_path=None, is_new=False):
 
     if is_new:
         if bdb_path.exists():
-            raise impl.nog.exc.MinterPathError('Path already exists', bdb_path, ns)
+            raise impl.nog_sql.exc.MinterPathError('Path already exists', bdb_path, ns)
         try:
-            impl.nog.filesystem.create_missing_directories_for_file(bdb_path)
+            impl.nog_sql.filesystem.create_missing_directories_for_file(bdb_path)
         except IOError as e:
-            raise impl.nog.exc.MinterPathError(
+            raise impl.nog_sql.exc.MinterPathError(
                 'Unable to create missing directories: {}'.format(str(e)), bdb_path, ns
             )
     else:
         if not bdb_path.exists():
-            raise impl.nog.exc.MinterError('Invalid BerkeleyDB path', bdb_path, ns)
+            raise impl.nog_sql.exc.MinterError('Invalid BerkeleyDB path', bdb_path, ns)
 
     log.debug(
         'Resolved {} path. "{}" -> "{}"'.format(
@@ -235,7 +235,7 @@ def _get_existing_path(ns):
     try:
         shoulder_model = ezidapp.models.shoulder.Shoulder.objects.get(prefix=str(ns))
     except ezidapp.models.shoulder.Shoulder.DoesNotExist:
-        raise impl.nog.exc.MinterPathError(
+        raise impl.nog_sql.exc.MinterPathError(
             'Unable to get path to minter: No matching prefix in Shoulder ORM',
             None,
             ns,
@@ -243,7 +243,7 @@ def _get_existing_path(ns):
 
     minter_uri = (shoulder_model.minter or '').strip()
     if not minter_uri:
-        raise impl.nog.exc.MinterPathError(
+        raise impl.nog_sql.exc.MinterPathError(
             'Unable to get path to minter: '
             'Matching prefix in Shoulder ORM does not specify a minter',
             None,
@@ -252,7 +252,7 @@ def _get_existing_path(ns):
 
     minter_list = minter_uri.split('/')
     if len(minter_list) < 2:
-        raise impl.nog.exc.MinterPathError(
+        raise impl.nog_sql.exc.MinterPathError(
             'Unable to get path minter: '
             'Matching prefix in Shoulder ORM contains invalid minter str: {}'.format(
                 minter_uri
@@ -289,7 +289,7 @@ def _get_bdb_path_by_namespace(ns, root_path=None):
     Returns:
         pathlib.Path
     """
-    ns = impl.nog.id_ns.IdNamespace.from_str(ns)
+    ns = impl.nog_sql.id_ns.IdNamespace.from_str(ns)
     if ns.scheme == 'doi':
         naan_prefix_str = doi_prefix_to_naan(ns.naan_prefix)
     else:
@@ -324,7 +324,7 @@ def _get_bdb_path(naan_str, shoulder_str, root_path=None):
         pathlib.Path
     """
     if not naan_str:
-        raise impl.nog.exc.MinterError('Invalid NAAN/Prefix: "{}"'.format(naan_str))
+        raise impl.nog_sql.exc.MinterError('Invalid NAAN/Prefix: "{}"'.format(naan_str))
     if not shoulder_str:
         shoulder_str = 'NULL'
         log.debug('Replaced empty shoulder with the "NULL" string')
@@ -354,7 +354,7 @@ def get_bdb_path_by_shoulder_model(shoulder_model, root_path=None):
     m = shoulder_model
     minter_uri = m.minter.strip()
     if not minter_uri:
-        raise impl.nog.exc.MinterNotSpecified(
+        raise impl.nog_sql.exc.MinterNotSpecified(
             'A minter has not been specified (minter field in the database is empty)'
         )
     return pathlib.Path(
@@ -402,13 +402,13 @@ def doi_to_shadow_ark(doi_str, allow_lossy=False):
     Should give the same results as the N2T doip2naan command line
     program.
     """
-    doi_ns = impl.nog.id_ns.IdNamespace.from_str(doi_str)
+    doi_ns = impl.nog_sql.id_ns.IdNamespace.from_str(doi_str)
     assert doi_ns.scheme == 'doi', 'Expected a complete DOI, not "{}"'.format(doi_str)
     try:
         ark_naan = doi_prefix_to_naan(doi_ns.naan_prefix, allow_lossy)
     except OverflowError as e:
-        raise impl.nog.exc.MinterError('Unable to create shadow ark: {}'.format(str(e)))
-    ark_ns = impl.nog.id_ns.IdNamespace(
+        raise impl.nog_sql.exc.MinterError('Unable to create shadow ark: {}'.format(str(e)))
+    ark_ns = impl.nog_sql.id_ns.IdNamespace(
         'ark', ark_naan, doi_ns.slash, (doi_ns.shoulder or '').lower()
     )
     return str(ark_ns)
@@ -430,10 +430,10 @@ def create_bdb_from_hjson(bdb_path, hjson_str):
 def create_bdb_from_dict(bdb_path, bdb_dict):
     bdb_path = pathlib.Path(bdb_path)
     if bdb_path.exists():
-        raise impl.nog.exc.MinterError(
+        raise impl.nog_sql.exc.MinterError(
             'Path already exists: {}'.format(bdb_path.as_posix())
         )
-    impl.nog.filesystem.create_missing_directories_for_file(bdb_path)
+    impl.nog_sql.filesystem.create_missing_directories_for_file(bdb_path)
     bdb = bsddb3.btopen(bdb_path.as_posix(), 'c')
     bdb.update({bytes(k): bytes(v) for k, v in list(bdb_dict.items())})
     bdb.close()

@@ -24,7 +24,7 @@ import ezidapp.models.realm
 import impl.log
 
 import impl.log as log
-import impl.nog.minter
+import impl.nog_sql.ezid_minter
 import impl.util
 
 logger = logging.getLogger(__name__)

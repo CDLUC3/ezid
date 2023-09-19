@@ -36,7 +36,7 @@ import ezidapp.models.link_checker
 import ezidapp.models.shoulder
 import ezidapp.models.user
 import ezidapp.models.util
-import impl.nog.filesystem
+import impl.nog_sql.filesystem
 import impl.nog_sql.ezid_minter
 import impl.nog_sql.shoulder
 import tests.util.metadata_generator
@@ -49,9 +49,9 @@ HERE_PATH = pathlib.Path(__file__).parent.resolve()
 ROOT_PATH = HERE_PATH / '..'
 
 DEFAULT_DB_KEY = 'default'
-import impl.nog.id_ns
+import impl.nog_sql.id_ns
 
-NS = impl.nog.id_ns.IdNamespace
+NS = impl.nog_sql.id_ns.IdNamespace
 
 # fmt=off
 NAMESPACE_LIST = [
@@ -280,7 +280,7 @@ def django_db_setup(django_db_keepdb):
 def disable_log_setup(mocker):
     """Prevent management commands from reconfiguring the logging that has been
     set up by pytest."""
-    mocker.patch('impl.nog.util.log_setup')
+    mocker.patch('impl.nog_sql.util.log_setup')
 
 
 # Fixtures
@@ -440,7 +440,7 @@ def tmp_bdb_root(mocker, tmp_path):
     used for creating paths below the root. E.g., `tmp_bdb_root / 'b2345' / 'x1'`.
     """
     for dot_path in (
-        'impl.nog.bdb.get_bdb_root',
+        'impl.nog_bdb.bdb.get_bdb_root',
     ):
         mocker.patch(
             dot_path,
@@ -606,7 +606,7 @@ def get_user_id_by_session_key(session_key):
 
 def django_save_db_fixture(db_key=DEFAULT_DB_KEY):
     """Save database to a bz2 compressed JSON fixture."""
-    fixture_file_path = impl.nog.filesystem.abs_path(REL_DB_FIXTURE_PATH.as_posix())
+    fixture_file_path = impl.nog_sql.filesystem.abs_path(REL_DB_FIXTURE_PATH.as_posix())
     log.info('Writing fixture. path="{}"'.format(fixture_file_path))
     buf = io.StringIO()
     django.core.management.call_command(
@@ -621,7 +621,7 @@ def django_save_db_fixture(db_key=DEFAULT_DB_KEY):
 
 def django_load_db_fixture(rel_json_fixture_path, db_key=DEFAULT_DB_KEY):
     log.debug("Populating DB from compressed JSON fixture file. db_key={}".format(db_key))
-    fixture_file_path = impl.nog.filesystem.abs_path(rel_json_fixture_path.as_posix())
+    fixture_file_path = impl.nog_sql.filesystem.abs_path(rel_json_fixture_path.as_posix())
     django.core.management.call_command("loaddata", fixture_file_path, database=db_key)
     django_commit_and_close(db_key)
 

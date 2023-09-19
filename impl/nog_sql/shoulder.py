@@ -13,7 +13,7 @@ import django.db.utils
 
 import ezidapp.models.datacenter
 import ezidapp.models.shoulder
-import impl.nog.id_ns
+import impl.nog_sql.id_ns
 import impl.nog_sql.ezid_minter
 
 log = logging.getLogger(__name__)
@@ -101,7 +101,7 @@ def create_shoulder(
     is_force,
     is_debug,
 ):
-    assert isinstance(ns, impl.nog.id_ns.IdNamespace)
+    assert isinstance(ns, impl.nog_sql.id_ns.IdNamespace)
     assert_shoulder_type_available(organization_name_str, ns.scheme)
     assert_super_shoulder_slash(ns, is_super_shoulder, is_force)
     log.info('Creating minter for {} shoulder: {}'.format(ns.scheme.upper(), ns))

@@ -6,7 +6,7 @@ import pathlib
 
 import hjson
 
-import impl.nog.bdb
+import impl.nog_bdb.bdb
 
 # from impl.nog import exc
 

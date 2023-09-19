@@ -48,15 +48,10 @@ BerkeleyDB keys (EZID names / N2T names):
 import logging
 import re
 import time
-import json
-
-import impl.nog.bdb
-import impl.nog.bdb_wrapper
-import impl.nog.exc
-import impl.nog.id_ns
 
 import ezidapp.models.minter
 import ezidapp.models.shoulder
+import impl.nog_sql
 
 # fmt:off
 XDIG_DICT = {
@@ -155,7 +150,7 @@ def create_minter_database(shoulder_ns, root_path=None, mask_str='eedk'):
 
     """
     print(shoulder_ns)
-    shoulder_ns = impl.nog.id_ns.IdNamespace.from_str(shoulder_ns)
+    shoulder_ns = impl.nog_sql.id_ns.IdNamespace.from_str(shoulder_ns)
     prefix = str(shoulder_ns)
     print(prefix)
     full_shoulder_str = '/'.join([shoulder_ns.naan_prefix, shoulder_ns.shoulder])
@@ -385,7 +380,7 @@ class EzidMinter:
             elif c == "d":
                 divider = DIGIT_COUNT
             else:
-                raise impl.nog.exc.MinterError(
+                raise impl.nog_sql.exc.MinterError(
                     'Unsupported character in mask: {}'.format(c)
                 )
             compounded_counter, rem = divmod(compounded_counter, divider)
@@ -498,11 +493,11 @@ class EzidMinter:
         active list. All the counters should be in the inactive list.
         """
         if not (self.combined_count == self.max_combined_count == self.total_count):
-            raise impl.nog.exc.MinterError(
+            raise impl.nog_sql.exc.MinterError(
                 "Attempted to extend a minter that is not exhausted"
             )
         if self.active_counter_list:
-            raise impl.nog.exc.MinterError(
+            raise impl.nog_sql.exc.MinterError(
                 "Attempted to extend a minter that still has active counters"
             )
 
@@ -514,13 +509,13 @@ class EzidMinter:
         but not the full N2T set.
         """
         if not re.match(r"[def]+k?$", self.mask_str):
-            raise impl.nog.exc.MinterError(
+            raise impl.nog_sql.exc.MinterError(
                 "Mask must use only 'd', 'e' and 'f' character types, "
                 "ending with optional 'k' check character: {}".format(self.mask_str)
             )
 
         if not re.match(r"add(\d)$", self.atlast_str):
-            raise impl.nog.exc.MinterError(
+            raise impl.nog_sql.exc.MinterError(
                 '"atlast" must be a string on form: add<digit>: {}'.format(
                     self.atlast_str
                 )
@@ -528,7 +523,7 @@ class EzidMinter:
 
     def _assert_valid_combined_count(self):
         if self.combined_count > self.max_combined_count:
-            raise impl.nog.exc.MinterError(
+            raise impl.nog_sql.exc.MinterError(
                 "Invalid counter total sum. total={} max={}".format(
                     self.combined_count, self.max_combined_count
                 )
@@ -536,7 +531,7 @@ class EzidMinter:
 
     def _assert_mask_matches_template(self):
         if self.template_str.find('{{{}}}'.format(self.mask_str)) == -1:
-            raise impl.nog.exc.MinterError(
+            raise impl.nog_sql.exc.MinterError(
                 'The mask that is embedded in the template key/value must match the '
                 'mask that is stored separately in the mask key/value. '
                 'template="{}" mask="{}"'.format(self.template_str, self.mask_str)
@@ -554,7 +549,7 @@ class EzidMinter:
             elif c == "d":
                 max_count *= DIGIT_COUNT
             else:
-                raise impl.nog.exc.MinterError(
+                raise impl.nog_sql.exc.MinterError(
                     'Unsupported character in mask: {}'.format(c)
                 )
         return max_count

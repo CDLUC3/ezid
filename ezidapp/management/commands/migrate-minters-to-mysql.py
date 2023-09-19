@@ -22,11 +22,11 @@ from django.core.exceptions import ValidationError
 
 import ezidapp.models.shoulder
 import ezidapp.models.minter
-import impl.nog.bdb
-import impl.nog.minter
-import impl.nog.util
-import impl.nog.bdb_wrapper
-import impl.nog.exc
+import impl.nog_bdb.bdb
+import impl.nog_bdb.minter
+import impl.nog_sql.util
+import impl.nog_bdb.bdb_wrapper
+import impl.nog_sql.exc
 
 log = logging.getLogger(__name__)
 

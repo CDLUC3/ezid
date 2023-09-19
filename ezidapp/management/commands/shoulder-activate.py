@@ -12,7 +12,7 @@ import django.core.management
 import django.db.transaction
 
 import ezidapp.models.shoulder
-import impl.nog.util
+import impl.nog_sql.util
 
 log = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ class Command(django.core.management.BaseCommand):
 
     def handle(self, *_, **opt):
         self.opt = opt = argparse.Namespace(**opt)
-        impl.nog.util.log_setup(__name__, opt.debug)
+        impl.nog_sql.util.log_setup(__name__, opt.debug)
 
         shoulder_str = opt.shoulder_str
         log.debug("Getting shoulder %s", shoulder_str)

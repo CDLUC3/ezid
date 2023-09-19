@@ -6,9 +6,9 @@
 
 import pytest
 
-import impl.nog.bdb as bdb
-import impl.nog.exc
-import impl.nog.id_ns
+import impl.nog_bdb.bdb as bdb
+import impl.nog_sql.exc
+import impl.nog_sql.id_ns
 import tests.util.sample
 
 
@@ -85,7 +85,7 @@ class TestDoiUtil:
     )
     def test_1031(self, ns_str, tmp_bdb_root):
         """get_path(): Invalid identifiers raise IdentifierError"""
-        with pytest.raises(impl.nog.id_ns.IdentifierError):
+        with pytest.raises(impl.nog_sql.id_ns.IdentifierError):
             bdb.get_path(ns_str, 'root', is_new=True)
 
     @pytest.mark.parametrize(
@@ -98,7 +98,7 @@ class TestDoiUtil:
     )
     def test_1032(self, ns_str, tmp_bdb_root):
         """get_path(): Raises IdentifierError for prefix that exceeds 5 digits"""
-        with pytest.raises(impl.nog.id_ns.IdentifierError):
+        with pytest.raises(impl.nog_sql.id_ns.IdentifierError):
             bdb.get_path(ns_str, 'root', is_new=True)
 
     def test_1035(self, shoulder_csv, tmp_bdb_root):
@@ -107,7 +107,7 @@ class TestDoiUtil:
         for ns_str, org_str, n2t_url in shoulder_csv:
             try:
                 p = bdb.get_path(ns_str, is_new=True).as_posix()
-            except impl.nog.exc.MinterError as e:
+            except impl.nog_sql.exc.MinterError as e:
                 p = repr(e)
             result_list.append(p.replace(tmp_bdb_root.as_posix(), ''))
         tests.util.sample.assert_match(result_list, 'get_path')
@@ -147,7 +147,7 @@ class TestDoiUtil:
     )
     def test_1050(self, doi_str):
         """doi_to_shadow_ark(): Lossy conversions are rejected as by N2T doip2naan"""
-        with pytest.raises(impl.nog.exc.MinterError):
+        with pytest.raises(impl.nog_sql.exc.MinterError):
             bdb.doi_to_shadow_ark(doi_str)
 
     def test_1060(self, shoulder_csv):
