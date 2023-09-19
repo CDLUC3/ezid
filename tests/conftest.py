@@ -308,7 +308,7 @@ def admin_admin():
 # API Test Account
 
 @pytest.fixture()
-def apitest_minter(tmp_bdb_root):
+def apitest_minter():
     """Create a minter and corresponding shoulder for the apitest user
 
     The minter us stored below the temporary root created by tmp_bdb_root. The shoulders are
@@ -428,30 +428,7 @@ def ez_user(client, django_user_model):
 
 
 @pytest.fixture()
-def tmp_bdb_root(mocker, tmp_path):
-    """Set a temporary root directory for the BerkeleyDB minter hierarchy
-
-    By default, a BDB path resolved by the minter will reference a location in EZID's
-    minter hierarchy, as configured in the EZID settings. Currently, `ezid/db/minters`.
-    This fixture causes BDB paths to resolve to a temporary tree under /tmp. Any minters
-    created by the test are deleted when the test exits.
-
-    Returns a pathlib.Path referencing the root of the tree. The slash operator can be
-    used for creating paths below the root. E.g., `tmp_bdb_root / 'b2345' / 'x1'`.
-    """
-    for dot_path in (
-        'impl.nog_bdb.bdb.get_bdb_root',
-    ):
-        mocker.patch(
-            dot_path,
-            return_value=(tmp_path / 'minters').resolve(),
-        )
-
-    return tmp_path
-
-
-@pytest.fixture()
-def minters(tmp_bdb_root, namespace, meta_type):
+def minters(namespace, meta_type):
     """Add a set of minters and corresponding shoulders. The minters are stored below
     the temporary root created by tmp_bdb_root. The shoulders are registered to the
     admin user in the DB, and are ready for use.

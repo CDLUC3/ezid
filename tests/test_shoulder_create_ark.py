@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 
 @freezegun.freeze_time('2010-10-11')
 class TestShoulderCreateArk:
-    def test_1000(self, caplog, tmp_bdb_root):
+    def test_1000(self, caplog):
         """Creating basic ARK shoulder returns expected messages."""
         caplog.set_level(logging.INFO)
         assert not ezidapp.models.shoulder.Shoulder.objects.filter(
@@ -32,7 +32,7 @@ class TestShoulderCreateArk:
         )
         sample.assert_match(caplog.text, 'output')
 
-    def test_1010(self, caplog, tmp_bdb_root):
+    def test_1010(self, caplog):
         """Creating a basic ARK shoulder creates expected database entries."""
         assert not ezidapp.models.shoulder.Shoulder.objects.filter(
             prefix='ark:/91101/r01/'
@@ -51,7 +51,7 @@ class TestShoulderCreateArk:
         assert not s.isSupershoulder
         assert not s.isTest
 
-    def test_1020(self, caplog, tmp_bdb_root):
+    def test_1020(self, caplog):
         """Creating an ARK shoulder with flags creates expected database
         entries."""
         assert not ezidapp.models.shoulder.Shoulder.objects.filter(
@@ -73,7 +73,7 @@ class TestShoulderCreateArk:
         assert s.isSupershoulder
         assert s.isTest
 
-    def test_1030(self, caplog, tmp_bdb_root):
+    def test_1030(self, caplog):
         """Creating a full shoulder without specifying the shoulder causes the
         minters to be stored in a separate directory named 'NULL'."""
         ns_str = 'ark:/99920/'

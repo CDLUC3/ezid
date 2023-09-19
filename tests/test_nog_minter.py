@@ -4,8 +4,8 @@
 import re
 import lzma
 import pathlib
+import bsddb3
 
-import impl.nog_bdb.bdb
 import impl.nog_sql.filesystem
 import impl.nog_sql.id_ns
 import impl.nog_sql.ezid_minter
@@ -32,7 +32,7 @@ class TestNogMinter:
         )
     
     def _minter_to_dict(self, bdb_path):
-        bdb_obj = impl.nog_bdb.bdb.open_bdb(bdb_path)
+        bdb_obj = bsddb3.btopen(bdb_path, 'r')
         
         def b2s(b):
             if isinstance(b, bytes):
@@ -49,7 +49,7 @@ class TestNogMinter:
         bdb_dict = {remove_prefix(b2s(k)): b2s(v) for (k, v) in bdb_obj.items()}
         return bdb_dict
 
-    def test_1000(self, tmp_bdb_root):
+    def test_1000(self):
         """Minter yields identifiers matching N2T when no template extensions
         are required.
 
@@ -57,7 +57,7 @@ class TestNogMinter:
         can be stepped directly to next state.
         """
         # load bdb file to mysql db 
-        bdb_path = pathlib.Path(self._get_bdb_path(ID_NS, ''))
+        bdb_path = self._get_bdb_path(ID_NS, '')
         bdb_dict = self._minter_to_dict(bdb_path)
 
         ezidapp.models.minter.Minter(prefix=ID_STR, minterState=bdb_dict)
@@ -76,7 +76,7 @@ class TestNogMinter:
                     i, python_sping, perl_sping
                 )
 
-    def test_1010(self, tmp_bdb_root, test_docs):
+    def test_1010(self, test_docs):
         """Minter yields identifiers matching N2T through a template extensions.
 
         This checks identifiers in an area where the minter template must be extended
@@ -84,7 +84,7 @@ class TestNogMinter:
         """
         # load bdb file to mysql db 
 
-        bdb_path = pathlib.Path(test_docs.joinpath('77913_r7_last_before_template_extend.bdb'))
+        bdb_path = str(test_docs.joinpath('77913_r7_last_before_template_extend.bdb'))
         bdb_dict = self._minter_to_dict(bdb_path)
 
         ezidapp.models.minter.Minter(prefix=ID_STR, minterState=bdb_dict)

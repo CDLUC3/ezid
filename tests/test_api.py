@@ -47,7 +47,6 @@ class TestAPI:
         self,
         request,
         ez_admin,
-        tmp_bdb_root,
         minters,
         log_shoulder_count,
         test_docs,
@@ -63,7 +62,7 @@ class TestAPI:
             result_list, 'mint-{}'.format(request.node.name)
         )  # re.sub("[^\\d\\w]+", "-",request.node.name)))
 
-    def test_1010(self, ez_admin, tmp_bdb_root, minters, test_docs, meta_type):
+    def test_1010(self, ez_admin, minters, test_docs, meta_type):
         """Test /view."""
         result_list = []
         ns, arg_tup = minters
