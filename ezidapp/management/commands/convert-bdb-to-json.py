@@ -115,7 +115,7 @@ class Command(django.core.management.BaseCommand):
             'siclist',
         ):
             if required_key not in bdb_dict:
-                log.warning(f'Missing key in BDB. Key: {k}')
+                log.warning(f'Missing key in BDB. Key: {required_key}')
                 missing_key_count += 1
         
         return missing_key_count
