@@ -16,9 +16,9 @@ import django.core.management
 import django.db.transaction
 
 import ezidapp.models.shoulder
-import impl.nog.bdb
-import impl.nog.minter
-import impl.nog.util
+import impl.nog_bdb.bdb
+import impl.nog_bdb.minter
+import impl.nog_sql.util
 
 log = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ class Command(django.core.management.BaseCommand):
 
     def handle(self, *_, **opt):
         self.opt = opt = argparse.Namespace(**opt)
-        impl.nog.util.log_setup(__name__, opt.debug)
+        impl.nog_sql.util.log_setup(__name__, opt.debug)
 
         log.info('Creating missing minters...')
 
@@ -94,7 +94,7 @@ class Command(django.core.management.BaseCommand):
 
             naan_str, shoulder_str = re.split(r'[/:.]', s.minter)[-2:]
             # noinspection PyProtectedMember
-            bdb_path = impl.nog.bdb._get_bdb_path(naan_str, shoulder_str, root_path=None)
+            bdb_path = impl.nog_bdb.bdb._get_bdb_path(naan_str, shoulder_str, root_path=None)
             if pathlib.Path(bdb_path).exists():
                 continue
 
@@ -103,7 +103,7 @@ class Command(django.core.management.BaseCommand):
             missing_count += 1
 
             try:
-                impl.nog.minter.create_minter_database(s.prefix, shoulder_str)
+                impl.nog_bdb.minter.create_minter_database(s.prefix, shoulder_str)
             except Exception as e:
                 log.warning(
                     'Unable to create missing minter. prefix="{}" name="{}". Error: {}'.format(

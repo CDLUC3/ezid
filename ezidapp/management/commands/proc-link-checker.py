@@ -87,7 +87,6 @@ import ezidapp.models.identifier
 # import ezidapp.models.link_checker
 import ezidapp.models.user
 import impl
-import impl.nog.util
 import impl.util
 
 log = logging.getLogger(__name__)

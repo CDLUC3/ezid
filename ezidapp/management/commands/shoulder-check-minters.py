@@ -15,10 +15,10 @@ import django.db.transaction
 
 import ezidapp.models.identifier
 import ezidapp.models.shoulder
-import impl.nog.bdb
-import impl.nog.exc
-import impl.nog.minter
-import impl.nog.util
+import impl.nog_bdb.bdb
+import impl.nog_sql.exc
+import impl.nog_bdb.minter
+import impl.nog_sql.util
 
 log = logging.getLogger(__name__)
 
@@ -39,7 +39,7 @@ class Command(django.core.management.BaseCommand):
 
     def handle(self, *_, **opt):
         self.opt = opt = argparse.Namespace(**opt)
-        impl.nog.util.log_setup(__name__, opt.debug)
+        impl.nog_sql.util.log_setup(__name__, opt.debug)
 
         log.info('Checking minter BerkeleyDB (BDB) databases...')
 
@@ -109,8 +109,8 @@ class Command(django.core.management.BaseCommand):
 
     def check_minter(self, shoulder_model):
         try:
-            bdb_path = impl.nog.bdb.get_bdb_path_by_shoulder_model(shoulder_model)
-        except impl.nog.exc.MinterNotSpecified:
+            bdb_path = impl.nog_bdb.bdb.get_bdb_path_by_shoulder_model(shoulder_model)
+        except impl.nog_sql.exc.MinterNotSpecified:
             return 'Skipped: No minter registered'
 
         if not pathlib.Path(bdb_path).exists():
@@ -120,8 +120,8 @@ class Command(django.core.management.BaseCommand):
             )
 
         try:
-            bdb = impl.nog.bdb.open_bdb(bdb_path)
-        except impl.nog.exc.MinterError as e:
+            bdb = impl.nog_bdb.bdb.open_bdb(bdb_path)
+        except impl.nog_sql.exc.MinterError as e:
             raise CheckError(
                 'Path exists but could not be opened as BDB', 'Error: {}'.format(str(e))
             )
@@ -151,8 +151,8 @@ class Command(django.core.management.BaseCommand):
                 raise CheckError('Key present in BDB but empty', 'Key: {}'.format(k))
 
         try:
-            minted_id = impl.nog.minter.mint_id(shoulder_model, dry_run=True)
-        except impl.nog.exc.MinterError as e:
+            minted_id = impl.nog_bdb.minter.mint_id(shoulder_model, dry_run=True)
+        except impl.nog_sql.exc.MinterError as e:
             raise CheckError('Minting test identifier failed', 'Error: {}'.format(str(e)))
 
         if shoulder_model.prefix.startswith('doi:'):

@@ -26,7 +26,7 @@ import django.conf
 import django.core.management
 
 import impl
-import impl.nog.util
+import impl.nog_sql.util
 import impl.util
 import impl.http_client
 
@@ -62,7 +62,7 @@ class Command(django.core.management.BaseCommand):
         parser.add_argument('--debug', action='store_true', help='Debug level logging')
 
     def handle(self, *args, **opt):
-        impl.nog.util.log_setup(__name__, opt.get('debug'))
+        impl.nog_sql.util.log_setup(__name__, opt.get('debug'))
 
         if opt.get('output_file'):
             o_file = open(opt.get('output_file'), 'w')
