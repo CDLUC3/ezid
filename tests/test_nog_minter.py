@@ -1,10 +1,8 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-import re
 import lzma
-import pathlib
-import bsddb3
+import json
 
 import impl.nog_sql.filesystem
 import impl.nog_sql.id_ns
@@ -31,34 +29,21 @@ class TestNogMinter:
             )
         )
     
-    def _minter_to_dict(self, bdb_path):
-        bdb_obj = bsddb3.btopen(bdb_path, 'r')
-        
-        def b2s(b):
-            if isinstance(b, bytes):
-                return b.decode('utf-8')
-            return b
-        
-        # remove prefix ":/" from the keys
-        # for example: 
-        #   ":/c0/top" -> "c0/top", 
-        #   ":/saclist" -> "saclist"
-        def remove_prefix(s):
-            return re.sub('^(:/)', '', s)
- 
-        bdb_dict = {remove_prefix(b2s(k)): b2s(v) for (k, v) in bdb_obj.items()}
-        return bdb_dict
+    def _minter_to_dict(self, file_path):
+        with open(file_path) as json_file:
+            return json.load(json_file)
 
-    def test_1000(self):
+    def test_1000(self, test_docs):
         """Minter yields identifiers matching N2T when no template extensions
         are required.
 
         This checks {MINT_COUNT} identifiers in an area where the minter
         can be stepped directly to next state.
         """
-        # load bdb file to mysql db 
-        bdb_path = self._get_bdb_path(ID_NS, '')
-        bdb_dict = self._minter_to_dict(bdb_path)
+        
+        # load minter to mysql
+        minter_file = str(test_docs.joinpath('77913_r7.json'))
+        bdb_dict = self._minter_to_dict(minter_file)
 
         ezidapp.models.minter.Minter(prefix=ID_STR, minterState=bdb_dict)
         ezidapp.models.minter.Minter.objects.create(prefix=ID_STR, minterState=bdb_dict)
@@ -82,9 +67,9 @@ class TestNogMinter:
         This checks identifiers in an area where the minter template must be extended
         before it can be stepped to the next state.
         """
-        # load bdb file to mysql db 
-
-        bdb_path = str(test_docs.joinpath('77913_r7_last_before_template_extend.bdb'))
+        
+        # load minter to mysql db 
+        bdb_path = str(test_docs.joinpath('77913_r7_last_before_template_extend.json'))
         bdb_dict = self._minter_to_dict(bdb_path)
 
         ezidapp.models.minter.Minter(prefix=ID_STR, minterState=bdb_dict)
