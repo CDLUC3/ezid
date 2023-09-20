@@ -193,9 +193,8 @@ class Command(django.core.management.BaseCommand):
             'saclist',
             'siclist',
         ):
-            k = ':/{}'.format(required_key)
-            if k not in bdb_dict:
-                log.warning(f'Missing key in BDB. Key: {k}')
+            if required_key not in bdb_dict:
+                log.warning(f'Missing key in BDB. Key: {required_key}')
                 missing_key_count += 1
         
         return missing_key_count
