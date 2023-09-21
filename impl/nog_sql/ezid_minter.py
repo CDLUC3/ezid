@@ -49,6 +49,7 @@ import logging
 import re
 import time
 
+from django.db import transaction
 import ezidapp.models.minter
 import ezidapp.models.shoulder
 import impl.nog_sql
@@ -135,9 +136,10 @@ def mint_by_bdb_path(prefix, mint_count=1, dry_run=False):
     See Also:
         :func:`mint_ids`
     """
-    with EzidMinter(prefix, is_new=False, dry_run=dry_run) as minter:
-        for minted_id in minter.mint(mint_count):
-            yield minted_id
+    with transaction.atomic():
+        with EzidMinter(prefix, is_new=False, dry_run=dry_run) as minter:
+            for minted_id in minter.mint(mint_count):
+                yield minted_id
 
 
 def create_minter_database(shoulder_ns, root_path=None, mask_str='eedk'):
@@ -562,7 +564,7 @@ class EzidMinter:
         return self.get(key_str).split()
     
     def get_minter_from_db(self):
-        minter = ezidapp.models.minter.Minter.objects.filter(prefix=self._prefix)
+        minter = ezidapp.models.minter.Minter.objects.select_for_update().filter(prefix=self._prefix)
         if minter.exists():
             if self._is_new:
                 raise Exception(f"Minter with this prefix already exists. Prefix: {self._prefix}")
