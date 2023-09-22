@@ -311,8 +311,8 @@ def admin_admin():
 def apitest_minter():
     """Create a minter and corresponding shoulder for the apitest user
 
-    The minter us stored below the temporary root created by tmp_bdb_root. The shoulders are
-    registered to the admin user in the DB, and are ready for use.
+    The minter and shoulder are created in the DB read for use. The shoulders are
+    registered to the admin user in the DB.
     """
     # ns_str = 'doi:10.39999/SD2'
     ns_str = 'ark:/99936/x3'
@@ -429,9 +429,9 @@ def ez_user(client, django_user_model):
 
 @pytest.fixture()
 def minters(namespace, meta_type):
-    """Add a set of minters and corresponding shoulders. The minters are stored below
-    the temporary root created by tmp_bdb_root. The shoulders are registered to the
-    admin user in the DB, and are ready for use.
+    """Add a set of minters and corresponding shoulders. 
+    The minters and shoulders are created in the DB ready for use. 
+    The shoulders are registered to the admin user in the DB.
 
     Yields a list containing the IdNamespace objects for the shoulders.
 
