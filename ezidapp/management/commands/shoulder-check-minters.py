@@ -11,6 +11,7 @@ import pathlib
 import django.contrib.auth.models
 import django.core.management
 import django.db.transaction
+from django.core.exceptions import ObjectDoesNotExist
 
 import ezidapp.models.identifier
 import ezidapp.models.shoulder
@@ -109,9 +110,13 @@ class Command(django.core.management.BaseCommand):
         try:
             minter = ezidapp.models.minter.Minter.objects.get(prefix=shoulder_model.prefix)
             if shoulder_model.prefix != minter.prefix:
-                return "Minter error: shoulder.prefix != minter.prefix"
+                raise CheckError(
+                    'Shoulder prefix does not match minter prefix', 
+                    f'shoulder.prefix: {shoulder_model.prefix}, minter.prefix: {minter.prefix}')
+        except ObjectDoesNotExist:
+            raise CheckError('No minter registered', f'No minter is registered for prefix: {shoulder_model.prefix}')
         except Exception as ex:
-            return f'Minter error: No minter registered - Error: {ex}'
+            raise CheckError('Get minter failed', f'Get minter by prefix {shoulder_model.prefix} failed with error: {ex}')
 
         try:
             minted_id = impl.nog_sql.ezid_minter.mint_id(shoulder_model, dry_run=True)
