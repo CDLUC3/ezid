@@ -570,16 +570,19 @@ class EzidMinter:
         return self.get(key_str).split()
     
     def get_minter_from_db(self):
-        minter = ezidapp.models.minter.Minter.objects.select_for_update().filter(prefix=self._prefix)
-        if minter.exists():
-            if self._is_new:
-                raise Exception(f"Minter with this prefix already exists. Prefix: {self._prefix}")
+        try:
+            minter = ezidapp.models.minter.Minter.objects.select_for_update().filter(prefix=self._prefix)
+            if minter.exists():
+                if self._is_new:
+                    raise Exception(f"Minter with this prefix already exists. Prefix: {self._prefix}")
+                else:
+                    self._minter = minter.first()
+                    self._minterState = minter.first().minterState
             else:
-                self._minter = minter.first()
-                self._minterState = minter.first().minterState
-        else:
-            if self._is_new == False:
-                raise Exception(f"Minter with this prefix does not exist. Prefix: {self._prefix}")
+                if self._is_new == False:
+                    raise Exception(f"Minter with this prefix does not exist. Prefix: {self._prefix}")
+        except Exception as ex:
+            log.info(f'Minter table select_for_update error: {ex}')
         
 
 class _Drand48:
