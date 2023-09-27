@@ -107,11 +107,11 @@ def create_shoulder(
     log.info('Creating minter for {} shoulder: {}'.format(ns.scheme.upper(), ns))
 
     prefix = str(ns)
-    # Add new minter to the minter table  with intial state.
+    # Add new minter to the minter table with initial state.
     if is_super_shoulder == False:
         try:
             impl.nog_sql.ezid_minter.create_minter_database(ns)
-            log.debug(f'Minter created for prefix: {prefix}')
+            log.info(f'Minter created for prefix: {prefix}')
         except Exception as e:
             if is_debug:
                 raise
