@@ -84,6 +84,7 @@ class TestShoulderCreateArk:
         assert s.isSupershoulder
         assert s.isTest
 
+        # no minter for a super shoulder
         assert not ezidapp.models.minter.Minter.objects.filter(prefix=prefix).exists()
         
 
