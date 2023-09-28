@@ -77,8 +77,8 @@ class TestShoulderCreateDoi:
         sample.assert_match(caplog.text, 'invalid_datacenter')
 
     def test_1030(self, caplog):
-        """Creating DataCite DOI shoulder creates expected database entries
-        for shoulder and minter."""
+        """Creating DataCite DOI super shoulder creates expected database entries
+        for shoulder but not minter."""
         prefix = 'doi:10.9111/R01'
         org_name = '91101/r01 test org'
         assert not ezidapp.models.shoulder.Shoulder.objects.filter(
