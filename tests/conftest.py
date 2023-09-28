@@ -317,7 +317,7 @@ def apitest_minter():
     # ns_str = 'doi:10.39999/SD2'
     ns_str = 'ark:/99936/x3'
 
-    shoulder_model = tests.util.util.create_shoulder(
+    shoulder_model = tests.util.util.create_shoulder_and_minter(
         namespace_str=ns_str,
         organization_name=f'API TEST Shoulder: {ns_str}',
         # datacenter_model=None,

@@ -19,6 +19,6 @@ class TestShoulderMint:
     def test_0100(self, caplog):
         caplog.set_level(logging.INFO)
         namespace_str = 'ark:/33333/r3'
-        tests.util.util.create_shoulder(namespace_str)
+        tests.util.util.create_shoulder_and_minter(namespace_str)
         django.core.management.call_command('shoulder-mint', namespace_str, '--count', '2')
         sample.assert_match(caplog.text, 'minted')

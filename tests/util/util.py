@@ -56,7 +56,7 @@ def shoulder_to_dict(s):
     }
 
 
-def create_shoulder(
+def create_shoulder_and_minter(
     namespace_str, organization_name='test shoulder', root_path=None, mask_str='eedk'
 ):
     is_doi = namespace_str[:4] == 'doi:'
