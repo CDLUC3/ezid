@@ -21,7 +21,7 @@ PERL_MINTED_PATH = impl.nog_sql.filesystem.abs_path(
 
 
 # noinspection PyClassHasNoInit,PyProtectedMember
-class TestNogMinter:
+class TestEzidMinter:
     def _get_bdb_path(self, id_ns, filename_prefix_str):
         return impl.nog_sql.filesystem.abs_path(
             "./test_docs/{}_{}{}.bdb".format(
@@ -45,10 +45,10 @@ class TestNogMinter:
             "atlast": "add3",
           
         Minter state:
-            minter seq: sping
-            1: 2t0f (initial)
-            2: z389
-            3: t950
+            minter seq: sping (order)
+            2192: 2t0f (current, 1st)
+            2193: z389 (next, 2d)
+            2194: t950 (3rd)
             ... ...
 
         This checks {MINT_COUNT} identifiers in an area where the minter
@@ -84,15 +84,11 @@ class TestNogMinter:
             "atlast": "add3"
         
         Minter state:
-            minter seq: sping
-            1: 2t0f (initial)
-            2: z389
-            3: t950
+            minter seq: sping (order)
+            8410: v582 (current, 1st)
+            8411: 4x54g1d (next, 2nd)
+            8412: 154dn7z (3rd)
             ... ...
-            6218: v57p
-            6219: v582
-            6220: 4x54g1d
-            6221: 154dn7z
 
         This checks identifiers in an area where the minter template must be extended
         before it can be stepped to the next state.
