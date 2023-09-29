@@ -122,12 +122,12 @@ def mint_ids(shoulder_model, mint_count=1, dry_run=False):
         :func:`mint_id`
     """
     prefix =  shoulder_model.prefix.strip()
-    for minted_str in mint_by_bdb_path(prefix, mint_count, dry_run=dry_run):
+    for minted_str in mint_by_prefix(prefix, mint_count, dry_run=dry_run):
         yield minted_str
 
 
 # noinspection PyIncorrectDocstring,PyIncorrectDocstring
-def mint_by_bdb_path(prefix, mint_count=1, dry_run=False):
+def mint_by_prefix(prefix, mint_count=1, dry_run=False):
     """Like mint_ids(), but accepts the path to a BerkeleyDB bdb minter
     file.
 

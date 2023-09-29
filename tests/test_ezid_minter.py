@@ -37,20 +37,32 @@ class TestNogMinter:
         """Minter yields identifiers matching N2T when no template extensions
         are required.
 
+        Minter info:
+            "shoulder": "77913/r7", 
+            "template": "77913/r7{eedk}", 
+            "total": "8410",
+            "type": "rand",
+            "atlast": "add3",
+          
+        Minter state:
+            minter seq: sping
+            1: 2t0f (initial)
+            2: z389
+            3: t950
+            ... ...
+
         This checks {MINT_COUNT} identifiers in an area where the minter
         can be stepped directly to next state.
         """
         
         # load minter to mysql
         minter_file = str(test_docs.joinpath('77913_r7.json'))
-        bdb_dict = self._minter_to_dict(minter_file)
-
-        ezidapp.models.minter.Minter(prefix=ID_STR, minterState=bdb_dict)
-        ezidapp.models.minter.Minter.objects.create(prefix=ID_STR, minterState=bdb_dict)
+        minter_dict = self._minter_to_dict(minter_file)
+        ezidapp.models.minter.Minter.objects.create(prefix=ID_STR, minterState=minter_dict)
 
         with lzma.open(PERL_MINTED_PATH, 'rt') as f:
             for i, python_sping in enumerate(
-                impl.nog_sql.ezid_minter.mint_by_bdb_path(
+                impl.nog_sql.ezid_minter.mint_by_prefix(
                     ID_STR, MINT_COUNT, dry_run=True
                 )
             ):
@@ -64,22 +76,39 @@ class TestNogMinter:
     def test_1010(self, test_docs):
         """Minter yields identifiers matching N2T through a template extensions.
 
+        Minter info:
+            "shoulder": "77913/r7", 
+            "template": "77913/r7{eedk}", 
+            "total": "8410", 
+            "type": "rand",
+            "atlast": "add3"
+        
+        Minter state:
+            minter seq: sping
+            1: 2t0f (initial)
+            2: z389
+            3: t950
+            ... ...
+            6218: v57p
+            6219: v582
+            6220: 4x54g1d
+            6221: 154dn7z
+
         This checks identifiers in an area where the minter template must be extended
         before it can be stepped to the next state.
         """
         
         # load minter to mysql db 
         bdb_path = str(test_docs.joinpath('77913_r7_last_before_template_extend.json'))
-        bdb_dict = self._minter_to_dict(bdb_path)
+        minter_dict = self._minter_to_dict(bdb_path)
 
-        ezidapp.models.minter.Minter(prefix=ID_STR, minterState=bdb_dict)
-        ezidapp.models.minter.Minter.objects.create(prefix=ID_STR, minterState=bdb_dict)
+        ezidapp.models.minter.Minter.objects.create(prefix=ID_STR, minterState=minter_dict)
 
         with lzma.open(PERL_MINTED_PATH, 'rt') as f:
             for i in range(6218):
                 f.readline()
             for i, python_sping in enumerate(
-                impl.nog_sql.ezid_minter.mint_by_bdb_path(
+                impl.nog_sql.ezid_minter.mint_by_prefix(
                     ID_STR,
                     10,
                     dry_run=True,
