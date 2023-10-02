@@ -95,8 +95,10 @@ def mint_id(shoulder_model, dry_run=False):
     See Also:
         :func:`mint_ids`
     """
-    for minted_ns in mint_ids(shoulder_model, 1, dry_run):
-        return minted_ns
+    minted_id = None
+    for id_str in mint_ids(shoulder_model, 1, dry_run):
+        minted_id = id_str
+    return minted_id
 
 
 # noinspection PyIncorrectDocstring,PyIncorrectDocstring
@@ -175,8 +177,10 @@ class EzidMinter:
         self._minterState = {}
         self._is_new = is_new
         self._dry_run = dry_run
+        print("in __init")
 
     def __enter__(self):
+        print("in __enter")
         self.get_minter_from_db()
         if self._is_new:
             self._init_new()
@@ -250,6 +254,7 @@ class EzidMinter:
 
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        print("in __exit")
         if self._dry_run:
             log.debug(
                 'Dry-run: Minter state not saved. Any minted IDs will be repeated.'
@@ -289,7 +294,9 @@ class EzidMinter:
         else:
             print("update a minter db entry")
             t = int(time.time())
-            ezidapp.models.minter.Minter.objects.filter(prefix=self._prefix).update(minterState=minterState, updateTime=t)
+            self._minter.minterState = minterState
+            self._minter.updateTime = t
+            self._minter.save()
 
 
     def mint(self, id_count=1):
@@ -303,6 +310,7 @@ class EzidMinter:
         self._assert_mask_matches_template()
 
         fmt_str = re.sub('{.*}', '{}', self.template_str)
+        print("in mint")
         print(f"template_str: {self.template_str}")
         print(f"fmt_str: {fmt_str}")
         for _ in range(id_count):

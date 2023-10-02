@@ -186,7 +186,10 @@ def _mintIdentifier(shoulder, user, metadata={}):
             return "error: bad request - shoulder does not support minting"
 
         identifier = impl.nog_sql.ezid_minter.mint_id(shoulder_model)
-        logger.debug('Minter returned identifier: {}'.format(identifier))
+        if identifier:
+            logger.debug('Minter returned identifier: {}'.format(identifier))
+        else:
+            return f"error: minter failed to create an identifier on shoulder {shoulder_model}"
 
         # proto super shoulder check
         prefix_val = django.conf.settings.PROTO_SUPER_SHOULDER.get(shoulder_model.prefix, shoulder_model.prefix)
