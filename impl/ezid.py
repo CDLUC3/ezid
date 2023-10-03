@@ -207,7 +207,7 @@ def _mintIdentifier(shoulder, user, metadata={}):
         identifier=identifier
     ).exists(), (
         f'Freshly minted identifier already exists in the database. '
-        f'The minter BDB file for the shoulder may be outdated. '
+        f'The minter state for the shoulder may be outdated. '
         f'shoulder="{shoulder_model.prefix}", identifier="{identifier}"'
     )
 

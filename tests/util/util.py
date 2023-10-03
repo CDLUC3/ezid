@@ -57,7 +57,7 @@ def shoulder_to_dict(s):
 
 
 def create_shoulder_and_minter(
-    namespace_str, organization_name='test shoulder', root_path=None, mask_str='eedk'
+    namespace_str, organization_name='test shoulder', mask_str='eedk'
 ):
     is_doi = namespace_str[:4] == 'doi:'
     prefix_str, shoulder_str = namespace_str.split('/')[-2:]
@@ -75,7 +75,7 @@ def create_shoulder_and_minter(
         active=True,
         manager='ezid',
     )
-    impl.nog_sql.ezid_minter.create_minter_database(namespace_str, root_path, mask_str)
+    impl.nog_sql.ezid_minter.create_minter_database(namespace_str, mask_str)
     return shoulder_model
 
 

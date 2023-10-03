@@ -78,11 +78,11 @@ def mint_id(shoulder_model, dry_run=False):
     Args:
         shoulder_model (Django ORM model): Shoulder
         dry_run (bool):
-            False (default): After successful minting, the BerkeleyDB database on disk,
+            False (default): After successful minting, the Minter database,
                 which stores the current state of the minter, is updated to the new
                 state. This prevents the minter from returning the same ID the next
                 time it is called.
-            True: The minter database on disk is not updated, so the same IDs are
+            True: The minter database is not updated, so the same IDs are
                 returned again the next time the minter is called. This is useful for
                 creating reproducible tests.
 
@@ -112,10 +112,10 @@ def mint_ids(shoulder_model, mint_count=1, dry_run=False):
     N2T Nog operates.
 
     Args:
+        shoulder_model (Django ORM model): Shoulder
         mint_count (int, default=1): Set the number of IDs to mint. The caller must
             accept this number of IDs, in order for the generator to run to completion
-            and for the minter state to be updated. be run to completion in order for
-            the minter state to be updated.
+            and for the minter state to be updated.
 
     Yields (str):
         This is a generator that yields minted identifiers as described in :func:`mint_id`.
@@ -130,7 +130,7 @@ def mint_ids(shoulder_model, mint_count=1, dry_run=False):
 
 # noinspection PyIncorrectDocstring,PyIncorrectDocstring
 def mint_by_prefix(prefix, mint_count=1, dry_run=False):
-    """Like mint_ids(), but accepts the path to a BerkeleyDB bdb minter
+    """Like mint_ids(), but accepts the prefix as input.
     file.
 
     Args:
@@ -150,13 +150,12 @@ def mint_by_prefix(prefix, mint_count=1, dry_run=False):
         log.error(f'Minter Error: {ex}')
 
 
-def create_minter_database(shoulder_ns, root_path=None, mask_str='eedk'):
-    """Create a new BerkeleyDB file
+def create_minter_database(shoulder_ns, mask_str='eedk'):
+    """Create a new minter in the database
 
     Args:
         shoulder_ns: DOI or ARK shoulder namespace
-        root_path:
-        mask_str:
+        mask_str: mask string
 
     """
     shoulder_ns = impl.nog_sql.id_ns.IdNamespace.from_str(shoulder_ns)
