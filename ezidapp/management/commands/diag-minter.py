@@ -3,8 +3,7 @@
 
 """Minter utilities
 
-- list: List basic information about the minters found in the directory tree rooted at
-  the default location or under another location if '--root' is specified.
+- list: List basic information about the minters.
 
   E.g.: ./manage.py diag-minter list
 
