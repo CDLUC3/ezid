@@ -16,7 +16,8 @@ import django.core.management
 import django.db.transaction
 
 import ezidapp.models.shoulder
-import impl.nog_sql.ezid_minter
+import impl.nog_bdb.bdb
+import impl.nog_bdb.minter
 import impl.nog_sql.util
 
 log = logging.getLogger(__name__)
@@ -75,7 +76,6 @@ class Command(django.core.management.BaseCommand):
     def create_missing_minters(self):
         total_count = 0
         missing_count = 0
-        minter_created  = 0
         unspecified_count = 0
 
         # TODO: Check for and count errors
@@ -92,8 +92,10 @@ class Command(django.core.management.BaseCommand):
                 unspecified_count += 1
                 continue
 
+            naan_str, shoulder_str = re.split(r'[/:.]', s.minter)[-2:]
             # noinspection PyProtectedMember
-            if ezidapp.models.minter.Minter.objects.filter(prefix=s.prefix).exists():
+            bdb_path = impl.nog_bdb.bdb._get_bdb_path(naan_str, shoulder_str, root_path=None)
+            if pathlib.Path(bdb_path).exists():
                 continue
 
             log.info('Creating missing minter. prefix="{}" name="{}"'.format(s.prefix, s.name))
@@ -101,8 +103,7 @@ class Command(django.core.management.BaseCommand):
             missing_count += 1
 
             try:
-                impl.nog_sql.ezid_minter.create_minter_database(s.prefix)
-                minter_created +=  1
+                impl.nog_bdb.minter.create_minter_database(s.prefix, shoulder_str)
             except Exception as e:
                 log.warning(
                     'Unable to create missing minter. prefix="{}" name="{}". Error: {}'.format(
@@ -111,6 +112,5 @@ class Command(django.core.management.BaseCommand):
                 )
 
         log.info('Total number of shoulders: {}'.format(total_count))
-        log.info('Missing minters: {}'.format(missing_count))
-        log.info('Created missing minters: {}'.format(minter_created))
+        log.info('Created missing shoulders: {}'.format(missing_count))
         log.info('Shoulders with unspecified minters: {}'.format(unspecified_count))

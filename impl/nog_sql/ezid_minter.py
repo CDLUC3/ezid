@@ -53,7 +53,8 @@ from django.db import transaction
 from django.db.utils import DatabaseError
 import ezidapp.models.minter
 import ezidapp.models.shoulder
-import impl.nog_sql
+import impl.nog_sql.id_ns
+import impl.nog_sql.exc
 
 # fmt:off
 XDIG_DICT = {
