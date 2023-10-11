@@ -82,7 +82,7 @@ class User(django.db.models.Model):
             try:
                 s = ezidapp.models.shoulder.getAgentShoulder()
                 assert s.isArk, "Agent shoulder type must be ARK"
-                self.pid = "{}{}".format(s.prefix, impl.nog.minter.mint_id(s))
+                self.pid = "{}{}".format(s.prefix, impl.nog_sql.ezid_minter.mint_id(s))
             except Exception as e:
                 impl.log.otherError("user.User.clean", e)
                 raise
