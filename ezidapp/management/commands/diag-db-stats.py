@@ -52,6 +52,9 @@ class Command(django.core.management.BaseCommand):
         )
 
     def handle(self, *_, **opt):
+        self.opt = opt = argparse.Namespace(**opt)
+        impl.nog_sql.util.log_setup(__name__, opt.debug)
+
         db = ORMStats()
         db.print_all()
         # db.print_identifier('ark:/13030/c80c4tkc')
