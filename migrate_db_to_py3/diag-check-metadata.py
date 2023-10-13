@@ -43,7 +43,7 @@ import django.core.management
 import django.db.models
 import django.db.transaction
 
-import impl.nog_bdb.counter
+import impl.nog_sql.counter
 
 log = logging.getLogger(__name__)
 
@@ -71,7 +71,7 @@ class Command(django.core.management.BaseCommand):
 class ViaORM:
     def __init__(self):
         self.exit_stack = contextlib.ExitStack()
-        self.counter = self.exit_stack.enter_context(impl.nog_bdb.counter.Counter())
+        self.counter = self.exit_stack.enter_context(impl.nog_sql.counter.Counter())
         self.page_size = django.conf.settings.QUERY_PAGE_SIZE
 
     def list_blobs_all(self):

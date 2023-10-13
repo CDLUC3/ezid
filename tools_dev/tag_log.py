@@ -10,7 +10,7 @@ import logging
 import re
 import sys
 
-import impl.nog_bdb.counter
+import impl.nog_sql.counter
 
 log = logging.getLogger(__name__)
 
@@ -86,7 +86,7 @@ class TagLog:
 
     def __enter__(self):
         self.exit_stack = contextlib.ExitStack()
-        self.counter = self.exit_stack.enter_context(impl.nog_bdb.counter.Counter())
+        self.counter = self.exit_stack.enter_context(impl.nog_sql.counter.Counter())
         self.count = self.counter.count
         return self
 

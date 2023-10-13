@@ -26,8 +26,7 @@ import django.db.transaction
 import ezidapp.models.async_queue
 import ezidapp.models.identifier
 import impl.enqueue
-import impl.nog_bdb.counter
-import impl.nog_bdb.tb
+import impl.nog_sql.counter
 import impl.nog_sql.util
 
 log = logging.getLogger(__name__)
@@ -62,7 +61,7 @@ class Command(django.core.management.BaseCommand):
 class ORMStats:
     def __init__(self):
         self.exit_stack = contextlib.ExitStack()
-        self.counter = self.exit_stack.enter_context(impl.nog_bdb.counter.Counter())
+        self.counter = self.exit_stack.enter_context(impl.nog_sql.counter.Counter())
         self.page_size = django.conf.settings.QUERY_PAGE_SIZE
 
     def print_identifier(self, identifier):
