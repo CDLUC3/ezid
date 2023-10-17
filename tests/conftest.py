@@ -456,6 +456,20 @@ def minters(namespace, meta_type):
     )
     yield namespace
 
+@pytest.fixture()
+def agent_minter():
+    """Create the minter for the CDL Agent shoulder.
+    
+    The Agent shoulder (ark:/99166/p9) is already in the DB ready for use.
+    The corresponding minter is not as the test DB was created before BDB minter to mysql migration.
+    Create the corresponding minter in the DB.
+    """
+    prefix = 'ark:/99166/p9'
+    if not ezidapp.models.minter.Minter.objects.filter(
+        prefix=prefix
+    ).exists():
+        impl.nog_sql.ezid_minter.create_minter_database(prefix)
+    
 
 @pytest.fixture()
 def shoulder_csv():

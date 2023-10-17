@@ -12,12 +12,12 @@ import ezidapp.models.group
 
 log = logging.getLogger(__name__)
 
-class TestGropu:
-    def test_1_create_group(self, caplog):
+class TestGroup:
+    def test_1_create_group(self, caplog, agent_minter):
         """test - Create group with group ID minted on Agent shoulder"""
         caplog.set_level(logging.INFO)
 
-        next_spin = '154dv8s'
+        next_spin = '4w25'
         expected_pid = f'{django.conf.settings.SHOULDERS_AGENT}{next_spin}'
 
         assert not ezidapp.models.group.Group.objects.filter(
