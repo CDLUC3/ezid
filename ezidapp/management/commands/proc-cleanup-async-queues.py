@@ -55,8 +55,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 None
         """
         # keep running until terminated
-        keepRunning = True
-        while keepRunning:
+        while not self.terminated():
             currentTime=int(time.time())
             timeDelta=django.conf.settings.DAEMONS_CHECK_IDENTIFIER_ASYNC_STATUS_TIMESTAMP
 
@@ -91,7 +90,6 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     # mark as 'OK' to delete from the refIdentifier
                     if not qs:
                         identifierStatus[key] = True
-                        self.sleep(django.conf.settings.DAEMONS_IDLE_SLEEP)
                         continue
 
                     for task_model in qs:
@@ -112,8 +110,6 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     log.info(
                         "Delete identifier: " + refId.identifier + " from refIdentifier table.")
                     self.deleteRecord(self.refIdentifier, refId.pk, record_type='refId', identifier=refId.identifier)
-
-            keepRunning=False
 
             self.sleep(django.conf.settings.DAEMONS_BATCH_SLEEP)
 
