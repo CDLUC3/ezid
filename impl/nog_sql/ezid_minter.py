@@ -177,10 +177,8 @@ class EzidMinter:
         self._minterState = {}
         self._is_new = is_new
         self._dry_run = dry_run
-        print("in __init")
 
     def __enter__(self):
-        print("in __enter")
         self.get_minter_from_db()
         if self._is_new:
             self._init_new()
@@ -228,7 +226,6 @@ class EzidMinter:
     def _setup_minter_variables(self):
         state = self._minterState
         self.base_count = int(state.get('basecount'))
-        print(f"base_count: {state.get('basecount')}")
         self.combined_count = int(state.get('oacounter'))
         self.max_combined_count = int(state.get('oatop'))
         self.total_count = int(state.get('total'))
@@ -254,7 +251,6 @@ class EzidMinter:
 
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        print("in __exit")
         if self._dry_run:
             log.debug(
                 'Dry-run: Minter state not saved. Any minted IDs will be repeated.'
@@ -282,17 +278,12 @@ class EzidMinter:
             state[f'c{n}/top'] = top
             state[f'c{n}/value'] = value
         
-        #self._bdb.__exit__(exc_type, exc_val, exc_tb)
         # saved minterState to MySQL DB
         minterState = self._minterState
-        #minterState = json.dumps(minterState)
-        print("in __exit__: minterState")
-        print(minterState)
+        
         if self._minter is None:
-            print("create a minter db entry")
             ezidapp.models.minter.Minter.objects.create(prefix=self._prefix, minterState=minterState)
         else:
-            print("update a minter db entry")
             t = int(time.time())
             self._minter.minterState = minterState
             self._minter.updateTime = t
