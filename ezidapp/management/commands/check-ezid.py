@@ -66,6 +66,9 @@ class Command(django.core.management.BaseCommand):
             log.info(f'Creating AKR shoulder: {prefix}, org_name: {org_name}')
             shoulder, minter = self.check_create_sholuder_and_minter('ark', prefix, org_name)
             
+            # reenable log handler as sub-command removes existing handlers
+            impl.nog_sql.util.log_setup(__name__, opt.debug)
+
             if not (shoulder.prefix == prefix and shoulder.type == 'ARK' 
                     and shoulder.isSupershoulder == False
                     and shoulder.datacenter == None
@@ -81,6 +84,8 @@ class Command(django.core.management.BaseCommand):
             datacenter_symbol = 'CDL.CDL'
             log.info(f'Creating Datacite DOI shoulder: {prefix}, org_name: {org_name}')
             shoulder, minter = self.check_create_sholuder_and_minter('doi', prefix, org_name, datacenter_symbol)
+            
+            impl.nog_sql.util.log_setup(__name__, opt.debug)
 
             if not (shoulder.prefix == prefix and shoulder.type == 'DOI' 
                     and shoulder.datacenter.symbol == datacenter_symbol
@@ -96,6 +101,8 @@ class Command(django.core.management.BaseCommand):
             org_name = 'Crossref doi:10.31223/FK3 test'
             log.info(f'Creating Crossref DOI shoulder: {prefix}, org_name: {org_name}')
             shoulder, minter = self.check_create_sholuder_and_minter('doi', prefix, org_name, is_crossref=True)
+
+            impl.nog_sql.util.log_setup(__name__, opt.debug)
 
             if not (shoulder.prefix == prefix and shoulder.type == 'DOI' 
                     and shoulder.datacenter == None
@@ -123,11 +130,12 @@ class Command(django.core.management.BaseCommand):
         password = 'apitest'
         prefix = 'ark:/99999/fk88'
         self.test_shoulder_mint_cmd(prefix)
+        impl.nog_sql.util.log_setup(__name__, opt.debug)
+
         self.grant_user_access_to_shoulder(username, prefix)
         shoulder, id_created, text = impl.client_util.mint_identifers(base_url, username, password, prefix, record_1)
         if id_created is not None:
             log.info(f'#### OK mint_id on {shoulder}, ID created: {id_created}')
-            print(f'#### OK mint_id on {shoulder}, ID created: {id_created}')
             update_data = {
                 '_status': 'reserved',
             }
@@ -138,17 +146,20 @@ class Command(django.core.management.BaseCommand):
 
         else:
             log.error(f'#### ERROR mint_id on {shoulder}')
-            print(f'#### ERROR mint_id on {shoulder}')
 
         
 
 
         prefix = 'doi:10.5072/FK7'
         self.test_shoulder_mint_cmd(prefix)
+        impl.nog_sql.util.log_setup(__name__, opt.debug)
+
         self.grant_user_access_to_shoulder(username, prefix)
 
         prefix = 'doi:10.31223/FK3'
         self.test_shoulder_mint_cmd(prefix)
+        impl.nog_sql.util.log_setup(__name__, opt.debug)
+        
         self.grant_user_access_to_shoulder(username, prefix)
 
 

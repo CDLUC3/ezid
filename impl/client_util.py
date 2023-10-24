@@ -34,7 +34,6 @@ def post_data(url, user_name, password, data):
 
 
 def mint_identifers(base_url, user_name, password, shoulder, data):
-    print(data)
     url = f'{base_url}/shoulder/{shoulder}'
     http_success, status_code, text, err_msg = post_data(url, user_name, password, data)
     
