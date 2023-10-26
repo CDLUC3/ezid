@@ -12,23 +12,59 @@ import django.conf
 import django.contrib.auth.models
 import django.core.management
 import django.db.transaction
+from django.db.models import Q
 
 import ezidapp.models.shoulder
 import ezidapp.models.datacenter
+import ezidapp.models.identifier
+import ezidapp.models.async_queue
 import impl.nog_sql.ezid_minter
 import impl.nog_sql.util
 import impl.client_util
 
 log = logging.getLogger(__name__)
 
-record_1 = {
+base_url = django.conf.settings.EZID_BASE_URL
+admin_username = django.conf.settings.ADMIN_USERNAME
+admin_password = django.conf.settings.ADMIN_PASSWORD
+username = 'apitest'
+password = 'apitest'
+
+record_datacite = {
     '_profile': 'datacite',
     '_target': "https://google.com",
-    'datacite.date': '2023',
+    'datacite.publicationyear': '2023',
     'datacite.type': 'Dataset',
-    'datacite.title': 'test record on shoulder - ark:/99999/fk88',
+    'datacite.title': 'datacite test record',
     'datacite.publisher': 'test publisher', 
     'datacite.creator': 'unknown',
+}
+
+xml_record = (
+    '<?xml version="1.0"?>'
+    '<journal xmlns="http://www.crossref.org/schema/5.3.0" '
+    'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
+    'xmlns:jats="http://www.ncbi.nlm.nih.gov/JATS1" '
+    'xsi:schemaLocation="http://www.crossref.org/schema/5.3.0 '
+    'http://www.crossref.org/schema/deposit/crossref5.3.0.xsd" type="preprint">'
+    '<journal_metadata language="en">'
+    '<full_title>Journal of Awesome Cat Names</full_title><abbrev_title>JACN</abbrev_title>'
+    '<!-- placeholder DOI, will be overwritten when DOI is minted -->  <doi_data>    <doi></doi>'
+    '<resource>https://dev.eartharxiv.org/repository/view/1777/</resource></doi_data>'
+    '</journal_metadata></journal>'
+    )
+record_crossref = {
+    '_crossref': 'yes',
+    '_profile': 'crossref',
+    '_target': "https://google.com",
+    'crossref': xml_record,
+}
+
+queueType = {
+    'binder': ezidapp.models.async_queue.BinderQueue,
+    'crossref': ezidapp.models.async_queue.CrossrefQueue,
+    'datacite': ezidapp.models.async_queue.DataciteQueue,
+    'search': ezidapp.models.async_queue.SearchIndexerQueue
 }
 
 class Command(django.core.management.BaseCommand):
@@ -50,16 +86,18 @@ class Command(django.core.management.BaseCommand):
         self.opt = opt = argparse.Namespace(**opt)
         impl.nog_sql.util.log_setup(__name__, opt.debug)
 
-        base_url = django.conf.settings.EZID_BASE_URL
-        admin_username = django.conf.settings.ADMIN_USERNAME
-        admin_password = django.conf.settings.ADMIN_PASSWORD
-
-        log.info('Checking EZID on  Dev or Stg ...')
-        on_prd  = input('Are you on EZID-Dev or Stg? Yes/No\n')
-        if on_prd.upper() != 'YES':
+        log.info('Testing EZID ...')
+        log.info('You can run this command on EZID-Dev or Stg but not PRD.')
+        on_prd  = input('Are you on EZID-PRD server? Yes/No\n')
+        if on_prd.upper() == 'YES':
             print('You can only run this command on EZID-Dev or EZID-Stg server. Abort!')
             exit()
+       
+        self.test_regular_shoulder(opt)
 
+        self.test_super_shoulder(opt)
+
+    def test_regular_shoulder(self, opt):
         try:
             prefix = 'ark:/99999/fk88'
             org_name = 'ark:/99999/fk88 test'
@@ -69,10 +107,11 @@ class Command(django.core.management.BaseCommand):
             # reenable log handler as sub-command removes existing handlers
             impl.nog_sql.util.log_setup(__name__, opt.debug)
 
-            if not (shoulder.prefix == prefix and shoulder.type == 'ARK' 
+            if not (shoulder.prefix == prefix and shoulder.isArk == True
+                    and shoulder.isDatacite == False
+                    and shoulder.isCrossref == False
                     and shoulder.isSupershoulder == False
-                    and shoulder.datacenter == None
-                    and shoulder.isCrossref == False):
+                    ):
                 log.error(f'Creating ARK shoulder: {prefix}, org_name: {org_name}: FAILED')
                 
             if (minter.prefix != prefix ):
@@ -87,9 +126,10 @@ class Command(django.core.management.BaseCommand):
             
             impl.nog_sql.util.log_setup(__name__, opt.debug)
 
-            if not (shoulder.prefix == prefix and shoulder.type == 'DOI' 
-                    and shoulder.datacenter.symbol == datacenter_symbol
+            if not (shoulder.prefix == prefix and shoulder.isDoi == True
+                    and shoulder.isDatacite == True 
                     and shoulder.isCrossref == False
+                    and shoulder.datacenter.symbol == datacenter_symbol
                     and shoulder.isSupershoulder == False):
                 log.error(f'Creating Datacite DOI shoulder : {prefix}, org_name: {org_name}: FAILED')
             
@@ -104,9 +144,10 @@ class Command(django.core.management.BaseCommand):
 
             impl.nog_sql.util.log_setup(__name__, opt.debug)
 
-            if not (shoulder.prefix == prefix and shoulder.type == 'DOI' 
-                    and shoulder.datacenter == None
+            if not (shoulder.prefix == prefix and shoulder.isDoi == True
+                    and shoulder.isDatacite == False
                     and shoulder.isCrossref == True
+                    and shoulder.datacenter is None
                     and shoulder.isSupershoulder == False):
                 log.error(f'Creating Crossref DOI shoulder : {prefix}, org_name: {org_name}: FAILED')
             
@@ -124,44 +165,159 @@ class Command(django.core.management.BaseCommand):
                 f'Unable to create shoulder/minter for prefix {prefix}. Error: {e}'
             )
 
-        log.info('#### Create shoulder completed successfully')
+        log.info('#### Create regualr shoulders completed successfully')
 
-        username = 'apitest'
-        password = 'apitest'
         prefix = 'ark:/99999/fk88'
         self.test_shoulder_mint_cmd(prefix)
         impl.nog_sql.util.log_setup(__name__, opt.debug)
-
-        self.grant_user_access_to_shoulder(username, prefix)
-        shoulder, id_created, text = impl.client_util.mint_identifers(base_url, username, password, prefix, record_1)
-        if id_created is not None:
-            log.info(f'#### OK mint_id on {shoulder}, ID created: {id_created}')
-            update_data = {
-                '_status': 'reserved',
-            }
-
-            impl.client_util.update_identifier(base_url, admin_username, admin_password, id_created, update_data)
-
-            impl.client_util.delete_identifier(base_url, username, password, id_created)
-
-        else:
-            log.error(f'#### ERROR mint_id on {shoulder}')
-
-        
-
+        self.mint_update_delete_identifier(prefix, record_datacite)
 
         prefix = 'doi:10.5072/FK7'
         self.test_shoulder_mint_cmd(prefix)
         impl.nog_sql.util.log_setup(__name__, opt.debug)
-
-        self.grant_user_access_to_shoulder(username, prefix)
+        self.mint_update_delete_identifier(prefix, record_datacite)
 
         prefix = 'doi:10.31223/FK3'
         self.test_shoulder_mint_cmd(prefix)
         impl.nog_sql.util.log_setup(__name__, opt.debug)
-        
-        self.grant_user_access_to_shoulder(username, prefix)
+        self.mint_update_delete_identifier(prefix, record_crossref, is_crossref=True)
 
+
+    def test_super_shoulder(self, opt):
+        try:
+            prefix = 'ark:/99999/fk88'
+            org_name = 'ark:/99999/fk88 test'
+            log.info(f'Creating AKR shoulder: {prefix}, org_name: {org_name}')
+            shoulder, minter = self.check_create_sholuder_and_minter('ark', prefix, org_name, is_super_shoulder=True)
+            
+            # reenable log handler as sub-command removes existing handlers
+            impl.nog_sql.util.log_setup(__name__, opt.debug)
+
+            if not (shoulder.prefix == prefix and shoulder.isArk == True
+                    and shoulder.isDatacite == False
+                    and shoulder.isCrossref == False
+                    and shoulder.isSupershoulder == True
+                    ):
+                log.error(f'Creating ARK super shoulder: {prefix}, org_name: {org_name}: FAILED')
+                
+            if minter is not None:
+                log.error(f'Super shoulder should not have a minter. Check shoulder and minter for prefix: {prefix}')
+
+            # datacite DOI
+            prefix = 'doi:10.5072/FK7'
+            org_name = 'Datacite doi:10.5072/FK7 test'
+            datacenter_symbol = 'CDL.CDL'
+            log.info(f'Creating Datacite DOI shoulder: {prefix}, org_name: {org_name}')
+            shoulder, minter = self.check_create_sholuder_and_minter('doi', prefix, org_name, datacenter_symbol, is_super_shoulder=True)
+            
+            impl.nog_sql.util.log_setup(__name__, opt.debug)
+
+            if not (shoulder.prefix == prefix and shoulder.isDoi == True
+                    and shoulder.isDatacite == True 
+                    and shoulder.isCrossref == False
+                    and shoulder.datacenter.symbol == datacenter_symbol
+                    and shoulder.isSupershoulder == True):
+                log.error(f'Creating Datacite DOI super shoulder : {prefix}, org_name: {org_name}: FAILED')
+            
+            if minter is not None:
+                log.error(f'Super shoulder should not have a minter. Check shoulder and minter for prefix: {prefix}')
+
+            # crossref DOI
+            prefix = 'doi:10.31223/FK3'
+            org_name = 'Crossref doi:10.31223/FK3 test'
+            log.info(f'Creating Crossref DOI shoulder: {prefix}, org_name: {org_name}')
+            shoulder, minter = self.check_create_sholuder_and_minter('doi', prefix, org_name, is_crossref=True, is_super_shoulder=True)
+
+            impl.nog_sql.util.log_setup(__name__, opt.debug)
+
+            if not (shoulder.prefix == prefix and shoulder.isDoi == True
+                    and shoulder.isDatacite == False
+                    and shoulder.isCrossref == True
+                    and shoulder.datacenter is None
+                    and shoulder.isSupershoulder == True):
+                log.error(f'Creating Crossref DOI super shoulder : {prefix}, org_name: {org_name}: FAILED')
+            
+            if minter is not None:
+                log.error(f'Super shoulder should not have a minter. Check shoulder and minter for prefix: {prefix}')
+
+        except Exception as e:
+            if django.conf.settings.DEBUG:
+                import logging
+
+                logging.exception('#' * 100)
+            if opt.debug:
+                raise
+            raise django.core.management.CommandError(
+                f'Unable to create shoulder/minter for prefix {prefix}. Error: {e}'
+            )
+
+        log.info('#### Create super shoulders completed successfully')
+
+        prefix = 'ark:/99999/fk88'
+        impl.nog_sql.util.log_setup(__name__, opt.debug)
+        self.create_update_delete_identifier(prefix, record_datacite)
+
+        prefix = 'doi:10.5072/FK7'
+        impl.nog_sql.util.log_setup(__name__, opt.debug)
+        self.create_update_delete_identifier(prefix, record_datacite)
+
+        prefix = 'doi:10.31223/FK3'
+        impl.nog_sql.util.log_setup(__name__, opt.debug)
+        self.create_update_delete_identifier(prefix, record_crossref, is_crossref=True)
+
+
+    def mint_update_delete_identifier(self, prefix, record, is_crossref=False):
+        self.grant_user_access_to_shoulder(username, prefix)
+        shoulder, id_created, text = impl.client_util.mint_identifer(base_url, username, password, prefix, record)
+        if id_created is not None:
+            log.info(f'#### OK mint_id on {shoulder}, ID created: {id_created}')
+            
+            if is_crossref:
+                update_data = {
+                    '_status': 'reserved',
+                    '_crossref': 'yes',
+                }
+            else:
+                update_data = {
+                    '_status': 'reserved',
+                }
+
+            # update status from public to reserved
+            impl.client_util.update_identifier(base_url, admin_username, admin_password, id_created, update_data)
+
+            impl.client_util.delete_identifier(base_url, username, password, id_created)
+            self.delete_refidentifier(id_created)
+
+        else:
+            log.error(f'#### mint_id on {shoulder} FAILED!')
+
+    def create_update_delete_identifier(self, prefix, record, is_crossref=False):
+        self.grant_user_access_to_shoulder(username, prefix)
+        identifier = f'{prefix}test_1'
+        id_created, text = impl.client_util.create_identifer(base_url, username, password, identifier, record)
+        if id_created is not None:
+            if id_created != identifier:
+                log.error(f'#### create ID {identifier} FAILED!')
+            else:
+                log.info(f'#### OK create ID {id_created}')
+            
+            if is_crossref:
+                update_data = {
+                    '_status': 'reserved',
+                    '_crossref': 'yes',
+                }
+            else:
+                update_data = {
+                    '_status': 'reserved',
+                }
+
+            # update status from public to reserved
+            impl.client_util.update_identifier(base_url, admin_username, admin_password, id_created, update_data)
+
+            impl.client_util.delete_identifier(base_url, username, password, id_created)
+            self.delete_refidentifier(id_created)
+        else:
+            log.error(f'#### create ID {identifier} FAILED!')
 
 
 
@@ -180,7 +336,7 @@ class Command(django.core.management.BaseCommand):
         else:
             raise django.core.management.CommandError("Shoulder type must be 'ark' or 'doi'")
         if is_super_shoulder:
-            cmd_args.append('--is_super_shoulder')
+            cmd_args.append('--super-shoulder')
         
         log.info(f'Delete shoulder/minter with prefix {prefix} if alreay exists')
         try:
@@ -197,7 +353,10 @@ class Command(django.core.management.BaseCommand):
         
         try:
             shoulder = ezidapp.models.shoulder.Shoulder.objects.get(prefix=prefix)
-            minter = ezidapp.models.minter.Minter.objects.get(prefix=prefix)
+            if is_super_shoulder:
+                minter = None
+            else:
+                minter = ezidapp.models.minter.Minter.objects.get(prefix=prefix)
         except Exception as ex:
              raise django.core.management.CommandError(f"Create shoulder/minter with prefix {prefix} failed: {ex}")
         
@@ -217,6 +376,18 @@ class Command(django.core.management.BaseCommand):
         minter = ezidapp.models.minter.Minter.objects.filter(prefix=prefix)
         if minter.exists():
             minter.delete()
+
+    def delete_refidentifier(self, identifier):
+        refIdentifiers = ezidapp.models.identifier.RefIdentifier.objects.filter(identifier=identifier)
+        if refIdentifiers.exists():
+            for refId in refIdentifiers:
+                for key, queue in queueType.items():
+                    record_set = queue.objects.filter(Q(refIdentifier_id=refId.pk))
+                    if record_set.exists():
+                        record_set.delete()
+            
+            refIdentifiers.delete()
+        
 
     def grant_user_access_to_shoulder(self, username, prefix):
         try:

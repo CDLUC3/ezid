@@ -4,7 +4,7 @@ import re
 
 import impl.anvl
 
-def post_data(url, user_name, password, data):
+def http_request(method, url, user_name, password, data):
     data = impl.anvl.format(data)
     # convert data to byte string
     try:
@@ -22,7 +22,11 @@ def post_data(url, user_name, password, data):
         "Authorization": "Basic " + base64.b64encode(f"{user_name}:{password}".encode('utf-8')).decode('utf-8'),
     }
     try:
-        r = requests.post(url=url, headers=headers, data=data)
+        if method.upper() == 'PUT':
+            r = requests.put(url=url, headers=headers, data=data)
+        else:
+            r = requests.post(url=url, headers=headers, data=data)
+        
         status_code = r.status_code
         text = r.text
         success = True
@@ -33,9 +37,9 @@ def post_data(url, user_name, password, data):
     return success, status_code, text, err_msg
 
 
-def mint_identifers(base_url, user_name, password, shoulder, data):
+def mint_identifer(base_url, user_name, password, shoulder, data):
     url = f'{base_url}/shoulder/{shoulder}'
-    http_success, status_code, text, err_msg = post_data(url, user_name, password, data)
+    http_success, status_code, text, err_msg = http_request('post', url, user_name, password, data)
     
     id_created = None
     if http_success:
@@ -55,9 +59,31 @@ def mint_identifers(base_url, user_name, password, shoulder, data):
 
     return status
 
+def create_identifer(base_url, user_name, password, identifier, data):
+    url = f'{base_url}/id/{identifier}'
+    http_success, status_code, text, err_msg = http_request('put', url, user_name, password, data)
+    
+    id_created = None
+    if http_success:
+        # should return text as:
+        # success: doi:10.5072/FK2TEST_1 | ark:/b5072/fk2test_1
+        # success: ark:/99999/fk4test_1
+        # error: bad request - identifier already exists
+        if text.strip().startswith("success"):
+            list_1 = text.split(':', 1)
+            if len(list_1) > 1:
+                ids = list_1[1]
+                list_2 = ids.split("|")
+                if len(list_2) > 0:
+                    id_created = list_2[0].strip()
+        
+    status = (id_created, text)
+
+    return status
+
 def update_identifier(base_url, user_name, password, id, data):
     url = f"{base_url}/id/{id}"
-    http_success, status_code, text, err_msg = post_data(url, user_name, password, data)
+    http_success, status_code, text, err_msg = http_request('post', url, user_name, password, data)
     if http_success and status_code == 200:
         print(f"ok update identifier - {id} updated with new data: {data}")
     else:
