@@ -137,11 +137,9 @@ def create_shoulder(
         agency = ezidapp.models.shoulder.RegistrationAgency.objects.get(
             registration_agency=agency_code
         )
-        print(agency)
         # Only one type of shoulder, "shoulder"
         # see: select * from ezidapp_shouldertype;
         shoulder_type = ezidapp.models.shoulder.ShoulderType.objects.get(shoulder_type="shoulder")
-        print(shoulder_type)
 
         ezidapp.models.shoulder.Shoulder.objects.create(
             prefix=ns,

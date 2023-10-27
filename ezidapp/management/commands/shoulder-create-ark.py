@@ -59,8 +59,6 @@ class Command(django.core.management.BaseCommand):
         self.opt = opt = argparse.Namespace(**opt)
         impl.nog_sql.util.log_setup(__name__, opt.debug)
 
-        print(self.opt)
-
         try:
             return self._handle(self.opt)
         except impl.nog_sql.exc.MinterError as e:
