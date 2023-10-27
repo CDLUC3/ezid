@@ -30,7 +30,7 @@ admin_password = django.conf.settings.ADMIN_PASSWORD
 username = 'apitest'
 password = 'apitest'
 
-prefixes = {
+test_new_prefixes = {
     'ark': 'ark:/99999/fk88',
     'datacite': 'doi:10.5072/FK7',
     'crossref': 'doi:10.31223/FK3'
@@ -98,6 +98,8 @@ class Command(django.core.management.BaseCommand):
         if on_prd.upper() == 'YES':
             print('You can only run this command on EZID-Dev or EZID-Stg server. Abort!')
             exit()
+
+        self.test_existing_shoulder(opt)
        
         self.test_regular_shoulder(opt)
 
@@ -105,23 +107,39 @@ class Command(django.core.management.BaseCommand):
 
     def test_data_prep(self):
         try:
-            for key, prefix in prefixes.items():
+            for key, prefix in test_new_prefixes.items():
                 self.delete_shoulder_minter(prefix)
         except Exception as ex:
             raise django.core.management.CommandError(f'Deleting exisiting shoulder/minter failed: {ex}')
 
     def test_data_cleanup(self):
         try:
-            for key, prefix in prefixes.items():
+            for key, prefix in test_new_prefixes.items():
                 self.delete_shoulder_minter(prefix)
         except Exception as ex:
             raise django.core.management.CommandError(f'Deleting exisiting shoulder/minter failed: {ex}')
+
+    def test_existing_shoulder(self, opt):
+        prefix = django.conf.settings.SHOULDERS_ARK_TEST
+        if prefix:
+            self.mint_update_delete_identifier(prefix, record_datacite)
+            self.create_update_delete_identifier(prefix, record_datacite)
+
+        prefix = django.conf.settings.SHOULDERS_DOI_TEST
+        if prefix:
+            self.mint_update_delete_identifier(prefix, record_datacite)
+            self.create_update_delete_identifier(prefix, record_datacite)
+
+        prefix = django.conf.settings.SHOULDERS_CROSSREF_TEST
+        if prefix:
+            self.mint_update_delete_identifier(prefix, record_crossref, is_crossref=True)
+            self.create_update_delete_identifier(prefix, record_crossref, is_crossref=True)
 
     def test_regular_shoulder(self, opt):
         try:
             self.test_data_prep()
 
-            prefix = prefixes.get('ark')
+            prefix = test_new_prefixes.get('ark')
             org_name = f'{prefix} test'
             log.info(f'Creating AKR shoulder: {prefix}, org_name: {org_name}')
             shoulder, minter = self.check_create_sholuder_and_minter('ark', prefix, org_name)
@@ -139,7 +157,7 @@ class Command(django.core.management.BaseCommand):
             if (minter.prefix != prefix ):
                 log.error(f'Creating minter for prefix: {prefix}: FAILED')
 
-            prefix = prefixes.get('datacite')
+            prefix = test_new_prefixes.get('datacite')
             org_name = f'{prefix} test'
             datacenter_symbol = 'CDL.CDL'
             log.info(f'Creating Datacite DOI shoulder: {prefix}, org_name: {org_name}')
@@ -157,7 +175,7 @@ class Command(django.core.management.BaseCommand):
             if (minter.prefix != prefix ):
                 log.error(f'Creating minter for prefix: {prefix}: FAILED')
 
-            prefix = prefixes.get('crossref')
+            prefix = test_new_prefixes.get('crossref')
             org_name = f'{prefix} test'
             log.info(f'Creating Crossref DOI shoulder: {prefix}, org_name: {org_name}')
             shoulder, minter = self.check_create_sholuder_and_minter('doi', prefix, org_name, is_crossref=True)
@@ -181,7 +199,7 @@ class Command(django.core.management.BaseCommand):
 
         log.info('#### Create regualr shoulders completed successfully')
 
-        prefix = prefixes.get('ark')
+        prefix = test_new_prefixes.get('ark')
         self.test_shoulder_mint_cmd(prefix)
         self.test_shoulder_update_organization(prefix, f'{prefix} new org_name')
         try:
@@ -193,7 +211,7 @@ class Command(django.core.management.BaseCommand):
         self.mint_update_delete_identifier(prefix, record_datacite)
         self.create_update_delete_identifier(prefix, record_datacite)
 
-        prefix = prefixes.get('datacite')
+        prefix = test_new_prefixes.get('datacite')
         self.test_shoulder_mint_cmd(prefix)
         self.test_shoulder_update_organization(prefix, f'{prefix} new org_name')
         self.test_shoulder_update_datacenter(prefix, 'CDL.UCD')
@@ -202,7 +220,7 @@ class Command(django.core.management.BaseCommand):
         self.mint_update_delete_identifier(prefix, record_datacite)
         self.create_update_delete_identifier(prefix, record_datacite)
 
-        prefix = prefixes.get('crossref')
+        prefix = test_new_prefixes.get('crossref')
         self.test_shoulder_mint_cmd(prefix)
         self.test_shoulder_update_organization(prefix, f'{prefix} new org_name')
         try:
@@ -220,7 +238,7 @@ class Command(django.core.management.BaseCommand):
         try:
             self.test_data_prep()
 
-            prefix = prefixes.get('ark')
+            prefix = test_new_prefixes.get('ark')
             org_name = f'{prefix} test'
             log.info(f'Creating AKR shoulder: {prefix}, org_name: {org_name}')
             shoulder, minter = self.check_create_sholuder_and_minter('ark', prefix, org_name, is_super_shoulder=True)
@@ -238,7 +256,7 @@ class Command(django.core.management.BaseCommand):
             if minter is not None:
                 log.error(f'Super shoulder should not have a minter. Check shoulder and minter for prefix: {prefix}')
 
-            prefix = prefixes.get('datacite')
+            prefix = test_new_prefixes.get('datacite')
             org_name = f'{prefix} test'
             datacenter_symbol = 'CDL.CDL'
             log.info(f'Creating Datacite DOI shoulder: {prefix}, org_name: {org_name}')
@@ -256,7 +274,7 @@ class Command(django.core.management.BaseCommand):
             if minter is not None:
                 log.error(f'Super shoulder should not have a minter. Check shoulder and minter for prefix: {prefix}')
 
-            prefix = prefixes.get('crossref')
+            prefix = test_new_prefixes.get('crossref')
             org_name = f'{prefix} test'
             log.info(f'Creating Crossref DOI shoulder: {prefix}, org_name: {org_name}')
             shoulder, minter = self.check_create_sholuder_and_minter('doi', prefix, org_name, is_crossref=True, is_super_shoulder=True)
@@ -280,15 +298,15 @@ class Command(django.core.management.BaseCommand):
 
         log.info('#### Create super shoulders completed successfully')
 
-        prefix = prefixes.get('ark')
+        prefix = test_new_prefixes.get('ark')
         impl.nog_sql.util.log_setup(__name__, opt.debug)
         self.create_update_delete_identifier(prefix, record_datacite)
 
-        prefix = prefixes.get('datacite')
+        prefix = test_new_prefixes.get('datacite')
         impl.nog_sql.util.log_setup(__name__, opt.debug)
         self.create_update_delete_identifier(prefix, record_datacite)
 
-        prefix = prefixes.get('crossref')
+        prefix = test_new_prefixes.get('crossref')
         impl.nog_sql.util.log_setup(__name__, opt.debug)
         self.create_update_delete_identifier(prefix, record_crossref, is_crossref=True)
 
@@ -323,12 +341,18 @@ class Command(django.core.management.BaseCommand):
     def create_update_delete_identifier(self, prefix, record, is_crossref=False):
         self.grant_user_access_to_shoulder(username, prefix)
         identifier = f'{prefix}test_1'
-        id_created, text = impl.client_util.create_identifer(base_url, username, password, identifier, record)
-        if id_created is not None:
-            if id_created.upper() != identifier.upper():
+        id_created_1, text_1 = impl.client_util.create_identifer(base_url, username, password, identifier, record)
+        id_created_2, text_2 = impl.client_util.create_identifer(base_url, username, password, identifier, record, update_if_exists=True)
+
+        if id_created_1 is None and id_created_2 is None:
+            log.error(f'#### create ID {identifier} FAILED!')
+        elif id_created_1 and id_created_2 and id_created_1 != id_created_2:
+            log.error(f'#### create ID {identifier} FAILED!')
+        else:
+            if id_created_2.upper() != identifier.upper():
                 log.error(f'#### create ID {identifier} FAILED!')
             else:
-                log.info(f'#### OK create ID {id_created}')
+                log.info(f'#### OK create ID {id_created_2}')
             
             if is_crossref:
                 update_data = {
@@ -341,13 +365,10 @@ class Command(django.core.management.BaseCommand):
                 }
 
             # update status from public to reserved
-            impl.client_util.update_identifier(base_url, admin_username, admin_password, id_created, update_data)
+            impl.client_util.update_identifier(base_url, admin_username, admin_password, id_created_2, update_data)
 
-            impl.client_util.delete_identifier(base_url, username, password, id_created)
-            self.delete_refidentifier(id_created)
-        else:
-            log.error(f'#### create ID {identifier} FAILED!')
-
+            impl.client_util.delete_identifier(base_url, username, password, id_created_2)
+            self.delete_refidentifier(id_created_2)
 
 
     def check_create_sholuder_and_minter(self, shoulder_type, prefix, org_name, datacenter_symbol=None, is_crossref=False, is_super_shoulder=False):

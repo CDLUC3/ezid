@@ -59,8 +59,12 @@ def mint_identifer(base_url, user_name, password, shoulder, data):
 
     return status
 
-def create_identifer(base_url, user_name, password, identifier, data):
-    url = f'{base_url}/id/{identifier}'
+def create_identifer(base_url, user_name, password, identifier, data, update_if_exists=False):
+    if update_if_exists:
+        url = f'{base_url}/id/{identifier}?update_if_exists=yes'
+    else:
+        url = f'{base_url}/id/{identifier}'
+        
     http_success, status_code, text, err_msg = http_request('put', url, user_name, password, data)
     
     id_created = None
