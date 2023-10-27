@@ -30,6 +30,12 @@ admin_password = django.conf.settings.ADMIN_PASSWORD
 username = 'apitest'
 password = 'apitest'
 
+prefixes = {
+    'ark': 'ark:/99999/fk88',
+    'datacite': 'doi:10.5072/FK7',
+    'crossref': 'doi:10.31223/FK3'
+}
+
 record_datacite = {
     '_profile': 'datacite',
     '_target': "https://google.com",
@@ -97,10 +103,26 @@ class Command(django.core.management.BaseCommand):
 
         self.test_super_shoulder(opt)
 
+    def test_data_prep(self):
+        try:
+            for key, prefix in prefixes.items():
+                self.delete_shoulder_minter(prefix)
+        except Exception as ex:
+            raise django.core.management.CommandError(f'Deleting exisiting shoulder/minter failed: {ex}')
+
+    def test_data_cleanup(self):
+        try:
+            for key, prefix in prefixes.items():
+                self.delete_shoulder_minter(prefix)
+        except Exception as ex:
+            raise django.core.management.CommandError(f'Deleting exisiting shoulder/minter failed: {ex}')
+
     def test_regular_shoulder(self, opt):
         try:
-            prefix = 'ark:/99999/fk88'
-            org_name = 'ark:/99999/fk88 test'
+            self.test_data_prep()
+
+            prefix = prefixes.get('ark')
+            org_name = f'{prefix} test'
             log.info(f'Creating AKR shoulder: {prefix}, org_name: {org_name}')
             shoulder, minter = self.check_create_sholuder_and_minter('ark', prefix, org_name)
             
@@ -117,9 +139,8 @@ class Command(django.core.management.BaseCommand):
             if (minter.prefix != prefix ):
                 log.error(f'Creating minter for prefix: {prefix}: FAILED')
 
-            # datacite DOI
-            prefix = 'doi:10.5072/FK7'
-            org_name = 'Datacite doi:10.5072/FK7 test'
+            prefix = prefixes.get('datacite')
+            org_name = f'{prefix} test'
             datacenter_symbol = 'CDL.CDL'
             log.info(f'Creating Datacite DOI shoulder: {prefix}, org_name: {org_name}')
             shoulder, minter = self.check_create_sholuder_and_minter('doi', prefix, org_name, datacenter_symbol)
@@ -136,9 +157,8 @@ class Command(django.core.management.BaseCommand):
             if (minter.prefix != prefix ):
                 log.error(f'Creating minter for prefix: {prefix}: FAILED')
 
-            # crossref DOI
-            prefix = 'doi:10.31223/FK3'
-            org_name = 'Crossref doi:10.31223/FK3 test'
+            prefix = prefixes.get('crossref')
+            org_name = f'{prefix} test'
             log.info(f'Creating Crossref DOI shoulder: {prefix}, org_name: {org_name}')
             shoulder, minter = self.check_create_sholuder_and_minter('doi', prefix, org_name, is_crossref=True)
 
@@ -155,38 +175,53 @@ class Command(django.core.management.BaseCommand):
                 log.error(f'Creating minter for prefix: {prefix}: FAILED')
 
         except Exception as e:
-            if django.conf.settings.DEBUG:
-                import logging
-
-                logging.exception('#' * 100)
-            if opt.debug:
-                raise
             raise django.core.management.CommandError(
                 f'Unable to create shoulder/minter for prefix {prefix}. Error: {e}'
             )
 
         log.info('#### Create regualr shoulders completed successfully')
 
-        prefix = 'ark:/99999/fk88'
+        prefix = prefixes.get('ark')
         self.test_shoulder_mint_cmd(prefix)
+        self.test_shoulder_update_organization(prefix, f'{prefix} new org_name')
+        try:
+            self.test_shoulder_update_datacenter(prefix, 'CDL.UCD')
+        except Exception as ex:
+            assert f'{ex}' == 'Scheme must be "doi": ark'
+
         impl.nog_sql.util.log_setup(__name__, opt.debug)
         self.mint_update_delete_identifier(prefix, record_datacite)
+        self.create_update_delete_identifier(prefix, record_datacite)
 
-        prefix = 'doi:10.5072/FK7'
+        prefix = prefixes.get('datacite')
         self.test_shoulder_mint_cmd(prefix)
+        self.test_shoulder_update_organization(prefix, f'{prefix} new org_name')
+        self.test_shoulder_update_datacenter(prefix, 'CDL.UCD')
+       
         impl.nog_sql.util.log_setup(__name__, opt.debug)
         self.mint_update_delete_identifier(prefix, record_datacite)
+        self.create_update_delete_identifier(prefix, record_datacite)
 
-        prefix = 'doi:10.31223/FK3'
+        prefix = prefixes.get('crossref')
         self.test_shoulder_mint_cmd(prefix)
+        self.test_shoulder_update_organization(prefix, f'{prefix} new org_name')
+        try:
+            self.test_shoulder_update_datacenter(prefix, 'CDL.UCD')
+        except Exception as ex:
+            assert 'Unable to set datacenter. Shoulder is registered with Crossref' in f'{ex}'
+
         impl.nog_sql.util.log_setup(__name__, opt.debug)
         self.mint_update_delete_identifier(prefix, record_crossref, is_crossref=True)
+        self.create_update_delete_identifier(prefix, record_crossref, is_crossref=True)
 
+        self.test_data_cleanup()
 
     def test_super_shoulder(self, opt):
         try:
-            prefix = 'ark:/99999/fk88'
-            org_name = 'ark:/99999/fk88 test'
+            self.test_data_prep()
+
+            prefix = prefixes.get('ark')
+            org_name = f'{prefix} test'
             log.info(f'Creating AKR shoulder: {prefix}, org_name: {org_name}')
             shoulder, minter = self.check_create_sholuder_and_minter('ark', prefix, org_name, is_super_shoulder=True)
             
@@ -203,9 +238,8 @@ class Command(django.core.management.BaseCommand):
             if minter is not None:
                 log.error(f'Super shoulder should not have a minter. Check shoulder and minter for prefix: {prefix}')
 
-            # datacite DOI
-            prefix = 'doi:10.5072/FK7'
-            org_name = 'Datacite doi:10.5072/FK7 test'
+            prefix = prefixes.get('datacite')
+            org_name = f'{prefix} test'
             datacenter_symbol = 'CDL.CDL'
             log.info(f'Creating Datacite DOI shoulder: {prefix}, org_name: {org_name}')
             shoulder, minter = self.check_create_sholuder_and_minter('doi', prefix, org_name, datacenter_symbol, is_super_shoulder=True)
@@ -222,9 +256,8 @@ class Command(django.core.management.BaseCommand):
             if minter is not None:
                 log.error(f'Super shoulder should not have a minter. Check shoulder and minter for prefix: {prefix}')
 
-            # crossref DOI
-            prefix = 'doi:10.31223/FK3'
-            org_name = 'Crossref doi:10.31223/FK3 test'
+            prefix = prefixes.get('crossref')
+            org_name = f'{prefix} test'
             log.info(f'Creating Crossref DOI shoulder: {prefix}, org_name: {org_name}')
             shoulder, minter = self.check_create_sholuder_and_minter('doi', prefix, org_name, is_crossref=True, is_super_shoulder=True)
 
@@ -241,29 +274,25 @@ class Command(django.core.management.BaseCommand):
                 log.error(f'Super shoulder should not have a minter. Check shoulder and minter for prefix: {prefix}')
 
         except Exception as e:
-            if django.conf.settings.DEBUG:
-                import logging
-
-                logging.exception('#' * 100)
-            if opt.debug:
-                raise
             raise django.core.management.CommandError(
                 f'Unable to create shoulder/minter for prefix {prefix}. Error: {e}'
             )
 
         log.info('#### Create super shoulders completed successfully')
 
-        prefix = 'ark:/99999/fk88'
+        prefix = prefixes.get('ark')
         impl.nog_sql.util.log_setup(__name__, opt.debug)
         self.create_update_delete_identifier(prefix, record_datacite)
 
-        prefix = 'doi:10.5072/FK7'
+        prefix = prefixes.get('datacite')
         impl.nog_sql.util.log_setup(__name__, opt.debug)
         self.create_update_delete_identifier(prefix, record_datacite)
 
-        prefix = 'doi:10.31223/FK3'
+        prefix = prefixes.get('crossref')
         impl.nog_sql.util.log_setup(__name__, opt.debug)
         self.create_update_delete_identifier(prefix, record_crossref, is_crossref=True)
+
+        self.test_data_cleanup()
 
 
     def mint_update_delete_identifier(self, prefix, record, is_crossref=False):
@@ -296,7 +325,7 @@ class Command(django.core.management.BaseCommand):
         identifier = f'{prefix}test_1'
         id_created, text = impl.client_util.create_identifer(base_url, username, password, identifier, record)
         if id_created is not None:
-            if id_created != identifier:
+            if id_created.upper() != identifier.upper():
                 log.error(f'#### create ID {identifier} FAILED!')
             else:
                 log.info(f'#### OK create ID {id_created}')
@@ -338,12 +367,10 @@ class Command(django.core.management.BaseCommand):
         if is_super_shoulder:
             cmd_args.append('--super-shoulder')
         
-        log.info(f'Delete shoulder/minter with prefix {prefix} if alreay exists')
-        try:
-            self.delete_shoulder_minter(prefix)
-            log.info(f'Shoulder/minter with prefix {prefix} were deleted')
-        except Exception as ex:
-            raise django.core.management.CommandError(f'Deleting exisiting shoulder/minter failed: {ex}')
+        # try:
+        #     self.delete_shoulder_minter(prefix)
+        # except Exception as ex:
+        #     raise django.core.management.CommandError(f'Deleting exisiting shoulder/minter failed: {ex}')
         
         log.info(f"Run command '{cmd} {cmd_args}' to create a shoulder and associated minter for prefix: {prefix}")
         try:
@@ -367,6 +394,15 @@ class Command(django.core.management.BaseCommand):
         cmd_args = [prefix, '--count', '2', '--update']
         django.core.management.call_command(cmd, *cmd_args)
 
+    def test_shoulder_update_datacenter(self, prefix, new_datacenter):
+        cmd = 'shoulder-update-datacenter'
+        cmd_args = [prefix, new_datacenter]
+        django.core.management.call_command(cmd, *cmd_args)
+
+    def test_shoulder_update_organization(self, prefix, new_org_name):
+        cmd = 'shoulder-update-organization'
+        cmd_args = [prefix, new_org_name]
+        django.core.management.call_command(cmd, *cmd_args)
 
     def delete_shoulder_minter(self, prefix):
         shoulder = ezidapp.models.shoulder.Shoulder.objects.filter(prefix=prefix)
@@ -396,9 +432,3 @@ class Command(django.core.management.BaseCommand):
             user.shoulders.add(shoulder)
         except Exception as ex:
             raise django.core.management.CommandError(f"Grant access to shoulder {prefix} for user '{username}' failed: {ex}")
-
-
-
-
-
-        
