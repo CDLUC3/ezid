@@ -88,6 +88,18 @@ The script takes two optional arguments:
 ```
 $ python manage.py migrate-minters-to-mysql.py --dry-run --output-file bdb_minters_<timestamp>.json
 ```
+Review the output and address issues if needed.
+```
+ezidapp.management.commands.migrate-minters-to-mysql INFO     migrate-minters-to-mysql - Total number of shoulders: 566
+ezidapp.management.commands.migrate-minters-to-mysql INFO     migrate-minters-to-mysql - Shoulders with unspecified minters: 36
+ezidapp.management.commands.migrate-minters-to-mysql INFO     migrate-minters-to-mysql - Minters with BDB file: 430
+ezidapp.management.commands.migrate-minters-to-mysql INFO     migrate-minters-to-mysql - Minters without BDB file: 100
+ezidapp.management.commands.migrate-minters-to-mysql INFO     migrate-minters-to-mysql - Minters with missing required keys: 0
+ezidapp.management.commands.migrate-minters-to-mysql INFO     migrate-minters-to-mysql - Minter validation errors: 0
+ezidapp.management.commands.migrate-minters-to-mysql INFO     migrate-minters-to-mysql - Dry run without updating MySQL: yes
+ezidapp.management.commands.migrate-minters-to-mysql INFO     migrate-minters-to-mysql - JSON minters file: None
+ezidapp.management.commands.migrate-minters-to-mysql INFO     migrate-minters-to-mysql - Completed successfully
+```
 
 #### 3.2 Perform BDB minters data migration
 ```
