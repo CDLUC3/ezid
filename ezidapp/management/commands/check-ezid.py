@@ -5,8 +5,10 @@
 are referencing non-existing minters.
 """
 
+import os
 import argparse
 import logging
+import socket
 
 import django.conf
 import django.contrib.auth.models
@@ -73,6 +75,17 @@ queueType = {
     'search': ezidapp.models.async_queue.SearchIndexerQueue
 }
 
+testsets = {
+    '1': 'mint, create, update and delete IDs on exisiting shoulders',
+    '2': 'create new shoulders and mint, create, update and delete IDs on newly created shoulders',
+    '3': 'combine test 1 and 2'
+}
+
+if 'HOSTNAME' in os.environ:
+    HOSTNAME = os.environ['HOSTNAME']
+else:
+    HOSTNAME = socket.gethostname()
+
 class Command(django.core.management.BaseCommand):
     help = __doc__
 
@@ -81,7 +94,13 @@ class Command(django.core.management.BaseCommand):
         self.opt = None
 
     def add_arguments(self, parser):
-        # Misc
+        parser.add_argument(
+            '--test-level',
+            type=int, 
+            choices=range(1, 4),
+            required=True,
+            help=f"Setup test level; 1={testsets.get('1')}, 2={testsets.get('2')}, 3={testsets.get('3')}",
+        )
         parser.add_argument(
             '--debug',
             action='store_true',
@@ -92,18 +111,29 @@ class Command(django.core.management.BaseCommand):
         self.opt = opt = argparse.Namespace(**opt)
         impl.nog_sql.util.log_setup(__name__, opt.debug)
 
+        test_level  = str(opt.test_level)
+        if test_level == '3':
+            testset = f"combine test 1 & 2: \ntest1: {testsets.get('1')}\ntest2: {testsets.get('2')}"
+        else:
+            testset = testsets.get(test_level)
+
         log.info('Testing EZID ...')
-        log.info('You can run this command on EZID-Dev or Stg but not PRD.')
-        on_prd  = input('Are you on EZID-PRD server? Yes/No\n')
-        if on_prd.upper() == 'YES':
-            print('You can only run this command on EZID-Dev or EZID-Stg server. Abort!')
+        log.info(f"Running testset {test_level}: {testset}")
+        
+        print(f'You are running this command on host: {HOSTNAME}')
+        on_prd  = input('Do you want to proceed? Yes/No\n')
+        if on_prd.upper() == 'NO':
+            print('Abort!')
             exit()
 
         self.test_existing_shoulder(opt)
-       
-        self.test_regular_shoulder(opt)
 
-        self.test_super_shoulder(opt)
+        if test_level in ['1', '3']:
+            self.test_existing_shoulder(opt)
+       
+        if test_level in ['2', '3']:
+            self.test_regular_shoulder(opt)
+            self.test_super_shoulder(opt)
 
     def test_data_prep(self):
         try:
