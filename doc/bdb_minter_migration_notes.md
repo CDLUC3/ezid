@@ -11,7 +11,7 @@ python manage.py shoulder-check-minters
 Review the output and fix issues if needed.
 
 1.2 Run the `diag-create-missing-minters.py` command to create missing minters.
-````
+```
 python manage.py diag-create-missing-minters.py
 ```
 
@@ -67,7 +67,6 @@ The script takes two optional arguments:
 * --output-file/-o: save BDB datasets in an output file in JSON format
 
 Sample command
-
 ```
 $ python manage.py migrate-minters-to-mysql.py --dry-run --output-file bdb_minters_<timestamp>.json
 ```
