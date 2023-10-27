@@ -32,30 +32,48 @@ tar -cvfz minters.<dev/stg/prd>.<timestamp>.tar.gz minters
 ```
 ### 4. Backup the EZID RDS database
 
-### 5. Update/Deploy new version of EZID code
+## Migration steps
+
+### 1. Update/Deploy new version of EZID code
 CDL note:
-* Deploy the new release tag with the "disable the EZID service and background jobs option"
+* Deploy the new release tag with settings to disable the EZID service and background jobs
   * Make sure EZID is deployed on the specified tag
   * Make sure EZID and background jobs are not started
+
+Puppet setting options:
 ```
 ensure_service: stopped
 project_revision: <new_release_tag>
 background_jobs_active: false
 ```
 
-## Create the minter table in the EZID database
+### 2. Create the minter table in the EZID database
 
-### 1. Modify the EZID settings to use the eziddba account for data model migration
-### 2. Make sure the required data model and mingration files are in place
+#### 2.1 Make sure the required data model and migration files are in place
 * data model: minter.py
 * migration file: 0004_minter.py
 
-### 3. Run the "migrate" migrate command to create the `minter` table:
+#### 2.2 Modify the EZID settings `settings/settings.py` to use the `eziddba` account for data model migration
+  
+```
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': hostname,
+        'NAME': 'ezid',
+        'USER': 'eziddba',
+        'PASSWORD': 'eziddba_password',
+```
+
+#### 2.3 Run the "migrate" migrate command to create the `minter` table
 ```
 python manage.py migrate
 ```
 
-## Perform BDB minters data migration
+#### 2.4 Verify the minter table in MySQL database
+Verify that the `minter` table has been created in the `ezid` database with the desired table schema.
+
+### 3. Perform BDB minters data migration
 
 Run the minter data migration script to convert the BDB minters to JSON objects and load them to the minter table in MySQL.
 
@@ -66,17 +84,30 @@ The script takes two optional arguments:
 * --dry-run/-r: dry run without updating the minter table in the EZID database
 * --output-file/-o: save BDB datasets in an output file in JSON format
 
-Sample command
+#### 3.1 Dry run and output minters file for review
 ```
 $ python manage.py migrate-minters-to-mysql.py --dry-run --output-file bdb_minters_<timestamp>.json
 ```
 
-## Disable the Berkeley minter database 
+#### 3.2 Perform BDB minters data migration
+```
+$ python manage.py migrate-minters-to-mysql.py --dry-run --output-file bdb_minters_<timestamp>.json
+```
+
+#### 3.4 Check data migration results
+The `minter` table in the MySQL `ezid` database should have been populated with BDB minter datasets.
+* check the total entries: should match BDB minters count
+* the minter.state field for each entry should be in JSON format with minter required data fields
+
+#### 3.5 Disable the Berkeley minter database 
 
 * Rename the Berkeley minter folder
 ```
 mv minters minters.bdb_sql_migration.<timestamp>
 ```
+
+#### 3.6 Verify minter
+run the `shoulder-mint` command to verify minter works as expected.
 
 ## Re-start EZID and background jobs
 Steps:
