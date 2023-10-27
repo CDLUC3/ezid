@@ -53,7 +53,7 @@ background_jobs_active: false
 * data model: minter.py
 * migration file: 0004_minter.py
 
-#### 2.2 Modify the EZID settings `settings/settings.py` to use the `eziddba` account for data model migration
+#### 2.2 Modify the EZID settings `settings/settings.py` to use the dba account for data model migration
   
 ```
 DATABASES = {
@@ -61,7 +61,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'HOST': hostname,
         'NAME': 'ezid',
-        'USER': 'eziddba',
+        'USER': 'eziddba_account',
         'PASSWORD': 'eziddba_password',
 ```
 
