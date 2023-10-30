@@ -122,14 +122,12 @@ class Command(django.core.management.BaseCommand):
         
         print(f'You are running this command on host: {HOSTNAME}')
         on_prd  = input('Do you want to proceed? Yes/No\n')
-        if on_prd.upper() == 'NO':
+        if on_prd.upper() != 'YES':
             print('Abort!')
             exit()
 
-        self.test_existing_shoulder(opt)
-
         if test_level in ['1', '3']:
-            self.test_existing_shoulder(opt)
+            self.test_existing_shoulder()
        
         if test_level in ['2', '3']:
             self.test_regular_shoulder(opt)
@@ -149,7 +147,7 @@ class Command(django.core.management.BaseCommand):
         except Exception as ex:
             raise django.core.management.CommandError(f'Deleting exisiting shoulder/minter failed: {ex}')
 
-    def test_existing_shoulder(self, opt):
+    def test_existing_shoulder(self):
         prefix = django.conf.settings.SHOULDERS_ARK_TEST
         if prefix:
             self.mint_update_delete_identifier(prefix, record_datacite)
