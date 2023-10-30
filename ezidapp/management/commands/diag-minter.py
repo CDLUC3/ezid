@@ -17,9 +17,9 @@
 
   E.g.: ./manage.py diag-minter dump ark:/99999/fk4
 
-- dump-full: Dump arbitrary BerkeleyDB to HJSON.
+- dump-full: Dump all minters to a JSON file.
 
-  E.g.: ./manage.py diag-minter dump-full path/to/database.xyz
+  E.g.: ./manage.py diag-minter dump-full path/to/minters.json
 
 
 - mint: Mint any number of identifiers with a given minter. By default, the minter state
@@ -29,13 +29,19 @@
   This command is intended mainly for testing an existing minter and only provides
   identifiers going forward from the minter's current state. See also: 'slice'
 
-  E.g.: ./manage.py diag-minter mint doi:10.123/fk4 --update
+  E.g.: ./manage.py diag-minter mint doi:10.123/fk4 --count 2 --update
 
-- forward: "Fast forward" all minters by a given number of identifiers. This is intended
-  for moving minters to a state in which they will not repeat identifiers minted by
-  another instance of EZID. - What is the use case?
+  Note: this is equivalent to the 'shoulder-mint' command:
+  ./manage.py shoulder-mint doi:10.123/fk4 --count 2 --update
 
-  E.g.: ./manage.py diag-minter forward --count 1000000
+- forward: "Fast forward" all minters by a given count. By default, the minter state
+  is not updated to reflect the minted identifiers, so the result can be considered as
+  a "preview" of the identifiers the minter will yield when next used by EZID.
+
+  Similar to the 'mint',  this command  is intended mainly for testing existing minters 
+  and only provides identifiers going forward from the minter's current state.
+
+  E.g.: ./manage.py diag-minter forward --count 2 --update
 
 - slice: Mint a "slice" of identifiers with a minter that is created on the fly and
   destroyed after minting. NOT YET implemented for MySQL version minter.
@@ -94,12 +100,12 @@ class Command(django.core.management.BaseCommand):
         parser.add_argument(
             "prefix", metavar="prefix", nargs='?', help='Full prefix/shoulder. E.g., ark:/99999/fk4'
         )
-        # For 'mint'
+        # For 'mint' and forward
         parser.add_argument(
             "--update",
             "-u",
             action="store_true",
-            help="""For use with 'mint': After minting, update the starting point of the
+            help="""For use with 'mint' and 'forward': After minting, update the starting point of the
             minter to the next new identifier. Without this switch, minting only
             provides a 'preview' of the sequence of identifiers that the minter will
             yield in regular use""",
@@ -142,6 +148,16 @@ class Command(django.core.management.BaseCommand):
         if opt.action_str == 'list':
             opt.action_str = 'list_minter'
         opt.action_str = opt.action_str.replace('-', '_')
+
+        self.id_str = 'identifer'
+        if self.opt.count> 1:
+            self.id_str = f'{self.id_str}s'
+        
+        update_str = 'update minter state after minting'
+        if self.opt.update:
+            self.update_str = f'and {update_str}'
+        else:
+            self.update_str =  f'without {update_str}'
 
         try:
             return getattr(self, opt.action_str)()
@@ -211,6 +227,9 @@ class Command(django.core.management.BaseCommand):
             raise django.core.management.CommandError(
                 'A prefix is required for this command'
             )
+  
+        log.info(f"Mint {self.opt.count} {self.id_str} on minter {self.opt.prefix} {self.update_str}")
+
         for i, id_str in enumerate(
             impl.nog_sql.ezid_minter.mint_by_prefix(
                 self.opt.prefix,
@@ -223,13 +242,16 @@ class Command(django.core.management.BaseCommand):
     def forward(self):
         for minter in ezidapp.models.minter.Minter.objects.all().order_by('prefix'):
             prefix = minter.prefix
-            log.info(f"Fast-Forwarding minter {prefix} by {self.opt.count}")
-            id_str = '<start>'
-            for id_str in impl.nog_sql.ezid_minter.mint_by_prefix(
-                prefix,
-                self.opt.count,
-                dry_run=False,
+            log.info(f"Fast-Forwarding minter {prefix} by {self.opt.count} {self.update_str}")
+            id_str = '<start>' 
+
+            for i, id_str in enumerate(
+                impl.nog_sql.ezid_minter.mint_by_prefix(
+                    prefix,
+                    self.opt.count,
+                    dry_run=not self.opt.update,
+                )
             ):
-                pass
-            log.info(f'Last minted: {id_str}')
+                log.info("{: 5d}: {}".format(i + 1, id_str))
+
 
