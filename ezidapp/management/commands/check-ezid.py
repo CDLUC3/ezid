@@ -228,7 +228,11 @@ class Command(django.core.management.BaseCommand):
         log.info('#### Create regualr shoulders completed successfully')
 
         prefix = test_new_prefixes.get('ark')
+        log.info(f'Minting 2 identifiers on minter with prefix: {prefix}')
         self.test_shoulder_mint_cmd(prefix)
+
+        impl.nog_sql.util.log_setup(__name__, opt.debug)
+        log.info(f'Updating organization for shoulder: {prefix}')
         self.test_shoulder_update_organization(prefix, f'{prefix} new org_name')
         try:
             self.test_shoulder_update_datacenter(prefix, 'CDL.UCD')
@@ -240,8 +244,15 @@ class Command(django.core.management.BaseCommand):
         self.create_update_delete_identifier(prefix, record_datacite)
 
         prefix = test_new_prefixes.get('datacite')
+        log.info(f'Minting 2 identifiers on minter with prefix: {prefix}')
         self.test_shoulder_mint_cmd(prefix)
+
+        impl.nog_sql.util.log_setup(__name__, opt.debug)
+        log.info(f'Updating organization name for shoulder: {prefix}')
         self.test_shoulder_update_organization(prefix, f'{prefix} new org_name')
+
+        impl.nog_sql.util.log_setup(__name__, opt.debug)
+        log.info(f'Updating datacenter for shoulder: {prefix}')
         self.test_shoulder_update_datacenter(prefix, 'CDL.UCD')
        
         impl.nog_sql.util.log_setup(__name__, opt.debug)
@@ -249,7 +260,11 @@ class Command(django.core.management.BaseCommand):
         self.create_update_delete_identifier(prefix, record_datacite)
 
         prefix = test_new_prefixes.get('crossref')
+        log.info(f'Minting 2 identifiers on minter with prefix: {prefix}')
         self.test_shoulder_mint_cmd(prefix)
+
+        impl.nog_sql.util.log_setup(__name__, opt.debug)
+        log.info(f'Updating organization name for shoulder: {prefix}')
         self.test_shoulder_update_organization(prefix, f'{prefix} new org_name')
         try:
             self.test_shoulder_update_datacenter(prefix, 'CDL.UCD')
