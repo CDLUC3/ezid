@@ -61,7 +61,7 @@ class Command(django.core.management.BaseCommand):
                 'Scheme must be "ark" or "doi": {}'.format(scheme_str)
             )
 
-        namespace_str = '{}:{}'.format(scheme_str, full_shoulder.upper())
+        namespace_str = '{}:{}'.format(scheme_str, full_shoulder)
 
         try:
             shoulder_model = ezidapp.models.shoulder.Shoulder.objects.get(prefix=namespace_str)
