@@ -88,11 +88,7 @@ def create_identifer(base_url, user_name, password, identifier, data, update_if_
 def update_identifier(base_url, user_name, password, id, data):
     url = f"{base_url}/id/{id}"
     http_success, status_code, text, err_msg = http_request('post', url, user_name, password, data)
-    if http_success and status_code == 200:
-        print(f"ok update identifier - {id} updated with new data: {data}")
-    else:
-        print(f"ERROR update identifier - update {id} failed - status_code: {status_code}: {text}: {err_msg}")
-
+    return http_success, status_code, text, err_msg
 
 def delete_identifier(base_url, user_name, password, id):
     url = f'{base_url}/id/{id}'
@@ -115,9 +111,6 @@ def delete_identifier(base_url, user_name, password, id):
             status_code = e.response.status_code
         err_msg = "HTTPError: " + str(e)[:200]
     
-    if success and status_code == 200:
-        print(f"ok delete identifier - {id} ")
-    else:
-        print(f"ERROR delete identifier - update {id} failed - status_code: {status_code}: {text}: {err_msg}")
+    return success, status_code, text, err_msg
 
 
