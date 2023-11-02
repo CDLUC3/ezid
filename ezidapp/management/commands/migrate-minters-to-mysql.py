@@ -114,9 +114,8 @@ class Command(django.core.management.BaseCommand):
                 unspecified_count += 1
                 continue
 
-            naan_str, shoulder_str = re.split(r'[/:.]', s.minter)[-2:]
             try:
-                bdb_path = impl.nog_bdb.bdb._get_bdb_path(naan_str, shoulder_str, root_path=None)
+                bdb_path = impl.nog_bdb.bdb.get_bdb_path_by_shoulder_model(s)
             except impl.nog_sql.exc.MinterError as e:
                 log.info(f'get_bdb_path failed: prefix="{s.prefix}" name="{s.name}"')
                 log.warning(f"error msg: {e}")
@@ -149,7 +148,7 @@ class Command(django.core.management.BaseCommand):
         log.info(f'Total number of shoulders: {total_count}')
         log.info(f'Shoulders with unspecified minters: {unspecified_count}')
         log.info(f'Minters with BDB file: {minter_count}')
-        log.info(f'Minters without BDB file: {missing_bdb_count}')
+        log.info(f'Minters missing BDB file: {missing_bdb_count}')
         log.info(f'Minters with missing required keys: {missing_key_count}')
         log.info(f'Minter validation errors: {validation_err_count}')
         log.info(f'Dry run without updating MySQL: {"yes" if dry_run else "no"}')

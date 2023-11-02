@@ -92,9 +92,8 @@ class Command(django.core.management.BaseCommand):
                 unspecified_count += 1
                 continue
 
-            naan_str, shoulder_str = re.split(r'[/:.]', s.minter)[-2:]
             # noinspection PyProtectedMember
-            bdb_path = impl.nog_bdb.bdb._get_bdb_path(naan_str, shoulder_str, root_path=None)
+            bdb_path = impl.nog_bdb.bdb.get_bdb_path_by_shoulder_model(s)
             if pathlib.Path(bdb_path).exists():
                 continue
 
@@ -103,7 +102,7 @@ class Command(django.core.management.BaseCommand):
             missing_count += 1
 
             try:
-                impl.nog_bdb.minter.create_minter_database(s.prefix, shoulder_str)
+                impl.nog_bdb.minter.create_minter_database(s.prefix)
             except Exception as e:
                 log.warning(
                     'Unable to create missing minter. prefix="{}" name="{}". Error: {}'.format(
