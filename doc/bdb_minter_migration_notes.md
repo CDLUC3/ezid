@@ -10,9 +10,9 @@ python manage.py shoulder-check-minters
 ```
 Review the output and fix issues if needed.
 - If there are "Next identifier to be minted is already in the database (outdated minter)" errors
-  - a. identifer the outdate minter 
-  - b. run the `shoulder-mint` command to move the minter forward one step
-  - c. re-run the `shoulder-check-minters` command and review output
+  - a. identifer the outdated minter 
+  - b. run the `shoulder-mint` command to move the minter one count forward
+  - c. re-run the `shoulder-check-minters` command and review the output
   - d. repeat step b-c until there are no more errors
 
 Sample output:
