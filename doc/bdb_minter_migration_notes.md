@@ -9,6 +9,25 @@
 python manage.py shoulder-check-minters
 ```
 Review the output and fix issues if needed.
+- If there are "Next identifier to be minted is already in the database (outdated minter)" errors
+  - a. identifer the outdate minter 
+  - b. run the `shoulder-mint` command to move the minter forward one step
+  - c. re-run the `shoulder-check-minters` command and review output
+  - d. repeat step b-c until there are no more errors
+
+Sample output:
+```
+ezidapp.management.commands.shoulder-check-minters INFO     shoulder-check-minters - --------------------------------------------------
+ezidapp.management.commands.shoulder-check-minters INFO     shoulder-check-minters - Check completed
+ezidapp.management.commands.shoulder-check-minters INFO     shoulder-check-minters - Total shoulders checked: 583
+ezidapp.management.commands.shoulder-check-minters ERROR    shoulder-check-minters - Errors:
+ezidapp.management.commands.shoulder-check-minters ERROR    shoulder-check-minters -    1 shoulders have error: Next identifier to be minted is already in the database (outdated minter) (active=yes, supershoulder=no, test=no)
+
+```
+Sample error:
+```
+ezidapp.management.commands.shoulder-check-minters ERROR    shoulder-check-minters - doi:10.48321/D1      Check failed: Next identifier to be minted is already in the database (outdated minter): Existing identifier: "doi:10.48321/D1X31R" "is in Store and is in Search" (active=yes, supershoulder=no, test=no)
+```
 
 1.2 Run the `diag-create-missing-minters.py` command to create missing minters.
 ```
