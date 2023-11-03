@@ -92,9 +92,8 @@ class Command(django.core.management.BaseCommand):
                 unspecified_count += 1
                 continue
 
-            naan_str, shoulder_str = re.split(r'[/:.]', s.minter)[-2:]
             # noinspection PyProtectedMember
-            bdb_path = impl.nog.bdb._get_bdb_path(naan_str, shoulder_str, root_path=None)
+            bdb_path = impl.nog.bdb.get_bdb_path_by_shoulder_model(s)
             if pathlib.Path(bdb_path).exists():
                 continue
 
