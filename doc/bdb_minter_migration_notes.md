@@ -43,10 +43,13 @@ python manage.py diag-create-missing-minters-tmp-fix.py
 
 * 1.3 Re-run the `shoulder-check-minters` command to check the minters
 
-### 2. Bring up the EZID-Down server
+### 2. Communicate EZID service downtime to EZID users
+Communicate EZID service downtime to EZID users.
 
+### 3. Bring up the EZID-Down server
+Bring up the EZID-Down server to cutoff access to EZID and let user know about the system downtime.
 
-### 3. Stop the EZID service and background jobs
+### 4. Stop the EZID service and background jobs
 CDL note:
 * Disable Nagios alerts
 * Deploy the current release tag with settings to disable the EZID service and background jobs
@@ -59,14 +62,14 @@ ensure_service: stopped
 project_revision: <current_release_tag>
 background_jobs_active: false
 ```
-### 4. Backup the BDB minters folder
+### 5. Backup the BDB minters folder
 Backup the BDB minters folder and save an extra copy of the backup file on a different device.
 ```
 tar -cvfz minters.<dev/stg/prd>.<timestamp>.tar.gz minters
 
 scp minters.<dev/stg/prd>.<timestamp>.tar.gz <target_source/target_dir>
 ```
-### 5. Backup the EZID RDS database
+### 6. Backup the EZID RDS database
 
 ## Migration steps
 
@@ -230,7 +233,7 @@ project_revision: <new_release_tag>
 Shutdown the EZID-DWON server to redirect requests to the ezid service.
 
 ## Communicate completion of migration
-Communicate once work is completed and validated
+Post completion message to the following Slack channels:
 * EZID-dev
 * uc3-maint
   
