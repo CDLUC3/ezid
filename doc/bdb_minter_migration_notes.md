@@ -201,8 +201,8 @@ phthon manage.py diag-minter forward --update
 * review test results
 
 ## Rollback steps
-Review minter data migration results. Any need to rollback migration work?
-* Yes: top here and proceed to rollback procedures
+Review minter migration results. Any unresolvable issues?
+* Yes: stop here and proceed to rollback procedures
 * No: proceed to next step
 
 ## Re-start EZID and background jobs
@@ -219,6 +219,18 @@ project_revision: <new_release_tag>
   * The `MINTERS_PATH` entry should have been commented out
 
 ## Perform post-migration checks
-
 1. Run the `verify_ezid_after_patching.py` script
-2. Run the regression tests command `python manage.py check-ezid` 
+2. Run the regression tests
+   * On EZID-Dev and EZID-Stg run the full test set
+     `python manage.py check-ezid --check-level 3`
+   * On EZID-Prd run the small test set
+     `python manage.py check-ezid --check-level 1`
+
+## Shutdown the EZID-DOWN server
+Shutdown the EZID-DWON server to redirect requests to the ezid service.
+
+## Communicate completion of migration
+Communicate once work is completed and validated
+* EZID-dev
+* uc3-maint
+  
