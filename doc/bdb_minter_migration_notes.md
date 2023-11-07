@@ -1,7 +1,7 @@
 # Berkeley DB minter migration notes
 
-## Pre-migraiton - Perform health checks
-Perform health checks at least two weeks before the prodcution migraiton to give you some time to resolve technical issues.
+## Pre-migration - Perform health checks
+Perform health checks at least two weeks before the prodcution migration to give you some time to resolve technical issues.
 
 ### 1. Perform instance health check
 - Perform a Disk Space check and make sure `/apps/ezid` has enough disk space for the migration
