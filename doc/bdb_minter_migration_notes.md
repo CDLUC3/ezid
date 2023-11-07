@@ -6,6 +6,8 @@ Perform health checks at least two weeks before the prodcution migraiton to give
 ### 1. Perform instance health check
 - Perform a Disk Space check and make sure `/apps/ezid` has enough disk space for the migration
   - requires 8MB disk space to store a bakup of the minters in `.tar.gz` format
+- Review EC2 metrics
+- Review RDS metrics
 
 ### 2. Perform EZID health check
 - Review EZID erros in log files (App, ELB, WAF)
