@@ -242,9 +242,9 @@ project_revision: <new_release_tag>
 1. Run the `verify_ezid_after_patching.py` script
 2. Run the regression tests
    * On EZID-Dev and EZID-Stg run the full test set
-     `python manage.py check-ezid --check-level 3`
+     `python manage.py check-ezid --test-level 3`
    * On EZID-Prd run the small test set
-     `python manage.py check-ezid --check-level 1`
+     `python manage.py check-ezid --test-level 1`
 
 ## Shutdown the EZID-DOWN server
 Shutdown the EZID-DWON server to redirect requests to the ezid service.
