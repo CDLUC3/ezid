@@ -64,9 +64,7 @@ python manage.py shoulder-check-minters | grep "Skipped" | wc -l
 ```
 
 ## Communicate EZID service downtime to EZID users
-Communicate EZID service downtime to EZID users
-- fdfd
-- On 
+Communicate EZID service downtime to internal and external users.
 
 ## Migration preparation steps
 ### 1. Verify EZID and background jobs are up and running
