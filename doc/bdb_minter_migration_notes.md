@@ -1,10 +1,18 @@
 # Berkeley DB minter migration notes
 
-## Preparation steps
-### 0. Perform a health check
+## Pre-migraiton - Perform health checks
+Perform health checks at least two weeks before the prodcution migraiton to give you some time to resolve technical issues.
+
+### 1. Perform instance health check
+- Perform a Disk Space check and make sure `/apps/ezid` has enough disk space for the migration
+  - requires 8MB disk space to store a bakup of the minters in `.tar.gz` format
+
+### 2. Perform EZID health check
+- Review EZID erros in log files (App, ELB, WAF)
+  - anything blocks the minter migraiton?
 - Verify EZID and background jobs are up and running
   
-### 1. Perform minter health check
+### 3. Perform minter health check
 
 * 1.1 Run the `shoulder-check-minters` command to check the minters.
 ```
@@ -42,7 +50,9 @@ ezidapp.management.commands.shoulder-check-minters ERROR    shoulder-check-minte
 
 * 1.2 Run the `diag-create-missing-minters-tmp-fix` command to create missing minters.
 
-Note: use this temporary fix as the original command `diag-create-missing-minters.py` does not work as expected. The original command will be replaced with a newer version after the BDB to MySQL minter migration.
+Note: 
+- backup the minters directory
+- use this temporary fix as the original command `diag-create-missing-minters.py` does not work as expected. The original command will be replaced with a newer version after the BDB to MySQL minter migration.
 
 ```
 python manage.py diag-create-missing-minters-tmp-fix
@@ -53,15 +63,20 @@ python manage.py diag-create-missing-minters-tmp-fix
 python manage.py shoulder-check-minters | grep "Skipped" | wc -l
 ```
 
-### 2. Communicate EZID service downtime to EZID users
-Communicate EZID service downtime to EZID users.
+## Communicate EZID service downtime to EZID users
+Communicate EZID service downtime to EZID users
+- fdfd
+- On 
 
-### 3. Bring up the EZID-Down server
+## Migration preparation steps
+### 1. Verify EZID and background jobs are up and running
+
+### 2. Bring up the EZID-Down server
 Bring up the EZID-Down server to cutoff access to EZID and let user know about the system downtime.
 
 TODO: Add link to downserver docs
 
-### 4. Stop the EZID service and background jobs
+### 3. Stop the EZID service and background jobs
 CDL note:
 * Disable Nagios alerts
 * Deploy the current release tag with settings to disable the EZID service and background jobs
@@ -76,14 +91,15 @@ ensure_service: stopped
 project_revision: <current_release_tag>
 background_jobs_active: false
 ```
-### 5. Backup the BDB minters folder
+### 4. Backup the BDB minters folder
 Back up the BDB minters folder and save an extra copy of the backup file on a different device.
 ```
 tar cvfz minters.<dev/stg/prd>.<timestamp>.tar.gz minters
 
 scp minters.<dev/stg/prd>.<timestamp>.tar.gz <target_source/target_dir>
 ```
-### 6. Backup the EZID RDS database
+### 5. Backup the EZID RDS database
+Stop, backup, restart the EZID RDS database.
 
 ## Migration steps
 
@@ -199,9 +215,11 @@ Run the `diag-minter` command to see if minters can produce identifiers and move
 ```
 python manage.py diag-minter mint ark:/99999/fk4
 
-python manage.py diag-minter mint ark:/99999/fk4 --count 2
+python manage.py diag-minter mint ark:/99999/fk4 --count 3
 
 python manage.py diag-minter mint ark:/99999/fk4 --count 2 --update
+
+python manage.py diag-minter mint ark:/99999/fk4 --count 2
 ```
 
 * Test on all minters:
