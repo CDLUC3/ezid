@@ -1,13 +1,20 @@
 # Berkeley DB minter migration notes
 
 ## Preparation steps
-
+### 0. Perform a health check
+- Verify EZID and background jobs are up and running
+  
 ### 1. Perform minter health check
 
 * 1.1 Run the `shoulder-check-minters` command to check the minters.
 ```
 python manage.py shoulder-check-minters
 ```
+
+```
+python manage.py shoulder-check-minters | grep "OK: Preview of next ID" | wc -l
+```
+
 Review the output and fix issues if needed.
 - If there are "Next identifier to be minted is already in the database (outdated minter)" errors
   - a. identifer the outdated minter 
@@ -33,21 +40,26 @@ ezidapp.management.commands.shoulder-check-minters ERROR    shoulder-check-minte
 
 ```
 
-* 1.2 Run the `diag-create-missing-minters-tmp-fix.py` command to create missing minters.
+* 1.2 Run the `diag-create-missing-minters-tmp-fix` command to create missing minters.
 
 Note: use this temporary fix as the original command `diag-create-missing-minters.py` does not work as expected. The original command will be replaced with a newer version after the BDB to MySQL minter migration.
 
 ```
-python manage.py diag-create-missing-minters-tmp-fix.py
+python manage.py diag-create-missing-minters-tmp-fix
 ```
 
 * 1.3 Re-run the `shoulder-check-minters` command to check the minters
+```
+python manage.py shoulder-check-minters | grep "Skipped" | wc -l
+```
 
 ### 2. Communicate EZID service downtime to EZID users
 Communicate EZID service downtime to EZID users.
 
 ### 3. Bring up the EZID-Down server
 Bring up the EZID-Down server to cutoff access to EZID and let user know about the system downtime.
+
+TODO: Add link to downserver docs
 
 ### 4. Stop the EZID service and background jobs
 CDL note:
@@ -56,6 +68,8 @@ CDL note:
   * Make sure the EZID code base is deployed on the specified tag
   * Make sure the EZID service and background jobs are not started
 
+- Note: Make sure service stays down. (TODO: confirm with Ashley that there are no puppet scripts that brings up the service).
+
 Puppet configuration `uc3-ezid-ui-<dev|stg|prd>.yaml` options:
 ```
 ensure_service: stopped
@@ -63,9 +77,9 @@ project_revision: <current_release_tag>
 background_jobs_active: false
 ```
 ### 5. Backup the BDB minters folder
-Backup the BDB minters folder and save an extra copy of the backup file on a different device.
+Back up the BDB minters folder and save an extra copy of the backup file on a different device.
 ```
-tar -cvfz minters.<dev/stg/prd>.<timestamp>.tar.gz minters
+tar cvfz minters.<dev/stg/prd>.<timestamp>.tar.gz minters
 
 scp minters.<dev/stg/prd>.<timestamp>.tar.gz <target_source/target_dir>
 ```
@@ -73,7 +87,7 @@ scp minters.<dev/stg/prd>.<timestamp>.tar.gz <target_source/target_dir>
 
 ## Migration steps
 
-### 1. Update/Deploy new version of EZID code
+### 1. Update/Deploy the new version of EZID code
 CDL note:
 * Deploy the new release tag with settings to disable the EZID service and background jobs
   * Make sure the EZID code base is deployed on the specified tag
@@ -93,9 +107,10 @@ background_jobs_active: false
 * migration file: 0004_minter.py
 
 #### 2.2 Modify the EZID settings
-Modify the EZID settings in file `settings/settings.py`:
-* a. to use the dba account for data model migration
-* b. to enable the `MINTERS_PATH` setting (remove the comment sign '#')
+Modify the EZID settings in the file `settings/settings.py`:
+* a. back up the current `settings.py` file 
+* b. to use the dba account for data model migration
+* c. to enable the `MINTERS_PATH` setting (remove the comment sign '#')
 
 ```
 DATABASES = {
@@ -109,7 +124,7 @@ DATABASES = {
 MINTERS_PATH = HOME_DIR / 'var' / 'minters'  # /apps/ezid/var/minters
 ```
 
-#### 2.3 Run the "migrate" migrate command to create the `minter` table
+#### 2.3 Run the "migrate" command to create the `minter` table
 ```
 python manage.py migrate
 ```
@@ -143,7 +158,7 @@ The script takes two optional arguments:
 
 #### 3.1 Dry run and output minters file for review
 ```
-$ python manage.py migrate-minters-to-mysql.py --dry-run --output-file bdb_minters_<timestamp>.json
+$ python manage.py migrate-minters-to-mysql --dry-run --output-file bdb_minters_<timestamp>.json
 ```
 Review the output and address issues if needed.
 ```
@@ -160,7 +175,7 @@ ezidapp.management.commands.migrate-minters-to-mysql INFO     migrate-minters-to
 
 #### 3.2 Perform BDB minters data migration
 ```
-$ python manage.py migrate-minters-to-mysql.py --output-file bdb_minters_<timestamp>.json
+$ python manage.py migrate-minters-to-mysql
 ```
 
 #### 3.3 Check data migration results
@@ -168,8 +183,9 @@ The `minter` table in the MySQL `ezid` database should have been populated with 
 * Check the total entries: should match BDB minters count
 * Check the minter.state field for each entry: they should be in JSON format with minter required data fields
 * Fix issues or move to the **Rollback Steps**
+* TODO: link the rollback procedure here
 
-#### 3.4 Disable the Berkeley minter database 
+#### 3.4 Disable the Berkeley Minter database 
 
 * Rename the Berkeley minter folder
 ```
@@ -177,36 +193,36 @@ mv minters minters.bdb_sql_migration.<timestamp>
 ```
 
 #### 3.5 Verify minter migration results
-Run the `diag-minter` command to see if minters can produce identifers and move to the next state
+Run the `diag-minter` command to see if minters can produce identifiers and move to the next state
 
 * Test on a specified minter
 ```
-phthon manage.py diag-minter mint ark:/99999/fk4
+python manage.py diag-minter mint ark:/99999/fk4
 
-phthon manage.py diag-minter mint ark:/99999/fk4 --count 2
+python manage.py diag-minter mint ark:/99999/fk4 --count 2
 
-phthon manage.py diag-minter mint ark:/99999/fk4 --count 2 --update
+python manage.py diag-minter mint ark:/99999/fk4 --count 2 --update
 ```
 
 * Test on all minters:
 ```
-phthon manage.py diag-minter forward 
+python manage.py diag-minter forward 
 
-phthon manage.py diag-minter forward --count 2
+python manage.py diag-minter forward --count 2
 
 # perform on all minters if needed
-phthon manage.py diag-minter forward --update  
+python manage.py diag-minter forward --update  
 ```
 
 #### Run EZID regression tests
 * start the EZID service (only EZID but not background jobs) 
-* run regression tests `python manage.py check-ezid`
-* review test results
+* run regression tests `python manage.py check-ezid --test-level 3`
+* Review test results
 
 ## Rollback steps
 Review minter migration results. Any unresolvable issues?
 * Yes: stop here and proceed to rollback procedures
-* No: proceed to next step
+* No: proceed to the next step
 
 ## Re-start EZID and background jobs
 1. Re-deploy the new release tag with the EZID and background jobs enabled
@@ -220,6 +236,7 @@ project_revision: <new_release_tag>
 2. Check the EZID settings.py file
   * The database configuration should be using the `ezid_readwrite` account and password now
   * The `MINTERS_PATH` entry should have been commented out
+  * Delete the `settings.py` backup file
 
 ## Perform post-migration checks
 1. Run the `verify_ezid_after_patching.py` script
