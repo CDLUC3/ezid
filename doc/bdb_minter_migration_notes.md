@@ -66,6 +66,11 @@ python manage.py diag-create-missing-minters-tmp-fix
 python manage.py shoulder-check-minters | grep "Skipped" | wc -l
 ```
 
+### Create release tags
+Since we need to deploy the new code base twice in the deployment procedure, create two release tags
+* pre-release(release candiate) tag
+* release tag
+
 ## Communicate EZID service downtime to EZID users
 Communicate EZID service downtime to internal and external users.
 
@@ -92,6 +97,12 @@ ensure_service: stopped
 project_revision: <current_release_tag>
 background_jobs_active: false
 ```
+
+Puppet deployment command:
+```
+uc3_pupapply.sh # preview mode
+uc3_pupapply.sh --exec 
+```
 ### 4. Backup the BDB minters folder
 Back up the BDB minters folder and save an extra copy of the backup file on a different device.
 ```
@@ -106,14 +117,14 @@ Stop, backup, restart the EZID RDS database.
 
 ### 1. Update/Deploy the new version of EZID code
 CDL note:
-* Deploy the new release tag with settings to disable the EZID service and background jobs
+* Deploy the pre-release tag with settings to disable the EZID service and background jobs
   * Make sure the EZID code base is deployed on the specified tag
   * Make sure the EZID service and background jobs are not started
 
 Puppet configuration `uc3-ezid-ui-<dev|stg|prd>.yaml` options:
 ```
 ensure_service: stopped
-project_revision: <new_release_tag>
+project_revision: <pre_release_tag>
 background_jobs_active: false
 ```
 
@@ -121,7 +132,11 @@ background_jobs_active: false
 
 #### 2.1 Make sure the required data model and migration files are in place
 * data model: minter.py
-* migration file: 0004_minter.py
+* migration files:
+  * 0001_initial.py
+  * 0002_auto_20221026_1139.py
+  * 0003_auto_20230809_1154.py
+  * 0004_minter.py
 
 #### 2.2 Modify the EZID settings
 Modify the EZID settings in the file `settings/settings.py`:
@@ -186,7 +201,7 @@ ezidapp.management.commands.migrate-minters-to-mysql INFO     migrate-minters-to
 ezidapp.management.commands.migrate-minters-to-mysql INFO     migrate-minters-to-mysql - Minters with missing required keys: 0
 ezidapp.management.commands.migrate-minters-to-mysql INFO     migrate-minters-to-mysql - Minter validation errors: 0
 ezidapp.management.commands.migrate-minters-to-mysql INFO     migrate-minters-to-mysql - Dry run without updating MySQL: yes
-ezidapp.management.commands.migrate-minters-to-mysql INFO     migrate-minters-to-mysql - JSON minters file: None
+ezidapp.management.commands.migrate-minters-to-mysql INFO     migrate-minters-to-mysql - JSON minters file: bdb_minters_<timestamp>.json
 ezidapp.management.commands.migrate-minters-to-mysql INFO     migrate-minters-to-mysql - Completed successfully
 ```
 
@@ -230,7 +245,7 @@ python manage.py diag-minter forward
 python manage.py diag-minter forward --count 2
 
 # perform on all minters if needed
-python manage.py diag-minter forward --update  
+#python manage.py diag-minter forward --update  
 ```
 
 #### Run EZID regression tests
