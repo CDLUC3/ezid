@@ -66,10 +66,8 @@ python manage.py diag-create-missing-minters-tmp-fix
 python manage.py shoulder-check-minters | grep "Skipped" | wc -l
 ```
 
-### Create release tags
-Since we need to deploy the new code base twice in the deployment procedure, create two release tags
-* pre-release(release candiate) tag
-* release tag
+## Create release tag
+Create a release tag for the deployment.
 
 ## Communicate EZID service downtime to EZID users
 Communicate EZID service downtime to internal and external users.
