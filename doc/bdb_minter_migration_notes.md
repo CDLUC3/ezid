@@ -19,10 +19,10 @@ Perform health checks at least two weeks before the prodcution migration to give
 * 1.1 Run the `shoulder-check-minters` command to check the minters.
 ```
 python manage.py shoulder-check-minters
-```
 
-```
 python manage.py shoulder-check-minters | grep "OK: Preview of next ID" | wc -l
+
+python manage.py shoulder-check-minters | grep "Skipped" | wc -l
 ```
 
 Review the output and fix issues if needed.
@@ -63,13 +63,15 @@ python manage.py diag-create-missing-minters-tmp-fix
 
 * 1.3 Re-run the `shoulder-check-minters` command to check the minters
 ```
-python manage.py shoulder-check-minters | grep "Skipped" | wc -l
+python manage.py shoulder-check-minters
 ```
 
-## Create release tags
-Create a release tags for the deployment
+## Prepare for software release
+1. Create release tags for the deployment
 - pre-release tag: created on a commit with the latest code
-- release tag: created on a commit after the pre-release tag (for example with minor updates to a readme doc) 
+- release tag: created on a newer commit after the pre-release tag with minor changes to documentation such as readme file or comments to code
+
+2. Create release note
 
 ## Communicate EZID service downtime to EZID users
 Communicate EZID service downtime to internal and external users.
@@ -88,7 +90,7 @@ sudo cdlsysctl stop ezid-proc-*
 ### 2. Bring up the EZID-is-down server
 Bring up the EZID-is-down server to cutoff access to EZID and let user know about the system downtime.
 
-TODO: Add link to how to bring up the EZID-is-down server
+[How to bring up the EZID-is-down server](https://github.com/CDLUC3/ezid-docs-internal/blob/main/docs/ezid_is_down_server.md)
 
 ### 3. Backup the BDB minters folder
 Back up the BDB minters folder and save an extra copy of the backup file on a different device.
@@ -133,10 +135,12 @@ uc3_pupapply.sh --exec
 #### 2.2 Modify the EZID settings
 Modify the EZID settings in the file `settings/settings.py`:
 * a. back up the current `settings.py` file 
-* b. to use the dba account for data model migration
-* c. to enable the `MINTERS_PATH` setting (remove the comment sign '#')
+* b. use the dba account for data model migration
+* c. enable the `MINTERS_PATH` setting (remove the comment sign '#')
 
 ```
+cp settings.py settings.py.bk
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -215,7 +219,7 @@ The `minter` table in the MySQL `ezid` database should have been populated with 
   * c0/top
   * c0/value
 * If there are issues:
-  * Fix issues and proceed, or
+  * Fix issues and proceed to the next step, or
   * move to the **Rollback Steps**
 * TODO: link the rollback procedure here
 
@@ -229,7 +233,7 @@ mv minters minters.bdb_sql_migration.<timestamp>
 #### 3.5 Verify minter migration results
 Run the `diag-minter` command to see if minters can produce identifiers and move to the next state
 
-* Test on a specified minter `ark:/99999/fk4`:
+* Test on a specified minter `ark:/99999/fk4` - test on Dev, Stg and Prd:
 ```
 python manage.py diag-minter mint ark:/99999/fk4
 
@@ -240,7 +244,7 @@ python manage.py diag-minter mint ark:/99999/fk4 --count 2 --update
 python manage.py diag-minter mint ark:/99999/fk4 --count 2
 ```
 
-* Test on all minters:
+* Test on all minters - **Do Not Test on PRD**; Only test on Dev and Stg:
 ```
 python manage.py diag-minter forward 
 
@@ -251,9 +255,12 @@ python manage.py diag-minter forward --count 2
 ```
 
 #### Run EZID regression tests
+**Do Not Test on PRD;** Only test on Dev and Stg:
 * start the EZID service (only EZID but not background jobs) 
 * run the regression tests and review test results
 ```
+sudo cdlsysctl start ezid
+
 python manage.py check-ezid --test-level 3
 ```
 
@@ -268,16 +275,25 @@ Shutdown the "EZID-is-down" server to redirect requests to the ezid service.
 ## Re-start EZID and background jobs
 1. Re-deploy EZID using the release tag with the EZID and background jobs enabled
   * remove or comment out the `ensure_service: stopped` and `background_jobs_active: false` statements
+  * run `uc3_pupapply.sh` command to deploy the new release
 
+Puppet configuration `uc3-ezid-ui-<dev|stg|prd>.yaml` options:
 ```
 #ensure_service: stopped
 project_revision: <new_release_tag>
 #background_jobs_active: false
 ```
+Puppet deployment command:
+```
+uc3_pupapply.sh # preview mode
+uc3_pupapply.sh --exec 
+```
+
 2. Check the EZID settings.py file
   * The database configuration should be using the `ezid_readwrite` account and password now
   * The `MINTERS_PATH` entry should have been commented out
-  * Delete the backup setting file `settings.py.bk
+
+3. Delete the backup setting file `settings.py.bk
 
 ## Perform post-migration checks
 Run the `verify_ezid_after_patching.py` script to verify services:
