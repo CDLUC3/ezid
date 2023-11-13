@@ -1,6 +1,6 @@
 # Berkeley DB minter migration notes
 
-## Pre-migration - Perform health checks
+## Pre-migration health checks
 Perform health checks at least two weeks before the prodcution migration to give you some time to resolve technical issues.
 
 ### 1. Perform instance health check
@@ -16,7 +16,7 @@ Perform health checks at least two weeks before the prodcution migration to give
   
 ### 3. Perform minter health check
 
-* 1.1 Run the `shoulder-check-minters` command to check the minters.
+3.1 Run the `shoulder-check-minters` command to check the minters.
 ```
 python manage.py shoulder-check-minters
 
@@ -51,7 +51,7 @@ ezidapp.management.commands.shoulder-check-minters ERROR    shoulder-check-minte
 
 ```
 
-* 1.2 Run the `diag-create-missing-minters-tmp-fix` command to create missing minters.
+3.2 Run the `diag-create-missing-minters-tmp-fix` command to create missing minters.
 
 Note: 
 - backup the minters directory
@@ -61,7 +61,7 @@ Note:
 python manage.py diag-create-missing-minters-tmp-fix
 ```
 
-* 1.3 Re-run the `shoulder-check-minters` command to check the minters
+3.3 Re-run the `shoulder-check-minters` command to check the minters
 ```
 python manage.py shoulder-check-minters
 ```
@@ -69,7 +69,7 @@ python manage.py shoulder-check-minters
 ## Prepare for software release
 1. Create release tags for the deployment
 - pre-release tag: created on a commit with the latest code
-- release tag: created on a newer commit after the pre-release tag with minor changes to documentation such as readme file or comments to code
+- release tag: created on a newer commit after the pre-release tag with minor changes to documentation such as readme or comments to code
 
 2. Create release note
 
@@ -78,28 +78,28 @@ Communicate EZID service downtime to internal and external users.
 
 ## Migration preparation steps
 
-### 1. Stop the EZID service and background jobs
-CDL note:
-* Disable Nagios alerts
-* Stop the EZID service and background jobs 
+### 1. Disable Nagios alerts
+
+### 2. Stop the EZID service and background jobs
+ 
 ```
 sudo cdlsysctl stop ezid
 
 sudo cdlsysctl stop ezid-proc-*
 ```
-### 2. Bring up the EZID-is-down server
+### 3. Bring up the EZID-is-down server
 Bring up the EZID-is-down server to cutoff access to EZID and let user know about the system downtime.
 
 [How to bring up the EZID-is-down server](https://github.com/CDLUC3/ezid-docs-internal/blob/main/docs/ezid_is_down_server.md)
 
-### 3. Backup the BDB minters folder
+### 4. Backup the BDB minters folder
 Back up the BDB minters folder and save an extra copy of the backup file on a different device.
 ```
 tar cvfz minters.<dev/stg/prd>.<timestamp>.tar.gz minters
 
 scp minters.<dev/stg/prd>.<timestamp>.tar.gz <target_source/target_dir>
 ```
-### 4. Backup the EZID RDS database
+### 5. Backup the EZID RDS database
 Take a snapshot of the EZID RDS database.
 
 ## Migration steps
@@ -273,7 +273,7 @@ Review minter migration results. Are there any unresolvable issues?
 Shutdown the "EZID-is-down" server to redirect requests to the ezid service.
 
 ## Re-start EZID and background jobs
-1. Re-deploy EZID using the release tag with the EZID and background jobs enabled
+1. Re-deploy EZID using the new release tag with the EZID and background jobs enabled
   * remove or comment out the `ensure_service: stopped` and `background_jobs_active: false` statements
   * run `uc3_pupapply.sh` command to deploy the new release
 
@@ -293,7 +293,7 @@ uc3_pupapply.sh --exec
   * The database configuration should be using the `ezid_readwrite` account and password now
   * The `MINTERS_PATH` entry should have been commented out
 
-3. Delete the backup setting file `settings.py.bk
+3. Delete the backup setting file `settings.py.bk`
 
 ## Perform post-migration checks
 Run the `verify_ezid_after_patching.py` script to verify services:
