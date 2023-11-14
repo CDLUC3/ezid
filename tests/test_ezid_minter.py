@@ -22,12 +22,6 @@ PERL_MINTED_PATH = impl.nog_sql.filesystem.abs_path(
 
 # noinspection PyClassHasNoInit,PyProtectedMember
 class TestEzidMinter:
-    def _get_bdb_path(self, id_ns, filename_prefix_str):
-        return impl.nog_sql.filesystem.abs_path(
-            "./test_docs/{}_{}{}.bdb".format(
-                id_ns.naan_prefix, id_ns.shoulder, filename_prefix_str
-            )
-        )
     
     def _minter_to_dict(self, file_path):
         with open(file_path) as json_file:
