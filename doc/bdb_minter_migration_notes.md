@@ -69,7 +69,7 @@ python manage.py shoulder-check-minters
 ## Prepare for software release
 1. Create release tags for the deployment
 - pre-release tag: created on a commit with the latest code
-- release tag: created on a newer commit after the pre-release tag with minor changes to documentation such as readme or comments to code
+- release tag: created on a newer commit after the pre-release tag (make minor changes to a documentation or comments if there is no code change)
 
 2. Create release note
 
@@ -89,8 +89,10 @@ sudo cdlsysctl stop ezid-proc-*
 ```
 ### 3. Bring up the EZID-is-down server
 Bring up the EZID-is-down server to cutoff access to EZID and let user know about the system downtime.
-
-[How to bring up the EZID-is-down server](https://github.com/CDLUC3/ezid-docs-internal/blob/main/docs/ezid_is_down_server.md)
+```
+screen ~/ezid/tools/downserver.py $(hostname) 18880 3600
+```
+Reference: [How to bring up the EZID-is-down server](https://github.com/CDLUC3/ezid-docs-internal/blob/main/docs/ezid_is_down_server.md)
 
 ### 4. Backup the BDB minters folder
 Back up the BDB minters folder and save an extra copy of the backup file on a different device.
@@ -136,7 +138,6 @@ uc3_pupapply.sh --exec
 Modify the EZID settings in the file `settings/settings.py`:
 * a. back up the current `settings.py` file 
 * b. use the dba account for data model migration
-* c. enable the `MINTERS_PATH` setting (remove the comment sign '#')
 
 ```
 cp settings.py settings.py.bk
@@ -148,8 +149,6 @@ DATABASES = {
         'NAME': 'ezid',
         'USER': 'eziddba_account',
         'PASSWORD': 'eziddba_password',
-
-MINTERS_PATH = HOME_DIR / 'var' / 'minters'  # /apps/ezid/var/minters
 ```
 
 #### 2.3 Run the "migrate" command to create the `minter` table
@@ -270,16 +269,19 @@ Review minter migration results. Are there any unresolvable issues?
 * No: proceed to the next step
 
 ## Shutdown the EZID-is-down server
-Shutdown the "EZID-is-down" server to redirect requests to the ezid service.
+Shutdown the "EZID-is-down" server:
+*  Resume the screen session
+*  Type [Ctrl-c] to teminate the session
 
 ## Re-start EZID and background jobs
 1. Re-deploy EZID using the new release tag with the EZID and background jobs enabled
-  * remove or comment out the `ensure_service: stopped` and `background_jobs_active: false` statements
+  * update the `ensure_service` entry to `running`
+  * comment out or remove the `background_jobs_active: false` statement
   * run `uc3_pupapply.sh` command to deploy the new release
 
 Puppet configuration `uc3-ezid-ui-<dev|stg|prd>.yaml` options:
 ```
-#ensure_service: stopped
+ensure_service: 'running'
 project_revision: <new_release_tag>
 #background_jobs_active: false
 ```
@@ -291,7 +293,7 @@ uc3_pupapply.sh --exec
 
 2. Check the EZID settings.py file
   * The database configuration should be using the `ezid_readwrite` account and password now
-  * The `MINTERS_PATH` entry should have been commented out
+  * The `MINTERS_PATH` entry should have been commented out ore removed
 
 3. Delete the backup setting file `settings.py.bk`
 
