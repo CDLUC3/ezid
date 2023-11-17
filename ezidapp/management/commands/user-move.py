@@ -57,7 +57,7 @@ class Command(django.core.management.BaseCommand):
 
     def handle(self, *_, **opt):
         self.opt = opt = argparse.Namespace(**opt)
-        impl._sql.util.log_setup(__name__, opt.debug)
+        impl.nog_sql.util.log_setup(__name__, opt.debug)
 
         user = ezidapp.models.util.getUserByUsername(opt.user)
         if user is None or opt.user == 'anonymous':
