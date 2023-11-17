@@ -6,7 +6,6 @@
 
 import argparse
 import logging
-import pathlib
 
 import django.contrib.auth.models
 import django.core.management

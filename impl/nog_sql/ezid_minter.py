@@ -538,13 +538,6 @@ class EzidMinter:
                     'Unsupported character in mask: {}'.format(c)
                 )
         return max_count
-
-    def get_int(self, key_str):
-        return int(self.get(key_str))
-
-    def get_list(self, key_str):
-        """Read a space separated string to a list."""
-        return self.get(key_str).split()
     
     def get_minter_from_db(self):
         try:
@@ -556,7 +549,7 @@ class EzidMinter:
                     self._minter = minter.first()
                     self._minterState = minter.first().minterState
             else:
-                if self._is_new == False:
+                if self._is_new is False:
                     raise Exception(f"Minter with this prefix does not exist. Prefix: {self._prefix}")
         except Exception as ex:
             log.info(f'Minter table select_for_update error: {ex}')

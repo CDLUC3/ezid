@@ -7,8 +7,6 @@ are referencing non-existing minters.
 
 import argparse
 import logging
-import pathlib
-import re
 
 import django.conf
 import django.contrib.auth.models
