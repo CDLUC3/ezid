@@ -68,8 +68,8 @@ python manage.py shoulder-check-minters
 
 ## Prepare for software release
 1. Create release tags for the deployment
-- pre-release tag: created on a commit with the latest code
-- release tag: created on a newer commit after the pre-release tag (make minor changes to a documentation or comments if there is no code change)
+- pre-release tag: created on the latest commit and with the `settings.MINTERS_PATH` configuration
+- release tag: created on the latest commit and without the `settings.MINTERS_PATH` configuration
 
 2. Create release note
 
