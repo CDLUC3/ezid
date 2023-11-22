@@ -33,7 +33,7 @@ import ezidapp.models.user
 import ezidapp.models.util
 import impl.django_util
 import impl.ezid
-import impl.nog.util
+import impl.nog_sql.util
 
 log = logging.getLogger(__name__)
 
@@ -57,7 +57,7 @@ class Command(django.core.management.BaseCommand):
 
     def handle(self, *_, **opt):
         self.opt = opt = argparse.Namespace(**opt)
-        impl.nog.util.log_setup(__name__, opt.debug)
+        impl.nog_sql.util.log_setup(__name__, opt.debug)
 
         user = ezidapp.models.util.getUserByUsername(opt.user)
         if user is None or opt.user == 'anonymous':

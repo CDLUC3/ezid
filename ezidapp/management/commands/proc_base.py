@@ -21,8 +21,6 @@ import django.db
 import django.db.transaction
 
 import ezidapp.models.async_queue
-import impl.nog.util
-
 
 class AsyncProcessingCommand(django.core.management.BaseCommand):
     help = __doc__

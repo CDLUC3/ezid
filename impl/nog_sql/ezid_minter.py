@@ -1,9 +1,8 @@
-#!/usr/bin/env python2
-
-#  Copyright©2021, Regents of the University of California
+#  Copyright©2023, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-"""N2T EggNog compatible minter for EZID
+"""MySQL version minter for EZID with BerkeleyDB data and structure unchanged and stored in 
+   the minterState field in the minter table.
 
 Terminology:
 
@@ -48,11 +47,14 @@ BerkeleyDB keys (EZID names / N2T names):
 
 import logging
 import re
+import time
 
-import impl.nog.bdb
-import impl.nog.bdb_wrapper
-import impl.nog.exc
-import impl.nog.id_ns
+from django.db import transaction
+from django.db.utils import DatabaseError
+import ezidapp.models.minter
+import ezidapp.models.shoulder
+import impl.nog_sql.id_ns
+import impl.nog_sql.exc
 
 # fmt:off
 XDIG_DICT = {
@@ -77,11 +79,11 @@ def mint_id(shoulder_model, dry_run=False):
     Args:
         shoulder_model (Django ORM model): Shoulder
         dry_run (bool):
-            False (default): After successful minting, the BerkeleyDB database on disk,
+            False (default): After successful minting, the Minter database,
                 which stores the current state of the minter, is updated to the new
                 state. This prevents the minter from returning the same ID the next
                 time it is called.
-            True: The minter database on disk is not updated, so the same IDs are
+            True: The minter database is not updated, so the same IDs are
                 returned again the next time the minter is called. This is useful for
                 creating reproducible tests.
 
@@ -94,8 +96,10 @@ def mint_id(shoulder_model, dry_run=False):
     See Also:
         :func:`mint_ids`
     """
-    for minted_ns in mint_ids(shoulder_model, 1, dry_run):
-        return minted_ns
+    minted_id = None
+    for id_str in mint_ids(shoulder_model, 1, dry_run):
+        minted_id = id_str
+    return minted_id
 
 
 # noinspection PyIncorrectDocstring,PyIncorrectDocstring
@@ -109,10 +113,10 @@ def mint_ids(shoulder_model, mint_count=1, dry_run=False):
     N2T Nog operates.
 
     Args:
+        shoulder_model (Django ORM model): Shoulder
         mint_count (int, default=1): Set the number of IDs to mint. The caller must
             accept this number of IDs, in order for the generator to run to completion
-            and for the minter state to be updated. be run to completion in order for
-            the minter state to be updated.
+            and for the minter state to be updated.
 
     Yields (str):
         This is a generator that yields minted identifiers as described in :func:`mint_id`.
@@ -120,58 +124,171 @@ def mint_ids(shoulder_model, mint_count=1, dry_run=False):
     See Also:
         :func:`mint_id`
     """
-    bdb_path = impl.nog.bdb.get_bdb_path_by_shoulder_model(shoulder_model)
-    for minted_str in mint_by_bdb_path(bdb_path, mint_count, dry_run=dry_run):
+    prefix =  shoulder_model.prefix.strip()
+    for minted_str in mint_by_prefix(prefix, mint_count, dry_run=dry_run):
         yield minted_str
 
 
 # noinspection PyIncorrectDocstring,PyIncorrectDocstring
-def mint_by_bdb_path(bdb_path, mint_count=1, dry_run=False):
-    """Like mint_ids(), but accepts the path to a BerkeleyDB bdb minter
+def mint_by_prefix(prefix, mint_count=1, dry_run=False):
+    """Like mint_ids(), but accepts the prefix as input.
     file.
 
     Args:
-        bdb_path: Path to a BerkeleyDB file.
+        prefix: minter prefix.
 
     See Also:
         :func:`mint_ids`
     """
-    with Minter(bdb_path, is_new=False, dry_run=dry_run) as minter:
-        for minted_id in minter.mint(mint_count):
-            yield minted_id
+    try:
+        with transaction.atomic():
+            with EzidMinter(prefix, is_new=False, dry_run=dry_run) as minter:
+                for minted_id in minter.mint(mint_count):
+                    yield minted_id
+    except DatabaseError as db_ex:
+        log.error(f'Minter Database Error: {db_ex}')
+    except Exception as ex:
+        log.error(f'Minter Error: {ex}')
 
 
-def create_minter_database(shoulder_ns, root_path=None, mask_str='eedk'):
-    """Create a new BerkeleyDB file
+def create_minter_database(shoulder_ns, mask_str='eedk'):
+    """Create a new minter in the database
 
     Args:
         shoulder_ns: DOI or ARK shoulder namespace
-        root_path:
-        mask_str:
+        mask_str: mask string
 
-    Returns (path): Absolute path to the new bdb file.
     """
-    shoulder_ns = impl.nog.id_ns.IdNamespace.from_str(shoulder_ns)
-    bdb_path = impl.nog.bdb.get_path(shoulder_ns, root_path, is_new=True)
+    shoulder_ns = impl.nog_sql.id_ns.IdNamespace.from_str(shoulder_ns)
+    prefix = str(shoulder_ns)
+    full_shoulder_str = '/'.join([shoulder_ns.naan_prefix, shoulder_ns.shoulder])
 
-    with Minter(bdb_path, is_new=True, dry_run=False) as minter:
-        full_shoulder_str = '/'.join([shoulder_ns.naan_prefix, shoulder_ns.shoulder])
+    if ezidapp.models.minter.Minter.objects.filter(prefix=prefix).exists():
+        raise Exception(f"Minter with this prefix already exists. Prefix: {prefix}")
+        
+    with EzidMinter(prefix, is_new=True, dry_run=False) as minter:
         minter.create(full_shoulder_str, mask_str)
 
-    return bdb_path
 
-
-class Minter(impl.nog.bdb_wrapper.BdbWrapper):
-    def __init__(self, bdb_path, is_new=False, dry_run=False):
-        super(Minter, self).__init__(bdb_path, is_new, dry_run)
+class EzidMinter:
+    def __init__(self, prefix, is_new=False, dry_run=False):
+        self._prefix = prefix
+        self._minter = None
+        self._minterState = {}
+        self._is_new = is_new
         self._dry_run = dry_run
 
     def __enter__(self):
-        super(Minter, self).__enter__()
+        self.get_minter_from_db()
+        if self._is_new:
+            self._init_new()
+        
+        self._setup_minter_variables()
         return self
 
+    def _init_new(self):
+        state = self._minterState
+        state['basecount'] = 0
+        state['oacounter'] = 0
+        state['oatop'] = 0
+        state['total'] = 0
+        state['percounter'] = 0
+        state['template'] = ''
+        state['mask'] = ''
+        state['atlast'] = ''
+        state['saclist'] = ''
+        state['siclist'] = ''
+
+        # Values not used by the EZID minter. We set them to increase the chance that
+        # the minter can be read by N2T or other implementations.
+        state['addcheckchar'] = 1
+        state['atlast_status'] = 3
+        state['dbversion'] = 'Generated by EZID'
+        state['erc'] = 'Generated by EZID'
+        state['expandable'] = 1
+        state['fseqnum'] = 1
+        state['generator_type'] = 'random'
+        state['germ'] = 0
+        state['gseqnum'] = 1
+        state['gseqnum_date'] = 0
+        state['held'] = 0
+        state['lzskipcount'] = 0
+        state['maskskipcount'] = 0
+        state['oklz'] = 1
+        state['padwidth'] = '20'
+        state['queued'] = 0
+        state['status'] = 'e'
+        state['type'] = 'rand'
+        state['unbounded'] = 1
+        state['version'] = '0.1.0'
+       
+
+    def _setup_minter_variables(self):
+        state = self._minterState
+        self.base_count = int(state.get('basecount'))
+        self.combined_count = int(state.get('oacounter'))
+        self.max_combined_count = int(state.get('oatop'))
+        self.total_count = int(state.get('total'))
+        self.max_per_counter = int(state.get('percounter'))
+        self.template_str = state.get('template')
+        self.mask_str = state.get('mask')
+        self.atlast_str = state.get('atlast')
+        self.active_counter_list = state.get('saclist').split()   # Read a space separated string to a list
+        self.inactive_counter_list = state.get('siclist').split()
+        self.counter_list = []
+        i = 0
+        while True:
+            try:
+                self.counter_list.append(
+                    (
+                        int(state[f'c{i}/top']),
+                        int(state[f'c{i}/value']),
+                    )
+                )
+            except KeyError:
+                break
+            i += 1
+
+
     def __exit__(self, exc_type, exc_val, exc_tb):
-        super(Minter, self).__exit__(exc_type, exc_val, exc_tb)
+        if self._dry_run:
+            log.debug(
+                'Dry-run: Minter state not saved. Any minted IDs will be repeated.'
+            )
+            return
+        if exc_type and exc_type not in (StopIteration, GeneratorExit):
+            log.error(
+                'Minter state not written back to BerkeleyDB due to exception. '
+                'Any minted IDs will be repeated.'
+            )
+            return
+        state = self._minterState
+        state['basecount'] = self.base_count
+        state['oacounter'] = self.combined_count
+        state['oatop'] = self.max_combined_count
+        state['total'] = self.total_count
+        state['percounter'] = self.max_per_counter
+        state['template'] = self.template_str
+        state['mask'] = self.mask_str
+        state['atlast'] = self.atlast_str
+        state['saclist'] = " ".join(self.active_counter_list) # Write list to a space separated string
+        state['siclist'] = " ".join(self.inactive_counter_list)
+
+        for n, (top, value) in enumerate(self.counter_list):
+            state[f'c{n}/top'] = top
+            state[f'c{n}/value'] = value
+        
+        # saved minterState to MySQL DB
+        minterState = self._minterState
+        
+        if self._minter is None:
+            ezidapp.models.minter.Minter.objects.create(prefix=self._prefix, minterState=minterState)
+        else:
+            t = int(time.time())
+            self._minter.minterState = minterState
+            self._minter.updateTime = t
+            self._minter.save()
+
 
     def mint(self, id_count=1):
         """Generate one or more identifiers
@@ -195,7 +312,7 @@ class Minter(impl.nog.bdb_wrapper.BdbWrapper):
                 xdig_str += self._get_check_char(minted_id)
             yield xdig_str
 
-    # noinspection PyAttributeOutsideInit
+
     def create(self, shoulder_str, mask_str='eedk'):
         """Set minter to initial, unused state."""
         # self._bdb.clear()
@@ -217,9 +334,9 @@ class Minter(impl.nog.bdb_wrapper.BdbWrapper):
 
         # Values not used by the EZID minter. We set them to increase the chance that
         # the minter can be read by N2T or other implementations.
-        self._bdb.set('shoulder', shoulder_str)
-        self._bdb.set('original_template', self.template_str)
-        self._bdb.set('origmask', self.mask_str)
+        self._minterState['shoulder'] = shoulder_str
+        self._minterState['original_template'] = self.template_str
+        self._minterState['origmask'] = self.mask_str
 
     def _next_state(self):
         """Step the minter to the next state."""
@@ -251,7 +368,7 @@ class Minter(impl.nog.bdb_wrapper.BdbWrapper):
             elif c == "d":
                 divider = DIGIT_COUNT
             else:
-                raise impl.nog.exc.MinterError(
+                raise impl.nog_sql.exc.MinterError(
                     'Unsupported character in mask: {}'.format(c)
                 )
             compounded_counter, rem = divmod(compounded_counter, divider)
@@ -361,11 +478,11 @@ class Minter(impl.nog.bdb_wrapper.BdbWrapper):
         active list. All the counters should be in the inactive list.
         """
         if not (self.combined_count == self.max_combined_count == self.total_count):
-            raise impl.nog.exc.MinterError(
+            raise impl.nog_sql.exc.MinterError(
                 "Attempted to extend a minter that is not exhausted"
             )
         if self.active_counter_list:
-            raise impl.nog.exc.MinterError(
+            raise impl.nog_sql.exc.MinterError(
                 "Attempted to extend a minter that still has active counters"
             )
 
@@ -377,13 +494,13 @@ class Minter(impl.nog.bdb_wrapper.BdbWrapper):
         but not the full N2T set.
         """
         if not re.match(r"[def]+k?$", self.mask_str):
-            raise impl.nog.exc.MinterError(
+            raise impl.nog_sql.exc.MinterError(
                 "Mask must use only 'd', 'e' and 'f' character types, "
                 "ending with optional 'k' check character: {}".format(self.mask_str)
             )
 
         if not re.match(r"add(\d)$", self.atlast_str):
-            raise impl.nog.exc.MinterError(
+            raise impl.nog_sql.exc.MinterError(
                 '"atlast" must be a string on form: add<digit>: {}'.format(
                     self.atlast_str
                 )
@@ -391,7 +508,7 @@ class Minter(impl.nog.bdb_wrapper.BdbWrapper):
 
     def _assert_valid_combined_count(self):
         if self.combined_count > self.max_combined_count:
-            raise impl.nog.exc.MinterError(
+            raise impl.nog_sql.exc.MinterError(
                 "Invalid counter total sum. total={} max={}".format(
                     self.combined_count, self.max_combined_count
                 )
@@ -399,7 +516,7 @@ class Minter(impl.nog.bdb_wrapper.BdbWrapper):
 
     def _assert_mask_matches_template(self):
         if self.template_str.find('{{{}}}'.format(self.mask_str)) == -1:
-            raise impl.nog.exc.MinterError(
+            raise impl.nog_sql.exc.MinterError(
                 'The mask that is embedded in the template key/value must match the '
                 'mask that is stored separately in the mask key/value. '
                 'template="{}" mask="{}"'.format(self.template_str, self.mask_str)
@@ -417,11 +534,26 @@ class Minter(impl.nog.bdb_wrapper.BdbWrapper):
             elif c == "d":
                 max_count *= DIGIT_COUNT
             else:
-                raise impl.nog.exc.MinterError(
+                raise impl.nog_sql.exc.MinterError(
                     'Unsupported character in mask: {}'.format(c)
                 )
         return max_count
-
+    
+    def get_minter_from_db(self):
+        try:
+            minter = ezidapp.models.minter.Minter.objects.select_for_update().filter(prefix=self._prefix)
+            if minter.exists():
+                if self._is_new:
+                    raise Exception(f"Minter with this prefix already exists. Prefix: {self._prefix}")
+                else:
+                    self._minter = minter.first()
+                    self._minterState = minter.first().minterState
+            else:
+                if self._is_new is False:
+                    raise Exception(f"Minter with this prefix does not exist. Prefix: {self._prefix}")
+        except Exception as ex:
+            log.info(f'Minter table select_for_update error: {ex}')
+        
 
 class _Drand48:
     """48-bit linear congruential PRNG, matching srand48() and drand48() in

@@ -10,7 +10,7 @@ import urllib.request
 import urllib.response
 
 import ezidapp.models.shoulder
-import impl.nog.minter
+import impl.nog_sql.ezid_minter
 import impl.util
 
 
@@ -56,8 +56,8 @@ def shoulder_to_dict(s):
     }
 
 
-def create_shoulder(
-    namespace_str, organization_name='test shoulder', root_path=None, mask_str='eedk'
+def create_shoulder_and_minter(
+    namespace_str, organization_name='test shoulder', mask_str='eedk'
 ):
     is_doi = namespace_str[:4] == 'doi:'
     prefix_str, shoulder_str = namespace_str.split('/')[-2:]
@@ -75,7 +75,7 @@ def create_shoulder(
         active=True,
         manager='ezid',
     )
-    impl.nog.minter.create_minter_database(namespace_str, root_path, mask_str)
+    impl.nog_sql.ezid_minter.create_minter_database(namespace_str, mask_str)
     return shoulder_model
 
 

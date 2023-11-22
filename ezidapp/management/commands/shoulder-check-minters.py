@@ -1,24 +1,22 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-"""Check that the BerkeleyDB minters are in the expected locations, can be
-opened, and contains an EZID or N2T minter
+"""Check outdated minters - Next identifier to be minted is already in the database 
 """
 
 import argparse
 import logging
-import pathlib
 
 import django.contrib.auth.models
 import django.core.management
 import django.db.transaction
+from django.core.exceptions import ObjectDoesNotExist
 
 import ezidapp.models.identifier
 import ezidapp.models.shoulder
-import impl.nog.bdb
-import impl.nog.exc
-import impl.nog.minter
-import impl.nog.util
+import impl.nog_sql.exc
+import impl.nog_sql.ezid_minter
+import impl.nog_sql.util
 
 log = logging.getLogger(__name__)
 
@@ -39,9 +37,9 @@ class Command(django.core.management.BaseCommand):
 
     def handle(self, *_, **opt):
         self.opt = opt = argparse.Namespace(**opt)
-        impl.nog.util.log_setup(__name__, opt.debug)
+        impl.nog_sql.util.log_setup(__name__, opt.debug)
 
-        log.info('Checking minter BerkeleyDB (BDB) databases...')
+        log.info('Check outdated minters ...')
 
         try:
             return self.check_all_minters()
@@ -109,50 +107,19 @@ class Command(django.core.management.BaseCommand):
 
     def check_minter(self, shoulder_model):
         try:
-            bdb_path = impl.nog.bdb.get_bdb_path_by_shoulder_model(shoulder_model)
-        except impl.nog.exc.MinterNotSpecified:
-            return 'Skipped: No minter registered'
-
-        if not pathlib.Path(bdb_path).exists():
-            raise CheckError(
-                'Minter BDB not at the expected path',
-                'Expected path: {}'.format(bdb_path.as_posix()),
-            )
-
-        try:
-            bdb = impl.nog.bdb.open_bdb(bdb_path)
-        except impl.nog.exc.MinterError as e:
-            raise CheckError(
-                'Path exists but could not be opened as BDB', 'Error: {}'.format(str(e))
-            )
-
-        def b2s(b):
-            if isinstance(b, bytes):
-                return b.decode('utf-8')
-            return b
-
-        bdb_dict = {b2s(k): b2s(v) for (k, v) in bdb.items()}
-
-        for required_key in (
-            'basecount',
-            'oacounter',
-            'oatop',
-            'total',
-            'percounter',
-            'template',
-            'mask',
-            'atlast',
-            'saclist',
-        ):
-            k = ':/{}'.format(required_key)
-            if k not in bdb_dict:
-                raise CheckError('Missing key in BDB', 'Key: {}'.format(k))
-            if not bdb_dict[k].strip():
-                raise CheckError('Key present in BDB but empty', 'Key: {}'.format(k))
+            minter = ezidapp.models.minter.Minter.objects.get(prefix=shoulder_model.prefix)
+            if shoulder_model.prefix != minter.prefix:
+                raise CheckError(
+                    'Shoulder prefix does not match minter prefix', 
+                    f'shoulder.prefix: {shoulder_model.prefix}, minter.prefix: {minter.prefix}')
+        except ObjectDoesNotExist:
+            raise CheckError('No minter registered', f'No minter is registered for prefix: {shoulder_model.prefix}')
+        except Exception as ex:
+            raise CheckError('Get minter failed', f'Get minter by prefix {shoulder_model.prefix} failed with error: {ex}')
 
         try:
-            minted_id = impl.nog.minter.mint_id(shoulder_model, dry_run=True)
-        except impl.nog.exc.MinterError as e:
+            minted_id = impl.nog_sql.ezid_minter.mint_id(shoulder_model, dry_run=True)
+        except impl.nog_sql.exc.MinterError as e:
             raise CheckError('Minting test identifier failed', 'Error: {}'.format(str(e)))
 
         if shoulder_model.prefix.startswith('doi:'):

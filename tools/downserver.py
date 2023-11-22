@@ -53,7 +53,8 @@ p.big { font-size: 200%% }
 <p>EZID's regularly scheduled maintenance window is Thursday <a
 href="http://www.thetimezoneconverter.com/?t=5:00am&amp;tz=Oakland">5:00am</a>&ndash;<a
 href="http://www.thetimezoneconverter.com/?t=6:00am&amp;tz=Oakland">6:00am</a>
-Pacific time.</p>
+Pacific time. For more information on system availability, 
+check <a href="https://ezidstatus.wordpress.com/">EZID's status page.</a></p>
 </body>
 </html>
 """

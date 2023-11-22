@@ -13,7 +13,7 @@ import ezidapp.models.shoulder
 import ezidapp.models.realm
 import ezidapp.models.validation
 import impl.log
-import impl.nog.minter
+import impl.nog_sql.ezid_minter
 import impl.util
 
 
@@ -32,7 +32,7 @@ class Group(django.db.models.Model):
                 #agent_model = django.apps.apps.get_model('ezidapp', 'getAgentShoulder')
                 agent_model = ezidapp.models.shoulder.getAgentShoulder()
                 assert agent_model.isArk, "Agent shoulder type must be ARK"
-                self.pid = "{}{}".format(agent_model.prefix, impl.nog.minter.mint_id(agent_model))
+                self.pid = "{}{}".format(agent_model.prefix, impl.nog_sql.ezid_minter.mint_id(agent_model))
             except Exception as e:
                 impl.log.otherError("group.Group.clean", e)
                 raise

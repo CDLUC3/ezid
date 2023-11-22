@@ -6,7 +6,7 @@
 
 import logging
 
-import impl.nog.shoulder as shoulder
+import impl.nog_sql.shoulder as shoulder
 import tests.util.sample as sample
 
 

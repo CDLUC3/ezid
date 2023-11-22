@@ -13,7 +13,6 @@ normally.
 import logging
 import sys
 import threading
-import typing
 import uuid
 
 import django.conf
@@ -29,7 +28,7 @@ import ezidapp.models.user
 import ezidapp.models.util
 import impl.enqueue
 import impl.log
-import impl.nog.minter
+import impl.nog_sql.ezid_minter
 import impl.policy
 import impl.util
 import impl.util2
@@ -185,8 +184,11 @@ def _mintIdentifier(shoulder, user, metadata={}):
             impl.log.badRequest(tid)
             return "error: bad request - shoulder does not support minting"
 
-        identifier = impl.nog.minter.mint_id(shoulder_model)
-        logger.debug('Minter returned identifier: {}'.format(identifier))
+        identifier = impl.nog_sql.ezid_minter.mint_id(shoulder_model)
+        if identifier:
+            logger.debug('Minter returned identifier: {}'.format(identifier))
+        else:
+            return f"error: minter failed to create an identifier on shoulder {shoulder_model}"
 
         # proto super shoulder check
         prefix_val = django.conf.settings.PROTO_SUPER_SHOULDER.get(shoulder_model.prefix, shoulder_model.prefix)
@@ -204,7 +206,7 @@ def _mintIdentifier(shoulder, user, metadata={}):
         identifier=identifier
     ).exists(), (
         f'Freshly minted identifier already exists in the database. '
-        f'The minter BDB file for the shoulder may be outdated. '
+        f'The minter state for the shoulder may be outdated. '
         f'shoulder="{shoulder_model.prefix}", identifier="{identifier}"'
     )
 

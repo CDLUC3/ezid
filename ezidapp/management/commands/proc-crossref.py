@@ -35,7 +35,6 @@ import ezidapp.models.util
 import impl.crossref
 import impl.ezid
 import impl.log
-import impl.nog.util
 import impl.util
 import impl.util2
 from django.db.models import Q
