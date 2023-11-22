@@ -5,9 +5,9 @@ import logging
 
 import pytest
 
-import impl.nog.exc
-import impl.nog.id_ns
-import impl.nog.id_ns as id_ns
+import impl.nog_sql.exc
+import impl.nog_sql.id_ns
+import impl.nog_sql.id_ns as id_ns
 import tests.util.sample as sample
 
 log = logging.getLogger(__name__)
@@ -104,8 +104,8 @@ def test_1040(ns_str, expected_tup):
 def test_1050(ns_str):
     """IdNamespace.from_str(): Attempting to split invalid namespaces raises
     MinterError"""
-    with pytest.raises(impl.nog.exc.MinterError):
-        impl.nog.id_ns.IdNamespace.from_str(ns_str)
+    with pytest.raises(impl.nog_sql.exc.MinterError):
+        impl.nog_sql.id_ns.IdNamespace.from_str(ns_str)
 
 
 @pytest.mark.parametrize(
@@ -124,7 +124,7 @@ def test_1050(ns_str):
 def test_1060(ns_str, ns_tup):
     """IdNamespace.from_str(): Splitting valid namespaces returns expected
     components"""
-    assert impl.nog.id_ns.IdNamespace.from_str(ns_str).as_tup() == ns_tup
+    assert impl.nog_sql.id_ns.IdNamespace.from_str(ns_str).as_tup() == ns_tup
 
 
 def test_1070(shoulder_csv):

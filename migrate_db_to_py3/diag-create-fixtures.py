@@ -22,9 +22,9 @@ import ezidapp.models.user
 import impl.download
 import impl.enqueue
 import impl.log
-import impl.nog.filesystem
-import impl.nog.shoulder
-import impl.nog.util
+import impl.nog_sql.filesystem
+import impl.nog_sql.shoulder
+import impl.nog_sql.util
 import impl.noid_egg
 
 APP_LABEL = 'ezidapp'
@@ -57,7 +57,7 @@ def dump_models():
 
 
 def create_fixtures():
-    fixture_dir_path = pathlib.Path(impl.nog.filesystem.abs_path('../../../ezidapp/fixtures'))
+    fixture_dir_path = pathlib.Path(impl.nog_sql.filesystem.abs_path('../../../ezidapp/fixtures'))
     # populate_async_queue()
     # ezidapp.DownloadQueue        ezidapp_downloadqueue
     # populate_async_queue()

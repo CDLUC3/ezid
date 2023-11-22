@@ -26,9 +26,8 @@ import django.db.transaction
 import ezidapp.models.async_queue
 import ezidapp.models.identifier
 import impl.enqueue
-import impl.nog.counter
-import impl.nog.tb
-import impl.nog.util
+import impl.nog_sql.counter
+import impl.nog_sql.util
 
 log = logging.getLogger(__name__)
 
@@ -53,6 +52,9 @@ class Command(django.core.management.BaseCommand):
         )
 
     def handle(self, *_, **opt):
+        self.opt = opt = argparse.Namespace(**opt)
+        impl.nog_sql.util.log_setup(__name__, opt.debug)
+
         db = ORMStats()
         db.print_all()
         # db.print_identifier('ark:/13030/c80c4tkc')
@@ -62,7 +64,7 @@ class Command(django.core.management.BaseCommand):
 class ORMStats:
     def __init__(self):
         self.exit_stack = contextlib.ExitStack()
-        self.counter = self.exit_stack.enter_context(impl.nog.counter.Counter())
+        self.counter = self.exit_stack.enter_context(impl.nog_sql.counter.Counter())
         self.page_size = django.conf.settings.QUERY_PAGE_SIZE
 
     def print_identifier(self, identifier):
@@ -92,4 +94,4 @@ class ORMStats:
                     # ','.join(s.name for s in m._meta.fields),
                 )
             )
-        impl.nog.util.print_table(row_list, log.info)
+        impl.nog_sql.util.print_table(row_list, log.info)

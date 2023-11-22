@@ -89,7 +89,6 @@ import logging
 import sys
 import time
 import typing
-import urllib.parse
 
 import django.conf
 import django.http

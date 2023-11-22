@@ -7,8 +7,6 @@ are referencing non-existing minters.
 
 import argparse
 import logging
-import pathlib
-import re
 
 import django.conf
 import django.contrib.auth.models
@@ -16,9 +14,8 @@ import django.core.management
 import django.db.transaction
 
 import ezidapp.models.shoulder
-import impl.nog.bdb
-import impl.nog.minter
-import impl.nog.util
+import impl.nog_sql.ezid_minter
+import impl.nog_sql.util
 
 log = logging.getLogger(__name__)
 
@@ -51,7 +48,7 @@ class Command(django.core.management.BaseCommand):
 
     def handle(self, *_, **opt):
         self.opt = opt = argparse.Namespace(**opt)
-        impl.nog.util.log_setup(__name__, opt.debug)
+        impl.nog_sql.util.log_setup(__name__, opt.debug)
 
         log.info('Creating missing minters...')
 
@@ -76,6 +73,7 @@ class Command(django.core.management.BaseCommand):
     def create_missing_minters(self):
         total_count = 0
         missing_count = 0
+        minter_created  = 0
         unspecified_count = 0
 
         # TODO: Check for and count errors
@@ -92,10 +90,8 @@ class Command(django.core.management.BaseCommand):
                 unspecified_count += 1
                 continue
 
-            naan_str, shoulder_str = re.split(r'[/:.]', s.minter)[-2:]
             # noinspection PyProtectedMember
-            bdb_path = impl.nog.bdb._get_bdb_path(naan_str, shoulder_str, root_path=None)
-            if pathlib.Path(bdb_path).exists():
+            if ezidapp.models.minter.Minter.objects.filter(prefix=s.prefix).exists():
                 continue
 
             log.info('Creating missing minter. prefix="{}" name="{}"'.format(s.prefix, s.name))
@@ -103,7 +99,8 @@ class Command(django.core.management.BaseCommand):
             missing_count += 1
 
             try:
-                impl.nog.minter.create_minter_database(s.prefix, shoulder_str)
+                impl.nog_sql.ezid_minter.create_minter_database(s.prefix)
+                minter_created +=  1
             except Exception as e:
                 log.warning(
                     'Unable to create missing minter. prefix="{}" name="{}". Error: {}'.format(
@@ -112,5 +109,6 @@ class Command(django.core.management.BaseCommand):
                 )
 
         log.info('Total number of shoulders: {}'.format(total_count))
-        log.info('Created missing shoulders: {}'.format(missing_count))
+        log.info('Missing minters: {}'.format(missing_count))
+        log.info('Created missing minters: {}'.format(minter_created))
         log.info('Shoulders with unspecified minters: {}'.format(unspecified_count))

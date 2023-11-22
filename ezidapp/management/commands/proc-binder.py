@@ -10,7 +10,6 @@ import ezidapp.management.commands.proc_base
 import ezidapp.models.async_queue
 import ezidapp.models.identifier
 import impl.log
-import impl.nog.util
 import impl.noid_egg
 
 log = logging.getLogger(__name__)

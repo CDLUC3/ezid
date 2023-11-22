@@ -36,9 +36,9 @@ import ezidapp.models.link_checker
 import ezidapp.models.shoulder
 import ezidapp.models.user
 import ezidapp.models.util
-import impl.nog.filesystem
-import impl.nog.minter
-import impl.nog.shoulder
+import impl.nog_sql.filesystem
+import impl.nog_sql.ezid_minter
+import impl.nog_sql.shoulder
 import tests.util.metadata_generator
 import tests.util.sample
 import tests.util.util
@@ -49,9 +49,9 @@ HERE_PATH = pathlib.Path(__file__).parent.resolve()
 ROOT_PATH = HERE_PATH / '..'
 
 DEFAULT_DB_KEY = 'default'
-import impl.nog.id_ns
+import impl.nog_sql.id_ns
 
-NS = impl.nog.id_ns.IdNamespace
+NS = impl.nog_sql.id_ns.IdNamespace
 
 # fmt=off
 NAMESPACE_LIST = [
@@ -280,7 +280,7 @@ def django_db_setup(django_db_keepdb):
 def disable_log_setup(mocker):
     """Prevent management commands from reconfiguring the logging that has been
     set up by pytest."""
-    mocker.patch('impl.nog.util.log_setup')
+    mocker.patch('impl.nog_sql.util.log_setup')
 
 
 # Fixtures
@@ -308,16 +308,16 @@ def admin_admin():
 # API Test Account
 
 @pytest.fixture()
-def apitest_minter(tmp_bdb_root):
+def apitest_minter():
     """Create a minter and corresponding shoulder for the apitest user
 
-    The minter us stored below the temporary root created by tmp_bdb_root. The shoulders are
-    registered to the admin user in the DB, and are ready for use.
+    The minter and shoulder are created in the DB read for use. The shoulders are
+    registered to the admin user in the DB.
     """
     # ns_str = 'doi:10.39999/SD2'
     ns_str = 'ark:/99936/x3'
 
-    shoulder_model = tests.util.util.create_shoulder(
+    shoulder_model = tests.util.util.create_shoulder_and_minter(
         namespace_str=ns_str,
         organization_name=f'API TEST Shoulder: {ns_str}',
         # datacenter_model=None,
@@ -428,33 +428,10 @@ def ez_user(client, django_user_model):
 
 
 @pytest.fixture()
-def tmp_bdb_root(mocker, tmp_path):
-    """Set a temporary root directory for the BerkeleyDB minter hierarchy
-
-    By default, a BDB path resolved by the minter will reference a location in EZID's
-    minter hierarchy, as configured in the EZID settings. Currently, `ezid/db/minters`.
-    This fixture causes BDB paths to resolve to a temporary tree under /tmp. Any minters
-    created by the test are deleted when the test exits.
-
-    Returns a pathlib.Path referencing the root of the tree. The slash operator can be
-    used for creating paths below the root. E.g., `tmp_bdb_root / 'b2345' / 'x1'`.
-    """
-    for dot_path in (
-        'impl.nog.bdb.get_bdb_root',
-    ):
-        mocker.patch(
-            dot_path,
-            return_value=(tmp_path / 'minters').resolve(),
-        )
-
-    return tmp_path
-
-
-@pytest.fixture()
-def minters(tmp_bdb_root, namespace, meta_type):
-    """Add a set of minters and corresponding shoulders. The minters are stored below
-    the temporary root created by tmp_bdb_root. The shoulders are registered to the
-    admin user in the DB, and are ready for use.
+def minters(namespace, meta_type):
+    """Add a set of minters and corresponding shoulders. 
+    The minters and shoulders are created in the DB ready for use. 
+    The shoulders are registered to the admin user in the DB.
 
     Yields a list containing the IdNamespace objects for the shoulders.
 
@@ -462,7 +439,7 @@ def minters(tmp_bdb_root, namespace, meta_type):
     multiple times, creating minters that are the combinatorial product of the two.
     """
     ns, arg_tup = namespace
-    impl.nog.shoulder.create_shoulder(
+    impl.nog_sql.shoulder.create_shoulder(
         ns,
         'test org for shoulder {}'.format(str(ns)),
         datacenter_model=(
@@ -479,6 +456,20 @@ def minters(tmp_bdb_root, namespace, meta_type):
     )
     yield namespace
 
+@pytest.fixture()
+def agent_minter():
+    """Create the minter for the CDL Agent shoulder.
+    
+    The Agent shoulder (ark:/99166/p9) is already in the DB ready for use.
+    The corresponding minter is not as the test DB was created before BDB minter to mysql migration.
+    Create the corresponding minter in the DB.
+    """
+    prefix = 'ark:/99166/p9'
+    if not ezidapp.models.minter.Minter.objects.filter(
+        prefix=prefix
+    ).exists():
+        impl.nog_sql.ezid_minter.create_minter_database(prefix)
+    
 
 @pytest.fixture()
 def shoulder_csv():
@@ -606,7 +597,7 @@ def get_user_id_by_session_key(session_key):
 
 def django_save_db_fixture(db_key=DEFAULT_DB_KEY):
     """Save database to a bz2 compressed JSON fixture."""
-    fixture_file_path = impl.nog.filesystem.abs_path(REL_DB_FIXTURE_PATH.as_posix())
+    fixture_file_path = impl.nog_sql.filesystem.abs_path(REL_DB_FIXTURE_PATH.as_posix())
     log.info('Writing fixture. path="{}"'.format(fixture_file_path))
     buf = io.StringIO()
     django.core.management.call_command(
@@ -621,7 +612,7 @@ def django_save_db_fixture(db_key=DEFAULT_DB_KEY):
 
 def django_load_db_fixture(rel_json_fixture_path, db_key=DEFAULT_DB_KEY):
     log.debug("Populating DB from compressed JSON fixture file. db_key={}".format(db_key))
-    fixture_file_path = impl.nog.filesystem.abs_path(rel_json_fixture_path.as_posix())
+    fixture_file_path = impl.nog_sql.filesystem.abs_path(rel_json_fixture_path.as_posix())
     django.core.management.call_command("loaddata", fixture_file_path, database=db_key)
     django_commit_and_close(db_key)
 

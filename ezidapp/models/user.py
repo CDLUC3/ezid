@@ -24,7 +24,7 @@ import ezidapp.models.realm
 import impl.log
 
 import impl.log as log
-import impl.nog.minter
+import impl.nog_sql.ezid_minter
 import impl.util
 
 logger = logging.getLogger(__name__)
@@ -82,7 +82,7 @@ class User(django.db.models.Model):
             try:
                 s = ezidapp.models.shoulder.getAgentShoulder()
                 assert s.isArk, "Agent shoulder type must be ARK"
-                self.pid = "{}{}".format(s.prefix, impl.nog.minter.mint_id(s))
+                self.pid = "{}{}".format(s.prefix, impl.nog_sql.ezid_minter.mint_id(s))
             except Exception as e:
                 impl.log.otherError("user.User.clean", e)
                 raise

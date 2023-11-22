@@ -6,7 +6,7 @@ import pathlib
 
 import hjson
 
-import impl.nog.bdb
+import impl.nog_bdb.bdb
 
 # from impl.nog import exc
 
@@ -189,7 +189,7 @@ class Bdb:
         self.bdb_dict = None
 
     def __enter__(self):
-        self._bdb_obj = impl.nog.bdb.open_bdb(self._bdb_path, self._is_new)
+        self._bdb_obj = impl.nog_bdb.bdb.open_bdb(self._bdb_path, self._is_new)
         self.bdb_dict = dict(self._bdb_obj)
         return self
 

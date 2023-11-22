@@ -6,7 +6,6 @@ import logging
 import freezegun
 
 import impl.datacite
-import impl.nog.util
 import impl.util
 import tests.util.anvl
 import tests.util.metadata_generator
@@ -47,13 +46,12 @@ class TestAPI:
         self,
         request,
         ez_admin,
-        tmp_bdb_root,
         minters,
         log_shoulder_count,
         test_docs,
         meta_type,
     ):
-        """Test /mint."""
+        """Test mint an identifier on ARK shoulder ark:/99933/x1 as the admin user"""
         log_shoulder_count('Shoulders after test launch')
         result_list = []
         ns, arg_tup = minters
@@ -62,8 +60,16 @@ class TestAPI:
         tests.util.sample.assert_match(
             result_list, 'mint-{}'.format(request.node.name)
         )  # re.sub("[^\\d\\w]+", "-",request.node.name)))
+        
+        # mint another ID
+        result_list = []
+        result_dict = self._mint(ez_admin, ns, meta_type, test_docs)
+        result_list.append(result_dict)
+        tests.util.sample.assert_match(
+            result_list, 'mint-{}_2'.format(request.node.name)
+        ) 
 
-    def test_1010(self, ez_admin, tmp_bdb_root, minters, test_docs, meta_type):
+    def test_1010(self, ez_admin, minters, test_docs, meta_type):
         """Test /view."""
         result_list = []
         ns, arg_tup = minters
@@ -131,7 +137,6 @@ class TestAPI:
         minters,
         test_docs,
         meta_type,
-        # tmp_bdb_root
     ):
         """
         View an identifier:
@@ -149,6 +154,11 @@ class TestAPI:
         result_list = []
         ns, arg_tup = minters
         result_dict = self._mint(apitest_client, ns, meta_type, test_docs)
+        
+        log.debug(f'result_dict mint="{result_dict}"')
+        assert result_dict['status_message'] == b'forbidden'
+        assert result_dict['status'] == b'error'
+
         minted_id = result_dict['status_message']
 
         # GET: Get
@@ -160,7 +170,9 @@ class TestAPI:
         )
         result_dict = tests.util.anvl.response_to_dict(response.content)
 
-        log.debug(f'result_dict="{result_dict}"')
+        log.debug(f'result_dict get="{result_dict}"')
+        assert result_dict['status_message'] == b'bad request - invalid identifier'
+        assert result_dict['status'] == b'error'
 
         result_dict['_url'] = str(ns)
 

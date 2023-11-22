@@ -13,8 +13,8 @@ import django.db.utils
 
 import ezidapp.models.datacenter
 import ezidapp.models.shoulder
-import impl.nog.id_ns
-import impl.nog.minter
+import impl.nog_sql.id_ns
+import impl.nog_sql.ezid_minter
 
 log = logging.getLogger(__name__)
 
@@ -101,20 +101,30 @@ def create_shoulder(
     is_force,
     is_debug,
 ):
-    assert isinstance(ns, impl.nog.id_ns.IdNamespace)
+    assert isinstance(ns, impl.nog_sql.id_ns.IdNamespace)
     assert_shoulder_type_available(organization_name_str, ns.scheme)
     assert_super_shoulder_slash(ns, is_super_shoulder, is_force)
     log.info('Creating minter for {} shoulder: {}'.format(ns.scheme.upper(), ns))
-    # Create the minter BerkeleyDB.
-    bdb_path = impl.nog.minter.create_minter_database(ns)
-    log.debug('Minter BerkeleyDB created at: {}'.format(bdb_path.as_posix()))
+
+    prefix = str(ns)
+    # Add new minter to the minter table with initial state.
+    if is_super_shoulder is False:
+        try:
+            impl.nog_sql.ezid_minter.create_minter_database(ns)
+            log.info(f'Minter created for prefix: {prefix}')
+        except Exception as e:
+            if is_debug:
+                raise
+            raise django.core.management.CommandError(
+                'Unable to create database record for minter. Error: {}'.format(str(e))
+            )
+    
     # Add new shoulder row to the shoulder table.
     try:
-        minterVal = "ezid:/{}".format(
-            '/'.join(bdb_path.parts[-3:-1]),
-        )
         if is_super_shoulder:
             minterVal = ''
+        else:
+            minterVal = prefix
 
         # get the corresponding agency
         # choice of 3
@@ -127,11 +137,9 @@ def create_shoulder(
         agency = ezidapp.models.shoulder.RegistrationAgency.objects.get(
             registration_agency=agency_code
         )
-        print(agency)
         # Only one type of shoulder, "shoulder"
         # see: select * from ezidapp_shouldertype;
         shoulder_type = ezidapp.models.shoulder.ShoulderType.objects.get(shoulder_type="shoulder")
-        print(shoulder_type)
 
         ezidapp.models.shoulder.Shoulder.objects.create(
             prefix=ns,

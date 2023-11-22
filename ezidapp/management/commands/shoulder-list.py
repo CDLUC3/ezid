@@ -9,8 +9,8 @@ import logging
 
 import django.core.management
 
-import impl.nog.shoulder
-import impl.nog.util
+import impl.nog_sql.shoulder
+import impl.nog_sql.util
 
 log = logging.getLogger(__name__)
 
@@ -31,6 +31,6 @@ class Command(django.core.management.BaseCommand):
     # noinspection PyAttributeOutsideInit
     def handle(self, *_, **opt):
         self.opt = opt = argparse.Namespace(**opt)
-        impl.nog.util.log_setup(__name__, opt.debug)
+        impl.nog_sql.util.log_setup(__name__, opt.debug)
 
-        impl.nog.shoulder.dump_shoulders()
+        impl.nog_sql.shoulder.dump_shoulders()
