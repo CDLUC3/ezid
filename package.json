@@ -5,7 +5,9 @@
   "main": "index.html",
   "scripts": {
     "stylelintfix": "stylelint \"dev/scss/*\" --fix",
-    "stylelintfix_legacy": "stylelint \"dev/legacy-scss/*\" --fix"
+    "stylelintfix_legacy": "stylelint \"dev/legacy-scss/*\" --fix",
+    "ui:watch": "gulp",
+    "ui:build": "gulp build"
   },
   "author": "Joel",
   "license": "MIT",
