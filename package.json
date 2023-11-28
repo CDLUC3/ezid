@@ -31,6 +31,7 @@
     "gulp-uglify": "^3.0.2",
     "gulp-useref": "^5.0.0",
     "jshint": "^2.13.0",
+    "node-sass": "^9.0.0",
     "postcss-assets": "^6.0.0",
     "run-sequence": "^2.2.1",
     "stylelint": "^13.13.1",
@@ -56,8 +57,5 @@
       ],
       "no-descending-specificity": null
     }
-  },
-  "dependencies": {
-    "node-sass": "^6.0.1"
   }
 }
