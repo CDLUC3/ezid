@@ -256,27 +256,21 @@ lxml is incompatible with mod_wsgi's use of Python sub-interpreters
 UI development setup
 ====================
 
-For UI development purposes only, install:
+Reqires:
 
-- NodeJS (recommended to install from NodeSource repository)
-- npm (installed automatically with NodeJS)
-- Ruby (for the scss-lint plugin)
+- Node
+- npm
 
-To install all gulp plugins (this relies on files gulpfile.js and
-packages.json in .../SITE_ROOT/PROJECT_ROOT):
+CD to ezid repository root.
 
-    cd .../SITE_ROOT/PROJECT_ROOT
-    npm update --save-dev
+Install UI toolkit:
 
-Then:
+    npm install
 
-    gem install scss_lint
-    npm install gulp
-
-For development, to make changes to static elements, components, and
+To make changes to static elements, components, and
 layouts:
 
-    gulp
+    npm run ui:watch
 
 This starts a local browser with the index page at
 http://localhost:3000/, and will reload HTML, CSS, and JavaScript in
@@ -284,10 +278,8 @@ the browser immediately upon any changes to these files.
 
 To create a build:
 
-    gulp build
+    npm run ui:build
 
-This writes static webpages to .../SITE_ROOT/PROJECT_ROOT/ui_library.
+This compiles CSS, JS and static webpages to [ezid repository root]/ui_library.
 
-To validate the HTML of a build using the W3C validation service:
-
-    gulp validateHTML
+Copy the compiled HTML, CSS and JS from ui_library into their locations within the ezid app.
