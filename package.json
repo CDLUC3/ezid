@@ -1,7 +1,7 @@
 {
-  "name": "EZID_UI_library",
+  "name": "ezid-ui-toolkit",
   "version": "1.0.0",
-  "description": "Gulp build tool for EZID UI library",
+  "description": "UI toolkit for EZID UI library",
   "main": "index.html",
   "scripts": {
     "stylelintfix": "stylelint \"dev/scss/*\" --fix",
@@ -9,7 +9,7 @@
     "ui:watch": "gulp",
     "ui:build": "gulp build"
   },
-  "author": "Joel",
+  "author": "CDLUC3",
   "license": "MIT",
   "devDependencies": {
     "browser-sync": "^2.29.3",
