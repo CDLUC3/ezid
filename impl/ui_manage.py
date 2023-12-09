@@ -428,6 +428,26 @@ def details(request):
         r = impl.datacite.dcmsRecordToHtml(id_metadata["datacite"])
         if r:
             d['datacite_html'] = r
+        
+        datacite_dict = impl.datacite.dcmsRecordToJson(id_metadata["datacite"])
+        if 'resource' in datacite_dict.keys():
+            if 'creators' in datacite_dict['resource'].keys() and 'creator' in datacite_dict['resource']['creators'].keys() and 'creatorName' in datacite_dict['resource']['creators']['creator'].keys():
+                d['identifier']['datacite.creator'] = datacite_dict['resource'].get('creators').get('creator').get('creatorName')
+
+            if 'titles' in datacite_dict['resource'].keys() and 'title' in datacite_dict['resource']['titles'].keys():
+                d['identifier']['datacite.title'] = datacite_dict['resource'].get('titles').get('title')
+
+            if 'publisher' in datacite_dict['resource'].keys():
+                d['identifier']['datacite.publisher'] = datacite_dict['resource'].get('publisher')
+            
+            if 'publicationYear' in datacite_dict['resource'].keys():
+                d['identifier']['datacite.publicationyear'] = datacite_dict['resource'].get('publicationYear')
+            
+            if 'resourceType' in datacite_dict['resource'].keys() and '@resourceTypeGeneral' in datacite_dict['resource']['resourceType'].keys():
+                d['identifier']['datacite.resourcetype'] = datacite_dict['resource'].get('resourceType').get('@resourceTypeGeneral')
+
+            print(d['identifier'])
+
     if (
         d['current_profile'].name == 'crossref'
         and 'crossref' in id_metadata

@@ -21,6 +21,7 @@ import urllib.response
 
 import django.conf
 import lxml.etree
+import xmltodict
 
 import ezidapp.models.shoulder
 import ezidapp.models.validation
@@ -615,6 +616,21 @@ def dcmsRecordToHtml(record):
         return r
     except Exception:
         return None
+
+def dcmsRecordToJson(record):
+    """Convert a DataCite Metadata Scheme <http://schema.datacite.org/> record
+    to an JSON dict.
+
+    Args:
+        record: The record should be unencoded.
+
+    Returns:
+        JSON dict or None on error.
+    """
+    record_dict = xmltodict.parse(str(record))
+
+    print(record_dict)
+    return record_dict
 
 
 def crossrefToDatacite(record, overrides=None):
