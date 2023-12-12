@@ -628,10 +628,64 @@ def dcmsRecordToJson(record):
         JSON dict or None on error.
     """
     record_dict = xmltodict.parse(str(record))
-
-    print(record_dict)
     return record_dict
 
+def briefDataciteRecord(record):
+    """Convert a DataCite Metadata Scheme <http://schema.datacite.org/> record
+    to a dictionary in simple DataCite format with data fields for Citation Preview.
+
+    Args:
+        record: Datacite record in XML.
+
+    Returns:
+        A dict or None on error. The dict contains the following keys:
+        - 'datacite.creator'
+        - 'datacite.title'
+        - 'datacite.publicationyear'
+        - 'datacite.resourcetype'
+    """
+
+    datacite_dict = dcmsRecordToJson(record)
+    briefDcRecord = {}
+    try:
+        if datacite_dict and 'resource' in datacite_dict.keys():
+            if 'creators' in datacite_dict['resource'].keys() and 'creator' in datacite_dict['resource']['creators'].keys():
+                creator = datacite_dict['resource']['creators']['creator']
+                if isinstance(creator, list):
+                    et_al = ''
+                    for i in range(len(creator)):
+                        if 'creatorName' in creator[i].keys():
+                            if 'datacite.creator' not in briefDcRecord.keys():
+                                briefDcRecord['datacite.creator'] = creator[i].get('creatorName')
+                            else:
+                                et_al = 'et al.'
+                    if briefDcRecord['datacite.creator'] and et_al != '':
+                        briefDcRecord['datacite.creator'] += f' {et_al}'
+                else:
+                    if 'creatorName' in creator.keys():
+                        briefDcRecord['datacite.creator'] = creator.get('creatorName')
+                        
+            if 'titles' in datacite_dict['resource'].keys() and 'title' in datacite_dict['resource']['titles'].keys():
+                title = datacite_dict['resource']['titles']['title']
+                if isinstance(title, list) and title:
+                    briefDcRecord['datacite.title'] = title[0]
+                else:
+                    briefDcRecord['datacite.title'] = title
+
+            if 'publisher' in datacite_dict['resource'].keys():
+                briefDcRecord['datacite.publisher'] = datacite_dict['resource'].get('publisher')
+            
+            if 'publicationYear' in datacite_dict['resource'].keys():
+                briefDcRecord['datacite.publicationyear'] = datacite_dict['resource'].get('publicationYear')
+            
+            if 'resourceType' in datacite_dict['resource'].keys() and '@resourceTypeGeneral' in datacite_dict['resource']['resourceType'].keys():
+                briefDcRecord['datacite.resourcetype'] = datacite_dict['resource'].get('resourceType').get('@resourceTypeGeneral')
+
+            print(f'brief: {briefDcRecord}')
+    except Exception as ex:
+        print(f'error: {ex} - brief record: {briefDcRecord}')
+        
+    return briefDcRecord
 
 def crossrefToDatacite(record, overrides=None):
     """Convert a Crossref Deposit Schema <http://help.crossref.org/deposit_schema>
