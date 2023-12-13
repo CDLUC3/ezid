@@ -647,7 +647,7 @@ def briefDataciteRecord(record):
     """
 
     datacite_dict = dcmsRecordToDict(record)
-    print(datacite_dict)
+    #print(datacite_dict)
     briefDcRecord = {}
     try:
         if datacite_dict and 'resource' in datacite_dict:
@@ -688,7 +688,7 @@ def briefDataciteRecord(record):
             if 'resourceType' in datacite_dict['resource'] and '@resourceTypeGeneral' in datacite_dict['resource']['resourceType']:
                 briefDcRecord['datacite.resourcetype'] = datacite_dict['resource'].get('resourceType').get('@resourceTypeGeneral')
 
-            print(f'brief: {briefDcRecord}')
+            #print(f'brief: {briefDcRecord}')
     except Exception as ex:
         print(f'error: {ex} - brief record: {briefDcRecord}')
         
