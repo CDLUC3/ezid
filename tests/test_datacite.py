@@ -1,10 +1,8 @@
 #  Copyright©2021, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
-"""Test ezidapp.models.validation
+"""Test impl.datacite
 """
-
-import pytest
 
 import impl.datacite
 
