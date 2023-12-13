@@ -438,7 +438,7 @@ def details(request):
             'datacite.resourcetype',
         ]
         for key in brief_record_keys:
-            if key in brief_record.keys():
+            if key in brief_record:
                 d["identifier"][key] = brief_record[key]
 
     if (
