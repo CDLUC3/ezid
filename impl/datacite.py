@@ -668,7 +668,10 @@ def briefDataciteRecord(record):
             if 'titles' in datacite_dict['resource'].keys() and 'title' in datacite_dict['resource']['titles'].keys():
                 title = datacite_dict['resource']['titles']['title']
                 if isinstance(title, list) and title:
-                    briefDcRecord['datacite.title'] = title[0]
+                    if isinstance(title[0], dict) and '#text' in title[0].keys():
+                        briefDcRecord['datacite.title'] = title[0].get('#text')
+                    else:
+                        briefDcRecord['datacite.title'] = title[0]
                 elif isinstance(title, dict) and '#text' in title.keys():
                     briefDcRecord['datacite.title'] = title.get('#text')
                 else:
