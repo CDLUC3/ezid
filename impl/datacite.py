@@ -617,15 +617,15 @@ def dcmsRecordToHtml(record):
     except Exception:
         return None
 
-def dcmsRecordToJson(record):
+def dcmsRecordToDict(record):
     """Convert a DataCite Metadata Scheme <http://schema.datacite.org/> record
-    to an JSON dict.
+    to a dict.
 
     Args:
         record: The record should be unencoded.
 
     Returns:
-        JSON dict or None on error.
+        A dict or None on error.
     """
     record_dict = xmltodict.parse(str(record))
     return record_dict
@@ -641,49 +641,51 @@ def briefDataciteRecord(record):
         A dict or None on error. The dict contains the following keys:
         - 'datacite.creator'
         - 'datacite.title'
+        - 'datacite.publisher'
         - 'datacite.publicationyear'
         - 'datacite.resourcetype'
     """
 
-    datacite_dict = dcmsRecordToJson(record)
+    datacite_dict = dcmsRecordToDict(record)
+    print(datacite_dict)
     briefDcRecord = {}
     try:
-        if datacite_dict and 'resource' in datacite_dict.keys():
-            if 'creators' in datacite_dict['resource'].keys() and 'creator' in datacite_dict['resource']['creators'].keys():
+        if datacite_dict and 'resource' in datacite_dict:
+            if 'creators' in datacite_dict['resource'] and 'creator' in datacite_dict['resource']['creators']:
                 creator = datacite_dict['resource']['creators']['creator']
                 if isinstance(creator, list):
                     et_al = ''
                     for i in range(len(creator)):
-                        if 'creatorName' in creator[i].keys():
-                            if 'datacite.creator' not in briefDcRecord.keys():
+                        if 'creatorName' in creator[i]:
+                            if 'datacite.creator' not in briefDcRecord:
                                 briefDcRecord['datacite.creator'] = creator[i].get('creatorName')
                             else:
                                 et_al = 'et al.'
                     if briefDcRecord['datacite.creator'] and et_al != '':
                         briefDcRecord['datacite.creator'] += f' {et_al}'
                 else:
-                    if 'creatorName' in creator.keys():
+                    if 'creatorName' in creator:
                         briefDcRecord['datacite.creator'] = creator.get('creatorName')
                         
-            if 'titles' in datacite_dict['resource'].keys() and 'title' in datacite_dict['resource']['titles'].keys():
+            if 'titles' in datacite_dict['resource'] and 'title' in datacite_dict['resource']['titles']:
                 title = datacite_dict['resource']['titles']['title']
-                if isinstance(title, list) and title:
-                    if len(title) > 0 and isinstance(title[0], dict) and '#text' in title[0].keys():
+                if isinstance(title, list) and len(title) > 0:
+                    if isinstance(title[0], dict) and '#text' in title[0]:
                         briefDcRecord['datacite.title'] = title[0].get('#text')
                     else:
                         briefDcRecord['datacite.title'] = title[0]
-                elif isinstance(title, dict) and '#text' in title.keys():
+                elif isinstance(title, dict) and '#text' in title:
                     briefDcRecord['datacite.title'] = title.get('#text')
                 else:
                     briefDcRecord['datacite.title'] = title
 
-            if 'publisher' in datacite_dict['resource'].keys():
+            if 'publisher' in datacite_dict['resource']:
                 briefDcRecord['datacite.publisher'] = datacite_dict['resource'].get('publisher')
             
-            if 'publicationYear' in datacite_dict['resource'].keys():
+            if 'publicationYear' in datacite_dict['resource']:
                 briefDcRecord['datacite.publicationyear'] = datacite_dict['resource'].get('publicationYear')
             
-            if 'resourceType' in datacite_dict['resource'].keys() and '@resourceTypeGeneral' in datacite_dict['resource']['resourceType'].keys():
+            if 'resourceType' in datacite_dict['resource'] and '@resourceTypeGeneral' in datacite_dict['resource']['resourceType']:
                 briefDcRecord['datacite.resourcetype'] = datacite_dict['resource'].get('resourceType').get('@resourceTypeGeneral')
 
             print(f'brief: {briefDcRecord}')
