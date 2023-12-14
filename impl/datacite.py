@@ -658,41 +658,43 @@ def briefDataciteRecord(record):
                     for i in range(len(creator)):
                         if 'creatorName' in creator[i]:
                             if 'datacite.creator' not in briefDcRecord:
-                                briefDcRecord['datacite.creator'] = creator[i].get('creatorName')
+                                briefDcRecord['datacite.creator'] = get_dict_value_by_key(creator[i]['creatorName'], '#text')
                             else:
                                 et_al = 'et al.'
                     if briefDcRecord['datacite.creator'] and et_al != '':
                         briefDcRecord['datacite.creator'] += f' {et_al}'
                 else:
                     if 'creatorName' in creator:
-                        briefDcRecord['datacite.creator'] = creator.get('creatorName')
+                        briefDcRecord['datacite.creator'] = get_dict_value_by_key(creator['creatorName'], '#text')
                         
             if 'titles' in datacite_dict['resource'] and 'title' in datacite_dict['resource']['titles']:
                 title = datacite_dict['resource']['titles']['title']
-                if isinstance(title, list) and len(title) > 0:
-                    if isinstance(title[0], dict) and '#text' in title[0]:
-                        briefDcRecord['datacite.title'] = title[0].get('#text')
-                    else:
-                        briefDcRecord['datacite.title'] = title[0]
-                elif isinstance(title, dict) and '#text' in title:
-                    briefDcRecord['datacite.title'] = title.get('#text')
+                if isinstance(title, list):
+                    if len(title) > 0:
+                        briefDcRecord['datacite.title'] = get_dict_value_by_key(title[0], '#text')
                 else:
-                    briefDcRecord['datacite.title'] = title
+                    briefDcRecord['datacite.title'] = get_dict_value_by_key(title, '#text')
 
             if 'publisher' in datacite_dict['resource']:
-                briefDcRecord['datacite.publisher'] = datacite_dict['resource'].get('publisher')
+                briefDcRecord['datacite.publisher'] = get_dict_value_by_key(datacite_dict['resource']['publisher'], '#text')
             
             if 'publicationYear' in datacite_dict['resource']:
-                briefDcRecord['datacite.publicationyear'] = datacite_dict['resource'].get('publicationYear')
+                briefDcRecord['datacite.publicationyear'] = datacite_dict['resource']['publicationYear']
             
-            if 'resourceType' in datacite_dict['resource'] and '@resourceTypeGeneral' in datacite_dict['resource']['resourceType']:
-                briefDcRecord['datacite.resourcetype'] = datacite_dict['resource'].get('resourceType').get('@resourceTypeGeneral')
+            if 'resourceType' in datacite_dict['resource']:
+                briefDcRecord['datacite.resourcetype'] = get_dict_value_by_key(datacite_dict['resource']['resourceType'], '@resourceTypeGeneral')
 
             #print(f'brief: {briefDcRecord}')
     except Exception as ex:
         print(f'error: {ex} - brief record: {briefDcRecord}')
         
     return briefDcRecord
+
+def get_dict_value_by_key(input_dict, key):
+    if isinstance(input_dict, dict) and key in input_dict:
+        return input_dict.get(key)
+    else:
+        return input_dict
 
 def crossrefToDatacite(record, overrides=None):
     """Convert a Crossref Deposit Schema <http://help.crossref.org/deposit_schema>
