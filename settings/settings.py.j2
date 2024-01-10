@@ -381,6 +381,22 @@ GOOGLE_ANALYTICS_ID = None
 
 MATOMO_SITE_ID = 21
 MATOMO_SITE_URL = 'https://matomo.cdlib.org/'
+MATOMO_API_TRACKING = { 'url': f'{MATOMO_SITE_URL}/matomo.php', 'site_id': MATOMO_SITE_ID,
+                        'ignore_paths': ["/learn/",
+                                         "/home/",
+                                         "/account/",
+ m                                        "/ajax_hide_alert",
+                                         "/contact/",
+                                         "/create/",
+                                         "/dashboard/",
+                                         "/demo/",
+                                         "/doc/",
+                                         "/download_confirm",
+                                         "/download_error",
+                                         "/manage/",
+                                         "/search/",
+                                         "/tombstone/"],
+                        'token_auth': "fill_me" }
 
 GZIP_COMMAND = '/usr/bin/gzip'
 ZIP_COMMAND = '/usr/bin/zip'
