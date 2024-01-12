@@ -43,6 +43,140 @@ test_records_2_creators = [
         ),
 ]
 
+# record without namespace prefixes
+test_xml_record  =  """<resource xmlns="http://datacite.org/schema/kernel-4" xmlns:ns_1="http://www.w3.org/2001/XMLSchema-instance" ns_1:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4/metadata.xsd">
+<identifier identifierType="ARK">99999/fk4zg85c0j</identifier>
+<creators>
+<creator>
+<creatorName>University of California Office of the President</creatorName>
+<affiliation>
+University of California Office of the President
+<nameIdentifier nameIdentifierScheme="ROR" nameIdentifierSchemeURI="https://ror.org">https://ror.org/00dmfq484</nameIdentifier>
+</affiliation>
+</creator>
+</creators>
+<titles>
+<title>Mechanism of smoke-induced MUC5B gene expression</title>
+</titles>
+<publisher>UCOP</publisher>
+<publicationYear>2023</publicationYear>
+<resourceType resourceTypeGeneral="Other">Grant</resourceType>
+<descriptions>
+<description descriptionType="Abstract">Test description.</description>
+</descriptions>
+<contributors>
+<contributor contributorType="ProjectLeader">
+<contributorName>Wu Reen</contributorName>
+<affiliation>
+University of California, Davis
+<nameIdentifier nameIdentifierScheme="ROR" nameIdentifierSchemeURI="https://ror.org">https://ror.org/05rrcem69</nameIdentifier>
+</affiliation>
+</contributor>
+</contributors>
+<dates>
+<date dateType="Issued" dateInformation="n/a">7/1/01</date>
+</dates>
+<alternateIdentifiers>
+<alternateIdentifier alternateIdentifierType="award-number">10RT-0262</alternateIdentifier>
+</alternateIdentifiers>
+<fundingReferences>
+<fundingReference>
+<funderName>University of California Office of the President</funderName>
+<funderIdentifier funderIdentifierType="ROR">https://ror.org/00dmfq484</funderIdentifier>
+</fundingReference>
+</fundingReferences>
+</resource>"""
+
+# record with namespace ns0
+test_xml_records_with_ns0  = str(
+"""<ns0:resource xmlns:ns0="http://datacite.org/schema/kernel-4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4/metadata.xsd">
+<ns0:identifier identifierType="ARK">99999/fk4zg85c0j</ns0:identifier>
+<ns0:creators>
+<ns0:creator>
+<ns0:creatorName>University of California Office of the President</ns0:creatorName>
+<ns0:affiliation>
+University of California Office of the President
+<ns0:nameIdentifier nameIdentifierScheme="ROR" nameIdentifierSchemeURI="https://ror.org">https://ror.org/00dmfq484</ns0:nameIdentifier>
+</ns0:affiliation>
+</ns0:creator>
+</ns0:creators>
+<ns0:titles>
+<ns0:title>Mechanism of smoke-induced MUC5B gene expression</ns0:title>
+</ns0:titles>
+<ns0:publisher>UCOP</ns0:publisher>
+<ns0:publicationYear>2023</ns0:publicationYear>
+<ns0:resourceType resourceTypeGeneral="Other">Grant</ns0:resourceType>
+<ns0:descriptions>
+<ns0:description descriptionType="Abstract">Test description.</ns0:description>
+</ns0:descriptions>
+<ns0:contributors>
+<ns0:contributor contributorType="ProjectLeader">
+<ns0:contributorName>Wu Reen</ns0:contributorName>
+<ns0:affiliation>
+University of California, Davis
+<ns0:nameIdentifier nameIdentifierScheme="ROR" nameIdentifierSchemeURI="https://ror.org">https://ror.org/05rrcem69</ns0:nameIdentifier>
+</ns0:affiliation>
+</ns0:contributor>
+</ns0:contributors>
+<ns0:dates>
+<ns0:date dateType="Issued" dateInformation="n/a">7/1/01</ns0:date>
+</ns0:dates>
+<ns0:alternateIdentifiers>
+<ns0:alternateIdentifier alternateIdentifierType="award-number">10RT-0262</ns0:alternateIdentifier>
+</ns0:alternateIdentifiers>
+<ns0:fundingReferences>
+<ns0:fundingReference>
+<ns0:funderName>University of California Office of the President</ns0:funderName>
+<ns0:funderIdentifier funderIdentifierType="ROR">https://ror.org/00dmfq484</ns0:funderIdentifier>
+</ns0:fundingReference>
+</ns0:fundingReferences>
+</ns0:resource>""")
+
+# record with namespace ns1
+test_xml_records_with_ns1 = str(
+"""<ns1:resource xmlns:ns1="http://datacite.org/schema/kernel-4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4/metadata.xsd">
+<ns1:identifier identifierType="ARK">99999/fk4zg85c0j</ns1:identifier>
+<ns1:creators>
+<ns1:creator>
+<ns1:creatorName>University of California Office of the President</ns1:creatorName>
+<ns1:affiliation>
+University of California Office of the President
+<ns1:nameIdentifier nameIdentifierScheme="ROR" nameIdentifierSchemeURI="https://ror.org">https://ror.org/00dmfq484</ns1:nameIdentifier>
+</ns1:affiliation>
+</ns1:creator>
+</ns1:creators>
+<ns1:titles>
+<ns1:title>Mechanism of smoke-induced MUC5B gene expression</ns1:title>
+</ns1:titles>
+<ns1:publisher>UCOP</ns1:publisher>
+<ns1:publicationYear>2023</ns1:publicationYear>
+<ns1:resourceType resourceTypeGeneral="Other">Grant</ns1:resourceType>
+<ns1:descriptions>
+<ns1:description descriptionType="Abstract">Test description.</ns1:description>
+</ns1:descriptions>
+<ns1:contributors>
+<ns1:contributor contributorType="ProjectLeader">
+<ns1:contributorName>Wu Reen</ns1:contributorName>
+<ns1:affiliation>
+University of California, Davis
+<ns1:nameIdentifier nameIdentifierScheme="ROR" nameIdentifierSchemeURI="https://ror.org">https://ror.org/05rrcem69</ns1:nameIdentifier>
+</ns1:affiliation>
+</ns1:contributor>
+</ns1:contributors>
+<ns1:dates>
+<ns1:date dateType="Issued" dateInformation="n/a">7/1/01</ns1:date>
+</ns1:dates>
+<ns1:alternateIdentifiers>
+<ns1:alternateIdentifier alternateIdentifierType="award-number">10RT-0262</ns1:alternateIdentifier>
+</ns1:alternateIdentifiers>
+<ns1:fundingReferences>
+<ns1:fundingReference>
+<ns1:funderName>University of California Office of the President</ns1:funderName>
+<ns1:funderIdentifier funderIdentifierType="ROR">https://ror.org/00dmfq484</ns1:funderIdentifier>
+</ns1:fundingReference>
+</ns1:fundingReferences>
+</ns1:resource>""")
+
 def test_briefDataciteRecord_1():
     for record in test_records_one_creator:
         brief_record = impl.datacite.briefDataciteRecord(record)
@@ -60,3 +194,16 @@ def test_briefDataciteRecord_2():
         assert brief_record['datacite.publisher'] == 'test publisher'
         assert brief_record['datacite.publicationyear'] == '1990'
         assert brief_record['datacite.resourcetype'] == 'Dataset'
+
+def test_rm_xml_namespace():
+
+    converted_rd_0 = impl.datacite.removeXMLNamespacePrefix(test_xml_records_with_ns0)
+    converted_rd_1 = impl.datacite.removeXMLNamespacePrefix(test_xml_records_with_ns1)
+
+    assert converted_rd_0 is not None
+    assert converted_rd_0 != ''
+    assert converted_rd_0 == converted_rd_1
+    assert converted_rd_1 == test_xml_record
+
+    
+    

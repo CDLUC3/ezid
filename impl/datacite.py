@@ -617,6 +617,28 @@ def dcmsRecordToHtml(record):
     except Exception:
         return None
 
+def removeXMLNamespacePrefix(record):
+    """Remove namespace prefixes from XML elements andd attributes.
+
+    Args:
+        record: The record should be unencoded.
+
+    Returns:
+        XML record or None on error.
+    """
+    try:
+        r = lxml.etree.tostring(
+            lxml.etree.XSLT(
+                lxml.etree.parse(
+                    os.path.join(django.conf.settings.PROJECT_ROOT, "profiles", "remove_ns_prefix.xsl")
+                )
+            )(impl.util.parseXmlString(record)),
+            encoding=str,
+        )
+        return r
+    except Exception:
+        return None
+    
 def dcmsRecordToDict(record):
     """Convert a DataCite Metadata Scheme <http://schema.datacite.org/> record
     to a dict.
