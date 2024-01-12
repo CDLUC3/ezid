@@ -429,7 +429,8 @@ def details(request):
         if r:
             d['datacite_html'] = r
         
-        brief_record = impl.datacite.briefDataciteRecord(id_metadata['datacite'])
+        converted_rd = impl.datacite.removeXMLNamespacePrefix(id_metadata['datacite'])
+        brief_record = impl.datacite.briefDataciteRecord(converted_rd)
         brief_record_keys = [
             'datacite.creator',
             'datacite.title',

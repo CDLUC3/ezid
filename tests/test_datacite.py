@@ -195,7 +195,8 @@ def test_briefDataciteRecord_2():
         assert brief_record['datacite.publicationyear'] == '1990'
         assert brief_record['datacite.resourcetype'] == 'Dataset'
 
-def test_rm_xml_namespace():
+def test_rm_xml_namespace_1():
+    """XML records with namespace prefixes"""
 
     converted_rd_0 = impl.datacite.removeXMLNamespacePrefix(test_xml_records_with_ns0)
     converted_rd_1 = impl.datacite.removeXMLNamespacePrefix(test_xml_records_with_ns1)
@@ -204,6 +205,17 @@ def test_rm_xml_namespace():
     assert converted_rd_0 != ''
     assert converted_rd_0 == converted_rd_1
     assert converted_rd_1 == test_xml_record
+
+def  test_rm_xml_namespace_2():
+    """XML records without namespace prefixes"""
+    for record in test_records_one_creator:
+        converted_rd = impl.datacite.removeXMLNamespacePrefix(record)
+        brief_record = impl.datacite.briefDataciteRecord(converted_rd)
+        assert brief_record['datacite.creator'] == 'test creator'
+        assert brief_record['datacite.title'] == 'test title'
+        assert brief_record['datacite.publisher'] == 'test publisher'
+        assert brief_record['datacite.publicationyear'] == '1990'
+        assert brief_record['datacite.resourcetype'] == 'Dataset'
 
     
     
