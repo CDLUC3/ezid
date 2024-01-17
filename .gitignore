@@ -25,6 +25,7 @@ settings.py
 static/javascripts/metadata_tooltips.js
 ui_library
 ~$
+settings.py.local
 
 
 # Dirs

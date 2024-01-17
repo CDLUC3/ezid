@@ -26,7 +26,7 @@ http_protocol: http
 
 # AWS SSM Params
 # Gather any environment specific application settings from AWS SSM ParameterStore
-# using aws_ssm pluggin
+# using aws_ssm plugin
 #
 aws_region: "{{ lookup('env', 'AWS_REGION') | default('us-west-2') }}"
 ssm_default_path: "{{ lookup('env', 'SSM_DEFAULT_PATH') | default('/no/path/') }}"
@@ -103,6 +103,7 @@ ezid_base_url:                 "{{ ssm_params['ezid_base_url']}}"
 email_new_account:             "{{ ssm_params['email_new_account'] }}"
 link_checker_admin:            "{{ ssm_params['link_checker_admin'] }}"
 log_level:                     "{{ ssm_params['log_level'] }}"
+matomo_site_id:                "{{ ssm_params['matomo_site_id'] }}"
 resolver_doi:                  "{{ ssm_params['resolver_doi'] }}"
 resolver_ark:                  "{{ ssm_params['resolver_ark'] }}"
 test_shoulder_dict:            "{{ ssm_params['test_shoulder_dict'] }}"
