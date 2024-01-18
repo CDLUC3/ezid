@@ -21,6 +21,7 @@ import urllib.response
 
 import django.conf
 import lxml.etree
+import xmltodict
 
 import ezidapp.models.shoulder
 import ezidapp.models.validation
@@ -616,6 +617,103 @@ def dcmsRecordToHtml(record):
     except Exception:
         return None
 
+def removeXMLNamespacePrefix(record):
+    """Remove namespace prefixes from XML elements andd attributes.
+
+    Args:
+        record: The record should be unencoded.
+
+    Returns:
+        XML record or None on error.
+    """
+    try:
+        r = lxml.etree.tostring(
+            lxml.etree.XSLT(
+                lxml.etree.parse(
+                    os.path.join(django.conf.settings.PROJECT_ROOT, "profiles", "remove_ns_prefix.xsl")
+                )
+            )(impl.util.parseXmlString(record)),
+            encoding=str,
+        )
+        return r
+    except Exception:
+        return None
+    
+def dcmsRecordToDict(record):
+    """Convert a DataCite Metadata Scheme <http://schema.datacite.org/> record
+    to a dict.
+
+    Args:
+        record: The record should be unencoded.
+
+    Returns:
+        A dict or None on error.
+    """
+    record_dict = xmltodict.parse(str(record))
+    return record_dict
+
+def briefDataciteRecord(record):
+    """Convert a DataCite Metadata Scheme <http://schema.datacite.org/> record
+    to a dictionary in simple DataCite format with data fields for Citation Preview.
+
+    Args:
+        record: Datacite record in XML.
+
+    Returns:
+        A dict or None on error. The dict contains the following keys:
+        - 'datacite.creator'
+        - 'datacite.title'
+        - 'datacite.publisher'
+        - 'datacite.publicationyear'
+        - 'datacite.resourcetype'
+    """
+
+    datacite_dict = dcmsRecordToDict(record)
+    briefDcRecord = {}
+    try:
+        if datacite_dict and 'resource' in datacite_dict:
+            if 'creators' in datacite_dict['resource'] and 'creator' in datacite_dict['resource']['creators']:
+                creator = datacite_dict['resource']['creators']['creator']
+                if isinstance(creator, list):
+                    et_al = ''
+                    for i in range(len(creator)):
+                        if 'creatorName' in creator[i]:
+                            if 'datacite.creator' not in briefDcRecord:
+                                briefDcRecord['datacite.creator'] = get_dict_value_by_key(creator[i]['creatorName'], '#text')
+                            else:
+                                et_al = 'et al.'
+                    if briefDcRecord['datacite.creator'] and et_al != '':
+                        briefDcRecord['datacite.creator'] += f' {et_al}'
+                else:
+                    if 'creatorName' in creator:
+                        briefDcRecord['datacite.creator'] = get_dict_value_by_key(creator['creatorName'], '#text')
+                        
+            if 'titles' in datacite_dict['resource'] and 'title' in datacite_dict['resource']['titles']:
+                title = datacite_dict['resource']['titles']['title']
+                if isinstance(title, list):
+                    if len(title) > 0:
+                        briefDcRecord['datacite.title'] = get_dict_value_by_key(title[0], '#text')
+                else:
+                    briefDcRecord['datacite.title'] = get_dict_value_by_key(title, '#text')
+
+            if 'publisher' in datacite_dict['resource']:
+                briefDcRecord['datacite.publisher'] = get_dict_value_by_key(datacite_dict['resource']['publisher'], '#text')
+            
+            if 'publicationYear' in datacite_dict['resource']:
+                briefDcRecord['datacite.publicationyear'] = datacite_dict['resource']['publicationYear']
+            
+            if 'resourceType' in datacite_dict['resource']:
+                briefDcRecord['datacite.resourcetype'] = get_dict_value_by_key(datacite_dict['resource']['resourceType'], '@resourceTypeGeneral')
+    except Exception as ex:
+        print(f'error: {ex} - brief record: {briefDcRecord}')
+        
+    return briefDcRecord
+
+def get_dict_value_by_key(input_dict, key):
+    if isinstance(input_dict, dict) and key in input_dict:
+        return input_dict.get(key)
+    else:
+        return input_dict
 
 def crossrefToDatacite(record, overrides=None):
     """Convert a Crossref Deposit Schema <http://help.crossref.org/deposit_schema>
