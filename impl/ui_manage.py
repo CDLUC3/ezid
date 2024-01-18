@@ -425,9 +425,23 @@ def details(request):
         time.time() - float(id_metadata['_updated']) < 60 * 30
     )
     if d['current_profile'].name == 'datacite' and 'datacite' in id_metadata:
-        r = impl.datacite.dcmsRecordToHtml(id_metadata["datacite"])
+        r = impl.datacite.dcmsRecordToHtml(id_metadata['datacite'])
         if r:
             d['datacite_html'] = r
+        
+        converted_rd = impl.datacite.removeXMLNamespacePrefix(id_metadata['datacite'])
+        brief_record = impl.datacite.briefDataciteRecord(converted_rd)
+        brief_record_keys = [
+            'datacite.creator',
+            'datacite.title',
+            'datacite.publicationyear',
+            'datacite.publisher',
+            'datacite.resourcetype',
+        ]
+        for key in brief_record_keys:
+            if key in brief_record:
+                d["identifier"][key] = brief_record[key]
+
     if (
         d['current_profile'].name == 'crossref'
         and 'crossref' in id_metadata
