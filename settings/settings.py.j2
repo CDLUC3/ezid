@@ -399,6 +399,19 @@ MATOMO_API_TRACKING = { 'url': f'{MATOMO_SITE_URL}/matomo.php', 'site_id': MATOM
                                          "/tombstone/"],
                         'token_auth': MATOMO_AUTH_TOKEN }
 
+# Celery Configuration Options
+CELERY_TIMEZONE = "America/Los_Angeles"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 60
+CELERY_BROKER_URL = 'sqla+sqlite:///../celery.sqlite'
+CELERY_BACKEND = 'db+sqlite:///../celery.sqlite'
+CELERY_TASK_RESULT_EXPIRES = 3600 # 1 hour until completed task results are deleted from database
+
+# the following were additional settings other examples used, but I don't believe they are necessary
+# CELERY_BROKER_BACKEND = "db+sqlite:///celery.sqlite"
+# CELERY_CACHE_BACKEND = "db+sqlite:///celery.sqlite"
+# CELERY_RESULT_BACKEND = "db+sqlite:///celery.sqlite"
+
 GZIP_COMMAND = '/usr/bin/gzip'
 ZIP_COMMAND = '/usr/bin/zip'
 
