@@ -399,7 +399,7 @@ MATOMO_API_TRACKING = { 'url': f'{MATOMO_SITE_URL}/matomo.php', 'site_id': MATOM
                                          "/tombstone/"],
                         'token_auth': MATOMO_AUTH_TOKEN }
 
-# Celery Configuration Options
+# Celery Configuration Options, which is a python task queue used for matomo tracking to make it asynchronous to api requests
 CELERY_TIMEZONE = "America/Los_Angeles"
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 60
