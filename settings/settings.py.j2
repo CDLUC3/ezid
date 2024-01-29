@@ -406,7 +406,7 @@ CELERY_TASK_TIME_LIMIT = 60
 # CELERY_BROKER_URL = 'sqla+sqlite:///../celery.sqlite'
 # CELERY_BACKEND = 'db+sqlite:///../celery.sqlite'
 CELERY_BROKER_URL = 'sqla+mysql://{{ database_user }}:{{ database_password | urlencode }}@{{ database_host }}/{{ database_name }}'
-CELERY_BACKEND = 'db+mysql://{{ database_user }}:{{ database_password }}@{{ database_host }}/{{ database_name }}'
+CELERY_BACKEND = 'db+mysql://{{ database_user }}:{{ database_password | urlencode }}@{{ database_host }}/{{ database_name }}'
 
 CELERY_TASK_RESULT_EXPIRES = 3600 # 1 hour until completed task results are deleted from database
 

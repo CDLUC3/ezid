@@ -30,4 +30,3 @@ ecs-logging~=1.1.0
 django-matomo-api-tracking
 celery~=5.3.6
 sqlalchemy~=2.0.25
-
