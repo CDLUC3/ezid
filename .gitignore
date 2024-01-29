@@ -26,6 +26,7 @@ static/javascripts/metadata_tooltips.js
 ui_library
 ~$
 settings.py.local
+templates/info
 
 
 # Dirs
