@@ -45,6 +45,9 @@ def upload_file(file_path, bucket_name, object_key):
         s3.upload_file(file_path, bucket_name, object_key)
         print(f"File uploaded successfully to {bucket_name}/{object_key}")
 
+        url = generate_presigned_url(bucket_name, object_key)
+        print(f"Pre-signed URL for {object_key} : {url}")
+
     except FileNotFoundError:
         print(f"The file {file_path} was not found.")
 
