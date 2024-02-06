@@ -39,6 +39,7 @@ import impl.log
 import impl.policy
 import impl.util
 import impl.util2
+import impl.s3
 
 
 SUFFIX_FORMAT_DICT = {
@@ -421,7 +422,10 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     def _moveCompressedFile(self, r: ezidapp.models.async_queue.DownloadQueue):
         try:
             if os.path.exists(self._path(r, 2)):
-                os.rename(self._path(r, 2), self._path(r, 3))
+                #os.rename(self._path(r, 2), self._path(r, 3))
+                file_path = self._path(r, 2)
+                filename = os.path.basename(file_path)
+                impl.s3.upload_file(file_path, "uc3-ezidui-dev", f"download/{filename}")
             else:
                 assert os.path.exists(self._path(r, 3)), "file has disappeared"
         except Exception as e:
