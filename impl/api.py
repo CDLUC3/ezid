@@ -907,9 +907,9 @@ def resolveIdentifier(
         json.dumps(msg), content_type="application/json; charset=utf-8"
     )
 
-def download_from_s3(request):
+def s3_download(request):
     file_path = request.path_info
-    filename = file_path[10:]
+    filename = file_path[13:]   # to-do: define a function to get filename
     bucket_name = "uc3-ezidui-dev"
     object_key = f"download/{filename}"
     pre_signed_url = impl.s3.generate_presigned_url(bucket_name, object_key)
