@@ -81,6 +81,7 @@ Identifier inflection (introspection):
   GET /{identifier}? or ??
   response body as for View an identifier
 """
+import os
 import ast
 import cgi
 import datetime
@@ -909,7 +910,7 @@ def resolveIdentifier(
 
 def s3_download(request):
     file_path = request.path_info
-    filename = file_path[13:]   # to-do: define a function to get filename
+    prefix, filename = os.path.split(file_path)
     bucket_name = "uc3-ezidui-dev"
     object_key = f"download/{filename}"
     pre_signed_url = impl.s3.generate_presigned_url(bucket_name, object_key)

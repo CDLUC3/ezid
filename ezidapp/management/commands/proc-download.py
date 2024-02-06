@@ -457,7 +457,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 f"{salutation}Thank you for using EZID to easily create and manage "
                 "your identifiers. The batch download you requested is available "
                 "at:\n\n"
-                f"{django.conf.settings.EZID_BASE_URL}/download/{r.filename}.{self._fileSuffix(r)}\n\n"
+                f"{django.conf.settings.EZID_BASE_URL}/s3_download/{r.filename}.{self._fileSuffix(r)}\n\n"
                 "The download will be deleted in 1 week.\n\n"
                 "Best,\n"
                 "EZID Team\n\n"
