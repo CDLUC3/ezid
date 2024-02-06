@@ -108,6 +108,7 @@ import impl.statistics
 import impl.userauth
 import impl.util
 import impl.http_accept_types
+import impl.s3
 
 HTTP_DATE_FORMAT = "%a, %d %b %Y %H:%M:%S GMT"
 
@@ -904,4 +905,16 @@ def resolveIdentifier(
         msg["error"] = "Not found."
     return django.http.HttpResponseNotFound(
         json.dumps(msg), content_type="application/json; charset=utf-8"
+    )
+
+def download_from_s3(request):
+    file_path = request.path_info
+    filename = file_path[10:]
+    bucket_name = "uc3-ezidui-dev"
+    object_key = f"download/{filename}"
+    pre_signed_url = impl.s3.generate_presigned_url(bucket_name, object_key)
+    print(f"Pre-signed URL for {object_key} : {pre_signed_url}")
+    return django.http.HttpResponse(
+        pre_signed_url,
+        content_type="text/plani; charset=utf-8",
     )
