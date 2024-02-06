@@ -381,7 +381,7 @@ ADMIN_GROUP_PID = 'ark:/99166/p9g44hq02'
 
 # Credentials
 
-GOOGLE_ANALYTICS_ID = None
+MATOMO_SITE_ID = None
 
 GZIP_COMMAND = '/usr/bin/gzip'
 ZIP_COMMAND = '/usr/bin/zip'
