@@ -18,14 +18,9 @@ var MATOMO_EVENT_LIB = MATOMO_EVENT_LIB || (function(){
     record_matomo_event : function() {
       var m = _args.split(" ");
       if (m.length >= 3) {
-        ga('send', {
-          hitType: 'event',
-          eventCategory: m[0],
-          eventAction: m[1],
-          eventLabel: m[2]
-        });
+        _paq.push(['trackEvent', m[0], m[1], m[2]]);
       } else {
-        console.log("Looking for three arguments in ga_event. Got " + m.length);
+        console.log("Looking for three arguments in event. Got " + m.length);
       }
     }
   };
