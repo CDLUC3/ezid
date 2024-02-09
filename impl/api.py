@@ -915,7 +915,5 @@ def s3_download(request):
     object_key = f"download/{filename}"
     pre_signed_url = impl.s3.generate_presigned_url(bucket_name, object_key)
     print(f"Pre-signed URL for {object_key} : {pre_signed_url}")
-    return django.http.HttpResponse(
-        pre_signed_url,
-        content_type="text/plani; charset=utf-8",
-    )
+
+    return django.http.HttpResponseRedirect(pre_signed_url)
