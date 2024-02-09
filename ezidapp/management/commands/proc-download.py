@@ -422,10 +422,11 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     def _moveCompressedFile(self, r: ezidapp.models.async_queue.DownloadQueue):
         try:
             if os.path.exists(self._path(r, 2)):
-                #os.rename(self._path(r, 2), self._path(r, 3))
-                file_path = self._path(r, 2)
-                filename = os.path.basename(file_path)
-                impl.s3.upload_file(file_path, "uc3-ezidui-dev", f"download/{filename}")
+                local_file_path = self._path(r, 2)
+                filename = os.path.basename(local_file_path)
+                bucket_name = django.conf.settings.S3_BUCKET
+                s3_object_key = f"{django.conf.settings.S3_BUCKET_DOWNLOAD_PATH}/{filename}"
+                impl.s3.upload_file(local_file_path, bucket_name, s3_object_key)
             else:
                 assert os.path.exists(self._path(r, 3)), "file has disappeared"
         except Exception as e:

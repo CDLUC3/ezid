@@ -381,7 +381,11 @@ ADMIN_GROUP_PID = 'ark:/99166/p9g44hq02'
 
 # Credentials
 
-GOOGLE_ANALYTICS_ID = None
+GMATOMO_SITE_ID = 21
+MATOMO_SITE_URL = 'https://matomo.cdlib.org/'
+
+S3_BUCKET = 'uc3-ezidui-dev'
+S3_BUCKET_DOWNLOAD_PATH = 'download'
 
 GZIP_COMMAND = '/usr/bin/gzip'
 ZIP_COMMAND = '/usr/bin/zip'

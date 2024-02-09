@@ -1,5 +1,8 @@
 import boto3
 from botocore.exceptions import NoCredentialsError
+import logging
+
+_log = logging.getLogger()
 
 def generate_presigned_url(bucket_name, object_key, expiration_time=3600):
     """
@@ -25,16 +28,16 @@ def generate_presigned_url(bucket_name, object_key, expiration_time=3600):
         return url
 
     except NoCredentialsError:
-        print("Credentials not available")
+        _log.error("S3 generate_presigned_url error: Credentials not available")
 
-def upload_file(file_path, bucket_name, object_key):
+def upload_file(local_file_path, bucket_name, s3_object_key):
     """
     Upload a file to an S3 bucket.
 
     Parameters:
-        - file_path (str): The local path of the file to upload.
+        - local_file_path (str): The local path of the file to upload.
         - bucket_name (str): The name of the S3 bucket.
-        - object_key (str): The key (path) to the object in the bucket.
+        - s3_object_key (str): The key (path) to the object in the bucket.
 
     Returns:
         - None
@@ -42,14 +45,11 @@ def upload_file(file_path, bucket_name, object_key):
     s3 = boto3.client('s3')
 
     try:
-        s3.upload_file(file_path, bucket_name, object_key)
-        print(f"File uploaded successfully to {bucket_name}/{object_key}")
-
-        url = generate_presigned_url(bucket_name, object_key)
-        print(f"Pre-signed URL for {object_key} : {url}")
+        s3.upload_file(local_file_path, bucket_name, s3_object_key)
+        _log.info(f"S3: File uploaded successfully to s3://{bucket_name}/{s3_object_key}")
 
     except FileNotFoundError:
-        print(f"The file {file_path} was not found.")
+        _log.error(f"S3 file upload error: The file {local_file_path} was not found.")
 
     except Exception as e:
-        print(f"An error occurred: {e}")
+        _log.error(f"S3 file upload error: An error occurred: {e}")

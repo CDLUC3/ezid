@@ -909,11 +909,12 @@ def resolveIdentifier(
     )
 
 def s3_download(request):
+    L = logging.getLogger()
     file_path = request.path_info
     prefix, filename = os.path.split(file_path)
     bucket_name = "uc3-ezidui-dev"
     object_key = f"download/{filename}"
     pre_signed_url = impl.s3.generate_presigned_url(bucket_name, object_key)
-    print(f"Pre-signed URL for {object_key} : {pre_signed_url}")
+    L.info(f"Pre-signed URL for {object_key} : {pre_signed_url}")
 
     return django.http.HttpResponseRedirect(pre_signed_url)
