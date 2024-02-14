@@ -380,8 +380,7 @@ ADMIN_USER_PID = 'ark:/99166/p9kw57h4w'
 ADMIN_GROUP_PID = 'ark:/99166/p9g44hq02'
 
 # Credentials
-
-GMATOMO_SITE_ID = 21
+MATOMO_SITE_ID = None
 MATOMO_SITE_URL = 'https://matomo.cdlib.org/'
 
 S3_BUCKET = 'uc3-ezidui-dev'
