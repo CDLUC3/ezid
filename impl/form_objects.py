@@ -375,6 +375,10 @@ def _validateAffiliationIdGrouping(caff, caffId, caffId_s, caffId_s_uri):
             )
     return err
 
+def _validatePublisherIdGrouping(caff, caffId, caffId_s, caffId_s_uri):
+    # TO-DO
+    err={}
+    return err
 
 def _validate_geolong(n):
     m = re.match(REGEX_GEOPOINT, n)
@@ -422,6 +426,10 @@ class NonRepeatingForm(django.forms.Form):
             'invalid': ERR_4DIGITYEAR,
         },
     )
+    publisherIdentifier = django.forms.CharField(required=False, label=_("Publisher Identifier"))
+    publisherIdentifierScheme = django.forms.CharField(required=False, label=_("Publisher IdentifierScheme"))
+    schemeURI = django.forms.CharField(required=False, label=_("schemeURI"))
+
     language = django.forms.CharField(required=False, label=_("Language"))
     version = django.forms.CharField(required=False, label=_("Version"))
 
