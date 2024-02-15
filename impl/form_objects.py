@@ -415,6 +415,14 @@ class NonRepeatingForm(django.forms.Form):
     target = django.forms.CharField(
         required=False, label=_("Location (URL)"), validators=[_validate_url]
     )
+    
+    language = django.forms.CharField(required=False, label=_("Language"))
+    version = django.forms.CharField(required=False, label=_("Version"))
+
+class PublisherForm(django.forms.Form):
+    """Form object for publisher elements in DataCite Advanced (XML)
+    profile."""
+
     publisher = django.forms.CharField(
         label=_("Publisher"), error_messages={'required': ERR_PUBLISHER}
     )
@@ -429,9 +437,6 @@ class NonRepeatingForm(django.forms.Form):
     publisherIdentifier = django.forms.CharField(required=False, label=_("Publisher Identifier"))
     publisherIdentifierScheme = django.forms.CharField(required=False, label=_("Publisher IdentifierScheme"))
     schemeURI = django.forms.CharField(required=False, label=_("schemeURI"))
-
-    language = django.forms.CharField(required=False, label=_("Language"))
-    version = django.forms.CharField(required=False, label=_("Version"))
 
 
 class ResourceTypeForm(django.forms.Form):
@@ -1036,6 +1041,8 @@ def getIdForm_datacite_xml(form_coll=None, request=None):
     remainder_form = (
         nonrepeating_form
     ) = (
+        publisher_form
+    ) = (
         resourcetype_form
     ) = (
         creator_set
@@ -1083,6 +1090,7 @@ def getIdForm_datacite_xml(form_coll=None, request=None):
         # noinspection PyUnboundLocalVariable
         remainder_form = RemainderForm(post, shoulder=shoulder, auto_id='%s')
         nonrepeating_form = NonRepeatingForm(post, auto_id='%s')
+        publisher_form = PublisherForm(post, auto_id='%s')
         resourcetype_form = ResourceTypeForm(post, auto_id='%s')
         # noinspection PyUnboundLocalVariable
         creator_nameIdLastIndex = _getNameIdCt(
@@ -1120,6 +1128,10 @@ def getIdForm_datacite_xml(form_coll=None, request=None):
         # Note: Remainder form only needed upon ID creation
         nonrepeating_form = NonRepeatingForm(
             form_coll.nonRepeating if hasattr(form_coll, 'nonRepeating') else None,
+            auto_id='%s',
+        )
+        publisher_form = PublisherForm(
+            form_coll.publisher if hasattr(form_coll, 'publisher') else None,
             auto_id='%s',
         )
         resourcetype_form = ResourceTypeForm(
@@ -1245,6 +1257,7 @@ def getIdForm_datacite_xml(form_coll=None, request=None):
     return {
         'remainder_form': remainder_form,
         'nonrepeating_form': nonrepeating_form,
+        'publisher_form': publisher_form,
         'resourcetype_form': resourcetype_form,
         'creator_set': creator_set,
         'title_set': title_set,
