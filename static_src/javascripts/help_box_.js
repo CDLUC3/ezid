@@ -24,21 +24,30 @@ $(document).ready(function() {
   // Hide all help content until elements are called upon (brought in via ezid-info-pages / popup_help.html)
   $('.help_window').hide();
 
-  // For each popover element, insert the corresponding content
-  $('[data-toggle="popover"]').each(function() {
-    var $pElem= $(this);
-    $pElem.popover(
-        {
-          html: true,
-          // Here data-container is set within html (as id of help_icon itself) to allow for
-          //   keyboard accessibility (tabbing into focusable elements within popover). Otherwise:
-          // container: 'body',
-          content: getPopContent($pElem.attr("id"))
-        }
-    );
-    // This prevents page from scrolling to top when you click
-    $pElem.on('click', function(e) {e.preventDefault(); return true;});
+  const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+  const popoverList = [...popoverTriggerList].map(popoverTriggerEl => {
+    new bootstrap.Popover(popoverTriggerEl, {
+        html: true,
+        content: getPopContent(popoverTriggerEl.getAttribute("id"))
+    });
   });
+
+  // For each popover element, insert the corresponding content
+  /*
+  $('[data-toggle="popover"]').each(function() {
+    const exampleEl = $(this)[ 0 ]; // make javascript instead of jQuery object);
+    const popover = new bootstrap.Popover(exampleEl, {
+      html: true,
+      container: 'body',
+      content: getPopContent(exampleEl.getAttribute("id"))
+    });
+
+    // This prevents page from scrolling to top when you click
+    exampleEl.onclick = function(e) {e.popover(); return true; }
+  });
+   */
+
+
   function getPopContent(target) {
     return $("#" + target + "_content").html();
   };
