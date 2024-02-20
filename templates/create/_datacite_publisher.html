@@ -4,15 +4,15 @@
   <div class="fieldset-controls__container">
     <div id="publisher" class="fieldset-controls__legend create__nested-legend">{% trans "Publisher" %}</div>
   </div>
-  {% include "create/_datacite_inlinetext.html" with field=form.publisher_form.publisher reqd="true" %}
-  {% include "create/_datacite_inlinetext.html" with field=form.publisher_form.publicationYear reqd="true" %}
+  {% include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.publisher reqd="true" %}
+  {% include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.publicationYear reqd="true" %}
   
   <details id="accordion__section-1" class="accordion__section create__accordion-section" {{accordions_open}}>
       <summary class="accordion__title create__accordion-title">{% trans "More Fields" %}</summary>
   
-      {% include "create/_datacite_inlinetext.html" with field=form.publisher_form.publisherIdentifier %}
-      {% include "create/_datacite_inlinetext.html" with field=form.publisher_form.publisherIdentifierScheme %}
-      {% include "create/_datacite_inlinetext.html" with field=form.publisher_form.schemeURI %}
+      {% include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.publisherIdentifier %}
+      {% include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.publisherIdentifierScheme %}
+      {% include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.schemeURI %}
   </details>
 </div>
 
