@@ -39,6 +39,7 @@ import impl.log
 import impl.policy
 import impl.util
 import impl.util2
+import impl.s3
 
 
 SUFFIX_FORMAT_DICT = {
@@ -421,7 +422,11 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     def _moveCompressedFile(self, r: ezidapp.models.async_queue.DownloadQueue):
         try:
             if os.path.exists(self._path(r, 2)):
-                os.rename(self._path(r, 2), self._path(r, 3))
+                local_file_path = self._path(r, 2)
+                filename = os.path.basename(local_file_path)
+                bucket_name = django.conf.settings.S3_BUCKET
+                s3_object_key = f"{django.conf.settings.S3_BUCKET_DOWNLOAD_PATH}/{filename}"
+                impl.s3.upload_file(local_file_path, bucket_name, s3_object_key)
             else:
                 assert os.path.exists(self._path(r, 3)), "file has disappeared"
         except Exception as e:
@@ -453,7 +458,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 f"{salutation}Thank you for using EZID to easily create and manage "
                 "your identifiers. The batch download you requested is available "
                 "at:\n\n"
-                f"{django.conf.settings.EZID_BASE_URL}/download/{r.filename}.{self._fileSuffix(r)}\n\n"
+                f"{django.conf.settings.EZID_BASE_URL}/s3_download/{r.filename}.{self._fileSuffix(r)}\n\n"
                 "The download will be deleted in 1 week.\n\n"
                 "Best,\n"
                 "EZID Team\n\n"
