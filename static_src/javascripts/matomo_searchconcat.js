@@ -12,7 +12,7 @@
 //    keywords=,creator:Dejaco,title:NewHybrids&object_type=Image
 // The category parameter (in this example 'object_type') is distinct from query parameters
 
-var GA_SEARCHPARMS_LIB = GA_SEARCHPARMS_LIB || (function(){
+var MATOMO_SEARCHPARMS_LIB = MATOMO_SEARCHPARMS_LIB || (function(){
 
   var _uri = '', _mainKey = '', _categoryKey = '', _allQueryKeys = []
   return {
@@ -56,7 +56,7 @@ var GA_SEARCHPARMS_LIB = GA_SEARCHPARMS_LIB || (function(){
         }
         out += categoryOut
       } else {
-        console.log("Undefined argument passed to google_analytics_searchconcat.js:concat_parms()")
+        console.log("Undefined argument passed to matomo_searchconcat.js:concat_parms()")
         out = ''
       }
       return out

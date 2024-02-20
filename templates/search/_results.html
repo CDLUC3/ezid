@@ -53,8 +53,8 @@ $(document).ready(function(){
   });
   // Record a Google Analytics event when user clicks "Download All"
   $('#download').on('keypress click', function(){
-    GA_EVENT_LIB.init("Manage Download Id_csv");
-    GA_EVENT_LIB.record_ga_event();
+    MATOMO_EVENT_LIB.init("Manage Download Id_csv");
+    MATOMO_EVENT_LIB.record_matomo_event();
   });
 });
 </script>
