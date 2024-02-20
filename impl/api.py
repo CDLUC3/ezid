@@ -81,6 +81,7 @@ Identifier inflection (introspection):
   GET /{identifier}? or ??
   response body as for View an identifier
 """
+import os
 import ast
 import cgi
 import datetime
@@ -108,6 +109,7 @@ import impl.statistics
 import impl.userauth
 import impl.util
 import impl.http_accept_types
+import impl.s3
 
 HTTP_DATE_FORMAT = "%a, %d %b %Y %H:%M:%S GMT"
 
@@ -905,3 +907,14 @@ def resolveIdentifier(
     return django.http.HttpResponseNotFound(
         json.dumps(msg), content_type="application/json; charset=utf-8"
     )
+
+def s3_download(request):
+    L = logging.getLogger()
+    file_path = request.path_info
+    prefix, filename = os.path.split(file_path)
+    bucket_name = django.conf.settings.S3_BUCKET
+    object_key = f"{django.conf.settings.S3_BUCKET_DOWNLOAD_PATH}/{filename}"
+    pre_signed_url = impl.s3.generate_presigned_url(bucket_name, object_key)
+    L.info(f"Pre-signed URL for {object_key} : {pre_signed_url}")
+
+    return django.http.HttpResponseRedirect(pre_signed_url)

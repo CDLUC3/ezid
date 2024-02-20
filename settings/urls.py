@@ -75,6 +75,7 @@ urlpatterns = [
     django.urls.re_path("^status$",                        impl.api.getStatus,                 name="api.getStatus"),
     django.urls.re_path("^version$",                       impl.api.getVersion,                name="api.getVersion"),
     django.urls.re_path("^download_request$",              impl.api.batchDownloadRequest,      name="api.batchDownloadRequest",),
+    django.urls.re_path("^s3_download/",                   impl.api.s3_download,               name="api.s3_download",), 
     django.urls.re_path("^admin/pause$",                   impl.api.pause,                     name="api.pause"),
     # django.urls.re_path("^admin/reload$",                  impl.api.reload,                    name="api.reload"),
     # OAI

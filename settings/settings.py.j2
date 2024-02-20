@@ -376,11 +376,12 @@ ADMIN_USER_PID = '{{ admin_search_user_pid }}'
 ADMIN_GROUP_PID = '{{ admin_search_group_pid }}'
 
 # Credentials
-
-GOOGLE_ANALYTICS_ID = None
-
-MATOMO_SITE_ID = 21
+MATOMO_SITE_ID = '{{ matomo_site_id }}'
+MATOMO_AUTH_TOKEN = '{{ matomo_auth_token }}'
 MATOMO_SITE_URL = 'https://matomo.cdlib.org/'
+
+S3_BUCKET = '{{ s3_bucket }}'
+S3_BUCKET_DOWNLOAD_PATH = 'download'
 
 GZIP_COMMAND = '/usr/bin/gzip'
 ZIP_COMMAND = '/usr/bin/zip'

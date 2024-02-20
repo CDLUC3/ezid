@@ -181,7 +181,7 @@ def enqueueRequest(user, request):
             # fileSize=0,
         )
         r.save()
-        return f"success: {django.conf.settings.EZID_BASE_URL}/download/{filename}.{_fileSuffix(r)}"
+        return f"success: {django.conf.settings.EZID_BASE_URL}/s3_download/{filename}.{_fileSuffix(r)}"  
     except Exception as e:
         impl.log.otherError("download.enqueueRequest", e)
         # noinspection PyUnresolvedReferences
