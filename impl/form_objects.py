@@ -416,13 +416,13 @@ class NonRepeatingForm(django.forms.Form):
         required=False, label=_("Location (URL)"), validators=[_validate_url]
     )
     publicationYear = django.forms.RegexField(
-            label=_("Publication Year"),
-            regex=REGEX_4DIGITYEAR,
-            error_messages={
-                'required': _("Please fill in a four digit value for publication year."),
-                'invalid': ERR_4DIGITYEAR,
-            },
-        )
+        label=_("Publication Year"),
+        regex=REGEX_4DIGITYEAR,
+        error_messages={
+            'required': _("Please fill in a four digit value for publication year."),
+            'invalid': ERR_4DIGITYEAR,
+        },
+    )
     language = django.forms.CharField(required=False, label=_("Language"))
     version = django.forms.CharField(required=False, label=_("Version"))
 
