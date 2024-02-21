@@ -380,6 +380,24 @@ MATOMO_SITE_ID = '{{ matomo_site_id }}'
 MATOMO_AUTH_TOKEN = '{{ matomo_auth_token }}'
 MATOMO_SITE_URL = 'https://matomo.cdlib.org/'
 
+MATOMO_API_TRACKING = { 'url': f'{MATOMO_SITE_URL}/matomo.php', 'site_id': MATOMO_SITE_ID,
+                        'ignore_paths': ["/learn/",
+                                         "/home/",
+                                         "/account/",
+                                         "/ajax_hide_alert",
+                                         "/contact/",
+                                         "/create/",
+                                         "/dashboard/",
+                                         "/demo/",
+                                         "/doc/",
+                                         "/download_confirm",
+                                         "/download_error",
+                                         "/manage/",
+                                         "/search/",
+                                         "/tombstone/"],
+                        'token_auth': MATOMO_AUTH_TOKEN,
+                        'ignore_html': True}
+
 
 # Celery Configuration Options, which is a python task queue used for matomo tracking to make it asynchronous to api requests
 CELERY_TIMEZONE = "America/Los_Angeles"
