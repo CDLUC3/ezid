@@ -415,10 +415,6 @@ class NonRepeatingForm(django.forms.Form):
     target = django.forms.CharField(
         required=False, label=_("Location (URL)"), validators=[_validate_url]
     )
-    
-    language = django.forms.CharField(required=False, label=_("Language"))
-    version = django.forms.CharField(required=False, label=_("Version"))
-
     publicationYear = django.forms.RegexField(
             label=_("Publication Year"),
             regex=REGEX_4DIGITYEAR,
@@ -427,6 +423,8 @@ class NonRepeatingForm(django.forms.Form):
                 'invalid': ERR_4DIGITYEAR,
             },
         )
+    language = django.forms.CharField(required=False, label=_("Language"))
+    version = django.forms.CharField(required=False, label=_("Version"))
 
 class PublisherForm(django.forms.Form):
     """Form object for Publisher element in DataCite Advanced (XML)
@@ -500,7 +498,7 @@ class NameIdMultBaseFormSet(django.forms.BaseFormSet):
         form.fields["affiliation-affiliationIdentifier"] = django.forms.CharField(
             required=False, label=_("Affiliation Identifier")
         )
-        form.fields["affiliation-Scheme"] = django.forms.CharField(
+        form.fields["affiliation-affiliationIdentifierScheme"] = django.forms.CharField(
             required=False, label=_("Affiliation Identifier Scheme")
         )
         form.fields["affiliation-schemeURI"] = django.forms.CharField(

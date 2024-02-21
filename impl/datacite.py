@@ -231,7 +231,6 @@ def validateDcmsRecord(identifier, record, schemaValidate=True):
     Returns:
         Either the normalized record is returned or an assertion error is raised.
     """
-    log.info(f"record: {record}")
     m = PROLOG_RE.match(record)
     if m:
         assert m.group(2) == "1.0", "Unsupported XML version"
@@ -286,7 +285,6 @@ def validateDcmsRecord(identifier, record, schemaValidate=True):
         i.text = "10.1234/X"
         schema[1].acquire()
         try:
-            # lxml.etree.XMLSchema.assertValid("<Element {http://datacite.org/schema/kernel-4}"")
             schema[0].assertValid(root)
         except Exception as e:
             # Ouch. On some LXML installations, but not all, an error is
