@@ -286,9 +286,6 @@ def validateDcmsRecord(identifier, record, schemaValidate=True):
         i.text = "10.1234/X"
         schema[1].acquire()
         try:
-            log.info(f"schema[0]: {schema[0]}")
-            log.info(f"schema[1]: {schema[1]}")
-            log.info(f"root: {root}")
             # lxml.etree.XMLSchema.assertValid("<Element {http://datacite.org/schema/kernel-4}"")
             schema[0].assertValid(root)
         except Exception as e:
@@ -710,7 +707,7 @@ def briefDataciteRecord(record):
             if 'resourceType' in datacite_dict['resource']:
                 briefDcRecord['datacite.resourcetype'] = get_dict_value_by_key(datacite_dict['resource']['resourceType'], '@resourceTypeGeneral')
     except Exception as ex:
-        print(f'error: {ex} - brief record: {briefDcRecord}')
+        log.error(f'error: {ex} - brief record: {briefDcRecord}')
         
     return briefDcRecord
 
