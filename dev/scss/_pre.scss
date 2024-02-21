@@ -3,8 +3,8 @@
 %pre__base {
 	margin: 1em 0;
 	padding: 0.5em;
-	border: 1px dotted $gray-light;
-	background-color: $gray-lighter;
+	border: 1px dotted; // $gray-light
+	// background-color: $gray-lighter;
 	font-size: 0.85em;
 }
 
