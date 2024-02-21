@@ -38,7 +38,7 @@ def render(request, template, context={}):
         # Todo: Reimplement alertMessage without ServerVariables
         "alertMessage": None,
         "feed_cache": [],  # ezidapp.management.commands.newsfeed.getLatestItems(),
-        "google_analytics_id": django.conf.settings.GOOGLE_ANALYTICS_ID,
+        "matomo_site_id": django.conf.settings.MATOMO_SITE_ID,
         "debug": django.conf.settings.DEBUG,
         "matomo_site_url": django.conf.settings.MATOMO_SITE_URL,
         "matomo_site_id": django.conf.settings.MATOMO_SITE_ID,
@@ -140,7 +140,7 @@ def error(request, code, content_custom=None):
         # Todo: Reimplement alertMessage without ServerVariables
         "alertMessage": None,
         "feed_cache": [],  # ezidapp.management.commands.newsfeed.getLatestItems(),
-        "google_analytics_id": django.conf.settings.GOOGLE_ANALYTICS_ID,
+        "matomo_site_id": django.conf.settings.MATOMO_SITE_ID,
         "content_custom": content_custom,
         "matomo_site_url": django.conf.settings.MATOMO_SITE_URL,
         "matomo_site_id": django.conf.settings.MATOMO_SITE_ID,
