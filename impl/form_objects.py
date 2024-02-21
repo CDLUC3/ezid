@@ -419,9 +419,6 @@ class NonRepeatingForm(django.forms.Form):
     language = django.forms.CharField(required=False, label=_("Language"))
     version = django.forms.CharField(required=False, label=_("Version"))
 
-    publisher = django.forms.CharField(
-            label=_("Publisher"), error_messages={'required': ERR_PUBLISHER}
-        )
     publicationYear = django.forms.RegexField(
             label=_("Publication Year"),
             regex=REGEX_4DIGITYEAR,
@@ -430,28 +427,16 @@ class NonRepeatingForm(django.forms.Form):
                 'invalid': ERR_4DIGITYEAR,
             },
         )
-    publisherIdentifier = django.forms.CharField(required=False, label=_("Publisher Identifier"))
-    publisherIdentifierScheme = django.forms.CharField(required=False, label=_("Publisher IdentifierScheme"))
-    schemeURI = django.forms.CharField(required=False, label=_("scheme URI"))
 
-
-class PublisherForm_0(django.forms.Form):
-    """Form object for Publisher Element in DataCite Advanced (XML)
+class PublisherForm(django.forms.Form):
+    """Form object for Publisher element in DataCite Advanced (XML)
     profile."""
 
     def __init__(self, *args, **kwargs):
-        super(PublisherForm_0, self).__init__(*args, **kwargs)
-       
+        super(PublisherForm, self).__init__(*args, **kwargs)
+
         self.fields['publisher'] = django.forms.CharField(
             label=_("Publisher"), error_messages={'required': ERR_PUBLISHER}
-        )
-        self.fields['publicationYear'] = django.forms.RegexField(
-            label=_("Publication Year"),
-            regex=REGEX_4DIGITYEAR,
-            error_messages={
-                'required': _("Please fill in a four digit value for publication year."),
-                'invalid': ERR_4DIGITYEAR,
-            },
         )
         self.fields['publisher-publisherIdentifier'] = django.forms.CharField(required=False, label=_("Publisher Identifier"))
         self.fields['publisher-publisherIdentifierScheme'] = django.forms.CharField(required=False, label=_("Publisher IdentifierScheme"))
@@ -515,7 +500,7 @@ class NameIdMultBaseFormSet(django.forms.BaseFormSet):
         form.fields["affiliation-affiliationIdentifier"] = django.forms.CharField(
             required=False, label=_("Affiliation Identifier")
         )
-        form.fields["affiliation-affiliationIdentifierScheme"] = django.forms.CharField(
+        form.fields["affiliation-Scheme"] = django.forms.CharField(
             required=False, label=_("Affiliation Identifier Scheme")
         )
         form.fields["affiliation-schemeURI"] = django.forms.CharField(
@@ -1060,6 +1045,8 @@ def getIdForm_datacite_xml(form_coll=None, request=None):
     remainder_form = (
         nonrepeating_form
     ) = (
+        publisher_form
+    ) = (
         resourcetype_form
     ) = (
         creator_set
@@ -1107,6 +1094,7 @@ def getIdForm_datacite_xml(form_coll=None, request=None):
         # noinspection PyUnboundLocalVariable
         remainder_form = RemainderForm(post, shoulder=shoulder, auto_id='%s')
         nonrepeating_form = NonRepeatingForm(post, auto_id='%s')
+        publisher_form = PublisherForm(post, auto_id='%s')
         resourcetype_form = ResourceTypeForm(post, auto_id='%s')
         # noinspection PyUnboundLocalVariable
         creator_nameIdLastIndex = _getNameIdCt(
@@ -1144,6 +1132,10 @@ def getIdForm_datacite_xml(form_coll=None, request=None):
         # Note: Remainder form only needed upon ID creation
         nonrepeating_form = NonRepeatingForm(
             form_coll.nonRepeating if hasattr(form_coll, 'nonRepeating') else None,
+            auto_id='%s',
+        )
+        publisher_form = PublisherForm(
+            form_coll.publisher if hasattr(form_coll, 'publisher') else None,
             auto_id='%s',
         )
         resourcetype_form = ResourceTypeForm(
@@ -1269,6 +1261,7 @@ def getIdForm_datacite_xml(form_coll=None, request=None):
     return {
         'remainder_form': remainder_form,
         'nonrepeating_form': nonrepeating_form,
+        'publisher_form': publisher_form,
         'resourcetype_form': resourcetype_form,
         'creator_set': creator_set,
         'title_set': title_set,
