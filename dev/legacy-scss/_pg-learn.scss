@@ -20,9 +20,9 @@
 }
 
 // libsass patch: https://github.com/twbs/bootstrap/issues/16576
-// .breadcrumb > li + li:before {
-//   content: $breadcrumb-separator + "\00a0";
-// }
+.breadcrumb > li + li:before {
+  content: $breadcrumb-separator + "\00a0";
+}
 
 @media (max-width:$container-sm){
   .panel-body{

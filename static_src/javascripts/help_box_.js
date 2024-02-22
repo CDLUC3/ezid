@@ -20,19 +20,12 @@
  *
  */
 
-console.log('help_box_.js loaded');
-
 $(document).ready(function() {
   // Hide all help content until elements are called upon (brought in via ezid-info-pages / popup_help.html)
   $('.help_window').hide();
 
-  console.log('document ready called');
-
   const popoverTriggerList = document.querySelectorAll('[data-toggle="popover"]');
-  console.log('popoverTriggerList', popoverTriggerList);
   const popoverList = [...popoverTriggerList].map((popoverTriggerEl) => {
-    console.log(popoverTriggerEl);
-    console.log('content', getPopContent(popoverTriggerEl.getAttribute("id")));
     return new bootstrap.Popover(popoverTriggerEl, {
         container: 'body',
         content: getPopContent(popoverTriggerEl.getAttribute("id")),
@@ -43,7 +36,6 @@ $(document).ready(function() {
     });
   });
 
-  console.log('popoverList', popoverList);
 
   // For each popover element, insert the corresponding content
   /*
