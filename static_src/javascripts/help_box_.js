@@ -36,51 +36,42 @@ $(document).ready(function() {
     });
   });
 
+  [...popoverTriggerList].map((item) => {
+      item.onclick = (e) => e.preventDefault();
+  });
+
+
 
   // For each popover element, insert the corresponding content
-  /*
-  $('[data-toggle="popover"]').each(function() {
-    const exampleEl = $(this)[ 0 ]; // make javascript instead of jQuery object);
-    const popover = new bootstrap.Popover(exampleEl, {
-      html: true,
-      container: 'body',
-      content: getPopContent(exampleEl.getAttribute("id"))
-    });
-
-    // This prevents page from scrolling to top when you click
-    exampleEl.onclick = function(e) {e.popover(); return true; }
-  });
-   */
-
-
   function getPopContent(target) {
     return $("#" + target + "_content").html();
   };
 
   // User able to dismiss/close help window by hitting escape key
-  // $(document).keyup(function (e) {
-  //   if (e.which === 27) {
-  //     $('[data-toggle="popover"]').each(function () {
-  //       $(this).popover('hide');
-  //     });
-  //   }
-  // });
+  $(document).keyup(function (e) {
+    if (e.which === 27) {
+      $('[data-toggle="popover"]').each(function () {
+        $(this).popover('hide');
+      });
+    }
+  });
 
   // ... and by clicking outside popover
-  // $('body').on('click', function (e) {
-  //   $('[data-toggle="popover"]').each(function () {
-  //     //the 'is' for buttons that trigger popups
-  //     //the 'has' for icons within a button that triggers a popup
-  //     if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
-  //       $(this).popover('hide');
-  //     }
-  //   });
-  // });
+  $('body').on('click', function (e) {
+    $('[data-toggle="popover"]').each(function () {
+      //the 'is' for buttons that trigger popups
+      //the 'has' for icons within a button that triggers a popup
+      if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+        $(this).popover('hide');
+      }
+    });
+  });
 
   // Record a Google Analytics event when user clicks "Tooltip" Bootstrap Popover
-  // $('.help_window').on('show.bs.popover', function () {
-  // $('.button__icon-help').on('click', function () {
-  //   MATOMO_EVENT_LIB.init("Documentation Open Tooltip");
-  //   MATOMO_EVENT_LIB.record_matomo_event();
-  // });
+  $('.help_window').on('show.bs.popover', function () {
+    $('.button__icon-help').on('click', function () {
+      MATOMO_EVENT_LIB.init("Documentation Open Tooltip");
+      MATOMO_EVENT_LIB.record_matomo_event();
+    });
+  });
 });
