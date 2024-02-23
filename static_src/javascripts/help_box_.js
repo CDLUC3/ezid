@@ -31,18 +31,22 @@ $(document).ready(function() {
         content: getPopContent(popoverTriggerEl.getAttribute("id")),
         html: true,
         sanitize: false,
-        title: 'Help',
         trigger: 'click'
     });
   });
 
-  [...popoverTriggerList].map((item) => {
-      item.onclick = (e) => e.preventDefault();
+  // Remove the title display since EZID doesn't display it
+  popoverList.forEach(function (popover) {
+    popover._element.removeAttribute('data-bs-original-title');
   });
 
+  // Prevent the default action of the popover trigger that scrolls the page to the top
+  [...popoverTriggerList].forEach((item) => {
+    // item.removeAttribute('data-bs-original-title');
+    item.onclick = (e) => e.preventDefault();
+  });
 
-
-  // For each popover element, insert the corresponding content
+  // For each popover element, get the corresponding content from elsewhere in the page
   function getPopContent(target) {
     return $("#" + target + "_content").html();
   };
