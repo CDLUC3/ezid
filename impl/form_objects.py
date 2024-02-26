@@ -375,9 +375,21 @@ def _validateAffiliationIdGrouping(caff, caffId, caffId_s, caffId_s_uri):
             )
     return err
 
-def _validatePublisherIdGrouping(caff, caffId, caffId_s, caffId_s_uri):
-    # TO-DO
+def _validatePublisherIdGrouping(pubId, pubId_s, pibId_s_uri):
     err={}
+    if (pubId_s or pibId_s_uri) and not pubId:
+        err['publisher-publisherIdentifier'] = _(
+            "A Publisher Identifier must be filled in if you specify other Publisher Identifier sub-properties."
+        )
+    if (pubId or pibId_s_uri) and not pubId_s:
+        err['publisher-publisherIdentifierScheme'] = _(
+            "A Publisher Identifier Scheme must be filled in if you specify other Publisher Identifier sub-properties."
+        )
+    if (pubId or pubId_s) and not pibId_s_uri:
+        err['publisher-schemeURI'] = _(
+            "A Publisher Identifier Scheme URI must be filled in if you specify other Publisher Identifier sub-properties."
+        )
+
     return err
 
 def _validate_geolong(n):
@@ -439,6 +451,19 @@ class PublisherForm(django.forms.Form):
         self.fields['publisher-publisherIdentifier'] = django.forms.CharField(required=False, label=_("Publisher Identifier"))
         self.fields['publisher-publisherIdentifierScheme'] = django.forms.CharField(required=False, label=_("Publisher IdentifierScheme"))
         self.fields['publisher-schemeURI'] = django.forms.CharField(required=False, label=_("scheme URI"))
+
+    def clean(self):
+        cleaned_data = super(PublisherForm, self).clean()
+        errs = {}
+        pubId = cleaned_data.get('publisher-publisherIdentifier', '')
+        pubId_s = cleaned_data. get('publisher-publisherIdentifierScheme', '')
+        pubId_s_uri = cleaned_data.get('publisher-schemeURI', '')
+
+        errs = _validatePublisherIdGrouping(pubId, pubId_s, pubId_s_uri)
+        if errs:
+            raise django.core.exceptions.ValidationError(errs)
+
+        return cleaned_data
 
 
 class ResourceTypeForm(django.forms.Form):
