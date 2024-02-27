@@ -377,17 +377,13 @@ def _validateAffiliationIdGrouping(caff, caffId, caffId_s, caffId_s_uri):
 
 def _validatePublisherIdGrouping(pubId, pubId_s, pibId_s_uri):
     err={}
-    if (pubId_s or pibId_s_uri) and not pubId:
-        err['publisher-publisherIdentifier'] = _(
-            "A Publisher Identifier must be filled in if you specify other Publisher Identifier sub-properties."
-        )
-    if (pubId or pibId_s_uri) and not pubId_s:
+    if pubId and not pubId_s:
         err['publisher-publisherIdentifierScheme'] = _(
-            "A Publisher Identifier Scheme must be filled in if you specify other Publisher Identifier sub-properties."
+            "A Publisher Identifier Scheme must be filled in if you specify a Publisher Identifier."
         )
-    if (pubId or pubId_s) and not pibId_s_uri:
-        err['publisher-schemeURI'] = _(
-            "A Publisher Identifier Scheme URI must be filled in if you specify other Publisher Identifier sub-properties."
+    if pubId_s and not pubId:
+        err['publisher-publisherIdentifier'] = _(
+            "A Publisher Identifier must be filled in if you specify a Publisher Identifier Scheme."
         )
 
     return err
