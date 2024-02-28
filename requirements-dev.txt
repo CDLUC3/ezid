@@ -4,7 +4,6 @@ Django~=3.2.7
 
 aiomysql~=0.0.21
 
-mysqlclient~=2.2.4
 mysql~=0.0.3
 myloginpath~=0.0.2
 
