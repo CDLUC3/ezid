@@ -94,7 +94,7 @@ def debug_task(self):
 @app.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
     # cleanup kombu message table every hour, defaults to keeping 1 day of messages
-    sender.add_periodic_task(60.0 * 60.0, cleanup_kombu_message_table.s(1),
+    sender.add_periodic_task(60.0, cleanup_kombu_message_table.s(1),
                              name='cleanup kombu message table every hour')
 
 
