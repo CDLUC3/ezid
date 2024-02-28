@@ -26,6 +26,10 @@
   ansible.builtin.pip:
     name: mysqlclient
     virtualenv: "{{ pyenv_root }}/versions/{{ pyenv_global }}"
+- name: install boto3 KLUGE
+  ansible.builtin.pip:
+    name: boto3
+    virtualenv: "{{ pyenv_root }}/versions/{{ pyenv_global }}"
 
 - name: run setup.py
   ansible.builtin.command:
