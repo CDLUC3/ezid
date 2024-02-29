@@ -52,26 +52,15 @@
       - collectstatic
       - --clear
       - --no-input
+      - --settings=settings.settings
   register: _response2
 
-#- when: _response1.rc is defined
-#  block:
-#
-#  - name: report setup.py response std_out
-#    debug:
-#      msg="{{ _response1.stdout_lines }}"
-#  
-#  - name: report setup.py response std_err
-#    debug:
-#      msg="{{ _response1.stderr_lines }}"
+- name: report `setup.py` std_out
+  debug:
+    msg: "{{ _response1.stdout_lines }}"
+  when: _response1.rc is defined
 
-#- when: _response2.rc is defined
-#  block:
-#
-#  - name: report manage.py response std_out
-#    debug:
-#      msg="{{ _response2.stdout_lines }}"
-#  
-#  - name: report manage.py response std_err
-#    debug:
-#      msg="{{ _response2.stderr_lines }}"
+- name: report `manage.py collectstatic` std_out
+  debug:
+    msg: "{{ _response2.stdout_lines }}"
+  when: _response2.rc is defined
