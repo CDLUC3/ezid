@@ -55,12 +55,14 @@
       - --settings=settings.settings
   register: _response2
 
-- name: report `setup.py` std_out
-  debug:
-    msg: "{{ _response1.stdout_lines }}"
-  when: _response1.rc is defined
-
-- name: report `manage.py collectstatic` std_out
-  debug:
-    msg: "{{ _response2.stdout_lines }}"
-  when: _response2.rc is defined
+## too noisy
+#
+#- name: report `setup.py` std_out
+#  debug:
+#    msg: "{{ _response1.stdout_lines }}"
+#  when: _response1.rc is defined
+#
+#- name: report `manage.py collectstatic` std_out
+#  debug:
+#    msg: "{{ _response2.stdout_lines }}"
+#  when: _response2.rc is defined
