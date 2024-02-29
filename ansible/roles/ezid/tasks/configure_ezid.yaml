@@ -41,7 +41,7 @@
   register: _response1
 
 - name: run pyenv rehash
-  ansible.builtin.command: pyenv rehash
+  ansible.builtin.command: "{{ pyenv_root }}/bin/pyenv rehash"
 
 - name: run manage.py collectstatic
   ansible.builtin.command:
