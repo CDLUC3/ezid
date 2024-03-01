@@ -10,7 +10,7 @@
       {% endif %}
       <div id="customize-modal__header" class="modal-header login-modal__header">
         <div class="customize-modal__title" id="myModalLabel">{% trans "Choose Columns to Display" %}</div>
-        <a href="" data-dismiss="modal" aria-label="close"><img src="/static/images/icon_cross.svg" class="close login-modal__close" data-dismiss="modal"></a>
+        <a href="" data-bs-dismiss="modal" aria-label="close"><img src="/static/images/icon_cross.svg" class="close login-modal__close" data-dismiss="modal"></a>
       </div>
       <div class="modal-body">
         <div class="row">
@@ -23,7 +23,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="button__cancel" id="restore_defaults">{% trans "Restore Defaults" %}</button>
-        <button type="button" class="button__cancel" data-dismiss="modal">{% trans "Cancel" %}</button>
+        <button type="button" class="button__cancel" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
         <button type="submit" class="button__primary search__action" name="submit_checks" value="Apply Changes">{% trans "Apply Changes" %}</button>
       </div>
       </form>

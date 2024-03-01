@@ -89,8 +89,8 @@ class TestEzidMinter:
         """
         
         # load minter to mysql db 
-        bdb_path = str(test_docs.joinpath('77913_r7_last_before_template_extend.json'))
-        minter_dict = self._minter_to_dict(bdb_path)
+        test_dataset_path = str(test_docs.joinpath('77913_r7_last_before_template_extend.json'))
+        minter_dict = self._minter_to_dict(test_dataset_path)
 
         ezidapp.models.minter.Minter.objects.create(prefix=ID_STR, minterState=minter_dict)
 

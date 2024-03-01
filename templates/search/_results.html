@@ -16,7 +16,7 @@
     {% endif %}
     </form>
     {% if results|length > 0 %}
-    <button class="customize-table__button-customize" data-toggle="modal" data-target="#myModal" type="button">{% trans "Customize View" %}</button>
+    <button class="customize-table__button-customize" data-bs-toggle="modal" data-bs-target="#myModal" type="button">{% trans "Customize View" %}</button>
     {% endif %}
   </div>
   {% include "search/_choose_cols.html" with primary_page=primary_page %}

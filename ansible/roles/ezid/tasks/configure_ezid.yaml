@@ -22,6 +22,15 @@
     group: "{{ group }}"
     mode: "0600"
 
+- name: install mysqlclient KLUGE
+  ansible.builtin.pip:
+    name: mysqlclient
+    virtualenv: "{{ pyenv_root }}/versions/{{ pyenv_global }}"
+- name: install boto3 KLUGE
+  ansible.builtin.pip:
+    name: boto3
+    virtualenv: "{{ pyenv_root }}/versions/{{ pyenv_global }}"
+
 - name: run setup.py
   ansible.builtin.command:
     chdir: "{{ app_dir }}/ezid"
@@ -32,7 +41,7 @@
   register: _response1
 
 - name: run pyenv rehash
-  ansible.builtin.command: pyenv rehash
+  ansible.builtin.command: "{{ pyenv_root }}/bin/pyenv rehash"
 
 - name: run manage.py collectstatic
   ansible.builtin.command:
@@ -43,26 +52,17 @@
       - collectstatic
       - --clear
       - --no-input
+      - --settings=settings.settings
   register: _response2
 
-#- when: _response1.rc is defined
-#  block:
+## too noisy
 #
-#  - name: report setup.py response std_out
-#    debug:
-#      msg="{{ _response1.stdout_lines }}"
-#  
-#  - name: report setup.py response std_err
-#    debug:
-#      msg="{{ _response1.stderr_lines }}"
-
-#- when: _response2.rc is defined
-#  block:
+#- name: report `setup.py` std_out
+#  debug:
+#    msg: "{{ _response1.stdout_lines }}"
+#  when: _response1.rc is defined
 #
-#  - name: report manage.py response std_out
-#    debug:
-#      msg="{{ _response2.stdout_lines }}"
-#  
-#  - name: report manage.py response std_err
-#    debug:
-#      msg="{{ _response2.stderr_lines }}"
+#- name: report `manage.py collectstatic` std_out
+#  debug:
+#    msg: "{{ _response2.stdout_lines }}"
+#  when: _response2.rc is defined

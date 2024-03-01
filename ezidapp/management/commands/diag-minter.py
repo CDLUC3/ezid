@@ -77,7 +77,6 @@ class Command(django.core.management.BaseCommand):
 
     def __init__(self):
         super(Command, self).__init__()
-        self.bdb_path = None
         self.opt = None
 
     def create_parser(self, *args, **kwargs):

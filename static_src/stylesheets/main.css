@@ -1119,13 +1119,6 @@ input[type="reset"].btn-block,
 input[type="button"].btn-block {
   width: 100%; }
 
-.fade {
-  opacity: 0;
-  -webkit-transition: opacity 0.15s linear;
-  transition: opacity 0.15s linear; }
-  .fade.in {
-    opacity: 1; }
-
 .collapse {
   display: none; }
   .collapse.in {
@@ -1441,7 +1434,7 @@ tbody.collapse.in {
     border-top-color: #e4b9c0; }
   .alert-danger .alert-link {
     color: #843534; }
-
+/*
 .modal-open {
   overflow: hidden; }
 
@@ -1456,6 +1449,7 @@ tbody.collapse.in {
   z-index: 1050;
   -webkit-overflow-scrolling: touch;
   outline: 0; }
+
   .modal.fade .modal-dialog {
     -webkit-transform: translate3d(0, -25%, 0);
     transform: translate3d(0, -25%, 0);
@@ -1541,6 +1535,7 @@ tbody.collapse.in {
   width: 50px;
   height: 50px;
   overflow: scroll; }
+ */
 
 @media (min-width: 480px) {
   .modal-dialog {
@@ -1685,8 +1680,13 @@ tbody.collapse.in {
   border-bottom: 1px solid #dadada;
   border-radius: 5px 5px 0 0; }
 
-.popover-content {
-  padding: 9px 14px; }
+.popover-content, .popover-body, .popover-title {
+  padding: 9px 14px;
+  font-size: 15px;
+  line-height: 1.3;
+  font-weight: normal;
+  color: black;
+}
 
 .popover > .arrow, .popover > .arrow:after {
   position: absolute;
