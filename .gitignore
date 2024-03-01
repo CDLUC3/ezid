@@ -12,6 +12,7 @@ Z*
 \.old[0-9]*$
 \.project$
 \.pydevproject$
+\.python-version
 .test-venv
 db
 dev/css/*
@@ -24,6 +25,7 @@ settings.py
 static/javascripts/metadata_tooltips.js
 ui_library
 ~$
+templates/info
 
 
 # Dirs

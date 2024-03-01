@@ -380,8 +380,42 @@ MATOMO_SITE_ID = '{{ matomo_site_id }}'
 MATOMO_AUTH_TOKEN = '{{ matomo_auth_token }}'
 MATOMO_SITE_URL = 'https://matomo.cdlib.org/'
 
-S3_BUCKET = '{{ s3_bucket }}'
-S3_BUCKET_DOWNLOAD_PATH = 'download'
+MATOMO_API_TRACKING = { 'url': f'{MATOMO_SITE_URL}/matomo.php', 'site_id': MATOMO_SITE_ID,
+                        'ignore_paths': ["/learn/",
+                                         "/home/",
+                                         "/account/",
+                                         "/ajax_hide_alert",
+                                         "/contact/",
+                                         "/create/",
+                                         "/dashboard/",
+                                         "/demo/",
+                                         "/doc/",
+                                         "/download_confirm",
+                                         "/download_error",
+                                         "/manage/",
+                                         "/search/",
+                                         "/tombstone/"],
+                        'token_auth': MATOMO_AUTH_TOKEN,
+                        'ignore_html': True}
+
+
+# Celery Configuration Options, which is a python task queue used for matomo tracking to make it asynchronous to api requests
+CELERY_TIMEZONE = "America/Los_Angeles"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 60
+# CELERY_BROKER_URL = 'sqla+sqlite:///../celery.sqlite'
+# CELERY_BACKEND = 'db+sqlite:///../celery.sqlite'
+CELERY_DB_CONNECT = 'mysql://{{ database_user }}:{{ database_password | urlencode }}@{{ database_host }}/{{ database_name }}'
+CELERY_BROKER_URL = f'sqla+{CELERY_DB_CONNECT}'
+CELERY_BACKEND = f'db+{CELERY_DB_CONNECT}'
+
+
+CELERY_TASK_RESULT_EXPIRES = 3600 # 1 hour until completed task results are deleted from database
+
+# the following were additional settings other examples used, but I don't believe they are necessary
+# CELERY_BROKER_BACKEND = "db+sqlite:///celery.sqlite"
+# CELERY_CACHE_BACKEND = "db+sqlite:///celery.sqlite"
+# CELERY_RESULT_BACKEND = "db+sqlite:///celery.sqlite"
 
 GZIP_COMMAND = '/usr/bin/gzip'
 ZIP_COMMAND = '/usr/bin/zip'
@@ -549,6 +583,7 @@ MIDDLEWARE = (
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'matomo_api_tracking.middleware.MatomoApiTrackingMiddleware',
     # 'impl.middleware.ExceptionScrubberMiddleware',
 )
 
