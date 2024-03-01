@@ -461,7 +461,6 @@ def agent_minter():
     """Create the minter for the CDL Agent shoulder.
     
     The Agent shoulder (ark:/99166/p9) is already in the DB ready for use.
-    The corresponding minter is not as the test DB was created before BDB minter to mysql migration.
     Create the corresponding minter in the DB.
     """
     prefix = 'ark:/99166/p9'
@@ -643,52 +642,3 @@ def django_close_all_connections():
     django.db.connections.close_all()
 
 
-# def html_pp(html_str):
-#     import bs4
-#     print(bs4.BeautifulSoup(html_str).prettify())
-
-
-# def ensure_minter(tmp_bdb_root, ns):
-#     """Create a minter BerkeleyDB for a shoulder if one does not already exist
-#     """
-#     # Create the minter BerkeleyDB.
-#     bdb_path = impl.nog.minter.create_minter_database(ns)
-#
-#     ns, arg_tup = namespace
-#     impl.nog.shoulder.create_shoulder(
-#         ns,
-#         'test org for shoulder {}'.format(str(ns)),
-#         datacenter_model=(
-#             ezidapp.models.datacenter.Datacenter.objects.filter(symbol='CDL.CDL').get()
-#             if meta_type == 'datacite'
-#             else None
-#         ),
-#         is_crossref=meta_type == 'crossref',
-#         is_test=True,
-#         is_super_shoulder='supershoulder' in arg_tup,
-#         is_sharing_datacenter=False,
-#         is_force='force' in arg_tup,
-#         is_debug=True,
-#     )
-#     yield namespace
-
-# def get_or_create_user(group_name):
-#     realm = ezidapp.models.realm.Realm.objects.update_or_create(name='CDL')[0]
-#     group = ezidapp.models.group.Group.objects.update_or_create(
-#             'realm': realm,
-#             'groupname': group_name,
-#             # },
-#         },
-#         groupname=django.conf.settings.ADMIN_GROUPNAME,
-#     )[0]
-#     user = ezidapp.models.user.User.objects.update_or_create(
-#         defaults={
-#             **ADMIN_MODEL_DICT['ezidapp.user'],
-#             'realm': realm,
-#             'group': group,
-#             'username': django.conf.settings.ADMIN_USERNAME,
-#         },
-#         username='admin',
-#     )[0]
-#     user.setPassword(django.conf.settings.ADMIN_PASSWORD)
-#     user.save()
