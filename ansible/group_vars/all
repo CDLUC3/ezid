@@ -26,7 +26,7 @@ http_protocol: http
 
 # AWS SSM Params
 # Gather any environment specific application settings from AWS SSM ParameterStore
-# using aws_ssm pluggin
+# using aws_ssm plugin
 #
 aws_region: "{{ lookup('env', 'AWS_REGION') | default('us-west-2') }}"
 ssm_default_path: "{{ lookup('env', 'SSM_DEFAULT_PATH') | default('/no/path/') }}"

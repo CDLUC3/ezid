@@ -315,7 +315,6 @@ class EzidMinter:
 
     def create(self, shoulder_str, mask_str='eedk'):
         """Set minter to initial, unused state."""
-        # self._bdb.clear()
 
         self.template_str = '{}{{}}'.format(shoulder_str, mask_str)
         self.mask_str = mask_str

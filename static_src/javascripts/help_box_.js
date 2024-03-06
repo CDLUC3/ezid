@@ -24,21 +24,29 @@ $(document).ready(function() {
   // Hide all help content until elements are called upon (brought in via ezid-info-pages / popup_help.html)
   $('.help_window').hide();
 
-  // For each popover element, insert the corresponding content
-  $('[data-toggle="popover"]').each(function() {
-    var $pElem= $(this);
-    $pElem.popover(
-        {
-          html: true,
-          // Here data-container is set within html (as id of help_icon itself) to allow for
-          //   keyboard accessibility (tabbing into focusable elements within popover). Otherwise:
-          // container: 'body',
-          content: getPopContent($pElem.attr("id"))
-        }
-    );
-    // This prevents page from scrolling to top when you click
-    $pElem.on('click', function(e) {e.preventDefault(); return true;});
+  const popoverTriggerList = document.querySelectorAll('[data-toggle="popover"]');
+  const popoverList = [...popoverTriggerList].map((popoverTriggerEl) => {
+    return new bootstrap.Popover(popoverTriggerEl, {
+        container: 'body',
+        content: getPopContent(popoverTriggerEl.getAttribute("id")),
+        html: true,
+        sanitize: false,
+        trigger: 'click'
+    });
   });
+
+  // Remove the title display since EZID doesn't display it
+  popoverList.forEach(function (popover) {
+    popover._element.removeAttribute('data-bs-original-title');
+  });
+
+  // Prevent the default action of the popover trigger that scrolls the page to the top
+  [...popoverTriggerList].forEach((item) => {
+    // item.removeAttribute('data-bs-original-title');
+    item.onclick = (e) => e.preventDefault();
+  });
+
+  // For each popover element, get the corresponding content from elsewhere in the page
   function getPopContent(target) {
     return $("#" + target + "_content").html();
   };
@@ -51,6 +59,7 @@ $(document).ready(function() {
       });
     }
   });
+
   // ... and by clicking outside popover
   $('body').on('click', function (e) {
     $('[data-toggle="popover"]').each(function () {
@@ -63,9 +72,10 @@ $(document).ready(function() {
   });
 
   // Record a Google Analytics event when user clicks "Tooltip" Bootstrap Popover
-  // $('.help_window').on('show.bs.popover', function () {
-  $('.button__icon-help').on('click', function () {
-    MATOMO_EVENT_LIB.init("Documentation Open Tooltip");
-    MATOMO_EVENT_LIB.record_matomo_event();
+  $('.help_window').on('show.bs.popover', function () {
+    $('.button__icon-help').on('click', function () {
+      MATOMO_EVENT_LIB.init("Documentation Open Tooltip");
+      MATOMO_EVENT_LIB.record_matomo_event();
+    });
   });
 });

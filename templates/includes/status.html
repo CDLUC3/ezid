@@ -2,7 +2,7 @@
   {% if not session or not "hide_alert" in session or not session.hide_alert %}
   <div id="ustatus" class="alert alert-warning" role="alert">
     <div class="alert-text">
-      <a href="#" class="close not-text" data-dismiss="alert">&times;</a>
+      <a href="#" class="close not-text" data-bs-dismiss="alert">&times;</a>
       {{ alertMessage|safe }}
     </div>
   </div>
