@@ -251,7 +251,7 @@ def validateDcmsRecord(identifier, record, schemaValidate=True):
     assert m, "Not a DataCite record"
     version = m.group(2)
     # Upgrade schema versions that have been deprecated by DataCite.
-    if version == "2.1" or version == "2.2":
+    if version in ["2.1", "2.2", "3"]:
         root = upgradeDcmsRecord(root, parseString=False, returnString=False)
         m = ROOT_TAG_RE.match(root.tag)
         version = m.group(2)
@@ -705,7 +705,7 @@ def briefDataciteRecord(record):
             if 'resourceType' in datacite_dict['resource']:
                 briefDcRecord['datacite.resourcetype'] = get_dict_value_by_key(datacite_dict['resource']['resourceType'], '@resourceTypeGeneral')
     except Exception as ex:
-        print(f'error: {ex} - brief record: {briefDcRecord}')
+        log.error(f'error: {ex} - brief record: {briefDcRecord}')
         
     return briefDcRecord
 

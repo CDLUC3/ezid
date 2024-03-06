@@ -54,6 +54,7 @@ RESOURCE_TYPES = (
     ('Dissertation', _('Dissertation')),
     ('Event', _('Event')),
     ('Image', _('Image')),
+    ('Instrument', _('Instrument')),
     ('InteractiveResource', _('Interactive Resource')),
     ('Journal', _('Journal')),
     ('JournalArticle', _('Journal Article')),
@@ -66,6 +67,7 @@ RESOURCE_TYPES = (
     ('Service', _('Service')),
     ('Software', _('Software')),
     ('Standard', _('Standard')),
+    ('StudyRegistration', _('Study Registration')),
     ('Text', _('Text')),
     ('Workflow', _('Workflow')),
     ('Other', _('Other')),
@@ -373,6 +375,18 @@ def _validateAffiliationIdGrouping(caff, caffId, caffId_s, caffId_s_uri):
             )
     return err
 
+def _validatePublisherIdGrouping(pubId, pubId_s, pibId_s_uri):
+    err={}
+    if pubId and not pubId_s:
+        err['publisher-publisherIdentifierScheme'] = _(
+            "A Publisher Identifier Scheme must be filled in if you specify a Publisher Identifier."
+        )
+    if pubId_s and not pubId:
+        err['publisher-publisherIdentifier'] = _(
+            "A Publisher Identifier must be filled in if you specify a Publisher Identifier Scheme."
+        )
+
+    return err
 
 def _validate_geolong(n):
     m = re.match(REGEX_GEOPOINT, n)
@@ -409,9 +423,6 @@ class NonRepeatingForm(django.forms.Form):
     target = django.forms.CharField(
         required=False, label=_("Location (URL)"), validators=[_validate_url]
     )
-    publisher = django.forms.CharField(
-        label=_("Publisher"), error_messages={'required': ERR_PUBLISHER}
-    )
     publicationYear = django.forms.RegexField(
         label=_("Publication Year"),
         regex=REGEX_4DIGITYEAR,
@@ -422,6 +433,33 @@ class NonRepeatingForm(django.forms.Form):
     )
     language = django.forms.CharField(required=False, label=_("Language"))
     version = django.forms.CharField(required=False, label=_("Version"))
+
+class PublisherForm(django.forms.Form):
+    """Form object for Publisher element in DataCite Advanced (XML)
+    profile."""
+
+    def __init__(self, *args, **kwargs):
+        super(PublisherForm, self).__init__(*args, **kwargs)
+
+        self.fields['publisher'] = django.forms.CharField(
+            label=_("Publisher"), error_messages={'required': ERR_PUBLISHER}
+        )
+        self.fields['publisher-publisherIdentifier'] = django.forms.CharField(required=False, label=_("Publisher Identifier"))
+        self.fields['publisher-publisherIdentifierScheme'] = django.forms.CharField(required=False, label=_("Publisher IdentifierScheme"))
+        self.fields['publisher-schemeURI'] = django.forms.CharField(required=False, label=_("scheme URI"))
+
+    def clean(self):
+        cleaned_data = super(PublisherForm, self).clean()
+        errs = {}
+        pubId = cleaned_data.get('publisher-publisherIdentifier', '')
+        pubId_s = cleaned_data. get('publisher-publisherIdentifierScheme', '')
+        pubId_s_uri = cleaned_data.get('publisher-schemeURI', '')
+
+        errs = _validatePublisherIdGrouping(pubId, pubId_s, pubId_s_uri)
+        if errs:
+            raise django.core.exceptions.ValidationError(errs)
+
+        return cleaned_data
 
 
 class ResourceTypeForm(django.forms.Form):
@@ -827,6 +865,7 @@ class RelIdForm(django.forms.Form):
             ),
         ),
         ("Cites", _("Cites")),
+        ("Collects", _("Collects")),
         ("Compiles", _("Compiles")),
         ("Continues", _("Continues")),
         ("Documents", _("Documents")),
@@ -835,6 +874,7 @@ class RelIdForm(django.forms.Form):
         ("HasPart", _("Has Part")),
         ("HasVersion", _("Has Version")),
         ("IsCitedBy", _("Is Cited By")),
+        ("IsCollectedBy", _("Is Collected By")),
         ("IsCompiledBy", _("Is Compiled By")),
         ("IsContinuedBy", _("Is Continued By")),
         ("IsDocumentedBy", _("Is Documented By")),
@@ -1024,6 +1064,8 @@ def getIdForm_datacite_xml(form_coll=None, request=None):
     remainder_form = (
         nonrepeating_form
     ) = (
+        publisher_form
+    ) = (
         resourcetype_form
     ) = (
         creator_set
@@ -1071,6 +1113,7 @@ def getIdForm_datacite_xml(form_coll=None, request=None):
         # noinspection PyUnboundLocalVariable
         remainder_form = RemainderForm(post, shoulder=shoulder, auto_id='%s')
         nonrepeating_form = NonRepeatingForm(post, auto_id='%s')
+        publisher_form = PublisherForm(post, auto_id='%s')
         resourcetype_form = ResourceTypeForm(post, auto_id='%s')
         # noinspection PyUnboundLocalVariable
         creator_nameIdLastIndex = _getNameIdCt(
@@ -1108,6 +1151,10 @@ def getIdForm_datacite_xml(form_coll=None, request=None):
         # Note: Remainder form only needed upon ID creation
         nonrepeating_form = NonRepeatingForm(
             form_coll.nonRepeating if hasattr(form_coll, 'nonRepeating') else None,
+            auto_id='%s',
+        )
+        publisher_form = PublisherForm(
+            form_coll.publisher if hasattr(form_coll, 'publisher') else None,
             auto_id='%s',
         )
         resourcetype_form = ResourceTypeForm(
@@ -1233,6 +1280,7 @@ def getIdForm_datacite_xml(form_coll=None, request=None):
     return {
         'remainder_form': remainder_form,
         'nonrepeating_form': nonrepeating_form,
+        'publisher_form': publisher_form,
         'resourcetype_form': resourcetype_form,
         'creator_set': creator_set,
         'title_set': title_set,
