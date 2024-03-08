@@ -417,6 +417,9 @@ CELERY_TASK_RESULT_EXPIRES = 3600 # 1 hour until completed task results are dele
 # CELERY_CACHE_BACKEND = "db+sqlite:///celery.sqlite"
 # CELERY_RESULT_BACKEND = "db+sqlite:///celery.sqlite"
 
+S3_BUCKET = '{{ s3_bucket }}'
+S3_BUCKET_DOWNLOAD_PATH = 'download'
+
 GZIP_COMMAND = '/usr/bin/gzip'
 ZIP_COMMAND = '/usr/bin/zip'
 
