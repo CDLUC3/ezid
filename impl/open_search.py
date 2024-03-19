@@ -50,6 +50,16 @@ class OpenSearch:
                     tmp = field_value
                 identifier_dict[field.name] = tmp
 
+        fields_to_add = ['searchable_target', 'resource_creator', 'resource_title', 'resource_publisher',
+                         'resource_publication_date', 'searchable_publication_year', 'resource_type',
+                         'searchable_resource_type', 'keywords', 'resource_creator_prefix', 'resource_title_prefix',
+                         'resource_publisher_prefix', 'has_metadata', 'public_search_visible', 'oai_visible']
+
+        for field in fields_to_add:
+            identifier_dict[field] = getattr(self, f'_{field}')()
+
+        # need to add linkIsBroken, hasIssue ?
+
         return json.dumps(identifier_dict, indent=2)
 
     # these are builders for the parts of the search
