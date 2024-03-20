@@ -25,7 +25,9 @@ open_s = os.OpenSearch(identifier=Identifier.objects.get(identifier='doi:10.2533
 my_json = open_s.json_for_identifier()
 """
 
-
+# todo: Do we need more meaningful values for these fields or are the database IDs ok?
+# datacenter, profile, owner, ownergroup
+# also, do we really need the crossref status and message which seem like internal fields for EZID maintenance, not search
 class OpenSearch:
     def __init__(self, identifier: Identifier):
         self.identifier = identifier
@@ -33,8 +35,9 @@ class OpenSearch:
 
     def json_for_identifier(self) -> str:
         identifier_dict = {}
+        exclude_fields = "pk cm metadata".split()
         for field in self.identifier._meta.fields:
-            if field.name != 'id':  # Exclude the primary key field:
+            if field.name not in exclude_fields:
                 field_value = getattr(self.identifier, field.name)
                 if field_value is None:
                     field_value = ''
@@ -50,10 +53,9 @@ class OpenSearch:
                     tmp = field_value
                 identifier_dict[field.name] = tmp
 
-        fields_to_add = ['searchable_target', 'resource_creator', 'resource_title', 'resource_publisher',
-                         'resource_publication_date', 'searchable_publication_year', 'resource_type',
-                         'searchable_resource_type', 'keywords', 'resource_creator_prefix', 'resource_title_prefix',
-                         'resource_publisher_prefix', 'has_metadata', 'public_search_visible', 'oai_visible']
+        fields_to_add = ['resource_creators', 'resource_title', 'resource_publisher',
+                         'resource_publication_date', 'resource_type',
+                         'word_bucket', 'has_metadata', 'public_search_visible', 'oai_visible']
 
         for field in fields_to_add:
             identifier_dict[field] = getattr(self, f'_{field}')()
@@ -68,6 +70,12 @@ class OpenSearch:
 
     def _resource_creator(self):
         return self.km.creator if self.km.creator is not None else ''
+
+    def _resource_creators(self):
+        if self.km.creator is None:
+            return []
+        creators = self.km.creator.split(';')
+        return [c.strip() for c in creators]
 
     def _resource_title(self):
         return self.km.title if self.km.title is not None else ''
@@ -89,10 +97,7 @@ class OpenSearch:
         t = self.km.validatedType
         return validation.resourceTypes[t.split("/")[0]] if t is not None else ''
 
-    """
-    The keywords look more like a bucket of search terms rather than actual keywords or subject terms
-    """
-    def _keywords(self):
+    def _word_bucket(self):
         kw = [self.identifier.identifier, self.identifier.owner.username, self.identifier.ownergroup.groupname]
         if self.identifier.isDatacite:
             kw.append(self.identifier.datacenter.symbol)
