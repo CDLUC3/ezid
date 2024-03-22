@@ -1,5 +1,7 @@
 from django.core.serializers import serialize
 from django.http import JsonResponse
+
+import settings.settings
 from ezidapp.models.identifier import Identifier
 import json
 import pdb
@@ -7,13 +9,16 @@ import base64
 import datetime
 import ezidapp.models.validation as validation
 import impl.util
+import requests
+from django.conf import settings
+from urllib.parse import quote
+import re
 
 MAX_SEARCHABLE_TARGET_LENGTH = 255
 INDEXED_PREFIX_LENGTH = 50
 
 # testing
 # python manage.py shell
-
 
 # seems like they're using the django db model libraries https://docs.djangoproject.com/en/5.0/topics/db/queries/
 
@@ -33,11 +38,18 @@ class OpenSearch:
         self.identifier = identifier
         self.km = identifier.kernelMetadata
 
-    def json_for_identifier(self) -> str:
+    # someone broke Python conventions and wrote some fields as camelCase instead of snake_case, so don't want to
+    # propagate it further
+    def _camel_to_snake(name):
+        name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+        return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
+
+    def dict_for_identifier(self) -> str:
         identifier_dict = {}
         exclude_fields = "pk cm metadata".split()
         for field in self.identifier._meta.fields:
             if field.name not in exclude_fields:
+                field_name = OpenSearch._camel_to_snake(field.name)
                 field_value = getattr(self.identifier, field.name)
                 if field_value is None:
                     field_value = ''
@@ -51,7 +63,7 @@ class OpenSearch:
                     tmp = datetime.datetime.utcfromtimestamp(field_value).isoformat()
                 else:
                     tmp = field_value
-                identifier_dict[field.name] = tmp
+                identifier_dict[field_name] = tmp
 
         fields_to_add = ['resource_creators', 'resource_title', 'resource_publisher',
                          'resource_publication_date', 'resource_type',
@@ -60,9 +72,13 @@ class OpenSearch:
         for field in fields_to_add:
             identifier_dict[field] = getattr(self, f'_{field}')()
 
+        identifier_dict.pop('identifier')
+        identifier_dict['id'] = self.identifier.identifier
+
         # need to add linkIsBroken, hasIssue ?
 
-        return json.dumps(identifier_dict, indent=2)
+        # return json.dumps(identifier_dict, indent=2) # need to add additional things to this dict for insertions/updates
+        return identifier_dict
 
     # these are builders for the parts of the search
     def _searchable_target(self):
@@ -136,3 +152,86 @@ class OpenSearch:
         return (
             self._public_search_visible() and self._has_metadata() and self.identifier.target != self.identifier.defaultTarget
         )
+
+    def submit_to_opensearch(self):
+        # Convert the dictionary into a JSON string
+        json_string = self.json_for_identifier()
+
+
+        # The URL for the OpenSearch endpoint
+        # http://<your_opensearch_server>:<port>/documents/<index_name>/_doc/<document_id>
+        # Send the POST request
+        response = requests.post(url, data=json_string,
+                                 headers={'Content-Type': 'application/json'})
+
+        # Check the response
+        if response.status_code == 200:
+            print("Successfully submitted document to OpenSearch.")
+        else:
+            print(f"Failed to submit document. Status code: {response.status_code}")
+
+    def index_exists(self):
+        url = f'{settings.OPENSEARCH_BASE}/{settings.OPENSEARCH_INDEX}'
+        response = requests.head(url, auth=(settings.OPENSEARCH_USER, settings.OPENSEARCH_PASSWORD), verify=False)
+        # Check the response
+        if response.status_code == 200:
+            return True
+        elif response.status_code == 404:
+            return False
+        else:
+            return None
+
+
+    # it looks like I need to do this from the opensearch dashboard because of permission denied 401 errors
+    def create_index(self):
+        # The URL for the OpenSearch endpoint
+        url = f'{settings.OPENSEARCH_BASE}/{settings.OPENSEARCH_INDEX}'
+
+        # The settings for the index
+        index_settings = {
+            "settings": {
+                "index": {
+                    "number_of_shards": 1,
+                    "number_of_replicas": 1
+                }
+            }
+        }
+
+        # Convert the dictionary into a JSON string
+        json_string = json.dumps(index_settings)
+
+        # Send the PUT request
+        response = requests.put(url, data=json_string, headers={'Content-Type': 'application/json'}, verify=False)
+
+        # Check the response
+        if response.status_code == 200:
+            return True
+        else:
+            return False
+
+    def upsert_document(self):
+        encoded_identifier = quote(self.identifier.identifier, safe='')
+
+        print(encoded_identifier)
+        # The URL for the OpenSearch endpoint
+        url = f'{settings.OPENSEARCH_BASE}/{settings.OPENSEARCH_INDEX}/_doc/{encoded_identifier}'
+
+        # Convert the dictionary into a JSON string
+        os_doc = self.dict_for_identifier()
+
+        # https://opensearch.org/docs/latest/api-reference/document-apis/update-document/#:~:text=By%20default%2C%20the%20update%20operation,)%2C%20use%20the%20upsert%20operation.
+        os_request = {"doc": os_doc, "doc_as_upsert": True}
+        json_string = json.dumps(os_request)
+
+        # Send the POST request
+        response = requests.post(url,
+                                 data=json_string,
+                                 headers={'Content-Type': 'application/json'},
+                                 auth=(settings.OPENSEARCH_USER, settings.OPENSEARCH_PASSWORD),
+                                 verify=False)
+
+        # Check the response
+        if response.status_code in range(200, 299):
+            return True
+        else:
+            return False
