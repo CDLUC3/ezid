@@ -16,6 +16,8 @@ urllib3.disable_warnings(InsecureRequestWarning)
 
 SPLIT_SIZE = 100
 
+# run: python manage.py opensearch-update
+
 class Command(BaseCommand):
     def handle(self, *args, **options):
         # Get all items from Identifier table 100 at a time manually since
@@ -59,8 +61,8 @@ class Command(BaseCommand):
     def _bulk_update_pair(identifier: Identifier) -> str:
         my_os = OpenSearch(identifier=identifier)
         my_dict = my_os.dict_for_identifier()
-        line1 = json.dumps({"update": {"_index": settings.OPENSEARCH_INDEX,"_id": identifier.identifier}})
-        line2 = json.dumps({"doc": my_dict, "doc_as_upsert": True})
+        line1 = json.dumps({"index": {"_index": settings.OPENSEARCH_INDEX, "_id": identifier.identifier}})
+        line2 = json.dumps(my_dict)
         return f"{line1}\n{line2}"
 
     @staticmethod

@@ -27,7 +27,7 @@ INDEXED_PREFIX_LENGTH = 50
 import impl.open_search as os
 from ezidapp.models.identifier import Identifier
 open_s = os.OpenSearch(identifier=Identifier.objects.get(identifier='doi:10.25338/B8JG7X'))
-my_json = open_s.json_for_identifier()
+my_dict = open_s.dict_for_identifier()
 """
 
 # todo: Do we need more meaningful values for these fields or are the database IDs ok?
@@ -153,23 +153,6 @@ class OpenSearch:
             self._public_search_visible() and self._has_metadata() and self.identifier.target != self.identifier.defaultTarget
         )
 
-    def submit_to_opensearch(self):
-        # Convert the dictionary into a JSON string
-        json_string = self.json_for_identifier()
-
-
-        # The URL for the OpenSearch endpoint
-        # http://<your_opensearch_server>:<port>/documents/<index_name>/_doc/<document_id>
-        # Send the POST request
-        response = requests.post(url, data=json_string,
-                                 headers={'Content-Type': 'application/json'})
-
-        # Check the response
-        if response.status_code == 200:
-            print("Successfully submitted document to OpenSearch.")
-        else:
-            print(f"Failed to submit document. Status code: {response.status_code}")
-
     def index_exists(self):
         url = f'{settings.OPENSEARCH_BASE}/{settings.OPENSEARCH_INDEX}'
         response = requests.head(url, auth=(settings.OPENSEARCH_USER, settings.OPENSEARCH_PASSWORD), verify=False)
@@ -209,7 +192,7 @@ class OpenSearch:
         else:
             return False
 
-    def upsert_document(self):
+    def index_document(self):
         encoded_identifier = quote(self.identifier.identifier, safe='')
 
         print(encoded_identifier)
@@ -219,12 +202,10 @@ class OpenSearch:
         # Convert the dictionary into a JSON string
         os_doc = self.dict_for_identifier()
 
-        # https://opensearch.org/docs/latest/api-reference/document-apis/update-document/#:~:text=By%20default%2C%20the%20update%20operation,)%2C%20use%20the%20upsert%20operation.
-        os_request = {"doc": os_doc, "doc_as_upsert": True}
-        json_string = json.dumps(os_request)
+        json_string = json.dumps(os_doc)
 
-        # Send the POST request
-        response = requests.post(url,
+        # Send the PUT request
+        response = requests.put(url,
                                  data=json_string,
                                  headers={'Content-Type': 'application/json'},
                                  auth=(settings.OPENSEARCH_USER, settings.OPENSEARCH_PASSWORD),
