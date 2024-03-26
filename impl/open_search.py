@@ -174,7 +174,7 @@ class OpenSearch:
         return (
             self.resource_title != ""
             and self.resource_publication_date != ""
-            and (self.resource_creator != "" or self.resource_publisher() != "")
+            and (self.resource_creator != "" or self.resource_publisher != "")
         )
 
     @property
