@@ -13,6 +13,10 @@ import requests
 from django.conf import settings
 from urllib.parse import quote
 import re
+import functools
+
+# the functools allows memoizing the results of the functions so they're not recalculated every time (ie cached
+# results if called more than once on the same object)
 
 MAX_SEARCHABLE_TARGET_LENGTH = 255
 INDEXED_PREFIX_LENGTH = 50
@@ -36,7 +40,7 @@ my_dict = open_s.dict_for_identifier()
 class OpenSearch:
     def __init__(self, identifier: Identifier):
         self.identifier = identifier
-        self.km = identifier.kernelMetadata.select_related('creator', 'title', 'publisher', 'date', 'type')
+        self.km = identifier.kernelMetadata
 
     # someone broke Python conventions and wrote some fields as camelCase instead of snake_case, so don't want to
     # propagate it further
@@ -70,7 +74,7 @@ class OpenSearch:
                          'word_bucket', 'has_metadata', 'public_search_visible', 'oai_visible']
 
         for field in fields_to_add:
-            identifier_dict[field] = getattr(self, f'_{field}')()
+            identifier_dict[field] = getattr(self, f'{field}')
 
         identifier_dict.pop('identifier')
         identifier_dict['id'] = self.identifier.identifier
@@ -81,39 +85,59 @@ class OpenSearch:
         return identifier_dict
 
     # these are builders for the parts of the search
-    def _searchable_target(self):
+    @property
+    @functools.lru_cache(maxsize=None)
+    def searchable_target(self):
         return self.identifier.target[::-1][:MAX_SEARCHABLE_TARGET_LENGTH]
 
-    def _resource_creator(self):
+    @property
+    @functools.lru_cache(maxsize=None)
+    def resource_creator(self):
         return self.km.creator if self.km.creator is not None else ''
 
-    def _resource_creators(self):
+    @property
+    @functools.lru_cache(maxsize=None)
+    def resource_creators(self):
         if self.km.creator is None:
             return []
         creators = self.km.creator.split(';')
         return [c.strip() for c in creators]
 
-    def _resource_title(self):
+    @property
+    @functools.lru_cache(maxsize=None)
+    def resource_title(self):
         return self.km.title if self.km.title is not None else ''
 
-    def _resource_publisher(self):
+    @property
+    @functools.lru_cache(maxsize=None)
+    def resource_publisher(self):
         return self.km.publisher if self.km.publisher is not None else ''
 
-    def _resource_publication_date(self):
+    @property
+    @functools.lru_cache(maxsize=None)
+    def resource_publication_date(self):
         return self.km.date if self.km.date is not None else ''
 
-    def _searchable_publication_year(self):
+    @property
+    @functools.lru_cache(maxsize=None)
+    def searchable_publication_year(self):
         d = self.km.validatedDate
         return int(d[:4]) if d is not None else None
 
-    def _resource_type(self):
+    @property
+    @functools.lru_cache(maxsize=None)
+    def resource_type(self):
         return self.km.type if self.km.type is not None else ''
 
-    def _searchable_resource_type(self):
+    @property
+    @functools.lru_cache(maxsize=None)
+    def searchable_resource_type(self):
         t = self.km.validatedType
         return validation.resourceTypes[t.split("/")[0]] if t is not None else ''
 
-    def _word_bucket(self):
+    @property
+    @functools.lru_cache(maxsize=None)
+    def word_bucket(self):
         kw = [self.identifier.identifier, self.identifier.owner.username, self.identifier.ownergroup.groupname]
         if self.identifier.isDatacite:
             kw.append(self.identifier.datacenter.symbol)
@@ -129,28 +153,40 @@ class OpenSearch:
                 kw.append(v)
         return " ; ".join(kw)
 
-    def _resource_creator_prefix(self):
-        return self._resource_creator()[: INDEXED_PREFIX_LENGTH]
+    @property
+    @functools.lru_cache(maxsize=None)
+    def resource_creator_prefix(self):
+        return self.resource_creator[: INDEXED_PREFIX_LENGTH]
 
-    def _resource_title_prefix(self):
-        return self._resource_title()[: INDEXED_PREFIX_LENGTH]
+    @property
+    @functools.lru_cache(maxsize=None)
+    def resource_title_prefix(self):
+        return self.resource_title[: INDEXED_PREFIX_LENGTH]
 
-    def _resource_publisher_prefix(self):
-        return self._resource_publisher()[: INDEXED_PREFIX_LENGTH]
+    @property
+    @functools.lru_cache(maxsize=None)
+    def resource_publisher_prefix(self):
+        return self.resource_publisher[: INDEXED_PREFIX_LENGTH]
 
-    def _has_metadata(self):
+    @property
+    @functools.lru_cache(maxsize=None)
+    def has_metadata(self):
         return (
-            self._resource_title() != ""
-            and self._resource_publication_date() != ""
-            and (self._resource_creator() != "" or self._resource_publisher() != "")
+            self.resource_title != ""
+            and self.resource_publication_date != ""
+            and (self.resource_creator != "" or self.resource_publisher() != "")
         )
 
-    def _public_search_visible(self):
+    @property
+    @functools.lru_cache(maxsize=None)
+    def public_search_visible(self):
         return self.identifier.isPublic and self.identifier.exported and not self.identifier.isTest
 
-    def _oai_visible(self):
+    @property
+    @functools.lru_cache(maxsize=None)
+    def oai_visible(self):
         return (
-            self._public_search_visible() and self._has_metadata() and self.identifier.target != self.identifier.defaultTarget
+            self.public_search_visible and self.has_metadata and self.identifier.target != self.identifier.defaultTarget
         )
 
     def index_exists(self):
