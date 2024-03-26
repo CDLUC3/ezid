@@ -15,8 +15,8 @@ from urllib.parse import quote
 import re
 import functools
 
-# the functools allows memoizing the results of the functions so they're not recalculated every time (ie cached
-# results if called more than once on the same object)
+# the functools allows memoizing the results of functions so they're not recalculated every time (ie cached
+# results if called more than once on the same instance)
 
 MAX_SEARCHABLE_TARGET_LENGTH = 255
 INDEXED_PREFIX_LENGTH = 50
@@ -231,12 +231,12 @@ class OpenSearch:
     def index_document(self):
         encoded_identifier = quote(self.identifier.identifier, safe='')
 
-        print(encoded_identifier)
         # The URL for the OpenSearch endpoint
         url = f'{settings.OPENSEARCH_BASE}/{settings.OPENSEARCH_INDEX}/_doc/{encoded_identifier}'
 
         # Convert the dictionary into a JSON string
         os_doc = self.dict_for_identifier()
+        os_doc['open_search_updated'] = datetime.datetime.now().isoformat()
 
         json_string = json.dumps(os_doc)
 

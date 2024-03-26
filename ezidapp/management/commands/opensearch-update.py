@@ -5,6 +5,7 @@ from impl.open_search import OpenSearch
 import json
 import pdb
 import requests
+import datetime
 
 # this is only for the time being since I'm using a local server without correct SSL/https
 import urllib3
@@ -18,6 +19,7 @@ SPLIT_SIZE = 100
 
 # run: python manage.py opensearch-update
 
+
 class Command(BaseCommand):
     def handle(self, *args, **options):
         # Get all items from Identifier table 100 at a time manually since
@@ -30,7 +32,11 @@ class Command(BaseCommand):
 
         string_parts = []
         counter = 0
-        start_after_id = 0
+        if options['starting_primary_id']:
+            start_after_id = options['starting_primary_id']
+        else:
+            start_after_id = 0
+
         while True:
             iden_arr = Identifier.objects.filter(id__gt=start_after_id).order_by('id')[:100]
             # break when we run out of items
@@ -50,17 +56,22 @@ class Command(BaseCommand):
                         print("Error in bulk update")
                         pdb.set_trace()
                     else:
-                        print(f'Total {counter+1} items updated in OpenSearch.')
+                        print(f'Total {counter+1} items updated in OpenSearch (at primary ID: {identifier.id}).')
                     # reset the accumulator
                     string_parts = []
 
                 counter += 1
+
+    def add_arguments(self, parser):
+        parser.add_argument('starting_primary_id', type=int, nargs='?', default=0,
+                            help='Starting primary ID from database (default 0)')
 
     # see https://opensearch.org/docs/latest/api-reference/document-apis/bulk/
     @staticmethod
     def _bulk_update_pair(identifier: Identifier) -> str:
         my_os = OpenSearch(identifier=identifier)
         my_dict = my_os.dict_for_identifier()
+        my_dict['open_search_updated'] = datetime.datetime.now().isoformat()
         line1 = json.dumps({"index": {"_index": settings.OPENSEARCH_INDEX, "_id": identifier.identifier}})
         line2 = json.dumps(my_dict)
         return f"{line1}\n{line2}"
