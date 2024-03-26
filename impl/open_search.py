@@ -36,7 +36,7 @@ my_dict = open_s.dict_for_identifier()
 class OpenSearch:
     def __init__(self, identifier: Identifier):
         self.identifier = identifier
-        self.km = identifier.kernelMetadata
+        self.km = identifier.kernelMetadata.select_related('creator', 'title', 'publisher', 'date', 'type')
 
     # someone broke Python conventions and wrote some fields as camelCase instead of snake_case, so don't want to
     # propagate it further
