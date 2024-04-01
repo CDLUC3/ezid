@@ -86,17 +86,17 @@ class OpenSearch:
 
     # these are builders for the parts of the search
     @property
-    @functools.lru_cache(maxsize=None)
+    @functools.lru_cache
     def searchable_target(self):
         return self.identifier.target[::-1][:MAX_SEARCHABLE_TARGET_LENGTH]
 
     @property
-    @functools.lru_cache(maxsize=None)
+    @functools.lru_cache
     def resource_creator(self):
         return self.km.creator if self.km.creator is not None else ''
 
     @property
-    @functools.lru_cache(maxsize=None)
+    @functools.lru_cache
     def resource_creators(self):
         if self.km.creator is None:
             return []
@@ -104,39 +104,39 @@ class OpenSearch:
         return [c.strip() for c in creators]
 
     @property
-    @functools.lru_cache(maxsize=None)
+    @functools.lru_cache
     def resource_title(self):
         return self.km.title if self.km.title is not None else ''
 
     @property
-    @functools.lru_cache(maxsize=None)
+    @functools.lru_cache
     def resource_publisher(self):
         return self.km.publisher if self.km.publisher is not None else ''
 
     @property
-    @functools.lru_cache(maxsize=None)
+    @functools.lru_cache
     def resource_publication_date(self):
         return self.km.date if self.km.date is not None else ''
 
     @property
-    @functools.lru_cache(maxsize=None)
+    @functools.lru_cache
     def searchable_publication_year(self):
         d = self.km.validatedDate
         return int(d[:4]) if d is not None else None
 
     @property
-    @functools.lru_cache(maxsize=None)
+    @functools.lru_cache
     def resource_type(self):
         return self.km.type if self.km.type is not None else ''
 
     @property
-    @functools.lru_cache(maxsize=None)
+    @functools.lru_cache
     def searchable_resource_type(self):
         t = self.km.validatedType
         return validation.resourceTypes[t.split("/")[0]] if t is not None else ''
 
     @property
-    @functools.lru_cache(maxsize=None)
+    @functools.lru_cache
     def word_bucket(self):
         kw = [self.identifier.identifier, self.identifier.owner.username, self.identifier.ownergroup.groupname]
         if self.identifier.isDatacite:
@@ -154,22 +154,22 @@ class OpenSearch:
         return " ; ".join(kw)
 
     @property
-    @functools.lru_cache(maxsize=None)
+    @functools.lru_cache
     def resource_creator_prefix(self):
         return self.resource_creator[: INDEXED_PREFIX_LENGTH]
 
     @property
-    @functools.lru_cache(maxsize=None)
+    @functools.lru_cache
     def resource_title_prefix(self):
         return self.resource_title[: INDEXED_PREFIX_LENGTH]
 
     @property
-    @functools.lru_cache(maxsize=None)
+    @functools.lru_cache
     def resource_publisher_prefix(self):
         return self.resource_publisher[: INDEXED_PREFIX_LENGTH]
 
     @property
-    @functools.lru_cache(maxsize=None)
+    @functools.lru_cache
     def has_metadata(self):
         return (
             self.resource_title != ""
@@ -178,12 +178,12 @@ class OpenSearch:
         )
 
     @property
-    @functools.lru_cache(maxsize=None)
+    @functools.lru_cache
     def public_search_visible(self):
         return self.identifier.isPublic and self.identifier.exported and not self.identifier.isTest
 
     @property
-    @functools.lru_cache(maxsize=None)
+    @functools.lru_cache
     def oai_visible(self):
         return (
             self.public_search_visible and self.has_metadata and self.identifier.target != self.identifier.defaultTarget
