@@ -89,7 +89,7 @@ class Command(BaseCommand):
                                  auth=(settings.OPENSEARCH_USER, settings.OPENSEARCH_PASSWORD),
                                  verify=False)
 
-        # the response may have "errors": true if there are issues and an items array with the errors
+        # the response may have "errors": true if there are issues and has an items array with the errors
         # the array has a dict with "status" (success in the 200s) and "error" (the error dict)
 
         # Check the response
