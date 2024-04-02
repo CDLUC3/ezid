@@ -191,7 +191,7 @@ class OpenSearch:
 
     def index_exists(self):
         url = f'{settings.OPENSEARCH_BASE}/{settings.OPENSEARCH_INDEX}'
-        response = requests.head(url, auth=(settings.OPENSEARCH_USER, settings.OPENSEARCH_PASSWORD), verify=False)
+        response = requests.head(url, auth=(settings.OPENSEARCH_USER, settings.OPENSEARCH_PASSWORD))
         # Check the response
         if response.status_code == 200:
             return True
@@ -199,34 +199,6 @@ class OpenSearch:
             return False
         else:
             return None
-
-
-    # it looks like I need to do this from the opensearch dashboard because of permission denied 401 errors
-    def create_index(self):
-        # The URL for the OpenSearch endpoint
-        url = f'{settings.OPENSEARCH_BASE}/{settings.OPENSEARCH_INDEX}'
-
-        # The settings for the index
-        index_settings = {
-            "settings": {
-                "index": {
-                    "number_of_shards": 1,
-                    "number_of_replicas": 1
-                }
-            }
-        }
-
-        # Convert the dictionary into a JSON string
-        json_string = json.dumps(index_settings)
-
-        # Send the PUT request
-        response = requests.put(url, data=json_string, headers={'Content-Type': 'application/json'}, verify=False)
-
-        # Check the response
-        if response.status_code == 200:
-            return True
-        else:
-            return False
 
     def index_document(self):
         encoded_identifier = quote(self.identifier.identifier, safe='')
@@ -244,8 +216,7 @@ class OpenSearch:
         response = requests.put(url,
                                  data=json_string,
                                  headers={'Content-Type': 'application/json'},
-                                 auth=(settings.OPENSEARCH_USER, settings.OPENSEARCH_PASSWORD),
-                                 verify=False)
+                                 auth=(settings.OPENSEARCH_USER, settings.OPENSEARCH_PASSWORD))
 
         # Check the response
         if response.status_code in range(200, 299):
