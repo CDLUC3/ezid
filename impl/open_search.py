@@ -1,7 +1,8 @@
 from django.core.serializers import serialize
 from django.http import JsonResponse
 
-import settings.settings
+# import settings.settings
+from django.conf import settings
 from ezidapp.models.identifier import Identifier
 import json
 import pdb
