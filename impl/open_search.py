@@ -28,11 +28,12 @@ INDEXED_PREFIX_LENGTH = 50
 # seems like they're using the django db model libraries https://docs.djangoproject.com/en/5.0/topics/db/queries/
 
 """
--- basic testing
+-- basic testing -- in "python manage.py shell"
 import impl.open_search as os
 from ezidapp.models.identifier import Identifier
 open_s = os.OpenSearch(identifier=Identifier.objects.get(identifier='doi:10.25338/B8JG7X'))
 my_dict = open_s.dict_for_identifier()
+
 """
 
 # todo: Do we need more meaningful values for these fields or are the database IDs ok?
