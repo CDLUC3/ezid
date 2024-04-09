@@ -73,7 +73,7 @@ def open_search():
     km.title = 'Test Title'
     km.publisher = 'Test Publisher'
     km.date = '2022-01-01'
-    km.type = 'Test Type'
+    km.type = 'Dataset/dataset'
     km.validatedDate = '2022'
     km.validatedType = 'Dataset/dataset'
 
@@ -112,7 +112,7 @@ def test_resource(open_search):
                          'title': 'Test Title',
                          'publisher': 'Test Publisher',
                          'publication_date': '2022-01-01',
-                         'type': 'Test Type'}
+                         'type': 'Dataset/dataset'}
     assert open_search.resource == expected_resource
 
 
@@ -139,7 +139,7 @@ def test_searchable_publication_year(open_search):
 
 
 def test_resource_type(open_search):
-    assert open_search.resource_type == 'Test Type'
+    assert open_search.resource_type == 'Dataset/dataset'
 
 
 def test_searchable_resource_type(open_search):
@@ -194,7 +194,7 @@ def test_dict_for_identifier(open_search):
                          'title': 'Test Title',
                          'publisher': 'Test Publisher',
                          'publication_date': '2022-01-01',
-                         'type': 'Test Type'},
+                         'type': 'Dataset/dataset'},
                      'word_bucket': 'doi:10.25338/B8JG7X ; testuser ; testgroup ; http://example.com',
                      'has_metadata': True,
                      'public_search_visible': True,
