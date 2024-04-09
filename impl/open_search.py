@@ -16,7 +16,7 @@ from urllib.parse import quote
 import re
 import functools
 
-# the functools allows memoizing the results of functions so they're not recalculated every time (ie cached
+# the functools allows memoizing the results of functions, so they're not recalculated every time (ie cached
 # results if called more than once on the same instance)
 
 MAX_SEARCHABLE_TARGET_LENGTH = 255
@@ -29,10 +29,11 @@ INDEXED_PREFIX_LENGTH = 50
 
 """
 -- basic testing
-import impl.open_search as os
+import impl.open_search as open_search
 from ezidapp.models.identifier import Identifier
-open_s = os.OpenSearch(identifier=Identifier.objects.get(identifier='doi:10.25338/B8JG7X'))
+open_s = open_search.OpenSearch(identifier=Identifier.objects.get(identifier='doi:10.25338/B8JG7X'))
 my_dict = open_s.dict_for_identifier()
+open_s.index_document()
 """
 
 # todo: Do we need more meaningful values for these fields or are the database IDs ok?
@@ -43,15 +44,14 @@ class OpenSearch:
         self.identifier = identifier
         self.km = identifier.kernelMetadata
 
-    # someone broke Python conventions and wrote some fields as camelCase instead of snake_case, so don't want to
-    # propagate it further
+    # uphold Python conventions and make fields snake_case instead of camelCase
     def _camel_to_snake(name):
         name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
         return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
 
     def dict_for_identifier(self) -> str:
         identifier_dict = {}
-        exclude_fields = "pk cm metadata".split()
+        exclude_fields = "cm metadata owner_id ownergroup_id profile_id".split()
         for field in self.identifier._meta.fields:
             if field.name not in exclude_fields:
                 field_name = OpenSearch._camel_to_snake(field.name)
@@ -59,7 +59,6 @@ class OpenSearch:
                 if field_value is None:
                     field_value = ''
 
-                # this fugly construct because . . . python
                 if hasattr(field_value, 'pk'):  # Check if it's a foreign key
                     tmp = field_value.pk
                 elif isinstance(field_value, bytes):
@@ -70,9 +69,8 @@ class OpenSearch:
                     tmp = field_value
                 identifier_dict[field_name] = tmp
 
-        fields_to_add = ['resource_creators', 'resource_title', 'resource_publisher',
-                         'resource_publication_date', 'resource_type',
-                         'word_bucket', 'has_metadata', 'public_search_visible', 'oai_visible']
+        fields_to_add = ['resource', 'word_bucket', 'has_metadata', 'public_search_visible', 'oai_visible',
+                         'owner', 'ownergroup', 'profile']
 
         for field in fields_to_add:
             identifier_dict[field] = getattr(self, f'{field}')
@@ -90,6 +88,15 @@ class OpenSearch:
     @functools.lru_cache
     def searchable_target(self):
         return self.identifier.target[::-1][:MAX_SEARCHABLE_TARGET_LENGTH]
+
+    @property
+    @functools.lru_cache
+    def resource(self):
+        return {"creators": self.resource_creators,
+                "title": self.resource_title,
+                "publisher": self.resource_publisher,
+                "publication_date": self.resource_publication_date,
+                "type": self.resource_type}
 
     @property
     @functools.lru_cache
@@ -189,6 +196,32 @@ class OpenSearch:
         return (
             self.public_search_visible and self.has_metadata and self.identifier.target != self.identifier.defaultTarget
         )
+
+    @property
+    @functools.lru_cache
+    def owner(self):
+        o = self.identifier.owner
+        if o is None:
+            return {}
+        return {"id": o.id, "username": o.username, "display_name": o.displayName, "account_email": o.accountEmail}
+
+    # adds a subset of the ownergroup, the id, name, and organization.  I'm cautious about adding too much data
+    # to the search in case it's not needed for search
+    @property
+    @functools.lru_cache
+    def ownergroup(self):
+        og = self.identifier.ownergroup
+        if og is None:
+            return {}
+        return {"id": og.id, "name": og.groupname, "organization": og.organizationName}
+
+    @property
+    @functools.lru_cache
+    def profile(self):
+        p = self.identifier.profile
+        if p is None:
+            return {}
+        return {"id": p.id, "label": p.label}
 
     def index_exists(self):
         url = f'{settings.OPENSEARCH_BASE}/{settings.OPENSEARCH_INDEX}'
