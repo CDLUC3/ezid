@@ -51,7 +51,7 @@ class OpenSearch:
 
     def dict_for_identifier(self) -> str:
         identifier_dict = {}
-        exclude_fields = "cm metadata owner_id ownergroup_id profile_id".split()
+        exclude_fields = "pk cm metadata owner_id ownergroup_id profile_id".split()
         for field in self.identifier._meta.fields:
             if field.name not in exclude_fields:
                 field_name = OpenSearch._camel_to_snake(field.name)
@@ -69,7 +69,7 @@ class OpenSearch:
                     tmp = field_value
                 identifier_dict[field_name] = tmp
 
-        fields_to_add = ['resource', 'word_bucket', 'has_metadata', 'public_search_visible', 'oai_visible',
+        fields_to_add = ['db_identifier_id', 'resource', 'word_bucket', 'has_metadata', 'public_search_visible', 'oai_visible',
                          'owner', 'ownergroup', 'profile']
 
         for field in fields_to_add:
@@ -82,6 +82,11 @@ class OpenSearch:
 
         # return json.dumps(identifier_dict, indent=2) # need to add additional things to this dict for insertions/updates
         return identifier_dict
+
+    @property
+    @functools.lru_cache
+    def db_identifier_id(self):
+        return self.identifier.pk
 
     # these are builders for the parts of the search
     @property
