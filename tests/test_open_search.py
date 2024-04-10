@@ -1,13 +1,47 @@
 import pytest
 import responses
 from unittest.mock import Mock
+from unittest.mock import MagicMock
 from ezidapp.models.identifier import Identifier
 from impl.open_search import OpenSearch
+
 
 @pytest.fixture
 def open_search():
     # Create a mock Identifier object
-    identifier = Mock(spec=Identifier)
+    identifier = MagicMock(spec=Identifier)
+
+    # mocking out the meta object for the Identifier database object
+    meta = MagicMock()
+    field_names = 'id identifier createTime updateTime status unavailableReason exported crossrefStatus' \
+        ' crossrefMessage target cm agentRole isTest datacenter_id owner_id ownergroup_id ' \
+        'profile_id metadata'.split()
+
+    fields = []
+    for field in field_names:
+        f = MagicMock()
+        f.name = field
+        fields.append(f)
+
+    meta.fields = fields
+
+    identifier._meta = meta
+    identifier.id = 37
+    identifier.pk = 37
+    identifier.createTime = 1640995200
+    identifier.updateTime = 1640998666
+    identifier.status = 'P'
+    identifier.unavailableReason = ''
+    identifier.crossrefStatus = ''
+    identifier.crossrefMessage = ''
+    identifier.cm = 'meow'
+    identifier.agentRole = ''
+    identifier.datacenter_id = 266
+    identifier.owner_id = 22
+    identifier.ownergroup_id = 33
+    identifier.profile_id = 44
+    identifier.metadata = {'json': 'metadata'}
+
     identifier.identifier = 'doi:10.25338/B8JG7X'
     identifier.target = 'http://example.com'
     identifier.defaultTarget = 'http://default.com'
@@ -15,10 +49,22 @@ def open_search():
     identifier.isPublic = True
     identifier.exported = True
     identifier.isTest = False
-    identifier.owner = Mock()
+
+    identifier.owner = MagicMock()
     identifier.owner.username = 'testuser'
-    identifier.ownergroup = Mock()
+    identifier.owner.displayName = 'Test User'
+    identifier.owner.accountEmail = 'test.user@example.org'
+    identifier.owner.id = 22
+
+    identifier.ownergroup = MagicMock()
+    identifier.ownergroup.id = 33
     identifier.ownergroup.groupname = 'testgroup'
+    identifier.ownergroup.organizationName = 'Test Organization'
+
+    identifier.profile = MagicMock()
+    identifier.profile.id = 44
+    identifier.profile.label = 'testprofile'
+
     identifier.metadata = {}
 
     # Create a mock KernelMetadata object
@@ -27,63 +73,140 @@ def open_search():
     km.title = 'Test Title'
     km.publisher = 'Test Publisher'
     km.date = '2022-01-01'
-    km.type = 'Test Type'
+    km.type = 'Dataset/dataset'
     km.validatedDate = '2022'
     km.validatedType = 'Dataset/dataset'
 
     identifier.kernelMetadata = km
 
     # Create the OpenSearch object to test
-    return OpenSearch(identifier)
+    return OpenSearch(identifier=identifier)
+
 
 def test_searchable_target(open_search):
     assert open_search.searchable_target == 'moc.elpmaxe//:ptth'
 
+
 def test_resource_creator(open_search):
     assert open_search.resource_creator == 'Test Creator'
+
 
 def test_resource_creators(open_search):
     assert open_search.resource_creators == ['Test Creator']
 
+
 def test_resource_title(open_search):
     assert open_search.resource_title == 'Test Title'
+
 
 def test_resource_publisher(open_search):
     assert open_search.resource_publisher == 'Test Publisher'
 
+
 def test_resource_publication_date(open_search):
     assert open_search.resource_publication_date == '2022-01-01'
+
+
+def test_resource(open_search):
+    expected_resource = {'creators': ['Test Creator'],
+                         'title': 'Test Title',
+                         'publisher': 'Test Publisher',
+                         'publication_date': '2022-01-01',
+                         'type': 'Dataset/dataset'}
+    assert open_search.resource == expected_resource
+
+
+def test_owner(open_search):
+    expected_owner = {'id': 22,
+                      'username': 'testuser',
+                      'display_name': 'Test User',
+                      'account_email': 'test.user@example.org'}
+    assert open_search.owner == expected_owner
+
+
+def test_ownergroup(open_search):
+    expected_ownergroup = {'id': 33, 'name': 'testgroup', 'organization': 'Test Organization'}
+    assert open_search.ownergroup == expected_ownergroup
+
+
+def test_profile(open_search):
+    expected_profile = {'id': 44, 'label': 'testprofile'}
+    assert open_search.profile == expected_profile
+
 
 def test_searchable_publication_year(open_search):
     assert open_search.searchable_publication_year == 2022
 
+
 def test_resource_type(open_search):
-    assert open_search.resource_type == 'Test Type'
+    assert open_search.resource_type == 'Dataset/dataset'
+
 
 def test_searchable_resource_type(open_search):
     assert open_search.searchable_resource_type == 'D'
+
 
 def test_word_bucket(open_search):
     expected_word_bucket = 'doi:10.25338/B8JG7X ; testuser ; testgroup ; http://example.com'
     assert open_search.word_bucket == expected_word_bucket
 
+
 def test_resource_creator_prefix(open_search):
     assert open_search.resource_creator_prefix == 'Test Creator'
+
 
 def test_resource_title_prefix(open_search):
     assert open_search.resource_title_prefix == 'Test Title'
 
+
 def test_resource_publisher_prefix(open_search):
     assert open_search.resource_publisher_prefix == 'Test Publisher'
+
 
 def test_has_metadata(open_search):
     assert open_search.has_metadata
 
+
 def test_public_search_visible(open_search):
     assert open_search.public_search_visible
 
+
 def test_oai_visible(open_search):
     assert open_search.oai_visible
+
+
+def test_dict_for_identifier(open_search):
+    expected_dict = {'id': 'doi:10.25338/B8JG7X',
+                     'create_time': '2022-01-01T00:00:00',
+                     'update_time': '2022-01-01T00:57:46',
+                     'status': 'P',
+                     'unavailable_reason': '',
+                     'exported': True,
+                     'crossref_status': '',
+                     'crossref_message': '',
+                     'target': 'http://example.com',
+                     'agent_role': '',
+                     'is_test': False,
+                     'datacenter_id': 266,
+                     'db_identifier_id': 37,
+                     'resource': {
+                         'creators': ['Test Creator'],
+                         'title': 'Test Title',
+                         'publisher': 'Test Publisher',
+                         'publication_date': '2022-01-01',
+                         'type': 'Dataset/dataset'},
+                     'word_bucket': 'doi:10.25338/B8JG7X ; testuser ; testgroup ; http://example.com',
+                     'has_metadata': True,
+                     'public_search_visible': True,
+                     'oai_visible': True,
+                     'owner': {
+                         'id': 22,
+                         'username': 'testuser',
+                         'display_name': 'Test User',
+                         'account_email': 'test.user@example.org'},
+                     'ownergroup': {'id': 33, 'name': 'testgroup', 'organization': 'Test Organization'},
+                     'profile': {'id': 44, 'label': 'testprofile'}}
+    assert open_search.dict_for_identifier() == expected_dict
 
 @responses.activate
 def test_index_exists(open_search):
