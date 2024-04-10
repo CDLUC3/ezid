@@ -31,15 +31,16 @@ INDEXED_PREFIX_LENGTH = 50
 -- basic testing -- in "python manage.py shell"
 import impl.open_search as open_search
 from ezidapp.models.identifier import Identifier
-open_s = open_search.OpenSearch(identifier=Identifier.objects.get(identifier='doi:10.25338/B8JG7X'))
+open_s = open_search.OpenSearchDoc(identifier=Identifier.objects.get(identifier='doi:10.25338/B8JG7X'))
 my_dict = open_s.dict_for_identifier()
 open_s.index_document()
 """
 
+
 # todo: Do we need more meaningful values for these fields or are the database IDs ok?
 # datacenter, profile, owner, ownergroup
 # also, do we really need the crossref status and message which seem like internal fields for EZID maintenance, not search
-class OpenSearch:
+class OpenSearchDoc:
     def __init__(self, identifier: Identifier):
         self.identifier = identifier
         self.km = identifier.kernelMetadata
@@ -54,7 +55,7 @@ class OpenSearch:
         exclude_fields = "pk cm metadata owner_id ownergroup_id profile_id".split()
         for field in self.identifier._meta.fields:
             if field.name not in exclude_fields:
-                field_name = OpenSearch._camel_to_snake(field.name)
+                field_name = OpenSearchDoc._camel_to_snake(field.name)
                 field_value = getattr(self.identifier, field.name)
                 if field_value is None:
                     field_value = ''

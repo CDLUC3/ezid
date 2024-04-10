@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from ezidapp.models.identifier import Identifier
-from impl.open_search import OpenSearch
+from impl.open_search_doc import OpenSearchDoc
 import json
 import pdb
 import requests
@@ -69,7 +69,7 @@ class Command(BaseCommand):
     # see https://opensearch.org/docs/latest/api-reference/document-apis/bulk/
     @staticmethod
     def _bulk_update_pair(identifier: Identifier) -> str:
-        my_os = OpenSearch(identifier=identifier)
+        my_os = OpenSearchDoc(identifier=identifier)
         my_dict = my_os.dict_for_identifier()
         my_dict['open_search_updated'] = datetime.datetime.now().isoformat()
         line1 = json.dumps({"index": {"_index": settings.OPENSEARCH_INDEX, "_id": identifier.identifier}})

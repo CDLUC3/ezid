@@ -3,11 +3,11 @@ import responses
 from unittest.mock import Mock
 from unittest.mock import MagicMock
 from ezidapp.models.identifier import Identifier
-from impl.open_search import OpenSearch
+from impl.open_search_doc import OpenSearchDoc
 
 
 @pytest.fixture
-def open_search():
+def open_search_doc():
     # Create a mock Identifier object
     identifier = MagicMock(spec=Identifier)
 
@@ -79,103 +79,103 @@ def open_search():
 
     identifier.kernelMetadata = km
 
-    # Create the OpenSearch object to test
-    return OpenSearch(identifier=identifier)
+    # Create the OpenSearchDoc object to test
+    return OpenSearchDoc(identifier=identifier)
 
 
-def test_searchable_target(open_search):
-    assert open_search.searchable_target == 'moc.elpmaxe//:ptth'
+def test_searchable_target(open_search_doc):
+    assert open_search_doc.searchable_target == 'moc.elpmaxe//:ptth'
 
 
-def test_resource_creator(open_search):
-    assert open_search.resource_creator == 'Test Creator'
+def test_resource_creator(open_search_doc):
+    assert open_search_doc.resource_creator == 'Test Creator'
 
 
-def test_resource_creators(open_search):
-    assert open_search.resource_creators == ['Test Creator']
+def test_resource_creators(open_search_doc):
+    assert open_search_doc.resource_creators == ['Test Creator']
 
 
-def test_resource_title(open_search):
-    assert open_search.resource_title == 'Test Title'
+def test_resource_title(open_search_doc):
+    assert open_search_doc.resource_title == 'Test Title'
 
 
-def test_resource_publisher(open_search):
-    assert open_search.resource_publisher == 'Test Publisher'
+def test_resource_publisher(open_search_doc):
+    assert open_search_doc.resource_publisher == 'Test Publisher'
 
 
-def test_resource_publication_date(open_search):
-    assert open_search.resource_publication_date == '2022-01-01'
+def test_resource_publication_date(open_search_doc):
+    assert open_search_doc.resource_publication_date == '2022-01-01'
 
 
-def test_resource(open_search):
+def test_resource(open_search_doc):
     expected_resource = {'creators': ['Test Creator'],
                          'title': 'Test Title',
                          'publisher': 'Test Publisher',
                          'publication_date': '2022-01-01',
                          'type': 'Dataset/dataset'}
-    assert open_search.resource == expected_resource
+    assert open_search_doc.resource == expected_resource
 
 
-def test_owner(open_search):
+def test_owner(open_search_doc):
     expected_owner = {'id': 22,
                       'username': 'testuser',
                       'display_name': 'Test User',
                       'account_email': 'test.user@example.org'}
-    assert open_search.owner == expected_owner
+    assert open_search_doc.owner == expected_owner
 
 
-def test_ownergroup(open_search):
+def test_ownergroup(open_search_doc):
     expected_ownergroup = {'id': 33, 'name': 'testgroup', 'organization': 'Test Organization'}
-    assert open_search.ownergroup == expected_ownergroup
+    assert open_search_doc.ownergroup == expected_ownergroup
 
 
-def test_profile(open_search):
+def test_profile(open_search_doc):
     expected_profile = {'id': 44, 'label': 'testprofile'}
-    assert open_search.profile == expected_profile
+    assert open_search_doc.profile == expected_profile
 
 
-def test_searchable_publication_year(open_search):
-    assert open_search.searchable_publication_year == 2022
+def test_searchable_publication_year(open_search_doc):
+    assert open_search_doc.searchable_publication_year == 2022
 
 
-def test_resource_type(open_search):
-    assert open_search.resource_type == 'Dataset/dataset'
+def test_resource_type(open_search_doc):
+    assert open_search_doc.resource_type == 'Dataset/dataset'
 
 
-def test_searchable_resource_type(open_search):
-    assert open_search.searchable_resource_type == 'D'
+def test_searchable_resource_type(open_search_doc):
+    assert open_search_doc.searchable_resource_type == 'D'
 
 
-def test_word_bucket(open_search):
+def test_word_bucket(open_search_doc):
     expected_word_bucket = 'doi:10.25338/B8JG7X ; testuser ; testgroup ; http://example.com'
-    assert open_search.word_bucket == expected_word_bucket
+    assert open_search_doc.word_bucket == expected_word_bucket
 
 
-def test_resource_creator_prefix(open_search):
-    assert open_search.resource_creator_prefix == 'Test Creator'
+def test_resource_creator_prefix(open_search_doc):
+    assert open_search_doc.resource_creator_prefix == 'Test Creator'
 
 
-def test_resource_title_prefix(open_search):
-    assert open_search.resource_title_prefix == 'Test Title'
+def test_resource_title_prefix(open_search_doc):
+    assert open_search_doc.resource_title_prefix == 'Test Title'
 
 
-def test_resource_publisher_prefix(open_search):
-    assert open_search.resource_publisher_prefix == 'Test Publisher'
+def test_resource_publisher_prefix(open_search_doc):
+    assert open_search_doc.resource_publisher_prefix == 'Test Publisher'
 
 
-def test_has_metadata(open_search):
-    assert open_search.has_metadata
+def test_has_metadata(open_search_doc):
+    assert open_search_doc.has_metadata
 
 
-def test_public_search_visible(open_search):
-    assert open_search.public_search_visible
+def test_public_search_visible(open_search_doc):
+    assert open_search_doc.public_search_visible
 
 
-def test_oai_visible(open_search):
-    assert open_search.oai_visible
+def test_oai_visible(open_search_doc):
+    assert open_search_doc.oai_visible
 
 
-def test_dict_for_identifier(open_search):
+def test_dict_for_identifier(open_search_doc):
     expected_dict = {'id': 'doi:10.25338/B8JG7X',
                      'create_time': '2022-01-01T00:00:00',
                      'update_time': '2022-01-01T00:57:46',
@@ -206,16 +206,16 @@ def test_dict_for_identifier(open_search):
                          'account_email': 'test.user@example.org'},
                      'ownergroup': {'id': 33, 'name': 'testgroup', 'organization': 'Test Organization'},
                      'profile': {'id': 44, 'label': 'testprofile'}}
-    assert open_search.dict_for_identifier() == expected_dict
+    assert open_search_doc.dict_for_identifier() == expected_dict
 
 @responses.activate
-def test_index_exists(open_search):
+def test_index_exists(open_search_doc):
     url = 'http://opensearch.example.com/ezid-test-index'
 
     # Define the response you want to return
     responses.add(responses.HEAD, url, status=200)
 
-    result = open_search.index_exists()
+    result = open_search_doc.index_exists()
 
     assert result
 
