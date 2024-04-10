@@ -34,3 +34,5 @@ responses~=0.24.1
 django-matomo-api-tracking @ git+https://github.com/CDLUC3/django-matomo-api-tracking@0.1.4
 celery~=5.3.6
 sqlalchemy~=2.0.25
+
+opensearch-dsl~=2.1.0

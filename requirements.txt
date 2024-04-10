@@ -29,3 +29,5 @@ ecs-logging~=1.1.0
 django-matomo-api-tracking @ git+https://github.com/CDLUC3/django-matomo-api-tracking@0.1.4
 celery~=5.3.6
 sqlalchemy~=2.0.25
+
+opensearch-dsl~=2.1.0
