@@ -17,6 +17,7 @@ from django.utils.translation import ugettext as _
 import ezidapp.models.identifier
 import impl.form_objects
 import impl.search_util
+import impl.open_search_util
 import impl.ui_common
 import impl.userauth
 import impl.util
@@ -194,7 +195,7 @@ def hasBrokenLinks(d, request):
     c = _buildAuthorityConstraints(request, "issues", user_id, group_id)
     c['hasIssues'] = True
     c['linkIsBroken'] = True
-    return impl.search_util.executeSearch(
+    return impl.open_search_util.executeSearch(
         impl.userauth.getUser(request, returnAnonymous=True), c, 0, 1
     )
 
@@ -268,7 +269,7 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
                 ezidapp.models.identifier.Identifier.CR_WARNING,
                 ezidapp.models.identifier.Identifier.CR_FAILURE,
             ]
-        d['total_results'] = impl.search_util.executeSearchCountOnly(
+        d['total_results'] = impl.open_search_util.executeSearchCountOnly(
             impl.userauth.getUser(request, returnAnonymous=True), c
         )
         d['total_results_str'] = format(d['total_results'], "n")
@@ -285,7 +286,7 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
         d['results'] = []
         rec_beg = (d['p'] - 1) * d['ps']
         rec_end = d['p'] * d['ps']
-        for id_model in impl.search_util.executeSearch(
+        for id_model in impl.open_search_util.executeSearch(
             impl.userauth.getUser(request, returnAnonymous=True),
             c,
             rec_beg,
