@@ -1,11 +1,6 @@
-/*!
- * Copyright©2021, Regents of the University of California
- * http://creativecommons.org/licenses/BSD
- */
-
 // Resize anything
 
 @mixin resizable($direction) {
-  resize: $direction; // Options: horizontal, vertical, both
   overflow: auto; // Per CSS3 UI, `resize` only applies when `overflow` isn't `visible`
+  resize: $direction; // Options: horizontal, vertical, both
 }

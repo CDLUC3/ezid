@@ -25,3 +25,7 @@ xmltodict~=0.13.0
 PyMySQL~=0.9.3
 configparser~=5.0.2
 ecs-logging~=1.1.0
+
+django-matomo-api-tracking @ git+https://github.com/CDLUC3/django-matomo-api-tracking@0.1.4
+celery~=5.3.6
+sqlalchemy~=2.0.25

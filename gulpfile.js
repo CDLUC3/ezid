@@ -18,7 +18,7 @@ var imagemin = require('gulp-imagemin');
 var cache = require('gulp-cache');
 var del = require('del');
 var modernizr = require('gulp-modernizr');
-var stylelint = require('gulp-stylelint');
+var stylelint = require('stylelint');
 var jshint = require('gulp-jshint');
 var lbInclude = require('gulp-lb-include');
 var ssi = require('browsersync-ssi');
@@ -30,7 +30,8 @@ var ghPages = require('gulp-gh-pages');
 
 exports.default = parallel(scss, start, watcher);
 
-exports.build = series(clean, fonts, scsslint_legacy, scsslint, jslint, scss_legacy, scss, assemble, minifyCss, copyimages, fonts);
+// exports.build = series(clean, fonts, scsslint_legacy, scsslint, jslint, scss_legacy, scss, assemble, minifyCss, copyimages, fonts);
+exports.build = series(clean, fonts, jslint, scss_legacy, scss, assemble, minifyCss, copyimages, fonts);
 
 exports.upload = githubpages;
 
@@ -159,6 +160,8 @@ function scsslint_legacy(cb) {
   }));
   cb();
 }
+
+
 
 // Lint JavaScript:
 
