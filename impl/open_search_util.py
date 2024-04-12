@@ -3,6 +3,7 @@ from opensearchpy import OpenSearch
 from opensearch_dsl import Search, Q
 from django.conf import settings
 import urllib
+from ezidapp.models.identifier import Identifier
 
 settings.OPENSEARCH_BASE
 
@@ -37,7 +38,7 @@ def executeSearch(
     to,
     orderBy=None,
     selectRelated=defaultSelectRelated,
-    defer=defaultDefer,
+    defer=defaultDefer
 ):
     """Execute a search database query, returning an evaluated QuerySet
 
@@ -53,8 +54,12 @@ def executeSearch(
     s = s.query(query)
     response = s.execute()
 
-    pdb.set_trace()
-    print('hello search world')
+    # response.hits.total.value is number of hits
+    # response.hits.hits is the list of hits
+
+    return response
+
+
 
 # noinspection PyDefaultArgument,PyDefaultArgument
 def executeSearchCountOnly(
@@ -73,3 +78,32 @@ def executeSearchCountOnly(
     # next page or set of pages without commiting to a full count.
     print('hello count world')
     return 10
+
+
+def issue_reasons(hit):
+    # Returns a list of the identifier's issues.
+    reasons = []
+    if not hit['has_metadata']:
+        reasons.append("missing metadata")
+    # the False below, was "linkIsBroken" -- which is not part of the OpenSearch hit and in the Identifier model around
+    # line 1110.  Apparently calculated by the link checker and not part of the OpenSearch hit currently.  should it be?
+    if False:
+        reasons.append("broken link")
+    if is_crossref_bad:
+        reasons.append(
+            "Crossref registration "
+            + ("warning" if hit['crossref_status'] == Identifier.CR_WARNING else "failure")
+        )
+    return reasons
+
+
+def is_crossref_bad(hit):
+    return hit['crossref_status'] in [Identifier.CR_WARNING, Identifier.CR_FAILURE]
+
+
+def is_crossref_good(hit):
+    return hit['crossref_status'] in [
+        Identifier.CR_RESERVED,
+        Identifier.CR_WORKING,
+        Identifier.CR_SUCCESS,
+    ]
