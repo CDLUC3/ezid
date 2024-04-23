@@ -12,7 +12,7 @@ import urllib.response
 
 import django.conf
 import django.contrib.messages
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 import ezidapp.models.identifier
 import impl.form_objects

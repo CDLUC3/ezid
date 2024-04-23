@@ -17,7 +17,7 @@ import django.template.loader
 import django.utils.http
 import django.utils.safestring
 import django.utils.translation
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 import ezidapp.models.group
 import ezidapp.models.realm

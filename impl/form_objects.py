@@ -6,7 +6,7 @@ import re
 import django.core.exceptions
 import django.core.validators
 import django.forms
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 import ezidapp.models.user
 import ezidapp.models.util
