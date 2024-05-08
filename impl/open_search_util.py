@@ -3,7 +3,9 @@ from opensearchpy import OpenSearch
 from opensearch_dsl import Search, Q
 from django.conf import settings
 import urllib
+import impl.util
 from ezidapp.models.identifier import Identifier
+import ezidapp.models.identifier
 
 settings.OPENSEARCH_BASE
 
@@ -30,6 +32,8 @@ defaultDefer = [
     "resourcePublisherPrefix",
 ]
 
+_fulltextFields = ["resourceCreator", "resourceTitle", "resourcePublisher", "keywords"]
+
 
 def executeSearch(
     user,
@@ -48,16 +52,15 @@ def executeSearch(
     'defer' are as in formulateQuery above.
     """
 
-    # Define the multi_match query
-    multi_match_query = Q("multi_match", query=constraints['keywords'], fields=["*"])
-
-    # Get the filters from the simpler_formulate_query function
     filters = simpler_formulate_query(constraints, orderBy=orderBy, selectRelated=selectRelated, defer=defer)
 
-    pdb.set_trace()
-
-    # Combine the multi_match query and the filters using a bool query
-    bool_query = Q('bool', must=multi_match_query, filter=filters)
+    if 'keywords' in constraints:
+        # Define the multi_match query
+        multi_match_query = Q("multi_match", query=constraints['keywords'], fields=["*"])
+        # Combine the multi_match query and the filters using a bool query
+        bool_query = Q('bool', must=multi_match_query, filter=filters)
+    else:
+        bool_query = Q('bool', filter=filters)
 
     # Use the bool query in the search
     s = Search(using=client, index=settings.OPENSEARCH_INDEX)
@@ -70,8 +73,6 @@ def executeSearch(
     # response.hits.hits is the list of hits
 
     return response
-
-
 
 # noinspection PyDefaultArgument,PyDefaultArgument
 def executeSearchCountOnly(
@@ -131,7 +132,13 @@ def simpler_formulate_query(
         "hasMetadata": "has_metadata",
         "publicSearchVisible": "public_search_visible",
         # "linkIsBroken": "linkIsBroken",  TODO: this is not part of the OpenSearch hit
-        # "hasIssues": "hasIssues", TODO: this is not part of the OpenSearch hit
+        # "hasIssues": "hasIssues", TODO: this is not part of the OpenSearch hit,
+        "createTime": "create_time",
+        "updateTime": "update_time",
+        "resourceCreator": "resource.creators",
+        "resourceTitle": "resource.title",
+        "resourcePublisher": "resource.publisher",
+        "keywords": "word_bucket",
     }
 
     filters = []
@@ -147,8 +154,130 @@ def simpler_formulate_query(
         ]:
             filter_dict = {"term": {translate_columns[column]: value}}
             filters.append(Q(filter_dict))
+            if column == "publicSearchVisible" and value is True:
+                scopeRequirementMet = True
+
+        elif column == "identifier":
+            v = impl.util.validateIdentifier(value)
+            if v is None:
+                if re.match("\\d{5}/", value):
+                    v = impl.util.validateArk(value)
+                    if v is not None:
+                        v = "ark:/" + v
+                elif re.match("10\\.[1-9]\\d{3,4}/", value):
+                    v = impl.util.validateDoi(value)
+                    if v is not None:
+                        v = "doi:" + v
+                if v is None:
+                    v = value
+            # TODO: in order for prefix to work, I have to make sure the identifier is indexed as a keyword with
+            # a custom mapping for the identifier field in the OpenSearch index, and it still only works in some
+            # circumstances.
+            # "If search.allow_expensive_queries is set to false, prefix queries are not run."
+            # "It's important to note that prefix queries can be resource-intensive and can lead to performance issues.
+            # They are not recommended for large scale text searching. For better performance, consider using an edge
+            # n-gram tokenizer at index time or a completion suggester for auto-complete functionality."
+
+            # filter_dict = {"prefix": {"_id": v}}
+            filter_dict = {"term": {"_id": v}}
+            filters.append(Q(filter_dict))
+
+        elif column == "identifierType":
+            if isinstance(value, str):
+                value = [value]
+            filter_dict = {"terms": {"identifier_type": value}}
+            filters.append(Q(filter_dict))
+
+        elif column == "owner":
+            if isinstance(value, str):
+                value = [value]
+            filter_dict = {"terms": {"owner.username": value}}
+            filters.append(Q(filter_dict))
+            scopeRequirementMet = True
+
+        elif column == "ownergroup":
+            if isinstance(value, str):
+                value = [value]
+            filter_dict = {"terms": {"ownergroup.name": value}}
+            filters.append(Q(filter_dict))
+            scopeRequirementMet = True
+
+        elif column in ["createTime", "updateTime"]:
+            if value[0] is not None:
+                if value[1] is not None:
+                    filter_dict = {"range": {translate_columns[column]: {"gte": value[0], "lte": value[1]}}}
+                else:
+                    filter_dict = {"range": {translate_columns[column]: {"gt": value[0]}}}
+                filters.append(Q(filter_dict))
+            else:
+                if value[1] is not None:
+                    filter_dict = {"range": {translate_columns[column]: {"lt": value[1]}}}
+                    filters.append(Q(filter_dict))
+
+        elif column == "status":
+            if isinstance(value, str):
+                value = [value]
+            stat_vals = [ezidapp.models.identifier.Identifier.statusDisplayToCode.get(v, v) for v in value]
+            filter_dict = {"terms": {"status": stat_vals}}
+            filters.append(Q(filter_dict))
+
+        elif column == "crossref":
+            if value:
+                filters.append(Q('bool',
+                                    must=Q('exists', field='crossref_status'),
+                                    must_not=Q('term', crossref_status='')))
+            else:
+                filters.append(Q('term', crossref_status=''))
+
+        elif column == "crossrefStatus":
+            if isinstance(value, str):
+                value = [value]
+            filter_dict = {"terms": {"crossref_status": value}}
+            filters.append(Q(filter_dict))
+
+        elif column == "target":
+            # check for both with and without trailing slash match
+            values = [value]
+            u = urllib.parse.urlparse(value)
+            if u.params == "" and u.query == "" and u.fragment == "":
+                # Make sure all post-path syntax is removed.
+                value = u.geturl()
+                if value.endswith("/"):
+                    values.append(value[:-1])
+                else:
+                    values.append(value + "/")
+
+            # I don't think we need to check for MAX_SEARCHABLE_TARGET_LENGTH in OpenSearch, but refer to search_util
+            # for how it was done with database if we need to re-add this limitation.
+            filter_dict = {"terms": {"target": value}}
+            filters.append(Q(filter_dict))
+
+        elif column == "profile":
+            if isinstance(value, str):
+                value = [value]
+            filter_dict = {"terms": {"profile.label": value}}
+            filters.append(Q(filter_dict))
+
+        elif column in _fulltextFields:
+            filter_dict = {"term": {translate_columns[column]: value}}
+            filters.append(Q(filter_dict))
+
+        elif column == "resourcePublicationYear":
+            if value[0] is not None:
+                if value[1] is not None:
+                    if value[0] == value[1]:
+                        filter_dict = {"term": {"searchable_publication_year": value[0]}}
+                        filters.append(Q(searchablePublicationYear=value[0]))
+                    else:
+                        filters.append(django.db.models.Q(searchablePublicationYear__range=value))
+                else:
+                    filters.append(django.db.models.Q(searchablePublicationYear__gte=value[0]))
+            else:
+                if value[1] is not None:
+                    filters.append(django.db.models.Q(searchablePublicationYear__lte=value[1]))
 
     return filters
+
 
 # note: holy crap this function is out of control at like 300 lines.  TODO: Code smell
 # noinspection PyDefaultArgument,PyDefaultArgument
@@ -231,7 +360,7 @@ def formulate_query(
             "hasIssues",
         ]:
             filters.append(django.db.models.Q(**{column: value}))
-            if column == "publicSearchVisible" and value == True:
+            if column == "publicSearchVisible" and value is True:
                 scopeRequirementMet = True
         elif column == "identifier":
             v = impl.util.validateIdentifier(value)
@@ -285,8 +414,7 @@ def formulate_query(
                 if value[1] is not None:
                     filters.append(django.db.models.Q(**{(column + "__lte"): value[1]}))
         elif column == "status":
-            if isinstance(value, str):
-                value = [value]
+
             filters.append(
                 functools.reduce(
                     operator.or_,

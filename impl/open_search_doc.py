@@ -36,10 +36,7 @@ my_dict = open_s.dict_for_identifier()
 open_s.index_document()
 """
 
-
-# todo: Do we need more meaningful values for these fields or are the database IDs ok?
-# datacenter, profile, owner, ownergroup
-# also, do we really need the crossref status and message which seem like internal fields for EZID maintenance, not search
+# do we really need the crossref status and message which seem like internal fields for EZID maintenance, not search
 class OpenSearchDoc:
     def __init__(self, identifier: Identifier):
         self.identifier = identifier
@@ -71,7 +68,7 @@ class OpenSearchDoc:
                 identifier_dict[field_name] = tmp
 
         fields_to_add = ['db_identifier_id', 'resource', 'word_bucket', 'has_metadata', 'public_search_visible', 'oai_visible',
-                         'owner', 'ownergroup', 'profile']
+                         'owner', 'ownergroup', 'profile', 'identifier_type', 'searchable_publication_year']
 
         for field in fields_to_add:
             identifier_dict[field] = getattr(self, f'{field}')
@@ -228,6 +225,14 @@ class OpenSearchDoc:
         if p is None:
             return {}
         return {"id": p.id, "label": p.label}
+
+    # identifier_type is ark or doi and the db search did some kind of slow like query for it, but should be explicit
+    @property
+    @functools.lru_cache
+    def identifier_type(self):
+        if self.identifier.identifier and self.identifier.identifier.startswith("doi:"):
+            return "doi"
+        return "ark"
 
     def index_exists(self):
         url = f'{settings.OPENSEARCH_BASE}/{settings.OPENSEARCH_INDEX}'
