@@ -6,7 +6,7 @@ import re
 import django.conf
 import django.contrib.messages
 import django.shortcuts
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 import ezidapp.models.shoulder
 import impl.datacite_xml

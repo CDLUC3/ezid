@@ -5,7 +5,7 @@ import csv
 import datetime
 import io
 
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 import ezidapp.management.commands
 
@@ -78,7 +78,7 @@ def dashboard(request):
 
 def ajax_dashboard_table(request):
     # noinspection PyDictCreation
-    if request.is_ajax():
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         user = impl.userauth.getUser(request)
         G = request.GET
         d = {
