@@ -12,8 +12,6 @@ import re
 
 class Migration(migrations.Migration):
 
-    replaces = [('ezidapp', '0001_initial'), ('ezidapp', '0002_auto_20221026_1139'), ('ezidapp', '0003_auto_20230809_1154'), ('ezidapp', '0004_minter'), ('ezidapp', '0005_rename_index')]
-
     initial = True
 
     dependencies = [
