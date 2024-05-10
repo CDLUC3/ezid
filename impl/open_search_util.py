@@ -6,6 +6,7 @@ import urllib
 import impl.util
 from ezidapp.models.identifier import Identifier
 import ezidapp.models.identifier
+import re
 
 settings.OPENSEARCH_BASE
 
@@ -139,6 +140,8 @@ def simpler_formulate_query(
         "resourceTitle": "resource.title",
         "resourcePublisher": "resource.publisher",
         "keywords": "word_bucket",
+        "linkIsBroken": "link_is_broken",
+        "hasIssues": "has_issues"
     }
 
     filters = []
@@ -149,8 +152,8 @@ def simpler_formulate_query(
             "isTest",
             "hasMetadata",
             "publicSearchVisible",
-            # "linkIsBroken",
-            # "hasIssues",
+            "linkIsBroken",
+            "hasIssues"
         ]:
             filter_dict = {"term": {translate_columns[column]: value}}
             filters.append(Q(filter_dict))
@@ -178,8 +181,8 @@ def simpler_formulate_query(
             # They are not recommended for large scale text searching. For better performance, consider using an edge
             # n-gram tokenizer at index time or a completion suggester for auto-complete functionality."
 
-            # filter_dict = {"prefix": {"_id": v}}
-            filter_dict = {"term": {"_id": v}}
+            filter_dict = {"prefix": {"searchable_id": v}}
+            # filter_dict = {"term": {"_id": v}}
             filters.append(Q(filter_dict))
 
         elif column == "identifierType":

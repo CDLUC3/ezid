@@ -33,7 +33,7 @@ class Command(BaseCommand):
 
         # create the index if it doesn't exist from the schema
         if oss.index_exists() is False:
-            print('index does not exists, so creating it')
+            print('index does not exist, so creating it')
             oss.create_index()
 
         string_parts = []
