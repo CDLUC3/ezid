@@ -4,6 +4,7 @@ from django.http import JsonResponse
 # import settings.settings
 from django.conf import settings
 from ezidapp.models.identifier import Identifier
+from ezidapp.models.identifier import SearchIdentifier
 import json
 import pdb
 import base64
@@ -36,11 +37,14 @@ my_dict = open_s.dict_for_identifier()
 open_s.index_document()
 """
 
-# do we really need the crossref status and message which seem like internal fields for EZID maintenance, not search
+# do we really need the crossref status and message which seem like internal fields for EZID maintenance, not search ?
 class OpenSearchDoc:
     def __init__(self, identifier: Identifier):
         self.identifier = identifier
         self.km = identifier.kernelMetadata
+        # TODO: we want to purge search_identifier in the future since OpenSearch replaces it
+        # but for now we are using it until "linkIsBroken" and "hasIssues" are moved elsewhere
+        self.search_identifier=SearchIdentifier.objects.get(identifier=identifier.identifier)
 
     # uphold Python conventions and make fields snake_case instead of camelCase
     def _camel_to_snake(name):
@@ -67,8 +71,9 @@ class OpenSearchDoc:
                     tmp = field_value
                 identifier_dict[field_name] = tmp
 
-        fields_to_add = ['db_identifier_id', 'resource', 'word_bucket', 'has_metadata', 'public_search_visible', 'oai_visible',
-                         'owner', 'ownergroup', 'profile', 'identifier_type', 'searchable_publication_year']
+        fields_to_add = ['db_identifier_id', 'resource', 'word_bucket', 'has_metadata', 'public_search_visible',
+                         'oai_visible', 'owner', 'ownergroup', 'profile', 'identifier_type',
+                         'searchable_publication_year', 'searchable_id', 'link_is_broken', 'has_issues']
 
         for field in fields_to_add:
             identifier_dict[field] = getattr(self, f'{field}')
@@ -134,6 +139,28 @@ class OpenSearchDoc:
     def searchable_publication_year(self):
         d = self.km.validatedDate
         return int(d[:4]) if d is not None else None
+
+    # this one is indexed as "keyword" so I can do a "prefix" search against it since otherwise it doesn't work
+    @property
+    @functools.lru_cache
+    def searchable_id(self):
+        return self.identifier.identifier
+
+    @property
+    @functools.lru_cache
+    def link_is_broken(self):
+        # TODO: this field is probably best moved out of the search table for the future
+        if self.search_identifier is not None:
+            return self.search_identifier.linkIsBroken
+        return False
+
+    @property
+    @functools.lru_cache
+    def has_issues(self):
+        # TODO: this field is probably best moved out of the search table for the future
+        if self.search_identifier is not None:
+            return self.search_identifier.hasIssues
+        return False
 
     @property
     @functools.lru_cache

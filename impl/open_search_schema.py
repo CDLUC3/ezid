@@ -51,6 +51,9 @@ OPEN_SEARCH_SCHEMA = {
             "exported": {
                 "type": "boolean"
             },
+            "has_issues": {
+                "type": "boolean"
+            },
             "has_metadata": {
                 "type": "boolean"
             },
@@ -73,6 +76,9 @@ OPEN_SEARCH_SCHEMA = {
                 }
             },
             "is_test": {
+                "type": "boolean"
+            },
+            "link_is_broken": {
                 "type": "boolean"
             },
             "oai_visible": {
@@ -207,6 +213,9 @@ OPEN_SEARCH_SCHEMA = {
                         }
                     }
                 }
+            },
+            "searchable_id": {
+                "type": "keyword"
             },
             "status": {
                 "type": "text",
