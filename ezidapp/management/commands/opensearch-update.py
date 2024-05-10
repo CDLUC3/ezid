@@ -6,6 +6,7 @@ import json
 import pdb
 import requests
 import datetime
+import impl.open_search_schema as oss
 
 # this is only for the time being since I'm using a local server without correct SSL/https
 import urllib3
@@ -29,6 +30,11 @@ class Command(BaseCommand):
         # all_identifiers = Identifier.objects.all().iterator(chunk_size=20)
         # for ident in all_identifiers: ...
         # ^^^ The above code would lock up ^^^
+
+        # create the index if it doesn't exist from the schema
+        if oss.index_exists() is False:
+            print('index does not exists, so creating it')
+            oss.create_index()
 
         string_parts = []
         counter = 0

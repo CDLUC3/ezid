@@ -207,11 +207,11 @@ def simpler_formulate_query(
                 if value[1] is not None:
                     filter_dict = {"range": {translate_columns[column]: {"gte": value[0], "lte": value[1]}}}
                 else:
-                    filter_dict = {"range": {translate_columns[column]: {"gt": value[0]}}}
+                    filter_dict = {"range": {translate_columns[column]: {"gte": value[0]}}}
                 filters.append(Q(filter_dict))
             else:
                 if value[1] is not None:
-                    filter_dict = {"range": {translate_columns[column]: {"lt": value[1]}}}
+                    filter_dict = {"range": {translate_columns[column]: {"lte": value[1]}}}
                     filters.append(Q(filter_dict))
 
         elif column == "status":
@@ -259,7 +259,7 @@ def simpler_formulate_query(
             filters.append(Q(filter_dict))
 
         elif column in _fulltextFields:
-            filter_dict = {"term": {translate_columns[column]: value}}
+            filter_dict = {"match": {translate_columns[column]: value}}
             filters.append(Q(filter_dict))
 
         elif column == "resourcePublicationYear":
@@ -267,17 +267,28 @@ def simpler_formulate_query(
                 if value[1] is not None:
                     if value[0] == value[1]:
                         filter_dict = {"term": {"searchable_publication_year": value[0]}}
-                        filters.append(Q(searchablePublicationYear=value[0]))
+                        filters.append(Q(filter_dict))
                     else:
-                        filters.append(django.db.models.Q(searchablePublicationYear__range=value))
+                        filter_dict = {"range": {"searchable_publication_year": {"gte": value[0], "lte": value[1]}}}
+                        filters.append(Q(filter_dict))
                 else:
-                    filters.append(django.db.models.Q(searchablePublicationYear__gte=value[0]))
+                    filter_dict = {"range": {"searchable_publication_year": {"gte": value[0]}}}
+                    filters.append(Q(filter_dict))
             else:
                 if value[1] is not None:
-                    filters.append(django.db.models.Q(searchablePublicationYear__lte=value[1]))
+                    filter_dict = {"range": {"searchable_publication_year": {"lte": value[1]}}}
+                    filters.append(Q(filter_dict))
+
+        elif column == "resourceType":
+            if isinstance(value, str):
+                value = [value]
+            filter_dict = {"terms": {"resource.type": value}}
+            filters.append(Q(filter_dict))
+
+        else:
+            assert False, "unrecognized column"
 
     return filters
-
 
 # note: holy crap this function is out of control at like 300 lines.  TODO: Code smell
 # noinspection PyDefaultArgument,PyDefaultArgument
