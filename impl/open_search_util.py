@@ -54,7 +54,7 @@ def executeSearch(
     """
 
     # TODO: is it a bug that in the original code the only place user is used is in logging?
-    # I would'vee thought results would be limited by user permission somehow.
+    # I would'vee thought results would be limited by user permission somehow, but I'm not sure they are.
 
     filters = formulate_query(constraints, orderBy=orderBy, selectRelated=selectRelated, defer=defer)
 
@@ -141,16 +141,14 @@ def formulate_query(
         "isTest": "is_test",
         "hasMetadata": "has_metadata",
         "publicSearchVisible": "public_search_visible",
-        # "linkIsBroken": "linkIsBroken",  TODO: this is not part of the OpenSearch hit
-        # "hasIssues": "hasIssues", TODO: this is not part of the OpenSearch hit,
+        "linkIsBroken": "link_is_broken",
+        "hasIssues": "has_issues",
         "createTime": "create_time",
         "updateTime": "update_time",
         "resourceCreator": "resource.creators",
         "resourceTitle": "resource.title",
         "resourcePublisher": "resource.publisher",
-        "keywords": "word_bucket",
-        "linkIsBroken": "link_is_broken",
-        "hasIssues": "has_issues"
+        "keywords": "word_bucket"
     }
 
     filters = []
