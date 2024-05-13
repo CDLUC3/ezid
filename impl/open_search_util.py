@@ -45,13 +45,16 @@ def executeSearch(
     selectRelated=defaultSelectRelated,
     defer=defaultDefer
 ):
-    """Execute a search database query, returning an evaluated QuerySet
+    """Execute a search opensearch query, returning an evaluated QuerySet
 
     'user' is the requestor, and should be an authenticated User
     object or AnonymousUser. 'from_' and 'to' are range bounds, and
     must be supplied. 'constraints', 'orderBy', 'selectRelated', and
     'defer' are as in formulateQuery above.
     """
+
+    # TODO: is it a bug that in the original code the only place user is used is in logging?
+    # I would'vee thought results would be limited by user permission somehow.
 
     filters = formulate_query(constraints, orderBy=orderBy, selectRelated=selectRelated, defer=defer)
 
@@ -67,6 +70,9 @@ def executeSearch(
     # Use the bool query in the search
     s = Search(using=client, index=settings.OPENSEARCH_INDEX)
     s = s.query(bool_query)
+
+    # return only the correct page of records
+    s = s[from_:to]
 
     # Execute the search
     response = s.execute()
