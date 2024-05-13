@@ -71,6 +71,12 @@ def executeSearch(
     s = Search(using=client, index=settings.OPENSEARCH_INDEX)
     s = s.query(bool_query)
 
+    # call the ordering function
+    if orderBy is not None:
+        order_dict = formulate_order_by(orderBy)
+        if order_dict is not None:
+            s = s.sort(order_dict)
+
     # return only the correct page of records
     s = s[from_:to]
 
@@ -299,4 +305,48 @@ def formulate_query(
             assert False, "unrecognized column"
 
     return filters
+
+
+"""
+In OpenSearch, you can order the results by a specific column using the sort method on the Search object. The sort
+method takes a dictionary where the keys are the field names and the values are the direction of the sort, either
+'asc' for ascending or 'desc' for descending.
+"""
+
+
+def formulate_order_by(order_by):
+    if order_by is not None:
+        direction = "asc"
+        if order_by.startswith("-"):
+            direction = "desc"
+            order_by = order_by[1:]
+
+        order_map = {
+                "identifier": 'identifier',
+                "createTime": 'create_time',
+                "updateTime": 'update_time',
+                "status": 'status',
+                "exported": 'exported',
+                "isTest": 'is_test',
+                "hasMetadata": 'has_metadata',
+                "publicSearchVisible": 'public_search_visible',
+                "linkIsBroken": 'link_is_broken',
+                "hasIssues": 'has_issues',
+                "owner": 'owner.username',
+                "identifierType": 'identifier',
+                "owner": 'owner.username',
+                "ownergroup": 'ownergroup.name',
+                "profile": 'profile.label',
+                "resourceCreator": 'resource.creators',
+                "resourceTitle": 'resource.title',
+                "resourcePublisher": 'resource.publisher',
+                "resourcePublicationYear": 'searchable_publication_year',
+                "resourceType": 'resource.type'
+        }
+
+        if order_by not in order_map:
+            return None
+
+        order_dict = {order_map[order_by]: {'order': direction}}
+        return order_dict
 
