@@ -322,7 +322,7 @@ def formulate_order_by(order_by):
             order_by = order_by[1:]
 
         order_map = {
-                "identifier": 'identifier',
+                "identifier": 'searchable_id',
                 "createTime": 'create_time',
                 "updateTime": 'update_time',
                 "status": 'status',
@@ -332,16 +332,15 @@ def formulate_order_by(order_by):
                 "publicSearchVisible": 'public_search_visible',
                 "linkIsBroken": 'link_is_broken',
                 "hasIssues": 'has_issues',
-                "owner": 'owner.username',
+                "owner": 'owner.username.keyword',
                 "identifierType": 'identifier',
-                "owner": 'owner.username',
-                "ownergroup": 'ownergroup.name',
-                "profile": 'profile.label',
-                "resourceCreator": 'resource.creators',
-                "resourceTitle": 'resource.title',
-                "resourcePublisher": 'resource.publisher',
+                "ownergroup": 'ownergroup.name.keyword',
+                "profile": 'profile.label.keyword',
+                "resourceCreator": 'resource.creators.keyword',
+                "resourceTitle": 'resource.title.keyword',
+                "resourcePublisher": 'resource.publisher.keyword',
                 "resourcePublicationYear": 'searchable_publication_year',
-                "resourceType": 'resource.type'
+                "resourceType": 'resource.type.keyword'
         }
 
         if order_by not in order_map:
