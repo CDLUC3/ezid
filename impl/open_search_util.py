@@ -138,6 +138,17 @@ def is_crossref_good(hit):
     ]
 
 
+def friendly_status(hit):
+    if hit['status'] == Identifier.PUBLIC:
+        return "public"
+    elif hit['status'] == Identifier.UNAVAILABLE:
+        return "unavailable"
+    elif hit['status'] == Identifier.RESERVED:
+        return "reserved"
+    else:
+        return "unknown"
+
+
 # trying to make the formulate query less long and complicated
 def formulate_query(
     constraints, orderBy=None, selectRelated=defaultSelectRelated, defer=defaultDefer
@@ -325,7 +336,7 @@ def formulate_order_by(order_by):
                 "identifier": 'searchable_id',
                 "createTime": 'create_time',
                 "updateTime": 'update_time',
-                "status": 'status',
+                "status": 'status.keyword',
                 "exported": 'exported',
                 "isTest": 'is_test',
                 "hasMetadata": 'has_metadata',

@@ -19,7 +19,7 @@ import django.contrib.messages
 from django.utils.translation import ugettext as _
 
 import impl.form_objects
-import impl.search_util
+# import impl.search_util
 import impl.open_search_util
 import impl.ui_common
 import impl.userauth
@@ -307,7 +307,7 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
                     "c_object_type": hit['resource']['type'],
                     "c_publisher": _truncateStr(hit['resource']['publisher']),
                     "c_pubyear": _truncateStr(hit['resource']['publication_date']),
-                    "c_id_status": hit['status'],
+                    "c_id_status": impl.open_search_util.friendly_status(hit),
                     "c_update_time": datetime.fromisoformat(hit['update_time']).timestamp()
                 }
                 if hit['status'] == Identifier.UNAVAILABLE and hit['unavailable_reason'] != "":
