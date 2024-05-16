@@ -2,30 +2,30 @@
 
 ## Configure the EZID application
 
-- name: symlink ezid logs
-  file:
-    path: "{{ app_dir }}/logs"
-    src: "{{ app_dir }}/var/log/ezid"
-    state: link
-- name: symlink download dir
-  file:
-    path: "{{ app_dir }}/download"
-    src: "{{ app_dir }}/var/www/download"
-    state: link
+## - name: symlink ezid logs
+##   file:
+##     path: "{{ app_dir }}/logs"
+##     src: "{{ app_dir }}/var/log/ezid"
+##     state: link
+## - name: symlink download dir
+##   file:
+##     path: "{{ app_dir }}/download"
+##     src: "{{ app_dir }}/var/www/download"
+##     state: link
+## 
+## - name: settings.py
+##   template:
+##     src: "{{ app_dir }}/ezid/settings/settings.py.j2"
+##     #src: "templates/ezid/settings/settings.py.j2"
+##     dest: "{{ app_dir }}/ezid/settings/settings.py"
+##     owner: "{{ user }}"
+##     group: "{{ group }}"
+##     mode: "0600"
 
-- name: settings.py
-  template:
-    src: "{{ app_dir }}/ezid/settings/settings.py.j2"
-    #src: "templates/ezid/settings/settings.py.j2"
-    dest: "{{ app_dir }}/ezid/settings/settings.py"
-    owner: "{{ user }}"
-    group: "{{ group }}"
-    mode: "0600"
-
-- name: install mysqlclient KLUGE
+- name: install poetry
   ansible.builtin.pip:
     name: poetry
-    virtualenv: "{{ pyenv_root }}/versions/{{ pyenv_global }}"
+    #virtualenv: "{{ pyenv_root }}/versions/{{ pyenv_global }}"
 
 ## - name: install mysqlclient KLUGE
 ##   ansible.builtin.pip:
