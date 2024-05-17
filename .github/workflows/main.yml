@@ -31,9 +31,9 @@ jobs:
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Install dependencies
-        run: poetry install
         env:
           POETRY_VIRTUALENVS_CREATE: false
+        run: poetry install
 
       - name: Dump environment (for troubleshooting)
         run: |
