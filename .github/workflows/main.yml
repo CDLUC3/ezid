@@ -11,8 +11,11 @@ jobs:
       PYTHONPATH: ${{ github.workspace }}
 
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-python@v2
+      - name: Checkout code
+        uses: actions/checkout@v1
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
         with:
           python-version: '3.11'
           architecture: 'x64'
@@ -21,11 +24,16 @@ jobs:
         run: |
           sudo /etc/init.d/mysql start
 
-      - name: Prepare Python env
+      
+      - name: Install Poetry
         run: |
-          pip install --upgrade pip setuptools wheel poetry
-          poetry install
-          poetry shell
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: poetry install
+        env:
+          POETRY_VIRTUALENVS_CREATE: false
 
       - name: Dump environment (for troubleshooting)
         run: |
@@ -69,13 +77,13 @@ jobs:
       - name: Load DB fixture
         run: |
           # ./manage.py loaddata --ignorenonexistent db
-          python manage.py loaddata db
+          poetry run python manage.py loaddata db
           #./manage.py diag-update-admin
 
       - name: Run tests
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: |
-          pytest --maxfail 10
+          poetry run pytest --maxfail 10
 
 #        - pip install -e .
