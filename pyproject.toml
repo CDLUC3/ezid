@@ -28,6 +28,17 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 keywords = ["persistent identifier", "id"]
+packages = [
+    { include = "ezidapp" },
+    { include = "settings" },
+    { include = "impl" },
+]
+
+
+
+
+
+
 
 #[tool.poetry_bumpversion.file."ezidapp/__init__.py"]
 
@@ -58,3 +69,25 @@ ecs-logging = "^2.1.0"
 celery = "^5.4.0"
 sqlalchemy = "^2.0.30"
 django-matomo-api-tracking = {git = "https://github.com/CDLUC3/django-matomo-api-tracking", rev = "0.1.4"}
+
+[tool.poetry.scripts]
+ez-batch-register = 'tools.batch_register:main'
+ez-client = 'tools.client:main'
+ez-dashboard = 'tools.dashboard:main'
+ez-decode-file = 'tools.decode_file:main'
+ez-dump-convert = 'tools.dump_convert:main'
+ez-dump-crossref = 'tools.dump_crossref:main'
+ez-dump-datacite = 'tools.dump_datacite:main'
+ez-dump-diff = 'tools.dump_diff:main'
+ez-dump-diff-crossref = 'tools.dump_diff_crossref:main'
+ez-dump-filter = 'tools.dump_filter:main'
+ez-dump-project = 'tools.dump_project:main'
+ez-dump-store = 'tools.dump_store:main'
+ez-filterlog = 'tools.filterlog:main'
+ez-queue-admin = 'tools.queue_admin:main'
+ez-shoulderless-identifiers = 'tools.shoulderless_identifiers:main'
+ez-link-check-emailer = 'tools.link_check_emailer:main'
+ez-link-check-summary-report = 'tools.link_check_summary_report:main'
+ez-downserver = 'tools.downserver:main'
+ 
+

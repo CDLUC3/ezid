@@ -21,6 +21,88 @@ This is how I got scotts forked package to resolve:
 poetry add git+https://github.com/CDLUC3/django-matomo-api-tracking@0.1.4
 
 
+________________________________________________________________________________
+Looking at console scripts now.  This is how setup.py generates console scripts:
+
+agould@localhost:~/git/github/cdluc3/ezid> python
+Python 3.11.9 (main, May 16 2024, 13:08:52) [GCC 7.5.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import pathlib
+>>> HERE_PATH = pathlib.Path(__file__).parent
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name '__file__' is not defined. Did you mean: '__name__'?
+>>> HERE_PATH = pathlib.Path(__name__).parent
+>>> def gen_console_scripts():
+...     """Generate command line stubs for the modules in the tools folders."""
+...     tool_path = HERE_PATH / 'tools'
+...     stub_list = []
+...     for p in tool_path.glob('*.py'):
+...         if p.name.startswith('_'):
+...             continue
+...         module_name = p.with_suffix('').name
+...         tool_name = 'ez-{}'.format(module_name.replace('_', '-'))
+...         stub_name = "{}=tools.{}:main".format( tool_name, module_name)
+...         stub_list.append(stub_name)
+...     return stub_list
+... 
+>>> gen_console_scripts
+<function gen_console_scripts at 0x7f0ad86e4b80>
+>>> gen_console_scripts()
+['ez-batch-register=tools.batch_register:main', 'ez-client=tools.client:main', 'ez-dashboard=tools.dashboard:main', 'ez-decode-file=tools.decode_file:main', 'ez-dump-convert=tools.dump_convert:main', 'ez-dump-crossref=tools.dump_crossref:main', 'ez-dump-datacite=tools.dump_datacite:main', 'ez-dump-diff=tools.dump_diff:main', 'ez-dump-diff-crossref=tools.dump_diff_crossref:main', 'ez-dump-filter=tools.dump_filter:main', 'ez-dump-project=tools.dump_project:main', 'ez-dump-store=tools.dump_store:main', 'ez-filterlog=tools.filterlog:main', 'ez-queue-admin=tools.queue_admin:main', 'ez-shoulderless-identifiers=tools.shoulderless_identifiers:main', 'ez-link-check-emailer=tools.link_check_emailer:main', 'ez-link-check-summary-report=tools.link_check_summary_report:main', 'ez-downserver=tools.downserver:main']
+>>> 
+
+>>> pprint.pp(scripts)
+['ez-batch-register=tools.batch_register:main',
+ 'ez-client=tools.client:main',
+ 'ez-dashboard=tools.dashboard:main',
+ 'ez-decode-file=tools.decode_file:main',
+ 'ez-dump-convert=tools.dump_convert:main',
+ 'ez-dump-crossref=tools.dump_crossref:main',
+ 'ez-dump-datacite=tools.dump_datacite:main',
+ 'ez-dump-diff=tools.dump_diff:main',
+ 'ez-dump-diff-crossref=tools.dump_diff_crossref:main',
+ 'ez-dump-filter=tools.dump_filter:main',
+ 'ez-dump-project=tools.dump_project:main',
+ 'ez-dump-store=tools.dump_store:main',
+ 'ez-filterlog=tools.filterlog:main',
+ 'ez-queue-admin=tools.queue_admin:main',
+ 'ez-shoulderless-identifiers=tools.shoulderless_identifiers:main',
+ 'ez-link-check-emailer=tools.link_check_emailer:main',
+ 'ez-link-check-summary-report=tools.link_check_summary_report:main',
+ 'ez-downserver=tools.downserver:main']
+
+
+I don't see how we can generate this list for consumption by poetry.  Do we even use these?
+
+So I just hacked them all in:
+
+[tool.poetry.scripts]
+ez-batch-register = 'tools.batch_register:main'
+ez-client = 'tools.client:main'
+ez-dashboard = 'tools.dashboard:main'
+ez-decode-file = 'tools.decode_file:main'
+ez-dump-convert = 'tools.dump_convert:main'
+ez-dump-crossref = 'tools.dump_crossref:main'
+ez-dump-datacite = 'tools.dump_datacite:main'
+ez-dump-diff = 'tools.dump_diff:main'
+ez-dump-diff-crossref = 'tools.dump_diff_crossref:main'
+ez-dump-filter = 'tools.dump_filter:main'
+ez-dump-project = 'tools.dump_project:main'
+ez-dump-store = 'tools.dump_store:main'
+ez-filterlog = 'tools.filterlog:main'
+ez-queue-admin = 'tools.queue_admin:main'
+ez-shoulderless-identifiers = 'tools.shoulderless_identifiers:main'
+ez-link-check-emailer = 'tools.link_check_emailer:main'
+ez-link-check-summary-report = 'tools.link_check_summary_report:main'
+ez-downserver = 'tools.downserver:main'
+ 
+
+
+
+
+
+
 
 
 
