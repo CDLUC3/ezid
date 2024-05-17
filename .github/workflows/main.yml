@@ -25,6 +25,7 @@ jobs:
         run: |
           pip install --upgrade pip setuptools wheel poetry
           poetry install
+          poetry shell
 
       - name: Dump environment (for troubleshooting)
         run: |
