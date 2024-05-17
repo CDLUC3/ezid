@@ -2,3 +2,74 @@
 skip_string_normalization = true
 line_length = 100
 
+[tool.poetry]
+name = "ezid"
+version = "3.2.7"
+description = "EZID - a Persistent Identifier Management System"
+authors = ["Your Name <you@example.com>"]
+license = "MIT License"
+readme = "README.md"
+package-mode = false 
+
+[tool.poetry.dependencies]
+python = "^3.11"
+django = ">=4.2.11,<4.3.0"
+aiomysql = ">=0.0.21,<0.1.0"
+mysql = ">=0.0.3,<0.1.0"
+myloginpath = ">=0.0.2,<0.1.0"
+jinja2 = ">=3.1.3,<3.2.0"
+pygments = ">=2.15.0,<2.16.0"
+boto3 = ">=1.18.33,<1.19.0"
+fasteners = ">=0.16.3,<0.17.0"
+feedparser = ">=6.0.8,<6.1.0"
+filelock = ">=3.0.12,<3.1.0"
+freezegun = ">=1.1.0,<1.2.0"
+hjson = ">=3.0.2,<3.1.0"
+lxml = ">=4.9.1,<4.10.0"
+pytest = ">=6.2.5,<6.3.0"
+python-dateutil = ">=2.8.2,<2.9.0"
+requests = ">=2.31.0,<2.32.0"
+setuptools = ">=65.5.1,<65.6.0"
+simplegist = ">=1.0.1,<1.1.0"
+toml = ">=0.10.2,<0.11.0"
+xmltodict = ">=0.13.0,<0.14.0"
+pymysql = ">=0.9.3,<0.10.0"
+configparser = ">=5.0.2,<5.1.0"
+ecs-logging = ">=1.1.0,<1.2.0"
+celery = ">=5.3.6,<5.4.0"
+sqlalchemy = ">=2.0.25,<2.1.0"
+django-matomo-api-tracking = {git = "https://github.com/CDLUC3/django-matomo-api-tracking", rev = "0.1.4", develop = true}
+
+
+[tool.poetry.group.dev.dependencies]
+django = ">=4.2.11,<4.3.0"
+aiomysql = ">=0.0.21,<0.1.0"
+mysql = ">=0.0.3,<0.1.0"
+myloginpath = ">=0.0.2,<0.1.0"
+jinja2 = ">=3.1.3,<3.2.0"
+pygments = ">=2.15.0,<2.16.0"
+boto3 = ">=1.18.33,<1.19.0"
+fasteners = ">=0.16.3,<0.17.0"
+feedparser = ">=6.0.8,<6.1.0"
+filelock = ">=3.0.12,<3.1.0"
+freezegun = ">=1.1.0,<1.2.0"
+hjson = ">=3.0.2,<3.1.0"
+lxml = ">=4.9.1,<4.10.0"
+pytest = ">=6.2.5,<6.3.0"
+python-dateutil = ">=2.8.2,<2.9.0"
+requests = ">=2.31.0,<2.32.0"
+setuptools = ">=65.5.1,<65.6.0"
+simplegist = ">=1.0.1,<1.1.0"
+toml = ">=0.10.2,<0.11.0"
+xmltodict = ">=0.13.0,<0.14.0"
+pymysql = ">=0.9.3,<0.10.0"
+configparser = ">=5.0.2,<5.1.0"
+ecs-logging = ">=1.1.0,<1.2.0"
+pytest-django = ">=4.5.2,<4.6.0"
+pytest-mock = ">=3.14.0,<3.15.0"
+celery = ">=5.3.6,<5.4.0"
+sqlalchemy = ">=2.0.25,<2.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
