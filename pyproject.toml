@@ -2,6 +2,10 @@
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.black]
+skip_string_normalization = true
+line_length = 100
+
 [tool.poetry]
 name = "ezid"
 description = "Easy ID - identifiers made easy. Create and manage long-term globally unique IDs for data and other sources"
@@ -9,7 +13,7 @@ version = "v3.2.7"
 #license = "CC-BY-3.0-US"
 #license = "MIT"
 readme = "README.md"
-authors = ["Regents of the University of Californiar"']
+authors = ["Regents of the University of Californiar"]
 maintainers =[
     "Jing Jiang <jing.jiang@ucop.edu>",
     "datadave <605409+datadavev@users.noreply.github.com>",
@@ -27,8 +31,30 @@ keywords = ["persistent identifier", "id"]
 
 #[tool.poetry_bumpversion.file."ezidapp/__init__.py"]
 
-
-[tool.black]
-skip_string_normalization = true
-line_length = 100
-
+[tool.poetry.dependencies]
+python = "^3.8"
+django = "^4.2.11"
+aiomysql = "^0.2.0"
+mysqlclient = "^2.2.4"
+boto3 = "^1.34.107"
+mysql = "^0.0.3"
+myloginpath = "^0.0.4"
+jinja2 = "^3.1.4"
+pygments = "^2.18.0"
+fasteners = "^0.19"
+feedparser = "^6.0.11"
+filelock = "^3.14.0"
+freezegun = "^1.5.1"
+hjson = "^3.1.0"
+lxml = "^5.2.2"
+python-dateutil = "^2.9.0.post0"
+requests = "^2.31.0"
+toml = "^0.10.2"
+simplegist = "^1.0.1"
+xmltodict = "^0.13.0"
+pymysql = "^1.1.0"
+configparser = "^7.0.0"
+ecs-logging = "^2.1.0"
+celery = "^5.4.0"
+sqlalchemy = "^2.0.30"
+django-matomo-api-tracking = {git = "https://github.com/CDLUC3/django-matomo-api-tracking", rev = "0.1.4"}

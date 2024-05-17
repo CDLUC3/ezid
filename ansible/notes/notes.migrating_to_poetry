@@ -12,9 +12,13 @@ https://packaging.python.org/en/latest/guides/modernize-setup-py-project/
 https://packaging.python.org/en/latest/discussions/install-requires-vs-requirements/
 https://packaging.python.org/en/latest/discussions/distribution-package-vs-import-package/
 https://packaging.python.org/en/latest/discussions/package-formats/
-https://packaging.python.org/en/latest/discussions/package-formats/
+https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/
 
 
+
+
+This is how I got scotts forked package to resolve:
+poetry add git+https://github.com/CDLUC3/django-matomo-api-tracking@0.1.4
 
 
 
