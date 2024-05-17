@@ -1,0 +1,108 @@
+________________________________________________________________________________
+5/16/2024
+
+Name: poetry
+Version: 1.8.3
+Summary: Python dependency management and packaging made easy.
+Home-page: https://python-poetry.org/
+Author: Sébastien Eustace
+Author-email: sebastien@eustace.io
+License: MIT
+Location: /ezid/.pyenv/versions/3.11.9/lib/python3.11/site-packages
+Requires: build, cachecontrol, cleo, crashtest, dulwich, fastjsonschema, installer, keyring, packaging, pexpect, pkginfo, platformdirs, poetry-core, poetry-plugin-export, pyproject-hooks, requests, requests-toolbelt, shellingham, tomlkit, trove-classifiers, virtualenv
+Required-by: poetry-plugin-export
+
+
+ezid@uc3-ezidui-dev01:09:20:41:~/install/ezid/ansible$ which poetry
+/usr/bin/which: no poetry in (/ezid/.pyenv/shims:/ezid/.pyenv/bin:/ezid/.local/bin:/ezid/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/puppetlabs/bin)
+
+ezid@uc3-ezidui-dev01:09:22:46:~/install/ezid/ansible$ python -m poetry -h
+
+Description:
+  Lists commands.
+
+Usage:
+  list [options] [--] [<namespace>]
+
+Arguments:
+  namespace                  The namespace name
+
+Options:
+  -h, --help                 Display help for the given command. When no command is given display help for the list command.
+  -q, --quiet                Do not output any message.
+  -V, --version              Display this application version.
+      --ansi                 Force ANSI output.
+      --no-ansi              Disable ANSI output.
+  -n, --no-interaction       Do not ask any interactive question.
+      --no-plugins           Disables plugins.
+      --no-cache             Disables Poetry source caches.
+  -C, --directory=DIRECTORY  The working directory for the Poetry command (defaults to the current working directory).
+  -v|vv|vvv, --verbose       Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug.
+
+Help:
+  The list command lists all commands:
+  
+    poetry list
+  
+  You can also display the commands for a specific namespace:
+  
+    poetry list test
+  
+
+
+
+________________________________________________________________________________
+
+
+
+Starting with a clean pyenv
+---------------------------
+
+# update pyenv
+cd /home/agould/.pyenv/plugins/python-build/../.. && git pull && cd -
+
+# install python 3.11.9
+ 1012  pyenv install 3.11.9
+ 1013  pyenv versions
+ 1017  pyenv global 3.11.9
+ 1032  pip list
+ 1033  pip install -U setuptools
+ 1034  pip install -U pip
+
+# install pipx
+ 1035  pip install pipx
+ 1036  pip list
+ 1037  pipx list
+
+# install poetry
+ 1072  pipx install poetry
+ 1073  pipx list
+ 1075  which poetry
+ 1076  cat $(which poetry)
+ 1077  poetry -h
+
+cat /home/agould/.local/share/pipx/venvs/poetry/pipx_metadat.json
+
+cat /home/agould/.local/share/pipx/venvs/poetry/pyvenv.cfg 
+home = /home/agould/.pyenv/versions/3.11.9/bin
+include-system-site-packages = false
+version = 3.11.9
+executable = /home/agould/.pyenv/versions/3.11.9/bin/python3.11
+command = /home/agould/.pyenv/versions/3.11.9/bin/python3.11 -m venv --without-pip /home/agould/.local/share/pipx/venvs/poetry
+
+
+agould@localhost:~/git/github/cdluc3/ezid> cat pyproject.toml 
+[tool.black]
+skip_string_normalization = true
+line_length = 100
+
+
+agould@localhost:~/git/github/cdluc3/ezid> poetry self show plugins
+
+  - poetry-plugin-export (1.8.0) Poetry plugin to export the dependencies to various formats
+      1 application plugin
+
+      Dependencies
+        - poetry (>=1.8.0,<3.0.0)
+        - poetry-core (>=1.7.0,<3.0.0)
+
