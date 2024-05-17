@@ -1,4 +1,26 @@
 ________________________________________________________________________________
+5/17/2024
+
+useful pages from https://packaging.python.org
+
+https://packaging.python.org/en/latest/overview/
+https://packaging.python.org/en/latest/flow/
+https://packaging.python.org/en/latest/tutorials/packaging-projects/
+https://packaging.python.org/en/latest/guides/installing-stand-alone-command-line-tools/
+https://packaging.python.org/en/latest/guides/writing-pyproject-toml/
+https://packaging.python.org/en/latest/guides/modernize-setup-py-project/
+https://packaging.python.org/en/latest/discussions/install-requires-vs-requirements/
+https://packaging.python.org/en/latest/discussions/distribution-package-vs-import-package/
+https://packaging.python.org/en/latest/discussions/package-formats/
+https://packaging.python.org/en/latest/discussions/package-formats/
+
+
+
+
+
+
+
+________________________________________________________________________________
 5/16/2024
 
 Name: poetry

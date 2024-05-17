@@ -1,3 +1,33 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "ezid"
+description = "Easy ID - identifiers made easy. Create and manage long-term globally unique IDs for data and other sources"
+version = "v3.2.7"
+#license = "CC-BY-3.0-US"
+#license = "MIT"
+readme = "README.md"
+authors = ["Regents of the University of Californiar"']
+maintainers =[
+    "Jing Jiang <jing.jiang@ucop.edu>",
+    "datadave <605409+datadavev@users.noreply.github.com>",
+    "Scott Fisher <sfisher@ucop.edu",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.11",
+]
+keywords = ["persistent identifier", "id"]
+
+#[tool.poetry_bumpversion.file."ezidapp/__init__.py"]
+
+
 [tool.black]
 skip_string_normalization = true
 line_length = 100
