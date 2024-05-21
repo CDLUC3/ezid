@@ -211,6 +211,15 @@ OPEN_SEARCH_SCHEMA = {
                                 "ignore_above": 256
                             }
                         }
+                    },
+                    "searchable_type": {
+                        "type": "text",
+                        "fields": {
+                            "keyword": {
+                                "type": "keyword",
+                                "ignore_above": 64
+                            }
+                        }
                     }
                 }
             },

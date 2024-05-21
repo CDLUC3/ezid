@@ -318,6 +318,8 @@ def formulate_query(
         else:
             assert False, "unrecognized column"
 
+        pdb.set_trace()
+
     return filters
 
 
