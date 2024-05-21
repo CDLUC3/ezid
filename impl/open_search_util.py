@@ -250,11 +250,12 @@ def formulate_query(
 
         elif column == "crossref":
             if value:
+                filter_dict = {"term": {"crossref_status.keyword": ""}}
                 filters.append(Q('bool',
                                     must=Q('exists', field='crossref_status.keyword'),
-                                    must_not=Q('term', crossref_status='')))
+                                    must_not=Q(filter_dict)))
             else:
-                filters.append(Q('term', crossref_status=''))
+                filters.append(Q({"term": {"crossref_status.keyword": ""}}))
 
         elif column == "crossrefStatus":
             if isinstance(value, str):
@@ -314,6 +315,8 @@ def formulate_query(
 
         else:
             assert False, "unrecognized column"
+
+    pdb.set_trace()
 
     return filters
 
