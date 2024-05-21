@@ -212,20 +212,20 @@ def formulate_query(
         elif column == "identifierType":
             if isinstance(value, str):
                 value = [value]
-            filter_dict = {"terms": {"identifier_type": value}}
+            filter_dict = {"terms": {"identifier_type.keyword": value}}
             filters.append(Q(filter_dict))
 
         elif column == "owner":
             if isinstance(value, str):
                 value = [value]
-            filter_dict = {"terms": {"owner.username": value}}
+            filter_dict = {"terms": {"owner.username.keyword": value}}
             filters.append(Q(filter_dict))
             scopeRequirementMet = True
 
         elif column == "ownergroup":
             if isinstance(value, str):
                 value = [value]
-            filter_dict = {"terms": {"ownergroup.name": value}}
+            filter_dict = {"terms": {"ownergroup.name.keyword": value}}
             filters.append(Q(filter_dict))
             scopeRequirementMet = True
 
@@ -245,13 +245,13 @@ def formulate_query(
             if isinstance(value, str):
                 value = [value]
             stat_vals = [ezidapp.models.identifier.Identifier.statusDisplayToCode.get(v, v) for v in value]
-            filter_dict = {"terms": {"status": stat_vals}}
+            filter_dict = {"terms": {"status.keyword": stat_vals}}
             filters.append(Q(filter_dict))
 
         elif column == "crossref":
             if value:
                 filters.append(Q('bool',
-                                    must=Q('exists', field='crossref_status'),
+                                    must=Q('exists', field='crossref_status.keyword'),
                                     must_not=Q('term', crossref_status='')))
             else:
                 filters.append(Q('term', crossref_status=''))
@@ -259,7 +259,7 @@ def formulate_query(
         elif column == "crossrefStatus":
             if isinstance(value, str):
                 value = [value]
-            filter_dict = {"terms": {"crossref_status": value}}
+            filter_dict = {"terms": {"crossref_status.keyword": value}}
             filters.append(Q(filter_dict))
 
         elif column == "target":
@@ -276,13 +276,13 @@ def formulate_query(
 
             # I don't think we need to check for MAX_SEARCHABLE_TARGET_LENGTH in OpenSearch, but refer to search_util
             # for how it was done with database if we need to re-add this limitation.
-            filter_dict = {"terms": {"target": value}}
+            filter_dict = {"terms": {"target.keyword": value}}
             filters.append(Q(filter_dict))
 
         elif column == "profile":
             if isinstance(value, str):
                 value = [value]
-            filter_dict = {"terms": {"profile.label": value}}
+            filter_dict = {"terms": {"profile.label.keyword": value}}
             filters.append(Q(filter_dict))
 
         elif column in _fulltextFields:
@@ -309,7 +309,7 @@ def formulate_query(
         elif column == "resourceType":
             if isinstance(value, str):
                 value = [value]
-            filter_dict = {"terms": {"resource.type": value}}
+            filter_dict = {"terms": {"resource.type.keyword": value}}
             filters.append(Q(filter_dict))
 
         else:

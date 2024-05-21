@@ -19,7 +19,6 @@ import django.contrib.messages
 from django.utils.translation import ugettext as _
 
 import impl.form_objects
-# import impl.search_util
 import impl.open_search_util
 import impl.ui_common
 import impl.userauth
