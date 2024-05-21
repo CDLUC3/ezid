@@ -114,11 +114,9 @@ def issue_reasons(hit):
     reasons = []
     if not hit['has_metadata']:
         reasons.append("missing metadata")
-    # the False below, was "linkIsBroken" -- which is not part of the OpenSearch hit and in the Identifier model around
-    # line 1110.  Apparently calculated by the link checker and not part of the OpenSearch hit currently.  should it be?
-    if False:
+    if hit['link_is_broken']:
         reasons.append("broken link")
-    if is_crossref_bad:
+    if is_crossref_bad(hit):
         reasons.append(
             "Crossref registration "
             + ("warning" if hit['crossref_status'] == Identifier.CR_WARNING else "failure")
@@ -126,10 +124,14 @@ def issue_reasons(hit):
     return reasons
 
 
+# a similar method exists in the database model for identifier, but this recreates the same logic based on the
+# OpenSearch hit
 def is_crossref_bad(hit):
     return hit['crossref_status'] in [Identifier.CR_WARNING, Identifier.CR_FAILURE]
 
 
+# a similar method exists in the database model for identifier, but this recreates the same logic based on the
+# OpenSearch hit
 def is_crossref_good(hit):
     return hit['crossref_status'] in [
         Identifier.CR_RESERVED,
