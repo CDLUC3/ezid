@@ -14,33 +14,33 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v1
 
-      - name: Set up pyenv
-        uses: "gabrielfalcao/pyenv-action@v18"
+      - name: Set up Python
+        uses: actions/setup-python@v2
         with:
-          default: 3.8.16
+          python-version: '3.11'
+          architecture: 'x64'
 
       - name: Start MySQL service
         run: |
           sudo /etc/init.d/mysql start
 
+      
       - name: Install Poetry
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Install dependencies
-        shell: bash -l {0}
         run: poetry install
 
       - name: Dump environment (for troubleshooting)
-        shell: bash -l {0}
         run: |
           printf 'PYTHONPATH: %s\n' "$PYTHONPATH"
           # apt-cache pkgnames | sort
           # find / | grep /bin/ | sort
           # pip freeze
           # pip check || true
-          python --version
+          # python --version
           echo "CWD=${PWD}"
           ls -l
           # mysql -e '
@@ -66,25 +66,22 @@ jobs:
           mkdir -p ../download/public ../logs
 
       - name: Setup DB and static files
-        shell: bash -l {0}
         run: |
           # ./manage.py makemigrations --merge --no-input
           # ./manage.py makemigrations ezidapp
-          python manage.py migrate
-          python manage.py collectstatic --no-input
+          poetry run python manage.py migrate
+          poetry run python manage.py collectstatic --no-input
 
       - name: Load DB fixture
-        shell: bash -l {0}
         run: |
           # ./manage.py loaddata --ignorenonexistent db
-          python manage.py loaddata db
+          poetry run python manage.py loaddata db
           #./manage.py diag-update-admin
 
       - name: Run tests
-        shell: bash -l {0}
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: |
-          pytest --maxfail 10
+          poetry run pytest --maxfail 10
 
 #        - pip install -e .
