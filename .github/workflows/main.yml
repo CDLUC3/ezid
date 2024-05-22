@@ -44,9 +44,9 @@ jobs:
           pyver=3.11.9
           venv=ezid_${pyver}
           pyenv install ${pyver}
+          pyenv activate myenv
           pyenv virtualenv ${pyver} ${venv}
-          pyenv global ${venv}
-          pip install --upgrade pip
+          pyenv activate ${venv}
 
       - name: Start MySQL service
         run: |
@@ -67,7 +67,7 @@ jobs:
           # find / | grep /bin/ | sort
           # pip freeze
           # pip check || true
-          # python --version
+          python --version
           echo "CWD=${PWD}"
           ls -l
           # mysql -e '
