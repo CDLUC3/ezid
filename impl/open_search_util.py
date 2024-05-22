@@ -312,7 +312,9 @@ def formulate_query(
         elif column == "resourceType":
             if isinstance(value, str):
                 value = [value]
-            filter_dict = {"terms": {"resource.type.keyword": value}}
+
+            searchable_vals = [ezidapp.models.validation.resourceTypes.get(v, v) for v in value]
+            filter_dict = {"terms": {"resource.searchable_type.keyword": searchable_vals}}
             filters.append(Q(filter_dict))
 
         else:
