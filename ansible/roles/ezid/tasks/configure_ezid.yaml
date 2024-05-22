@@ -2,39 +2,30 @@
 
 ## Configure the EZID application
 
-## - name: symlink ezid logs
-##   file:
-##     path: "{{ app_dir }}/logs"
-##     src: "{{ app_dir }}/var/log/ezid"
-##     state: link
-## - name: symlink download dir
-##   file:
-##     path: "{{ app_dir }}/download"
-##     src: "{{ app_dir }}/var/www/download"
-##     state: link
-## 
-## - name: settings.py
-##   template:
-##     src: "{{ app_dir }}/ezid/settings/settings.py.j2"
-##     #src: "templates/ezid/settings/settings.py.j2"
-##     dest: "{{ app_dir }}/ezid/settings/settings.py"
-##     owner: "{{ user }}"
-##     group: "{{ group }}"
-##     mode: "0600"
+- name: symlink ezid logs
+  file:
+    path: "{{ app_dir }}/logs"
+    src: "{{ app_dir }}/var/log/ezid"
+    state: link
+- name: symlink download dir
+  file:
+    path: "{{ app_dir }}/download"
+    src: "{{ app_dir }}/var/www/download"
+    state: link
+
+- name: settings.py
+  template:
+    src: "{{ app_dir }}/ezid/settings/settings.py.j2"
+    #src: "templates/ezid/settings/settings.py.j2"
+    dest: "{{ app_dir }}/ezid/settings/settings.py"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: "0600"
 
 - name: install poetry
   ansible.builtin.pip:
     name: poetry
 
-## - name: install mysqlclient KLUGE
-##   ansible.builtin.pip:
-##     name: mysqlclient
-##     virtualenv: "{{ pyenv_root }}/versions/{{ pyenv_global }}"
-## - name: install boto3 KLUGE
-##   ansible.builtin.pip:
-##     name: boto3
-##     virtualenv: "{{ pyenv_root }}/versions/{{ pyenv_global }}"
-## 
 - name: run poetry install
   ansible.builtin.command:
     chdir: "{{ app_dir }}/ezid"
@@ -45,20 +36,20 @@
       - dev
   register: _response1
 
-## - name: run pyenv rehash
-##   ansible.builtin.command: "{{ pyenv_root }}/bin/pyenv rehash"
-## 
-## - name: run manage.py collectstatic
-##   ansible.builtin.command:
-##     chdir: "{{ app_dir }}/ezid"
-##     argv:
-##       - "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/python"
-##       - "{{ app_dir }}/ezid/manage.py"
-##       - collectstatic
-##       - --clear
-##       - --no-input
-##       - --settings=settings.settings
-##   register: _response2
+- name: run pyenv rehash
+  ansible.builtin.command: "{{ pyenv_root }}/bin/pyenv rehash"
+
+- name: run manage.py collectstatic
+  ansible.builtin.command:
+    chdir: "{{ app_dir }}/ezid"
+    argv:
+      - "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/python"
+      - "{{ app_dir }}/ezid/manage.py"
+      - collectstatic
+      - --clear
+      - --no-input
+      - --settings=settings.settings
+  register: _response2
 
 ## too noisy
 #
