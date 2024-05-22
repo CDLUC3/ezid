@@ -8,10 +8,10 @@ line_length = 100
 
 [tool.poetry]
 name = "ezid"
-description = "Easy ID - identifiers made easy. Create and manage long-term globally unique IDs for data and other sources"
-version = "v3.2.7"
+version = "v3.2.8"
+description = "EZID - identifiers made easy. Create and manage long-term globally unique IDs for data and other sources"
 #license = "CC-BY-3.0-US"
-#license = "MIT"
+#license = "MIT License"
 readme = "README.md"
 authors = ["Regents of the University of Californiar"]
 maintainers =[
@@ -34,16 +34,11 @@ packages = [
     { include = "impl" },
 ]
 
-
-
-
-
-
-
 #[tool.poetry_bumpversion.file."ezidapp/__init__.py"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+#python = "^3.8"
+python = "^3.11"
 django = "^4.2.11"
 aiomysql = "^0.2.0"
 mysqlclient = "^2.2.4"
@@ -68,7 +63,11 @@ configparser = "^7.0.0"
 ecs-logging = "^2.1.0"
 celery = "^5.4.0"
 sqlalchemy = "^2.0.30"
-django-matomo-api-tracking = {git = "https://github.com/CDLUC3/django-matomo-api-tracking", rev = "0.1.4"}
+django-matomo-api-tracking = {git = "https://github.com/CDLUC3/django-matomo-api-tracking", rev = "0.1.4", develop = true}
+
+[tool.poetry.group.dev.dependencies]
+pytest-django = "^4.8.0"
+pytest-mock = "^3.14.0"
 
 [tool.poetry.scripts]
 ez-batch-register = 'tools.batch_register:main'
@@ -89,5 +88,3 @@ ez-shoulderless-identifiers = 'tools.shoulderless_identifiers:main'
 ez-link-check-emailer = 'tools.link_check_emailer:main'
 ez-link-check-summary-report = 'tools.link_check_summary_report:main'
 ez-downserver = 'tools.downserver:main'
- 
-

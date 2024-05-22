@@ -11,29 +11,69 @@ jobs:
       PYTHONPATH: ${{ github.workspace }}
 
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-python@v2
-        with:
-          python-version: '3.9'
-          architecture: 'x64'
+      - name: Checkout code
+        uses: actions/checkout@v1
+
+      - name: Set up pyenv
+        shell: bash -l {0}
+        run: |
+          # Install dependencies
+          sudo apt-get update
+          sudo apt-get install -y make build-essential libssl-dev zlib1g-dev \
+            libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm \
+            libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev \
+            liblzma-dev openssl git
+  
+          # Clone pyenv repository
+          curl https://pyenv.run | bash
+
+          # Set up environment variables
+          echo 'export PYENV_ROOT="$HOME/.pyenv"' >> $HOME/.bashrc
+          echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> $HOME/.bashrc
+  
+          # Add pyenv init to shell
+          echo 'eval "$(pyenv init --path)"' >> $HOME/.bashrc
+          echo 'eval "$(pyenv init -)"' >> $HOME/.bashrc
+          echo 'eval "$(pyenv virtualenv-init -)"' >> $HOME/.bashrc
+  
+      - name: Reload shell
+        shell: bash -l {0}
+        run: |
+          source $HOME/.bashrc
+          pyenv --version
+
+      - name: Install Python with pyenv
+        shell: bash -l {0}
+        run: |
+          pyver=3.11.9
+          venv=ezid_${pyver}
+          pyenv install ${pyver}
+          pyenv activate myenv
+          pyenv virtualenv ${pyver} ${venv}
+          pyenv activate ${venv}
 
       - name: Start MySQL service
         run: |
           sudo /etc/init.d/mysql start
 
-      - name: Prepare Python env
+      - name: Install Poetry
         run: |
-          pip install --upgrade pip setuptools wheel
-          pip install -r ./requirements-dev.txt
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        shell: bash -l {0}
+        run: poetry install
 
       - name: Dump environment (for troubleshooting)
+        shell: bash -l {0}
         run: |
           printf 'PYTHONPATH: %s\n' "$PYTHONPATH"
           # apt-cache pkgnames | sort
           # find / | grep /bin/ | sort
           # pip freeze
           # pip check || true
-          # python --version
+          python --version
           echo "CWD=${PWD}"
           ls -l
           # mysql -e '
@@ -59,19 +99,22 @@ jobs:
           mkdir -p ../download/public ../logs
 
       - name: Setup DB and static files
+        shell: bash -l {0}
         run: |
           # ./manage.py makemigrations --merge --no-input
           # ./manage.py makemigrations ezidapp
-          ./manage.py migrate
-          ./manage.py collectstatic --no-input
+          python manage.py migrate
+          python manage.py collectstatic --no-input
 
       - name: Load DB fixture
+        shell: bash -l {0}
         run: |
           # ./manage.py loaddata --ignorenonexistent db
-          ./manage.py loaddata db
+          python manage.py loaddata db
           #./manage.py diag-update-admin
 
       - name: Run tests
+        shell: bash -l {0}
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: |
