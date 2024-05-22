@@ -27,17 +27,17 @@ jobs:
           curl https://pyenv.run | bash
   
           # Set up environment variables
-          echo 'export PYENV_ROOT="$HOME/.pyenv"' >> $GITHUB_ENV
-          echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> $GITHUB_ENV
+          echo 'export PYENV_ROOT="$HOME/.pyenv"' >> $HOME/.bashrc
+          echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> $HOME/.bashrc
   
           # Add pyenv init to shell
-          echo 'eval "$(pyenv init --path)"' >> $GITHUB_ENV
-          echo 'eval "$(pyenv init -)"' >> $GITHUB_ENV
+          echo 'eval "$(pyenv init --path)"' >> $HOME/.bashrc
+          echo 'eval "$(pyenv init -)"' >> $HOME/.bashrc
   
       - name: Reload shell
         shell: bash
         run: |
-          source $GITHUB_ENV
+          source $HOME/.bashrc
 
       - name: Install Python with pyenv
         run: |
