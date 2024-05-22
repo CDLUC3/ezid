@@ -24,7 +24,13 @@ jobs:
         run: |
           sudo /etc/init.d/mysql start
 
-      
+      - name: Setup Python virtual environment
+        run: |
+          curl https://pyenv.run | bash
+          pyver=3.11.9
+          pyenv install ${pyver}
+          pyenv global ${venv}
+
       - name: Install Poetry
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
@@ -69,19 +75,19 @@ jobs:
         run: |
           # ./manage.py makemigrations --merge --no-input
           # ./manage.py makemigrations ezidapp
-          poetry run python manage.py migrate
-          poetry run python manage.py collectstatic --no-input
+          python manage.py migrate
+          python manage.py collectstatic --no-input
 
       - name: Load DB fixture
         run: |
           # ./manage.py loaddata --ignorenonexistent db
-          poetry run python manage.py loaddata db
+          python manage.py loaddata db
           #./manage.py diag-update-admin
 
       - name: Run tests
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: |
-          poetry run pytest --maxfail 10
+          pytest --maxfail 10
 
 #        - pip install -e .
