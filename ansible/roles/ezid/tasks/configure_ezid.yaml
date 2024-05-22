@@ -25,7 +25,6 @@
 - name: install poetry
   ansible.builtin.pip:
     name: poetry
-    #virtualenv: "{{ pyenv_root }}/versions/{{ pyenv_global }}"
 
 ## - name: install mysqlclient KLUGE
 ##   ansible.builtin.pip:
@@ -36,15 +35,16 @@
 ##     name: boto3
 ##     virtualenv: "{{ pyenv_root }}/versions/{{ pyenv_global }}"
 ## 
-## - name: run setup.py
-##   ansible.builtin.command:
-##     chdir: "{{ app_dir }}/ezid"
-##     argv:
-##       - "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/python"
-##       - "{{ app_dir }}/ezid/setup.py"
-##       - develop
-##   register: _response1
-## 
+- name: run poetry install
+  ansible.builtin.command:
+    chdir: "{{ app_dir }}/ezid"
+    argv:
+      - "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/poetry"
+      - install
+      - --without
+      - dev
+  register: _response1
+
 ## - name: run pyenv rehash
 ##   ansible.builtin.command: "{{ pyenv_root }}/bin/pyenv rehash"
 ## 
