@@ -31,9 +31,9 @@
     chdir: "{{ app_dir }}/ezid"
     argv:
       - "{{ pyenv_root }}/shims/poetry"
-      - config
-      - virtualenvs.create
-      - false
+      - "config"
+      - "virtualenvs.create"
+      - "false"
       #- "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/poetry"
 
 - name: run poetry install
@@ -41,9 +41,9 @@
     chdir: "{{ app_dir }}/ezid"
     argv:
       - "{{ pyenv_root }}/shims/poetry"
-      - install
-      - --without
-      - dev
+      - "install"
+      - "--without"
+      - "dev"
   register: _response1
 
 ##- name: run pip install
