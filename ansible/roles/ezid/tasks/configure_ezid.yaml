@@ -26,7 +26,7 @@
   ansible.builtin.pip:
     name: poetry
 
-- name: run poetry install
+- name: run poetry config
   ansible.builtin.command:
     chdir: "{{ app_dir }}/ezid"
     argv:
