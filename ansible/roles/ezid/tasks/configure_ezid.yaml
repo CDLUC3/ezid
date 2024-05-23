@@ -26,14 +26,23 @@
   ansible.builtin.pip:
     name: poetry
 
-- name: run poetry install
+##- name: run poetry install
+##  ansible.builtin.command:
+##    chdir: "{{ app_dir }}/ezid"
+##    argv:
+##      - "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/poetry"
+##      - install
+##      - --without
+##      - dev
+##  register: _response1
+
+- name: run pip install
   ansible.builtin.command:
     chdir: "{{ app_dir }}/ezid"
     argv:
-      - "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/poetry"
+      - "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/pip"
       - install
-      - --without
-      - dev
+      - .
   register: _response1
 
 - name: run pyenv rehash
