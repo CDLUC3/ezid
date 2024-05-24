@@ -30,9 +30,9 @@ INDEXED_PREFIX_LENGTH = 50
 
 """
 -- basic testing -- in "python manage.py shell"
-import impl.open_search as open_search
+from impl.open_search_doc import OpenSearchDoc
 from ezidapp.models.identifier import Identifier
-open_s = open_search.OpenSearchDoc(identifier=Identifier.objects.get(identifier='doi:10.25338/B8JG7X'))
+open_s = OpenSearchDoc(identifier=Identifier.objects.get(identifier='doi:10.25338/B8JG7X'))
 my_dict = open_s.dict_for_identifier()
 open_s.index_document()
 """
@@ -42,9 +42,18 @@ class OpenSearchDoc:
     def __init__(self, identifier: Identifier):
         self.identifier = identifier
         self.km = identifier.kernelMetadata
-        # TODO: we want to purge search_identifier in the future since OpenSearch replaces it
-        # but for now we are using it until "linkIsBroken" and "hasIssues" are moved elsewhere
         self.search_identifier=SearchIdentifier.objects.get(identifier=identifier.identifier)
+
+    # class convenience method to index a document from an identifier
+    def index_from_from_identifier(identifier):
+        open_s = OpenSearchDoc(identifier=identifier)
+        return open_s.index_document()
+
+    # class convenience method to index a document from a search identifier
+    def index_from_search_identifier(search_identifier):
+        identifier = Identifier.objects.get(identifier=search_identifier.identifier)
+        open_s = OpenSearchDoc(identifier=identifier)
+        return open_s.index_document()
 
     # uphold Python conventions and make fields snake_case instead of camelCase
     def _camel_to_snake(name):
