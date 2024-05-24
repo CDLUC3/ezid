@@ -1,7 +1,6 @@
-from opensearchpy import OpenSearch
-from opensearch_dsl import Search, Q
 from django.conf import settings
-import urllib
+from impl.open_search_doc import OpenSearchDoc
+
 
 OPEN_SEARCH_SCHEMA = {
     "mappings": {
@@ -270,16 +269,7 @@ OPEN_SEARCH_SCHEMA = {
 }
 
 
-parsed_url = urllib.parse.urlparse(settings.OPENSEARCH_BASE)
-client = OpenSearch(
-    hosts = [{'host': parsed_url.hostname, 'port': parsed_url.port}],
-    http_compress = True, # enables gzip compression for request bodies
-    http_auth = (settings.OPENSEARCH_USER, settings.OPENSEARCH_PASSWORD),
-    use_ssl = True,
-    verify_certs = True,
-    ssl_assert_hostname = False,
-    ssl_show_warn = False
-)
+client = OpenSearchDoc.CLIENT
 
 
 def create_index():
@@ -287,4 +277,4 @@ def create_index():
 
 
 def index_exists():
-    return client.indices.exists(index=settings.OPENSEARCH_INDEX)
+    return OpenSearchDoc.index_exists()

@@ -56,18 +56,21 @@ class OpenSearchDoc:
         self.km = identifier.kernelMetadata
         self.search_identifier=SearchIdentifier.objects.get(identifier=identifier.identifier)
 
-    # class convenience method to index a document from an identifier
+    # convenience method to index a document from an identifier
+    @staticmethod
     def index_from_from_identifier(identifier):
         open_s = OpenSearchDoc(identifier=identifier)
         return open_s.index_document()
 
     # class convenience method to index a document from a search identifier
+    @staticmethod
     def index_from_search_identifier(search_identifier):
         identifier = Identifier.objects.get(identifier=search_identifier.identifier)
         open_s = OpenSearchDoc(identifier=identifier)
         return open_s.index_document()
 
     # uphold Python conventions and make fields snake_case instead of camelCase
+    @staticmethod
     def _camel_to_snake(name):
         name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
         return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
@@ -283,8 +286,9 @@ class OpenSearchDoc:
             return "doi"
         return "ark"
 
-    def index_exists(self):
-        return self.CLIENT.indices.exists(index=settings.OPENSEARCH_INDEX)
+    @classmethod
+    def index_exists(cls):
+        return OpenSearchDoc.CLIENT.indices.exists(index=settings.OPENSEARCH_INDEX)
 
     def index_document(self):
         os_doc = self.dict_for_identifier()
