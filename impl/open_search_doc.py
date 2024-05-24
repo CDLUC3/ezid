@@ -12,10 +12,12 @@ import datetime
 import ezidapp.models.validation as validation
 import impl.util
 import requests
-from django.conf import settings
 from urllib.parse import quote
 import re
 import functools
+from opensearchpy import OpenSearch
+from django.conf import settings
+import urllib
 
 # the functools allows memoizing the results of functions, so they're not recalculated every time (ie cached
 # results if called more than once on the same instance)
@@ -39,6 +41,17 @@ open_s.index_document()
 
 # do we really need the crossref status and message which seem like internal fields for EZID maintenance, not search ?
 class OpenSearchDoc:
+    PARSED_URL = urllib.parse.urlparse(settings.OPENSEARCH_BASE)
+    CLIENT = OpenSearch(
+        hosts=[{'host': PARSED_URL.hostname, 'port': PARSED_URL.port}],
+        http_compress=True,  # enables gzip compression for request bodies
+        http_auth=(settings.OPENSEARCH_USER, settings.OPENSEARCH_PASSWORD),
+        use_ssl=True,
+        verify_certs=True,
+        ssl_assert_hostname=False,
+        ssl_show_warn=False
+    )
+
     def __init__(self, identifier: Identifier):
         self.identifier = identifier
         self.km = identifier.kernelMetadata
@@ -283,25 +296,18 @@ class OpenSearchDoc:
             return None
 
     def index_document(self):
-        encoded_identifier = quote(self.identifier.identifier, safe='')
-
-        # The URL for the OpenSearch endpoint
-        url = f'{settings.OPENSEARCH_BASE}/{settings.OPENSEARCH_INDEX}/_doc/{encoded_identifier}'
-
-        # Convert the dictionary into a JSON string
         os_doc = self.dict_for_identifier()
         os_doc['open_search_updated'] = datetime.datetime.now().isoformat()
 
-        json_string = json.dumps(os_doc)
-
-        # Send the PUT request
-        response = requests.put(url,
-                                 data=json_string,
-                                 headers={'Content-Type': 'application/json'},
-                                 auth=(settings.OPENSEARCH_USER, settings.OPENSEARCH_PASSWORD))
+        # Use the index method of the OpenSearch client to index the document
+        response = self.CLIENT.index(
+            index=settings.OPENSEARCH_INDEX,
+            id=self.identifier.identifier,
+            body=os_doc,
+        )
 
         # Check the response
-        if response.status_code in range(200, 299):
+        if 'result' in response and response['result'] in ['created', 'updated']:
             return True
         else:
             return False
