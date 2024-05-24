@@ -11,7 +11,6 @@ import base64
 import datetime
 import ezidapp.models.validation as validation
 import impl.util
-import requests
 from urllib.parse import quote
 import re
 import functools
@@ -285,15 +284,7 @@ class OpenSearchDoc:
         return "ark"
 
     def index_exists(self):
-        url = f'{settings.OPENSEARCH_BASE}/{settings.OPENSEARCH_INDEX}'
-        response = requests.head(url, auth=(settings.OPENSEARCH_USER, settings.OPENSEARCH_PASSWORD))
-        # Check the response
-        if response.status_code == 200:
-            return True
-        elif response.status_code == 404:
-            return False
-        else:
-            return None
+        return self.CLIENT.indices.exists(index=settings.OPENSEARCH_INDEX)
 
     def index_document(self):
         os_doc = self.dict_for_identifier()
