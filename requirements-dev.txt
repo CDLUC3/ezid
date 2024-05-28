@@ -1,6 +1,6 @@
 # Generated with ./mk-requirements-dev.sh
 
-Django~=3.2.7
+Django~=4.2.11
 
 aiomysql~=0.0.21
 

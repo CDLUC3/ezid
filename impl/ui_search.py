@@ -16,7 +16,7 @@ from ezidapp.models.identifier import Identifier
 
 import django.conf
 import django.contrib.messages
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 import impl.form_objects
 import impl.open_search_util

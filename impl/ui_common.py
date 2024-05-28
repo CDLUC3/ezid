@@ -17,7 +17,7 @@ import django.template.loader
 import django.utils.http
 import django.utils.safestring
 import django.utils.translation
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 import ezidapp.models.group
 import ezidapp.models.realm
@@ -203,7 +203,7 @@ def user_login_required(f):
                 request, _("You must be logged in to view this page.")
             )
             return django.http.HttpResponseRedirect(
-                "/login?next=" + django.utils.http.urlquote(request.get_full_path())
+                "/login?next=" + urllib.parse.quote(request.get_full_path())
             )
         return f(request, *args, **kwargs)
 
