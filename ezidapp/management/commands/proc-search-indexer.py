@@ -47,9 +47,14 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
     def delete(self, task_model):
         if not self._is_anonymous(task_model):
-            ezidapp.models.identifier.SearchIdentifier.objects.filter(
+            target_ids = ezidapp.models.identifier.SearchIdentifier.objects.filter(
                 identifier=task_model.refIdentifier.identifier,
-            ).delete()
+            )
+            target_ids.delete()
+            for target_id in target_ids:
+                open_s = OpenSearchDoc(identifier=target_id)
+                open_s.remove_from_index()
+
 
     def _is_anonymous(self, task_model):
         return task_model.refIdentifier.owner is None
@@ -63,7 +68,6 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         search_id_model.computeComputedValues()
         search_id_model.save()
         OpenSearchDoc.index_from_search_identifier(search_identifier=search_id_model) # Index the identifier in OpenSearch
-
 
     def _ref_id_to_search_id(self, ref_id_model):
         try:

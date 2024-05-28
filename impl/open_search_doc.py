@@ -15,6 +15,7 @@ from urllib.parse import quote
 import re
 import functools
 from opensearchpy import OpenSearch
+from opensearchpy.exceptions import NotFoundError
 from django.conf import settings
 import urllib
 
@@ -109,6 +110,19 @@ class OpenSearchDoc:
 
         # return json.dumps(identifier_dict, indent=2) # need to add additional things to this dict for insertions/updates
         return identifier_dict
+
+    def remove_from_index(self):
+        try:
+            response = self.CLIENT.delete(
+                index=settings.OPENSEARCH_INDEX,
+                id=self.identifier.identifier,
+            )
+            if response['result'] == 'deleted':
+                return True
+        except NotFoundError:
+            # if it's not found, it's already deleted
+            return True
+        return False
 
     @property
     @functools.lru_cache
