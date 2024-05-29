@@ -38,13 +38,6 @@ Listen {{ http_port }}
  	<Directory {{ app_dir }}/ezid/static>
  		Require all granted
  	</Directory>
- 	
- 	Alias /download {{ app_dir }}/var/www/download/public
- 	<Directory {{ app_dir }}/var/www/download/public>
- 		Require all granted
- 		Options -Indexes
- 		ErrorDocument 404 /download_error
- 	</Directory>     	
 
  	Alias /robots.txt {{ app_dir }}/var/www/html/robots.txt
  	Alias /sitemap.xml {{ app_dir }}/ezid/static/sitemap.xml
