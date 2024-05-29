@@ -96,6 +96,10 @@ def executeSearchCountOnly(
     s = Search(using=client, index=settings.OPENSEARCH_INDEX)
     s = s.query(bool_query)
 
+    # limit to 2 results since the s.count returns the number of hits (estimated?) without loading all
+    # the records and even items with hundreds of thousands of results product a count quickly.
+    s = s[0:1]
+
     return s.count()
 
 
