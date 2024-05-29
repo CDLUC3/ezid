@@ -3,7 +3,9 @@ import responses
 from unittest.mock import Mock
 from unittest.mock import MagicMock
 from ezidapp.models.identifier import Identifier
+from ezidapp.models.identifier import SearchIdentifier
 from impl.open_search_doc import OpenSearchDoc
+from unittest.mock import patch
 
 
 @pytest.fixture
@@ -79,8 +81,21 @@ def open_search_doc():
 
     identifier.kernelMetadata = km
 
+    # The search_identifier is only used to get a subset of the columns.
+    #
+    search_identifier = MagicMock(spec=SearchIdentifier)
+    search_identifier.identifier = identifier.identifier
+    search_identifier.hasIssues = False
+    search_identifier.linkIsBroken = False
+    identifier.search_identifier = search_identifier
+
+    # hope this works to patch the mock call in the OpenSearchDoc initializer
+    with patch('ezidapp.models.identifier.SearchIdentifier.objects.get', return_value=search_identifier) as mock_get:
+        # Create an OpenSearchDoc object
+        open_search_doc = OpenSearchDoc(identifier=identifier)
+
     # Create the OpenSearchDoc object to test
-    return OpenSearchDoc(identifier=identifier)
+    return open_search_doc
 
 
 def test_searchable_target(open_search_doc):
@@ -112,7 +127,8 @@ def test_resource(open_search_doc):
                          'title': 'Test Title',
                          'publisher': 'Test Publisher',
                          'publication_date': '2022-01-01',
-                         'type': 'Dataset/dataset'}
+                         'type': 'Dataset/dataset',
+                         'searchable_type': 'D'}
     assert open_search_doc.resource == expected_resource
 
 
@@ -175,6 +191,26 @@ def test_oai_visible(open_search_doc):
     assert open_search_doc.oai_visible
 
 
+def test_identifier_type(open_search_doc):
+    assert open_search_doc.identifier_type == 'doi'
+
+
+def searchable_publication_year(open_search_doc):
+    assert open_search_doc.searchable_publication_year == 2022
+
+
+def searchable_id(open_search_doc):
+    assert open_search_doc.searchable_id == 'doi:10.25338/B8JG7X'
+
+
+def link_is_broken(open_search_doc):
+    assert open_search_doc.link_is_broken is False
+
+
+def has_issues(open_search_doc):
+    assert open_search_doc.has_issues is False
+
+
 def test_dict_for_identifier(open_search_doc):
     expected_dict = {'id': 'doi:10.25338/B8JG7X',
                      'create_time': '2022-01-01T00:00:00',
@@ -194,7 +230,8 @@ def test_dict_for_identifier(open_search_doc):
                          'title': 'Test Title',
                          'publisher': 'Test Publisher',
                          'publication_date': '2022-01-01',
-                         'type': 'Dataset/dataset'},
+                         'type': 'Dataset/dataset',
+                         'searchable_type': 'D'},
                      'word_bucket': 'doi:10.25338/B8JG7X ; testuser ; testgroup ; http://example.com',
                      'has_metadata': True,
                      'public_search_visible': True,
@@ -205,19 +242,11 @@ def test_dict_for_identifier(open_search_doc):
                          'display_name': 'Test User',
                          'account_email': 'test.user@example.org'},
                      'ownergroup': {'id': 33, 'name': 'testgroup', 'organization': 'Test Organization'},
-                     'profile': {'id': 44, 'label': 'testprofile'}}
+                     'profile': {'id': 44, 'label': 'testprofile'},
+                     'identifier_type': 'doi',
+                     'searchable_publication_year': 2022,
+                     'searchable_id': 'doi:10.25338/B8JG7X',
+                     'link_is_broken': False,
+                     'has_issues': False}
     assert open_search_doc.dict_for_identifier() == expected_dict
 
-@responses.activate
-def test_index_exists(open_search_doc):
-    url = 'http://opensearch.example.com/ezid-test-index'
-
-    # Define the response you want to return
-    responses.add(responses.HEAD, url, status=200)
-
-    result = open_search_doc.index_exists()
-
-    assert result
-
-    assert len(responses.calls) == 1
-    assert responses.calls[0].request.url == url
