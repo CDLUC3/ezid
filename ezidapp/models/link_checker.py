@@ -29,7 +29,7 @@ class LinkChecker(django.db.models.Model):
         )
 
     class Meta:
-        index_together = [("owner_id", "isBad", "lastCheckTime")]
+        indexes = [django.db.models.Index(fields=["owner_id", "isBad", "lastCheckTime"])]
 
     def clean(self):
         self.isBad = self.numFailures > 0

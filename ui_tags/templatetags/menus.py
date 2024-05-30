@@ -3,7 +3,7 @@
 
 import django.urls.resolvers
 import django.template
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 register = django.template.Library()
 

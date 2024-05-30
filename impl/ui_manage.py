@@ -14,7 +14,7 @@ import django.db.models
 import django.http
 import django.shortcuts
 import django.urls.resolvers
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 import impl.datacite
 import impl.datacite_xml
