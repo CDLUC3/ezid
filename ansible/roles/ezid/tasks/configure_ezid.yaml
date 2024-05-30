@@ -7,11 +7,11 @@
     path: "{{ app_dir }}/logs"
     src: "{{ app_dir }}/var/log/ezid"
     state: link
-
-- name: delete download dir symlink
+- name: symlink download dir
   file:
     path: "{{ app_dir }}/download"
-    state: absent
+    src: "{{ app_dir }}/var/www/download"
+    state: link
 
 - name: settings.py
   template:
