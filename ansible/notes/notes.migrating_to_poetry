@@ -1,4 +1,25 @@
 ________________________________________________________________________________
+Thu May 23 12:37:59 PM PDT 2024
+
+from: https://nanthony007.medium.com/stop-using-pip-use-poetry-instead-db7164f4fc72
+
+When using poetry inside containers I recommend installing from pip (I know, I
+said not to, but I prefer this over curl-ing and piping something into my
+production container). I do recommend locking the poetry version: pip install
+poetry=1.1.4 that way you have stability there. I then disable the virtualenv
+creation (since we don’t need it inside containers) by running poetry config
+virtualenvs.create false after the poetry install. Then the container can copy
+our two poetry files (poetry.lock and pyproject.toml) and run poetry install to
+install our locked dependencies just as we had them! Furthermore, we now no
+longer need to preface our run commands with poetry run since we disabled the
+virtual environment!
+
+
+
+
+
+
+________________________________________________________________________________
 5/17/2024
 
 useful pages from https://packaging.python.org
