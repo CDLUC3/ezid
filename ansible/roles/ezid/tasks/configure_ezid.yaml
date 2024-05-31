@@ -26,24 +26,35 @@
   ansible.builtin.pip:
     name: poetry
 
-##- name: run poetry install
-##  ansible.builtin.command:
-##    chdir: "{{ app_dir }}/ezid"
-##    argv:
-##      - "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/poetry"
-##      - install
-##      - --without
-##      - dev
-##  register: _response1
-
-- name: run pip install
+- name: run poetry config
   ansible.builtin.command:
     chdir: "{{ app_dir }}/ezid"
     argv:
-      - "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/pip"
-      - install
-      - .
+      - "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/poetry"
+      - "config"
+      - "virtualenvs.create"
+      - "false"
+      #- "{{ pyenv_root }}/shims/poetry"
+      #- "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/poetry"
+
+- name: run poetry install
+  ansible.builtin.command:
+    chdir: "{{ app_dir }}/ezid"
+    argv:
+      - "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/poetry"
+      - "install"
+      - "--without"
+      - "dev"
   register: _response1
+
+##- name: run pip install
+##  ansible.builtin.command:
+##    chdir: "{{ app_dir }}/ezid"
+##    argv:
+##      - "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/pip"
+##      - install
+##      - .
+##  register: _response1
 
 - name: run pyenv rehash
   ansible.builtin.command: "{{ pyenv_root }}/bin/pyenv rehash"
