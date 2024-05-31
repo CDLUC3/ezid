@@ -2,7 +2,7 @@
 
 Django~=4.2.11
 
-aiomysql~=0.0.21
+aiomysql~=0.2.0
 
 mysql~=0.0.3
 myloginpath~=0.0.2
@@ -24,7 +24,7 @@ simplegist~=1.0.1
 toml~=0.10.2
 xmltodict~=0.13.0
 
-PyMySQL~=0.9.3
+PyMySQL~=1.1.1
 configparser~=5.0.2
 ecs-logging~=1.1.0
 pytest-django
