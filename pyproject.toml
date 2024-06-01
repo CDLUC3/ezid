@@ -7,13 +7,17 @@ skip_string_normalization = true
 line_length = 100
 
 [tool.poetry]
+# use Poetry only for dependency management but not for packaging
+package-mode = false
+
 name = "ezid"
-version = "v3.2.8"
+version = "v3"
 description = "EZID - identifiers made easy. Create and manage long-term globally unique IDs for data and other sources"
 #license = "CC-BY-3.0-US"
 #license = "MIT License"
+repository = "https://github.com/cdluc3/ezid"
 readme = "README.md"
-authors = ["Regents of the University of Californiar"]
+authors = ["Regents of the University of California"]
 maintainers =[
     "Jing Jiang <jing.jiang@ucop.edu>",
     "datadave <605409+datadavev@users.noreply.github.com>",
@@ -34,11 +38,10 @@ packages = [
     { include = "impl" },
 ]
 
-#[tool.poetry_bumpversion.file."ezidapp/__init__.py"]
 
 [tool.poetry.dependencies]
-#python = "^3.8"
-python = "^3.11"
+python = "^3.8"
+#python = "^3.11"
 django = "^4.2.11"
 aiomysql = "^0.2.0"
 mysqlclient = "^2.2.4"
