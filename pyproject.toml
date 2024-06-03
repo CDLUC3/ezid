@@ -7,9 +7,6 @@ skip_string_normalization = true
 line_length = 100
 
 [tool.poetry]
-# use Poetry only for dependency management but not for packaging
-package-mode = false
-
 name = "ezid"
 version = "v3"
 description = "EZID - identifiers made easy. Create and manage long-term globally unique IDs for data and other sources"
