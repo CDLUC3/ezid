@@ -4,6 +4,7 @@ from django.http import JsonResponse
 # import settings.settings
 from django.conf import settings
 from ezidapp.models.identifier import Identifier
+from ezidapp.models.identifier import SearchIdentifier
 import json
 import pdb
 import base64
@@ -54,6 +55,7 @@ class OpenSearchDoc:
     def __init__(self, identifier: Identifier):
         self.identifier = identifier
         self.km = identifier.kernelMetadata
+        self.search_identifier=SearchIdentifier.objects.get(identifier=identifier.identifier)
 
     # convenience method to index a document from an identifier
     @staticmethod
@@ -187,12 +189,18 @@ class OpenSearchDoc:
     @property
     @functools.lru_cache
     def link_is_broken(self):
-        return self.identifier.linkIsBroken
+        # TODO: this field is probably best moved out of the search table for the future
+        if self.search_identifier is not None:
+            return self.search_identifier.linkIsBroken
+        return False
 
     @property
     @functools.lru_cache
     def has_issues(self):
-        return self.identifier.hasIssues
+        # TODO: this field is probably best moved out of the search table for the future
+        if self.search_identifier is not None:
+            return self.search_identifier.hasIssues
+        return False
 
     @property
     @functools.lru_cache
