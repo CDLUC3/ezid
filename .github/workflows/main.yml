@@ -17,7 +17,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.8'
           architecture: 'x64'
 
       - name: Start MySQL service
@@ -31,7 +31,10 @@ jobs:
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Install dependencies
-        run: poetry install
+        run: pip install .
+
+      - name: Validate installed packages against poetry.lock file
+        run: poetry check --lock
 
       - name: Dump environment (for troubleshooting)
         run: |
@@ -69,19 +72,19 @@ jobs:
         run: |
           # ./manage.py makemigrations --merge --no-input
           # ./manage.py makemigrations ezidapp
-          poetry run python manage.py migrate
-          poetry run python manage.py collectstatic --no-input
+          manage.py migrate
+          manage.py collectstatic --no-input
 
       - name: Load DB fixture
         run: |
           # ./manage.py loaddata --ignorenonexistent db
-          poetry run python manage.py loaddata db
+          manage.py loaddata db
           #./manage.py diag-update-admin
 
       - name: Run tests
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: |
-          poetry run pytest --maxfail 10
+          pytest --maxfail 10
 
 #        - pip install -e .
