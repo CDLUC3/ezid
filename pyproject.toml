@@ -18,7 +18,7 @@ authors = ["Regents of the University of California"]
 maintainers =[
     "Jing Jiang <jing.jiang@ucop.edu>",
     "datadave <605409+datadavev@users.noreply.github.com>",
-    "Scott Fisher <sfisher@ucop.edu",
+    "Scott Fisher <sfisher@ucop.edu>",
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -54,11 +54,11 @@ freezegun = "^1.5.1"
 hjson = "^3.1.0"
 lxml = "^5.2.2"
 python-dateutil = "^2.9.0.post0"
-requests = "^2.31.0"
+requests = "^2.32.0"
 toml = "^0.10.2"
 simplegist = "^1.0.1"
 xmltodict = "^0.13.0"
-pymysql = "^1.1.0"
+pymysql = "^1.1.1"
 configparser = "^7.0.0"
 ecs-logging = "^2.1.0"
 celery = "^5.4.0"
