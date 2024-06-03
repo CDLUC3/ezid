@@ -66,6 +66,8 @@ def open_search_doc():
     identifier.profile = MagicMock()
     identifier.profile.id = 44
     identifier.profile.label = 'testprofile'
+    identifier.linkIsBroken = False
+    identifier.hasIssues = False
 
     identifier.metadata = {}
 
@@ -81,18 +83,7 @@ def open_search_doc():
 
     identifier.kernelMetadata = km
 
-    # The search_identifier is only used to get a subset of the columns.
-    #
-    search_identifier = MagicMock(spec=SearchIdentifier)
-    search_identifier.identifier = identifier.identifier
-    search_identifier.hasIssues = False
-    search_identifier.linkIsBroken = False
-    identifier.search_identifier = search_identifier
-
-    # hope this works to patch the mock call in the OpenSearchDoc initializer
-    with patch('ezidapp.models.identifier.SearchIdentifier.objects.get', return_value=search_identifier) as mock_get:
-        # Create an OpenSearchDoc object
-        open_search_doc = OpenSearchDoc(identifier=identifier)
+    open_search_doc = OpenSearchDoc(identifier=identifier)
 
     # Create the OpenSearchDoc object to test
     return open_search_doc
