@@ -81,5 +81,3 @@ FYI: I notice this script doesn't also copy over any new fonts and images.
 1. SASS is a scripting language that is interpreted into CSS stylesheets (http://sass-lang.com/)
 2. Bootstrap: An HTML, CSS, and JS framework for developing responsive UI (http://getbootstrap.com/)
 
-
-

@@ -50,10 +50,10 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             target_ids = ezidapp.models.identifier.SearchIdentifier.objects.filter(
                 identifier=task_model.refIdentifier.identifier,
             )
-            target_ids.delete()
             for target_id in target_ids:
                 open_s = OpenSearchDoc(identifier=target_id)
                 open_s.remove_from_index()
+            target_ids.delete()
 
 
     def _is_anonymous(self, task_model):
