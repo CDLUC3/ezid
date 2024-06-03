@@ -67,6 +67,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         search_id_model = self._ref_id_to_search_id(ref_id_model)
         search_id_model.computeComputedValues()
         search_id_model.save()
+        # the following line may be removed later when we get rid of the search identifier table and make from
+        # the normal identifier table instead.  Right now we're updating both temporarily in case we need to revert.
         OpenSearchDoc.index_from_search_identifier(search_identifier=search_id_model) # Index the identifier in OpenSearch
 
     def _ref_id_to_search_id(self, ref_id_model):

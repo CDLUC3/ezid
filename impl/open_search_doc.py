@@ -61,7 +61,8 @@ class OpenSearchDoc:
         open_s = OpenSearchDoc(identifier=identifier)
         return open_s.index_document()
 
-    # class convenience method to index a document from a search identifier
+    # class convenience method to index a document from a search identifier, likely can be removed in the future
+    # when we get rid of the search identifier table
     @staticmethod
     def index_from_search_identifier(search_identifier):
         identifier = Identifier.objects.get(identifier=search_identifier.identifier)
