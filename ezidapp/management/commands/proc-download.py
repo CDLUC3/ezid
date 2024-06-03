@@ -222,7 +222,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
     def _prepareMetadata(
         self,
-        id_model: ezidapp.models.identifier.SearchIdentifier,
+        id_model: ezidapp.models.identifier.Identifier,
         convertTimestamps: object,
     ) -> dict:
         d = id_model.toLegacy()
@@ -235,7 +235,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         return d
 
     def _writeAnvl(
-        self, f: typing.TextIO, id_model: ezidapp.models.identifier.SearchIdentifier, metadata: dict
+        self, f: typing.TextIO, id_model: ezidapp.models.identifier.Identifier, metadata: dict
     ):
         if f.tell() > 0:
             f.write("\n")
@@ -247,7 +247,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         self,
         f: typing.TextIO,
         columns,
-        id_model: ezidapp.models.identifier.SearchIdentifier,
+        id_model: ezidapp.models.identifier.Identifier,
         metadata: dict,
     ):
         w = csv.writer(f)
@@ -270,7 +270,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         w.writerow([self._csvEncode(c).decode('utf-8', errors='replace') for c in l])
 
     def _writeXml(
-        self, f: typing.TextIO, id: ezidapp.models.identifier.SearchIdentifier, metadata: dict
+        self, f: typing.TextIO, id: ezidapp.models.identifier.Identifier, metadata: dict
     ):
         f.write(f'<record identifier="{impl.util.xmlEscape(id.identifier)}">')
         for k, v in list(metadata.items()):
@@ -288,7 +288,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         _total = 0
         while not self.terminated():
             qs = (
-                ezidapp.models.identifier.SearchIdentifier.objects.filter(identifier__gt=r.lastId)
+                ezidapp.models.identifier.Identifier.objects.filter(identifier__gt=r.lastId)
                 .filter(owner__pid=r.toHarvest.split(",")[r.currentIndex])
                 .select_related("owner", "ownergroup", "datacenter", "profile")
                 .order_by("identifier")
