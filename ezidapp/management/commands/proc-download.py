@@ -256,15 +256,15 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             if c == "_id":
                 l.append(id_model.identifier)
             elif c == "_mappedCreator":
-                l.append(id_model.resourceCreator)
+                l.append(Command._mappedField(id_model, "creator"))
             elif c == "_mappedTitle":
-                l.append(id_model.resourceTitle)
+                l.append(Command._mappedField(id_model, "title"))
             elif c == "_mappedPublisher":
-                l.append(id_model.resourcePublisher)
+                l.append(Command._mappedField(id_model, "publisher"))
             elif c == "_mappedDate":
-                l.append(id_model.resourcePublicationDate)
+                l.append(Command._mappedField(id_model, "date"))
             elif c == "_mappedType":
-                l.append(id_model.resourceType)
+                l.append(Command._mappedField(id_model, "type"))
             else:
                 l.append(metadata.get(c, ""))
         w.writerow([self._csvEncode(c).decode('utf-8', errors='replace') for c in l])
@@ -522,3 +522,12 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             return SUFFIX_FORMAT_DICT[r.format] + ".gz"
         else:
             return "zip"
+
+    # These methods remove dependencies on the SearchIdentifiers model for output
+
+    @staticmethod
+    def _mappedField(id_model: ezidapp.models.identifier.Identifier, field: str):
+        km = id_model.kernelMetadata
+        if not km:
+            return ''
+        return getattr(km, field) if getattr(km, field) is not None else ''
