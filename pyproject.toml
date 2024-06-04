@@ -1,4 +1,87 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.black]
 skip_string_normalization = true
 line_length = 100
 
+[tool.poetry]
+name = "ezid"
+version = "v3"
+description = "EZID - identifiers made easy. Create and manage long-term globally unique IDs for data and other sources"
+#license = "CC-BY-3.0-US"
+#license = "MIT License"
+repository = "https://github.com/cdluc3/ezid"
+readme = "README.md"
+authors = ["Regents of the University of California"]
+maintainers =[
+    "Jing Jiang <jing.jiang@ucop.edu>",
+    "datadave <605409+datadavev@users.noreply.github.com>",
+    "Scott Fisher <sfisher@ucop.edu>",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.11",
+]
+keywords = ["persistent identifier", "id"]
+packages = [
+    { include = "ezidapp" },
+    { include = "settings" },
+    { include = "impl" },
+]
+
+
+[tool.poetry.dependencies]
+python = "^3.8"
+#python = "^3.11"
+django = "^4.2.11"
+aiomysql = "^0.2.0"
+mysqlclient = "^2.2.4"
+boto3 = "^1.34.119"
+mysql = "^0.0.3"
+myloginpath = "^0.0.4"
+jinja2 = "^3.1.4"
+pygments = "^2.18.0"
+fasteners = "^0.19"
+feedparser = "^6.0.11"
+filelock = "^3.14.0"
+freezegun = "^1.5.1"
+hjson = "^3.1.0"
+lxml = "^5.2.2"
+python-dateutil = "^2.9.0.post0"
+requests = "^2.32.3"
+toml = "^0.10.2"
+simplegist = "^1.0.1"
+xmltodict = "^0.13.0"
+pymysql = "^1.1.1"
+configparser = "^7.0.0"
+ecs-logging = "^2.1.0"
+celery = "^5.4.0"
+sqlalchemy = "^2.0.30"
+django-matomo-api-tracking = {git = "https://github.com/CDLUC3/django-matomo-api-tracking", rev = "0.1.4"}
+
+
+[tool.poetry.scripts]
+ez-batch-register = 'tools.batch_register:main'
+ez-client = 'tools.client:main'
+ez-dashboard = 'tools.dashboard:main'
+ez-decode-file = 'tools.decode_file:main'
+ez-dump-convert = 'tools.dump_convert:main'
+ez-dump-crossref = 'tools.dump_crossref:main'
+ez-dump-datacite = 'tools.dump_datacite:main'
+ez-dump-diff = 'tools.dump_diff:main'
+ez-dump-diff-crossref = 'tools.dump_diff_crossref:main'
+ez-dump-filter = 'tools.dump_filter:main'
+ez-dump-project = 'tools.dump_project:main'
+ez-dump-store = 'tools.dump_store:main'
+ez-filterlog = 'tools.filterlog:main'
+ez-queue-admin = 'tools.queue_admin:main'
+ez-shoulderless-identifiers = 'tools.shoulderless_identifiers:main'
+ez-link-check-emailer = 'tools.link_check_emailer:main'
+ez-link-check-summary-report = 'tools.link_check_summary_report:main'
+ez-downserver = 'tools.downserver:main'
