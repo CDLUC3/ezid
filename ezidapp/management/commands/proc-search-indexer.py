@@ -23,6 +23,8 @@ import ezidapp.management.commands.proc_base
 import ezidapp.models.async_queue
 import ezidapp.models.identifier
 from impl.open_search_doc import OpenSearchDoc
+from django.db import transaction
+from django.db import DatabaseError
 
 log = logging.getLogger(__name__)
 
@@ -47,13 +49,25 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
     def delete(self, task_model):
         if not self._is_anonymous(task_model):
+            # search model
             target_ids = ezidapp.models.identifier.SearchIdentifier.objects.filter(
                 identifier=task_model.refIdentifier.identifier,
             )
-            for target_id in target_ids:
-                open_s = OpenSearchDoc(identifier=target_id)
-                open_s.remove_from_index()
-            target_ids.delete()
+
+            try:
+                with transaction.atomic():
+                    for target_id in target_ids:
+                        is_good = OpenSearchDoc.delete_from_search_identifier(search_identifier=target_id)
+                        if not is_good:
+                            raise DatabaseError('Error deleting from OpenSearch index')
+                    target_ids.delete()
+            except DatabaseError as e:
+                log.error(f'Error deleting, rolling transaction back: {e}')
+                if 'OpenSearch' not in str(e):
+                    # reindex the identifiers in OpenSearch that failed to delete from the database
+                    for target_id in target_ids:
+                        OpenSearchDoc.index_from_search_identifier(search_identifier=target_id)
+                raise e
 
 
     def _is_anonymous(self, task_model):
@@ -66,10 +80,23 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         log.debug(f'ref_id_model="{ref_id_model}"')
         search_id_model = self._ref_id_to_search_id(ref_id_model)
         search_id_model.computeComputedValues()
-        search_id_model.save()
-        # the following line may be removed later when we get rid of the search identifier table and make from
-        # the normal identifier table instead.  Right now we're updating both temporarily in case we need to revert.
-        OpenSearchDoc.index_from_search_identifier(search_identifier=search_id_model) # Index the identifier in OpenSearch
+        try:
+            with transaction.atomic():
+                search_id_model.save()
+                is_good = OpenSearchDoc.index_from_search_identifier(search_identifier=search_id_model)
+                if not is_good:
+                    raise DatabaseError('Error indexing in OpenSearch')
+        except DatabaseError as e:
+            log.error(f'Error saving, rolling transaction back: {e}')
+            if 'OpenSearch' not in str(e):
+                # it didn't save to db, see if searchIdentifier exists in the database (from previous save)
+                existing_count = ezidapp.models.identifier.SearchIdentifier.objects.filter(
+                    identifier=search_id_model.identifier,
+                ).count()
+                if existing_count == 0:
+                    # it's not in the SearchIdentifier db table, so remove it from OpenSearch
+                    OpenSearchDoc.delete_from_search_identifier(search_identifier=search_id_model)
+            raise e
 
     def _ref_id_to_search_id(self, ref_id_model):
         try:

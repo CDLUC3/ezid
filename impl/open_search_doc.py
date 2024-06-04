@@ -71,6 +71,14 @@ class OpenSearchDoc:
         open_s = OpenSearchDoc(identifier=identifier)
         return open_s.index_document()
 
+    # class convenience method to index a document from a search identifier, likely can be removed in the future
+    # when we get rid of the search identifier table
+    @staticmethod
+    def delete_from_search_identifier(search_identifier):
+        identifier = Identifier.objects.get(identifier=search_identifier.identifier)
+        open_s = OpenSearchDoc(identifier=identifier)
+        return open_s.remove_from_index()
+
     # uphold Python conventions and make fields snake_case instead of camelCase
     @staticmethod
     def _camel_to_snake(name):
