@@ -1,11 +1,11 @@
 #
-# script: update_pyproject.sh
-# Update pyproject.toml with command poetry add ${package}@latest. 
+# Script: update_pyproject.sh
+# Update pyproject.toml pacakges to the latest version with command poetry add ${package}@latest. 
 # This has the added benefit of updating poetry.lock as well. 
 
 # for now we omit `django-matomo-api-tracking` because of how it is sourced.
+# Do not update Python and Django
 DEPS="
-django
 aiomysql
 mysqlclient
 boto3
