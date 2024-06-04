@@ -59,7 +59,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     for target_id in target_ids:
                         is_good = OpenSearchDoc.delete_from_search_identifier(search_identifier=target_id)
                         if not is_good:
-                            raise DatabaseError('Error deleting from OpenSearch index')
+                            raise DatabaseError('Error deleting from OpenSearch index')  # skip DB delete
                     target_ids.delete()
             except DatabaseError as e:
                 log.error(f'Error deleting, rolling transaction back: {e}')
@@ -82,10 +82,10 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         search_id_model.computeComputedValues()
         try:
             with transaction.atomic():
-                search_id_model.save()
+                search_id_model.save()  # if error saving skips to exception
                 is_good = OpenSearchDoc.index_from_search_identifier(search_identifier=search_id_model)
                 if not is_good:
-                    raise DatabaseError('Error indexing in OpenSearch')
+                    raise DatabaseError('Error indexing in OpenSearch')  # should trigger rollback
         except DatabaseError as e:
             log.error(f'Error saving, rolling transaction back: {e}')
             if 'OpenSearch' not in str(e):
