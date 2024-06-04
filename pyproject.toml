@@ -64,8 +64,6 @@ ecs-logging = "^2.1.0"
 celery = "^5.4.0"
 sqlalchemy = "^2.0.30"
 django-matomo-api-tracking = {git = "https://github.com/CDLUC3/django-matomo-api-tracking", rev = "0.1.4"}
-pytest-django = "^4.8.0"
-pytest-mock = "^3.14.0"
 
 
 [tool.poetry.scripts]
