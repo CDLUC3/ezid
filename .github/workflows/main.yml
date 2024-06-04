@@ -72,13 +72,13 @@ jobs:
         run: |
           # ./manage.py makemigrations --merge --no-input
           # ./manage.py makemigrations ezidapp
-          manage.py migrate
-          manage.py collectstatic --no-input
+          ./manage.py migrate
+          ./manage.py collectstatic --no-input
 
       - name: Load DB fixture
         run: |
           # ./manage.py loaddata --ignorenonexistent db
-          manage.py loaddata db
+          ./manage.py loaddata db
           #./manage.py diag-update-admin
 
       - name: Run tests
