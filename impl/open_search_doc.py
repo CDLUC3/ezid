@@ -55,7 +55,11 @@ class OpenSearchDoc:
     def __init__(self, identifier: Identifier):
         self.identifier = identifier
         self.km = identifier.kernelMetadata
-        self.search_identifier=SearchIdentifier.objects.get(identifier=identifier.identifier)
+
+        try:
+            self.search_identifier=SearchIdentifier.objects.get(identifier=identifier.identifier)
+        except SearchIdentifier.DoesNotExist:
+            self.search_identifier=None
 
     # convenience method to index a document from an identifier
     @staticmethod
@@ -224,7 +228,9 @@ class OpenSearchDoc:
     @property
     @functools.lru_cache
     def word_bucket(self):
-        kw = [self.identifier.identifier, self.identifier.owner.username, self.identifier.ownergroup.groupname]
+        kw = [self.identifier.identifier,
+              self.identifier.owner.username if self.identifier.owner else None,
+              self.identifier.ownergroup.groupname if self.identifier.ownergroup else None]
         if self.identifier.isDatacite:
             kw.append(self.identifier.datacenter.symbol)
         if self.identifier.target != self.identifier.defaultTarget:
@@ -237,6 +243,7 @@ class OpenSearchDoc:
                     kw.append(v)
             else:
                 kw.append(v)
+        pdb.set_trace()
         return " ; ".join(kw)
 
     @property

@@ -7,6 +7,9 @@ import pdb
 import requests
 import datetime
 import impl.open_search_schema as oss
+from django.db.models import Q
+import dateutil.parser
+
 
 # this is only for the time being since I'm using a local server without correct SSL/https
 import urllib3
@@ -38,18 +41,35 @@ class Command(BaseCommand):
 
         string_parts = []
         counter = 0
-        if options['starting_primary_id']:
-            start_after_id = options['starting_primary_id']
+        if options['starting_id']:
+            start_after_id = options['starting_id']
         else:
             start_after_id = 0
 
+        # I'm going through all the records in an odd way since these tables take about 10 minutes to even get a count
+        # of the records (or things that don't load them). This seems to avoid the problem of doing normal iteration
+        # through the records, even though it's not supposed to have that problem.
+
+        # Also adding additional filtering for additional criteria with a Q object that may be neutral or contain
+        # additional criteria.
+
+        additional_filter = Q()  # an empty filter
+
+        if options['updated_since']:
+            updated_since = dateutil.parser.parse(options['updated_since'])
+            additional_filter = Q(updateTime__gte=updated_since.timestamp())
+
         while True:
-            iden_arr = Identifier.objects.filter(id__gt=start_after_id).order_by('id')[:100]
+            pdb.set_trace()
+            iden_arr = (Identifier.objects.filter(id__gt=start_after_id)
+                        .filter(additional_filter).order_by('id')[:100])
+
             # break when we run out of items
             if not iden_arr:
                 break
 
             for identifier in iden_arr:
+                print(f'Counter {counter}, ID {identifier.id}')
                 string_parts.append(self._bulk_update_pair(identifier))
                 start_after_id = identifier.id
 
@@ -59,8 +79,7 @@ class Command(BaseCommand):
 
                     # handle the result and do something if error? log or what?
                     if result is False:
-                        print("Error in bulk update")
-                        pdb.set_trace()
+                        print(f'Error updating OpenSearch (at primary ID: {identifier.id}).')
                     else:
                         print(f'Total {counter+1} items updated in OpenSearch (at primary ID: {identifier.id}).')
                     # reset the accumulator
@@ -69,8 +88,13 @@ class Command(BaseCommand):
                 counter += 1
 
     def add_arguments(self, parser):
-        parser.add_argument('starting_primary_id', type=int, nargs='?', default=0,
+        parser.add_argument('--starting_id', type=int, nargs='?', default=0,
                             help='Starting primary ID from database (default 0)')
+
+        parser.add_argument('--updated_since', type=str, nargs='?', default='',
+                            help='Updated since date (default empty) in ISO 8601 format.'
+                            ' (YYYY-MM-DDTHH:MM:SS) example: 2023-10-10T00:00:00Z.'
+                            ' The date parser may support other common formats also.')
 
     # see https://opensearch.org/docs/latest/api-reference/document-apis/bulk/
     @staticmethod
