@@ -279,7 +279,8 @@ def formulate_query(
             match_queries = []
             for word in words:
                 match_queries.append(Q("match", **{translate_columns[column]: word}))
-                bool_query = Q('bool', must=match_queries)
+
+            bool_query = Q('bool', must=match_queries)
             filters.append(bool_query)
 
         elif column == "resourcePublicationYear":
