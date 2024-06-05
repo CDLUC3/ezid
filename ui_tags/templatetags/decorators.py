@@ -90,7 +90,7 @@ def basictag(takes_context=False):
             del bits[0]
 
             # noinspection PyDeprecation
-            params, xx, xxx, defaults = inspect.getargspec(tag_func)
+            params, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations = inspect.getfullargspec(tag_func)
             max_args = len(params)
 
             if takes_context:
@@ -162,7 +162,7 @@ def blocktag(tag_func):
         del bits[0]
 
         # noinspection PyDeprecation
-        params, xx, xxx, defaults = inspect.getargspec(tag_func)
+        params, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations = inspect.getfullargspec(tag_func)
         max_args = len(params) - 2  # Ignore context and nodelist
         min_args = max_args - len(defaults or [])
 
