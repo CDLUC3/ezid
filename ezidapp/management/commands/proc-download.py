@@ -523,8 +523,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         else:
             return "zip"
 
-    # These methods remove dependencies on the SearchIdentifiers model for output
-
+    # This method remove dependency on the SearchIdentifiers model for output of bulk update/download
     @staticmethod
     def _mappedField(id_model: ezidapp.models.identifier.Identifier, field: str):
         km = id_model.kernelMetadata

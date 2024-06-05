@@ -3,7 +3,6 @@ from django.conf import settings
 from ezidapp.models.identifier import Identifier
 from impl.open_search_doc import OpenSearchDoc
 import json
-import pdb
 import requests
 import datetime
 import impl.open_search_schema as oss
@@ -22,6 +21,14 @@ urllib3.disable_warnings(InsecureRequestWarning)
 SPLIT_SIZE = 100
 
 # run: python manage.py opensearch-update
+# optional parameters: --starting_id 1234 --updated_since 2023-10-10T00:00:00Z
+# --starting_id is the primary key ID to start populating from (good for resuming after a crash while populating all)
+# --updated_since is a date in ISO 8601 format (YYYY-MM-DDTHH:MM:SS) to filter by updated time
+# it allows you to only populate items updated after a certain date/time, which should make the population much faster
+# because no need to repopulate all items for the entire history.
+
+# Even if items are already up-to-date, it doesn't hurt to repopulate them since it just updates from the
+# copy of record which is the database values. OpenSearach values are derived for search and display purposes.
 
 
 class Command(BaseCommand):
@@ -32,7 +39,7 @@ class Command(BaseCommand):
         #
         # all_identifiers = Identifier.objects.all().iterator(chunk_size=20)
         # for ident in all_identifiers: ...
-        # ^^^ The above code would lock up ^^^
+        # ^^^ The above code would lock up.  I think it has to do with the count taking about 10 minutes to get. ^^^
 
         # create the index if it doesn't exist from the schema
         if oss.index_exists() is False:
@@ -47,7 +54,7 @@ class Command(BaseCommand):
             start_after_id = 0
 
         # Also adding additional filtering for additional criteria with a Q object that may be neutral or contain
-        # additional criteria.
+        # time-based criteria to limit number or results.
 
         additional_filter = Q()  # an empty filter
 

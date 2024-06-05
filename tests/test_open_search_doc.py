@@ -1,5 +1,4 @@
 import pytest
-import responses
 from unittest.mock import Mock
 from unittest.mock import MagicMock
 from ezidapp.models.identifier import Identifier

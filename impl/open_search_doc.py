@@ -6,7 +6,6 @@ from django.conf import settings
 from ezidapp.models.identifier import Identifier
 from ezidapp.models.identifier import SearchIdentifier
 import json
-import pdb
 import base64
 import datetime
 import ezidapp.models.validation as validation
@@ -83,7 +82,7 @@ class OpenSearchDoc:
         open_s = OpenSearchDoc(identifier=identifier)
         return open_s.remove_from_index()
 
-    # uphold Python conventions and make fields snake_case instead of camelCase
+    # uphold Python conventions and make fields snake_case instead of initial lower camelCase
     @staticmethod
     def _camel_to_snake(name):
         name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
@@ -119,9 +118,10 @@ class OpenSearchDoc:
         identifier_dict.pop('identifier')
         identifier_dict['id'] = self.identifier.identifier
 
-        # need to add linkIsBroken, hasIssue ?
+        # linkIsBroken, hasIssue fields remain in the Searchidentifiers table and when we are ready to remove most data
+        # from the searchidentifiers table, we can either remove unused columns from that table or else move these fields
+        # into a different database table/model.
 
-        # return json.dumps(identifier_dict, indent=2) # need to add additional things to this dict for insertions/updates
         return identifier_dict
 
     def remove_from_index(self):
@@ -137,12 +137,15 @@ class OpenSearchDoc:
             return True
         return False
 
+    # the properties using lru_cache are memoized, so they're only calculated once and then cached for future calls
+    # for the same object instance (this should make calls faster if used multiple times on the same instance)
+
     @property
     @functools.lru_cache
     def db_identifier_id(self):
         return self.identifier.pk
 
-    # these are builders for the parts of the search
+    # these are builder functions for the parts of the search
     @property
     @functools.lru_cache
     def searchable_target(self):
@@ -201,7 +204,6 @@ class OpenSearchDoc:
     @property
     @functools.lru_cache
     def link_is_broken(self):
-        # TODO: this field is probably best moved out of the search table for the future
         if self.search_identifier is not None:
             return self.search_identifier.linkIsBroken
         return False
@@ -209,7 +211,6 @@ class OpenSearchDoc:
     @property
     @functools.lru_cache
     def has_issues(self):
-        # TODO: this field is probably best moved out of the search table for the future
         if self.search_identifier is not None:
             return self.search_identifier.hasIssues
         return False

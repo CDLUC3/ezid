@@ -1,4 +1,5 @@
-import pdb
+import urllib
+
 from opensearchpy import OpenSearch
 from opensearch_dsl import Search, Q
 from django.conf import settings
@@ -25,6 +26,11 @@ defaultDefer = [
 
 _fulltextFields = ["resourceCreator", "resourceTitle", "resourcePublisher", "keywords"]
 
+# This utility is a conversion of the older search_util.py to use OpenSearch instead of the database.
+
+# I needed to create a few helper functions and inline them here for some functions which existed in other
+# modules in the original codebase
+
 
 def executeSearch(
     user,
@@ -43,17 +49,7 @@ def executeSearch(
     'defer' are as in formulateQuery above.
     """
 
-    # TODO: is it a bug that in the original code the only place user is used is in logging?
-    # I would'vee thought results would be limited by user permission somehow, but I'm not sure they are.
-
     filters = formulate_query(constraints, orderBy=orderBy, selectRelated=selectRelated, defer=defer)
-
-    # if 'keywords' in constraints:
-    #     # Define the multi_match query
-    #     multi_match_query = Q("multi_match", query=constraints['keywords'], fields=["*"])
-    #     # Combine the multi_match query and the filters using a bool query
-    #     bool_query = Q('bool', must=multi_match_query, filter=filters)
-    # else:
 
     bool_query = Q('bool', filter=filters)
 
@@ -72,9 +68,6 @@ def executeSearch(
 
     # Execute the search
     response = s.execute()
-
-    # response.hits.total.value is number of hits
-    # response.hits.hits is the list of hits
 
     return response
 
@@ -98,6 +91,10 @@ def executeSearchCountOnly(
 
     # limit to 2 results since the s.count returns the number of hits (estimated?) without loading all
     # the records and even items with hundreds of thousands of results product a count quickly.
+    # Without limiting this first and doing a count, it times out with a large number of results, which seems
+    # kind of wrong since it should be able to count without loading all the records, but there is a huge
+    # performance increase by doing it this way and prevents large queries like searching for the word "California"
+    # from timing out and giving a 504 error in the web application.
     s = s[0:1]
 
     return s.count()
@@ -145,7 +142,7 @@ def friendly_status(hit):
         return "unknown"
 
 
-# trying to make the formulate query less long and complicated
+# This is a long method which mirrors the original search_util.py's formulateQuery method which was also long.
 def formulate_query(
     constraints, orderBy=None, selectRelated=defaultSelectRelated, defer=defaultDefer
 ):
@@ -193,13 +190,6 @@ def formulate_query(
                         v = "doi:" + v
                 if v is None:
                     v = value
-            # TODO: in order for prefix to work, I have to make sure the identifier is indexed as a keyword with
-            # a custom mapping for the identifier field in the OpenSearch index, and it still only works in some
-            # circumstances.
-            # "If search.allow_expensive_queries is set to false, prefix queries are not run."
-            # "It's important to note that prefix queries can be resource-intensive and can lead to performance issues.
-            # They are not recommended for large scale text searching. For better performance, consider using an edge
-            # n-gram tokenizer at index time or a completion suggester for auto-complete functionality."
 
             filter_dict = {"prefix": {"searchable_id": v}}
             # filter_dict = {"term": {"_id": v}}
@@ -271,8 +261,9 @@ def formulate_query(
                 else:
                     values.append(value + "/")
 
-            # I don't think we need to check for MAX_SEARCHABLE_TARGET_LENGTH in OpenSearch, but refer to search_util
-            # for how it was done with database if we need to re-add this limitation.
+            # We don't need to check for MAX_SEARCHABLE_TARGET_LENGTH in OpenSearch, but refer to search_util
+            # for how it was done with database if we need to re-add this limitation. OpenSearch limits automatically
+            # as set up in the schema.
             filter_dict = {"terms": {"target.keyword": value}}
             filters.append(Q(filter_dict))
 
@@ -358,4 +349,3 @@ def formulate_order_by(order_by):
 
         order_dict = {order_map[order_by]: {'order': direction}}
         return order_dict
-

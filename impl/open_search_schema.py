@@ -1,6 +1,14 @@
 from django.conf import settings
 from impl.open_search_doc import OpenSearchDoc
 
+# This schema was originally dumped from the OpenSearch index once I had it in the right format.
+# I needed to specifically add the identifier (ark/doi) as a keyword field to make it searchable.
+
+# I believe the code to dump this was something like
+# mapping = client.indices.get_mapping(index=index_name)
+
+# if the index doesn't exist, it will use this schema to create it when running the opensearch-update django
+# management command.  If it exists, it leaves it alone.
 
 OPEN_SEARCH_SCHEMA = {
     "mappings": {
