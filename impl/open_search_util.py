@@ -274,8 +274,13 @@ def formulate_query(
             filters.append(Q(filter_dict))
 
         elif column in _fulltextFields:
-            filter_dict = {"match": {translate_columns[column]: value}}
-            filters.append(Q(filter_dict))
+            words = value.split()
+
+            match_queries = []
+            for word in words:
+                match_queries.append(Q("match", **{translate_columns[column]: word}))
+                bool_query = Q('bool', must=match_queries)
+            filters.append(bool_query)
 
         elif column == "resourcePublicationYear":
             if value[0] is not None:
