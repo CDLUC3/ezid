@@ -22,22 +22,26 @@
     group: "{{ group }}"
     mode: "0600"
 
-- name: install mysqlclient KLUGE
+- name: install poetry
   ansible.builtin.pip:
-    name: mysqlclient
-    virtualenv: "{{ pyenv_root }}/versions/{{ pyenv_global }}"
-- name: install boto3 KLUGE
-  ansible.builtin.pip:
-    name: boto3
-    virtualenv: "{{ pyenv_root }}/versions/{{ pyenv_global }}"
+    name: poetry
 
-- name: run setup.py
+- name: run pip install
   ansible.builtin.command:
     chdir: "{{ app_dir }}/ezid"
     argv:
-      - "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/python"
-      - "{{ app_dir }}/ezid/setup.py"
-      - develop
+      - "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/pip"
+      - install
+      - .
+  register: _response1
+
+- name: validate poetry.lock
+  ansible.builtin.command:
+    chdir: "{{ app_dir }}/ezid"
+    argv:
+      - "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/poetry"
+      - check
+      - --lock
   register: _response1
 
 - name: run pyenv rehash
@@ -55,12 +59,12 @@
       - --settings=settings.settings
   register: _response2
 
+- name: report poetry.lock validation
+  debug:
+    msg: "{{ _response1.stdout_lines }}"
+  when: _response1.rc is defined
+
 ## too noisy
-#
-#- name: report `setup.py` std_out
-#  debug:
-#    msg: "{{ _response1.stdout_lines }}"
-#  when: _response1.rc is defined
 #
 #- name: report `manage.py collectstatic` std_out
 #  debug:

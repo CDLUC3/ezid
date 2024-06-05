@@ -10,6 +10,7 @@ virtual_environments:
   ensure: present
 pyenv_root: "{{ app_dir }}/.pyenv"
 pyenv_global: ezid-py38
+ansible_python_interpreter: "{{ pyenv_root }}/shims/python"
 
 ezid_repo: https://github.com/CDLUC3/ezid.git
 ezid_version: master
