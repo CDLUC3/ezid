@@ -46,10 +46,6 @@ class Command(BaseCommand):
         else:
             start_after_id = 0
 
-        # I'm going through all the records in an odd way since these tables take about 10 minutes to even get a count
-        # of the records (or things that don't load them). This seems to avoid the problem of doing normal iteration
-        # through the records, even though it's not supposed to have that problem.
-
         # Also adding additional filtering for additional criteria with a Q object that may be neutral or contain
         # additional criteria.
 
@@ -60,7 +56,6 @@ class Command(BaseCommand):
             additional_filter = Q(updateTime__gte=updated_since.timestamp())
 
         while True:
-            pdb.set_trace()
             iden_arr = (Identifier.objects.filter(id__gt=start_after_id)
                         .filter(additional_filter).order_by('id')[:100])
 
@@ -69,7 +64,6 @@ class Command(BaseCommand):
                 break
 
             for identifier in iden_arr:
-                print(f'Counter {counter}, ID {identifier.id}')
                 string_parts.append(self._bulk_update_pair(identifier))
                 start_after_id = identifier.id
 

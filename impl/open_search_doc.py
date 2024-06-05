@@ -243,7 +243,7 @@ class OpenSearchDoc:
                     kw.append(v)
             else:
                 kw.append(v)
-        pdb.set_trace()
+        kw = [x for x in kw if x is not None]
         return " ; ".join(kw)
 
     @property
