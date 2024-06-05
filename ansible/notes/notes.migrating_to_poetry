@@ -1,0 +1,237 @@
+________________________________________________________________________________
+Thu May 23 12:37:59 PM PDT 2024
+
+from: https://nanthony007.medium.com/stop-using-pip-use-poetry-instead-db7164f4fc72
+
+When using poetry inside containers I recommend installing from pip (I know, I
+said not to, but I prefer this over curl-ing and piping something into my
+production container). I do recommend locking the poetry version: pip install
+poetry=1.1.4 that way you have stability there. I then disable the virtualenv
+creation (since we don’t need it inside containers) by running poetry config
+virtualenvs.create false after the poetry install. Then the container can copy
+our two poetry files (poetry.lock and pyproject.toml) and run poetry install to
+install our locked dependencies just as we had them! Furthermore, we now no
+longer need to preface our run commands with poetry run since we disabled the
+virtual environment!
+
+
+
+
+
+
+________________________________________________________________________________
+5/17/2024
+
+useful pages from https://packaging.python.org
+
+https://packaging.python.org/en/latest/overview/
+https://packaging.python.org/en/latest/flow/
+https://packaging.python.org/en/latest/tutorials/packaging-projects/
+https://packaging.python.org/en/latest/guides/installing-stand-alone-command-line-tools/
+https://packaging.python.org/en/latest/guides/writing-pyproject-toml/
+https://packaging.python.org/en/latest/guides/modernize-setup-py-project/
+https://packaging.python.org/en/latest/discussions/install-requires-vs-requirements/
+https://packaging.python.org/en/latest/discussions/distribution-package-vs-import-package/
+https://packaging.python.org/en/latest/discussions/package-formats/
+https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/
+
+
+
+
+This is how I got scotts forked package to resolve:
+poetry add git+https://github.com/CDLUC3/django-matomo-api-tracking@0.1.4
+
+
+________________________________________________________________________________
+Looking at console scripts now.  This is how setup.py generates console scripts:
+
+agould@localhost:~/git/github/cdluc3/ezid> python
+Python 3.11.9 (main, May 16 2024, 13:08:52) [GCC 7.5.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import pathlib
+>>> HERE_PATH = pathlib.Path(__file__).parent
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name '__file__' is not defined. Did you mean: '__name__'?
+>>> HERE_PATH = pathlib.Path(__name__).parent
+>>> def gen_console_scripts():
+...     """Generate command line stubs for the modules in the tools folders."""
+...     tool_path = HERE_PATH / 'tools'
+...     stub_list = []
+...     for p in tool_path.glob('*.py'):
+...         if p.name.startswith('_'):
+...             continue
+...         module_name = p.with_suffix('').name
+...         tool_name = 'ez-{}'.format(module_name.replace('_', '-'))
+...         stub_name = "{}=tools.{}:main".format( tool_name, module_name)
+...         stub_list.append(stub_name)
+...     return stub_list
+... 
+>>> gen_console_scripts
+<function gen_console_scripts at 0x7f0ad86e4b80>
+>>> gen_console_scripts()
+['ez-batch-register=tools.batch_register:main', 'ez-client=tools.client:main', 'ez-dashboard=tools.dashboard:main', 'ez-decode-file=tools.decode_file:main', 'ez-dump-convert=tools.dump_convert:main', 'ez-dump-crossref=tools.dump_crossref:main', 'ez-dump-datacite=tools.dump_datacite:main', 'ez-dump-diff=tools.dump_diff:main', 'ez-dump-diff-crossref=tools.dump_diff_crossref:main', 'ez-dump-filter=tools.dump_filter:main', 'ez-dump-project=tools.dump_project:main', 'ez-dump-store=tools.dump_store:main', 'ez-filterlog=tools.filterlog:main', 'ez-queue-admin=tools.queue_admin:main', 'ez-shoulderless-identifiers=tools.shoulderless_identifiers:main', 'ez-link-check-emailer=tools.link_check_emailer:main', 'ez-link-check-summary-report=tools.link_check_summary_report:main', 'ez-downserver=tools.downserver:main']
+>>> 
+
+>>> pprint.pp(scripts)
+['ez-batch-register=tools.batch_register:main',
+ 'ez-client=tools.client:main',
+ 'ez-dashboard=tools.dashboard:main',
+ 'ez-decode-file=tools.decode_file:main',
+ 'ez-dump-convert=tools.dump_convert:main',
+ 'ez-dump-crossref=tools.dump_crossref:main',
+ 'ez-dump-datacite=tools.dump_datacite:main',
+ 'ez-dump-diff=tools.dump_diff:main',
+ 'ez-dump-diff-crossref=tools.dump_diff_crossref:main',
+ 'ez-dump-filter=tools.dump_filter:main',
+ 'ez-dump-project=tools.dump_project:main',
+ 'ez-dump-store=tools.dump_store:main',
+ 'ez-filterlog=tools.filterlog:main',
+ 'ez-queue-admin=tools.queue_admin:main',
+ 'ez-shoulderless-identifiers=tools.shoulderless_identifiers:main',
+ 'ez-link-check-emailer=tools.link_check_emailer:main',
+ 'ez-link-check-summary-report=tools.link_check_summary_report:main',
+ 'ez-downserver=tools.downserver:main']
+
+
+I don't see how we can generate this list for consumption by poetry.  Do we even use these?
+
+So I just hacked them all in:
+
+[tool.poetry.scripts]
+ez-batch-register = 'tools.batch_register:main'
+ez-client = 'tools.client:main'
+ez-dashboard = 'tools.dashboard:main'
+ez-decode-file = 'tools.decode_file:main'
+ez-dump-convert = 'tools.dump_convert:main'
+ez-dump-crossref = 'tools.dump_crossref:main'
+ez-dump-datacite = 'tools.dump_datacite:main'
+ez-dump-diff = 'tools.dump_diff:main'
+ez-dump-diff-crossref = 'tools.dump_diff_crossref:main'
+ez-dump-filter = 'tools.dump_filter:main'
+ez-dump-project = 'tools.dump_project:main'
+ez-dump-store = 'tools.dump_store:main'
+ez-filterlog = 'tools.filterlog:main'
+ez-queue-admin = 'tools.queue_admin:main'
+ez-shoulderless-identifiers = 'tools.shoulderless_identifiers:main'
+ez-link-check-emailer = 'tools.link_check_emailer:main'
+ez-link-check-summary-report = 'tools.link_check_summary_report:main'
+ez-downserver = 'tools.downserver:main'
+ 
+
+
+
+
+
+
+
+
+
+________________________________________________________________________________
+5/16/2024
+
+Name: poetry
+Version: 1.8.3
+Summary: Python dependency management and packaging made easy.
+Home-page: https://python-poetry.org/
+Author: Sébastien Eustace
+Author-email: sebastien@eustace.io
+License: MIT
+Location: /ezid/.pyenv/versions/3.11.9/lib/python3.11/site-packages
+Requires: build, cachecontrol, cleo, crashtest, dulwich, fastjsonschema, installer, keyring, packaging, pexpect, pkginfo, platformdirs, poetry-core, poetry-plugin-export, pyproject-hooks, requests, requests-toolbelt, shellingham, tomlkit, trove-classifiers, virtualenv
+Required-by: poetry-plugin-export
+
+
+ezid@uc3-ezidui-dev01:09:20:41:~/install/ezid/ansible$ which poetry
+/usr/bin/which: no poetry in (/ezid/.pyenv/shims:/ezid/.pyenv/bin:/ezid/.local/bin:/ezid/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/puppetlabs/bin)
+
+ezid@uc3-ezidui-dev01:09:22:46:~/install/ezid/ansible$ python -m poetry -h
+
+Description:
+  Lists commands.
+
+Usage:
+  list [options] [--] [<namespace>]
+
+Arguments:
+  namespace                  The namespace name
+
+Options:
+  -h, --help                 Display help for the given command. When no command is given display help for the list command.
+  -q, --quiet                Do not output any message.
+  -V, --version              Display this application version.
+      --ansi                 Force ANSI output.
+      --no-ansi              Disable ANSI output.
+  -n, --no-interaction       Do not ask any interactive question.
+      --no-plugins           Disables plugins.
+      --no-cache             Disables Poetry source caches.
+  -C, --directory=DIRECTORY  The working directory for the Poetry command (defaults to the current working directory).
+  -v|vv|vvv, --verbose       Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug.
+
+Help:
+  The list command lists all commands:
+  
+    poetry list
+  
+  You can also display the commands for a specific namespace:
+  
+    poetry list test
+  
+
+
+
+________________________________________________________________________________
+
+
+
+Starting with a clean pyenv
+---------------------------
+
+# update pyenv
+cd /home/agould/.pyenv/plugins/python-build/../.. && git pull && cd -
+
+# install python 3.11.9
+ 1012  pyenv install 3.11.9
+ 1013  pyenv versions
+ 1017  pyenv global 3.11.9
+ 1032  pip list
+ 1033  pip install -U setuptools
+ 1034  pip install -U pip
+
+# install pipx
+ 1035  pip install pipx
+ 1036  pip list
+ 1037  pipx list
+
+# install poetry
+ 1072  pipx install poetry
+ 1073  pipx list
+ 1075  which poetry
+ 1076  cat $(which poetry)
+ 1077  poetry -h
+
+cat /home/agould/.local/share/pipx/venvs/poetry/pipx_metadat.json
+
+cat /home/agould/.local/share/pipx/venvs/poetry/pyvenv.cfg 
+home = /home/agould/.pyenv/versions/3.11.9/bin
+include-system-site-packages = false
+version = 3.11.9
+executable = /home/agould/.pyenv/versions/3.11.9/bin/python3.11
+command = /home/agould/.pyenv/versions/3.11.9/bin/python3.11 -m venv --without-pip /home/agould/.local/share/pipx/venvs/poetry
+
+
+agould@localhost:~/git/github/cdluc3/ezid> cat pyproject.toml 
+[tool.black]
+skip_string_normalization = true
+line_length = 100
+
+
+agould@localhost:~/git/github/cdluc3/ezid> poetry self show plugins
+
+  - poetry-plugin-export (1.8.0) Poetry plugin to export the dependencies to various formats
+      1 application plugin
+
+      Dependencies
+        - poetry (>=1.8.0,<3.0.0)
+        - poetry-core (>=1.7.0,<3.0.0)
+
