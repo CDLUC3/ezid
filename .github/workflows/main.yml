@@ -11,20 +11,33 @@ jobs:
       PYTHONPATH: ${{ github.workspace }}
 
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-python@v2
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.8'
           architecture: 'x64'
 
       - name: Start MySQL service
         run: |
           sudo /etc/init.d/mysql start
 
-      - name: Prepare Python env
+      
+      - name: Install Poetry
         run: |
-          pip install --upgrade pip setuptools wheel
-          pip install -r ./requirements-dev.txt
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: pip install .
+
+      - name: Install dev dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Validate installed packages against poetry.lock file
+        run: poetry check --lock
 
       - name: Dump environment (for troubleshooting)
         run: |
