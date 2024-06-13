@@ -57,8 +57,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             try:
                 with transaction.atomic():
                     for target_id in target_ids:
-                        is_good = OpenSearchDoc.delete_from_search_identifier(search_identifier=target_id)
-                        if not is_good:
+                        open_s = OpenSearchDoc(identifier=task_model.refIdentifier)
+                        if not open_s.remove_from_index():
                             raise DatabaseError('Error deleting from OpenSearch index')  # skip DB delete
                     target_ids.delete()
             except DatabaseError as e:
@@ -83,7 +83,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         try:
             with transaction.atomic():
                 search_id_model.save()  # if error saving skips to exception
-                is_good = OpenSearchDoc.index_from_search_identifier(search_identifier=search_id_model)
+                open_s = OpenSearchDoc(identifier=ref_id_model)
+                is_good = open_s.index_document()
                 if not is_good:
                     raise DatabaseError('Error indexing in OpenSearch')  # should trigger rollback
         except DatabaseError as e:
@@ -95,7 +96,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 ).count()
                 if existing_count == 0:
                     # it's not in the SearchIdentifier db table, so remove it from OpenSearch
-                    OpenSearchDoc.delete_from_search_identifier(search_identifier=search_id_model)
+                    open_s = OpenSearchDoc(identifier=ref_id_model)
+                    open_s.remove_from_index()
             raise e
 
     def _ref_id_to_search_id(self, ref_id_model):
