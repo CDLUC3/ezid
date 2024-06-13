@@ -3,6 +3,7 @@ from django.http import JsonResponse
 
 # import settings.settings
 from django.conf import settings
+from django.test import override_settings
 from ezidapp.models.identifier import Identifier
 from ezidapp.models.identifier import SearchIdentifier
 import json
@@ -136,6 +137,25 @@ class OpenSearchDoc:
             # if it's not found, it's already deleted
             return True
         return False
+
+    def update_link_issues(self, link_is_broken=False, has_issues=False):
+        dict_to_update = {
+            'open_search_updated': datetime.datetime.now().isoformat(),
+            'update_time': datetime.datetime.now().isoformat(),
+            'link_is_broken': link_is_broken,
+            'has_issues': has_issues }
+
+        response = self.CLIENT.update(
+            index=settings.OPENSEARCH_INDEX,
+            id=self.identifier.identifier,
+            body={"doc": dict_to_update}
+        )
+
+        # Check the response
+        if 'result' in response and response['result'] == 'updated':
+            return True
+        else:
+            return False
 
     # the properties using lru_cache are memoized, so they're only calculated once and then cached for future calls
     # for the same object instance (this should make calls faster if used multiple times on the same instance)

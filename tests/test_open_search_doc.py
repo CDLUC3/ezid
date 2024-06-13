@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch, ANY
 from unittest.mock import MagicMock
 from ezidapp.models.identifier import Identifier
 from ezidapp.models.identifier import SearchIdentifier
@@ -248,4 +248,27 @@ def test_dict_for_identifier(open_search_doc):
                      'link_is_broken': False,
                      'has_issues': False}
     assert open_search_doc.dict_for_identifier() == expected_dict
+
+
+@patch('impl.open_search_doc.OpenSearchDoc.CLIENT')
+def test_update_link_issues(mock_client, open_search_doc):
+    # Arrange
+    mock_response = {'result': 'updated'}
+    mock_client.update.return_value = mock_response
+
+    # Act
+    result = open_search_doc.update_link_issues(link_is_broken=True, has_issues=True)
+
+    # Assert
+    mock_client.update.assert_called_once_with(
+        index='ezid-test-index',
+        id=open_search_doc.identifier.identifier,
+        body={"doc": {
+            'open_search_updated': ANY,  # Use unittest.mock.ANY if the exact value doesn't matter
+            'update_time': ANY,
+            'link_is_broken': True,
+            'has_issues': True
+        }}
+    )
+    assert result is True
 
