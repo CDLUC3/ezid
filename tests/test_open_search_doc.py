@@ -66,6 +66,11 @@ def open_search_doc():
     identifier.profile.id = 44
     identifier.profile.label = 'testprofile'
 
+    identifier.datacenter = MagicMock()
+    identifier.datacenter.id = 266
+    identifier.datacenter.symbol = 'CDL.CDL'
+    identifier.datacenter.name = 'California Digital Library'
+
     identifier.metadata = {}
 
     # Create a mock KernelMetadata object
@@ -222,7 +227,11 @@ def test_dict_for_identifier(open_search_doc):
                      'target': 'http://example.com',
                      'agent_role': '',
                      'is_test': False,
-                     'datacenter_id': 266,
+                     'datacenter': {
+                        'id': 266,
+                        'symbol': 'CDL.CDL',
+                        'name': 'California Digital Library'
+                     },
                      'db_identifier_id': 37,
                      'resource': {
                          'creators': ['Test Creator'],

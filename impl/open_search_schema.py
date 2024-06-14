@@ -44,12 +44,28 @@ OPEN_SEARCH_SCHEMA = {
                 }
             },
             "datacenter": {
-                "type": "text",
-                "fields": {
-                    "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                    }
+                "properties": {
+                    "symbol": {
+                        "type": "text",
+                        "fields": {
+                            "keyword": {
+                                "type": "keyword",
+                                "ignore_above": 256
+                            }
+                        }
+                    },
+                    "name": {
+                        "type": "text",
+                        "fields": {
+                            "keyword": {
+                                "type": "keyword",
+                                "ignore_above": 256
+                            }
+                        }
+                    },
+                    "id": {
+                        "type": "long"
+                    },
                 }
             },
             "db_identifier_id": {

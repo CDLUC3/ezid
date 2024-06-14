@@ -91,7 +91,7 @@ class OpenSearchDoc:
 
     def dict_for_identifier(self) -> str:
         identifier_dict = {}
-        exclude_fields = "pk cm metadata owner_id ownergroup_id profile_id".split()
+        exclude_fields = "pk cm metadata owner_id ownergroup_id profile_id datacenter_id".split()
         for field in self.identifier._meta.fields:
             if field.name not in exclude_fields:
                 field_name = OpenSearchDoc._camel_to_snake(field.name)
@@ -110,7 +110,7 @@ class OpenSearchDoc:
                 identifier_dict[field_name] = tmp
 
         fields_to_add = ['db_identifier_id', 'resource', 'word_bucket', 'has_metadata', 'public_search_visible',
-                         'oai_visible', 'owner', 'ownergroup', 'profile', 'identifier_type',
+                         'oai_visible', 'owner', 'ownergroup', 'profile', 'datacenter', 'identifier_type',
                          'searchable_publication_year', 'searchable_id', 'link_is_broken', 'has_issues']
 
         for field in fields_to_add:
@@ -328,6 +328,14 @@ class OpenSearchDoc:
         if p is None:
             return {}
         return {"id": p.id, "label": p.label}
+
+    @property
+    @functools.lru_cache
+    def datacenter(self):
+        dc = self.identifier.datacenter
+        if dc is None:
+            return {"id": None, "symbol": "", "name": ""}
+        return {"id": dc.id, "symbol": dc.symbol, "name": dc.name}
 
     # identifier_type is ark or doi and the db search did some kind of slow like query for it, but should be explicit
     @property
