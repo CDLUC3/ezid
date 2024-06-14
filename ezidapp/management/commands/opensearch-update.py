@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.conf import settings
-from ezidapp.models.identifier import Identifier
+from ezidapp.models.identifier import SearchIdentifier
 from impl.open_search_doc import OpenSearchDoc
 import json
 import requests
@@ -29,6 +29,11 @@ SPLIT_SIZE = 100
 
 # Even if items are already up-to-date, it doesn't hurt to repopulate them since it just updates from the
 # copy of record which is the database values. OpenSearach values are derived for search and display purposes.
+
+# NOTE: This script will need revision if the SearchIdentifier model is ever removed from EZID since it relies on the
+# SearchIdentifier update time to determine what to update in OpenSearch.  It could be modified to use the
+# Identifier update time instead, but that might be a different time that does not take into account the link checker
+# which is updates in the SearchIdentifier table and doesn't update the Identifier table.
 
 
 class Command(BaseCommand):
@@ -63,7 +68,7 @@ class Command(BaseCommand):
             additional_filter = Q(updateTime__gte=updated_since.timestamp())
 
         while True:
-            iden_arr = (Identifier.objects.filter(id__gt=start_after_id)
+            iden_arr = (SearchIdentifier.objects.filter(id__gt=start_after_id)
                         .filter(additional_filter).order_by('id')[:100])
 
             # break when we run out of items
@@ -99,7 +104,7 @@ class Command(BaseCommand):
 
     # see https://opensearch.org/docs/latest/api-reference/document-apis/bulk/
     @staticmethod
-    def _bulk_update_pair(identifier: Identifier) -> str:
+    def _bulk_update_pair(identifier: SearchIdentifier) -> str:
         my_os = OpenSearchDoc(identifier=identifier)
         my_dict = my_os.dict_for_identifier()
         my_dict['open_search_updated'] = datetime.datetime.now().isoformat()
