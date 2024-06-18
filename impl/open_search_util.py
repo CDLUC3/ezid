@@ -264,7 +264,7 @@ def formulate_query(
             # We don't need to check for MAX_SEARCHABLE_TARGET_LENGTH in OpenSearch, but refer to search_util
             # for how it was done with database if we need to re-add this limitation. OpenSearch limits automatically
             # as set up in the schema.
-            filter_dict = {"terms": {"target.keyword": value}}
+            filter_dict = {"terms": {"target.keyword": values}}
             filters.append(Q(filter_dict))
 
         elif column == "profile":
