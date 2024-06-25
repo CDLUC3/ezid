@@ -222,7 +222,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
     def _prepareMetadata(
         self,
-        id_model: ezidapp.models.identifier.Identifier,
+        id_model: ezidapp.models.identifier.SearchIdentifier,
         convertTimestamps: object,
     ) -> dict:
         d = id_model.toLegacy()
@@ -247,7 +247,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         self,
         f: typing.TextIO,
         columns,
-        id_model: ezidapp.models.identifier.Identifier,
+        id_model: ezidapp.models.identifier.SearchIdentifier,
         metadata: dict,
     ):
         w = csv.writer(f)
@@ -256,21 +256,21 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             if c == "_id":
                 l.append(id_model.identifier)
             elif c == "_mappedCreator":
-                l.append(Command._mappedField(id_model, "creator"))
+                l.append(id_model.resourceCreator)
             elif c == "_mappedTitle":
-                l.append(Command._mappedField(id_model, "title"))
+                l.append(id_model.resourceTitle)
             elif c == "_mappedPublisher":
-                l.append(Command._mappedField(id_model, "publisher"))
+                l.append(id_model.resourcePublisher)
             elif c == "_mappedDate":
-                l.append(Command._mappedField(id_model, "date"))
+                l.append(id_model.resourcePublicationDate)
             elif c == "_mappedType":
-                l.append(Command._mappedField(id_model, "type"))
+                l.append(id_model.resourceType)
             else:
                 l.append(metadata.get(c, ""))
         w.writerow([self._csvEncode(c).decode('utf-8', errors='replace') for c in l])
 
     def _writeXml(
-        self, f: typing.TextIO, id: ezidapp.models.identifier.Identifier, metadata: dict
+        self, f: typing.TextIO, id: ezidapp.models.identifier.SearchIdentifier, metadata: dict
     ):
         f.write(f'<record identifier="{impl.util.xmlEscape(id.identifier)}">')
         for k, v in list(metadata.items()):
@@ -288,7 +288,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         _total = 0
         while not self.terminated():
             qs = (
-                ezidapp.models.identifier.Identifier.objects.filter(identifier__gt=r.lastId)
+                ezidapp.models.identifier.SearchIdentifier.objects.filter(identifier__gt=r.lastId)
                 .filter(owner__pid=r.toHarvest.split(",")[r.currentIndex])
                 .select_related("owner", "ownergroup", "datacenter", "profile")
                 .order_by("identifier")
@@ -522,11 +522,3 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             return SUFFIX_FORMAT_DICT[r.format] + ".gz"
         else:
             return "zip"
-
-    # This method remove dependency on the SearchIdentifiers model for output of bulk update/download
-    @staticmethod
-    def _mappedField(id_model: ezidapp.models.identifier.Identifier, field: str):
-        km = id_model.kernelMetadata
-        if not km:
-            return ''
-        return getattr(km, field) if getattr(km, field) is not None else ''
