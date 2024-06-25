@@ -1,0 +1,19 @@
+{% load i18n %}
+
+<div id="publisher_set" class="fieldset-stacked create__nested-fieldset fieldset__bottom-border" role="group" aria-labelledby="publisher">
+  <div class="fieldset-controls__container">
+    <div id="publisher" class="fieldset-controls__legend create__nested-legend">{% trans "Publisher" %}</div>
+  </div>
+
+  {% for p_field in form.publisher_form %}
+    {% if forloop.counter == 1 %}
+      {% include "create/_datacite_inlinetext.html" with field=p_field reqd="true" %}
+      <details id="accordion__section-1" class="accordion__section create__accordion-section" {{accordions_open}}>
+        <summary class="accordion__title create__accordion-title">{% trans "More Fields" %}</summary>
+    {% else %}
+      {% include "create/_datacite_inlinetext.html" with field=p_field %}
+    {% endif %}
+  {% endfor %}
+  </details>
+  
+</div>

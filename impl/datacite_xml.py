@@ -171,11 +171,12 @@ def _separateByFormType(d):
     """ Representation of django forms and formsets used for DataCite XML """
     FormColl = collections.namedtuple(
         'FormColl',
-        'nonRepeating resourceType creators titles descrs subjects contribs dates altids relids sizes formats rights geoLocations fundingReferences',
+        'nonRepeating publisher resourceType creators titles descrs subjects contribs dates altids relids sizes formats rights geoLocations fundingReferences',
     )
 
     return FormColl(
         nonRepeating=_nonRepeating if _nonRepeating else None,
+        publisher=dict_generate(d, 'publisher'),
         resourceType=dict_generate(d, 'resourceType'),
         creators=dict_generate(d, 'creators'),
         titles=dict_generate(d, 'titles'),
