@@ -297,7 +297,14 @@ client = OpenSearchDoc.CLIENT
 
 
 def create_index():
-    client.indices.create(index=settings.OPENSEARCH_INDEX, body=OPEN_SEARCH_SCHEMA)
+    body = {
+        "settings": {
+            "number_of_shards": 3,
+            "number_of_replicas": 1
+        },
+        "mappings": OPEN_SEARCH_SCHEMA["mappings"]
+    }
+    client.indices.create(index=settings.OPENSEARCH_INDEX, body=body)
 
 
 def index_exists():
