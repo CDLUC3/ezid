@@ -123,6 +123,7 @@ class IdentifierBase(django.db.models.Model):
         on_delete=django.db.models.PROTECT,
     )
 
+
     def updateFromUntrustedLegacy(self, d, allowRestrictedSettings=False):
         """Fill out a new identifier or (partially) updates an existing
         identifier from client-supplied (i.e., untrusted) legacy
@@ -1145,6 +1146,15 @@ class SearchIdentifier(IdentifierBase):
 
 
 class Identifier(IdentifierBase):
+
+    @property
+    def search_identifier(self):
+        try:
+            search_ident = ezidapp.models.identifier.SearchIdentifier.objects.get(identifier=self.identifier)
+        except ezidapp.models.identifier.SearchIdentifier.DoesNotExist:
+            search_ident = None
+        return search_ident
+
 
     class Meta:
         indexes = [

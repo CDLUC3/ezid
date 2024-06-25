@@ -64,6 +64,11 @@ DATABASES_RECONNECT_DELAY = 60
 # we put them here to avoid any overt dependencies on MySQL.
 SEARCH_MINIMUM_WORD_LENGTH = 3
 
+OPENSEARCH_BASE = '{{ opensearch_base }}'
+OPENSEARCH_INDEX = '{{ opensearch_index }}'
+OPENSEARCH_USER = '{{ opensearch_user }}'
+OPENSEARCH_PASSWORD = '{{ opensearch_password }}'
+
 # fmt:off
 # The following stopwords, determined empirically, are the words that appear in the
 # keyword text of more than 20% of identifiers.
