@@ -235,7 +235,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         return d
 
     def _writeAnvl(
-        self, f: typing.TextIO, id_model: ezidapp.models.identifier.Identifier, metadata: dict
+        self, f: typing.TextIO, id_model: ezidapp.models.identifier.SearchIdentifier, metadata: dict
     ):
         if f.tell() > 0:
             f.write("\n")
