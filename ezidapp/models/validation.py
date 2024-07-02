@@ -131,6 +131,7 @@ def publicationDate(date):
 # mnemonic codes for database storage purposes. (N.B.: the codes are
 # used for ordering, so their order should match the order of the full
 # terms.)
+# 2024-04-10: the mnemonic codes are out of order; keep the code unique at least.
 
 resourceTypes = {
     "Audiovisual": "A",
@@ -145,6 +146,7 @@ resourceTypes = {
     "Dissertation": "Di",
     "Event": "E",
     "Image": "Im",
+    "Instrument": "Is",
     "InteractiveResource": "In",
     "Journal": "J",
     "JournalArticle": "Ja",
@@ -158,6 +160,7 @@ resourceTypes = {
     "Software": "So",
     "Sound": "Su",
     "Standard": "St",
+    "StudyRegistration": "Sr",
     "Text": "T",
     "Workflow": "W",
     "Other": "Z",
