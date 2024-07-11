@@ -39,7 +39,7 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.8"
 #python = "^3.11"
-django = "^4.2.11"
+django = "^4.2.14"
 aiomysql = "^0.2.0"
 mysqlclient = "^2.2.4"
 boto3 = "^1.34.143"

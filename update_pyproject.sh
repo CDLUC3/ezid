@@ -5,7 +5,8 @@
 # Run `poetry update` afterwards to update package dependencies that were missed from the above `poetry add` command.
 
 # for now we omit `django-matomo-api-tracking` because of how it is sourced.
-# Do not update Python and Django
+# Do not update Python or Django in this script.
+# Manually run the `poetry add {package}@version` command to update Python and Django to a desired version.
 DEPS="
 aiomysql
 mysqlclient
