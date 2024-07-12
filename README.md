@@ -211,9 +211,9 @@ automatically update minimum semantic versions in `pyproject.toml`.  To keep
 Note:
 * Run the `poetry update` command if you modified the `pyproject.toml` file manually.
   
-2. Review changes with `git diff poetry.lock`
+3. Review changes with `git diff poetry.lock`
    
-3. Commit your updates and cut a new release candidate tag.  Open a pull request so 
+4. Commit your updates and cut a new release candidate tag.  Open a pull request so 
    proper integration testing can be scheduled.
 
    In most cases you will see changes in the `pyproject.toml` and `poetry.lock` files.
