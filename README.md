@@ -171,7 +171,10 @@ automatically update minimum semantic versions in `pyproject.toml`.  To keep
      poetry add ${package}@latest
    done
    ```
-
+   Note:
+   * A script `pdate_pyproject.sh` was created to automate the above process.
+   * The `django` entry is excluded from the list as we would like to manage Django version by ourself.
+   * The `pdate_pyproject.sh` script includes a final step `poetry update` which is used to update package dependencies in `poetry.lock`.
 
 1. Review changes with `git diff pyproject.toml`.  Make alterations as needed:
    ```
@@ -205,8 +208,14 @@ automatically update minimum semantic versions in `pyproject.toml`.  To keep
     celery = "^5.4.0"
     sqlalchemy = "^2.0.30"
    ``` 
-
-1. Commit your updates and cut a new release candidate tag.  Open a pull request so 
+Note:
+* Run the `poetry update` command if you modified the `pyproject.toml` file manually.
+  
+2. Review changes with `git diff poetry.lock`
+   
+3. Commit your updates and cut a new release candidate tag.  Open a pull request so 
    proper integration testing can be scheduled.
+
+   In most cases you will see changes in the `pyproject.toml` and `poetry.lock` files.
 
 
