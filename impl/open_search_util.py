@@ -274,13 +274,18 @@ def formulate_query(
             filters.append(Q(filter_dict))
 
         elif column in _fulltextFields:
-            words = value.split()
+            must_words, should_words = words_to_must_and_should(value)
 
-            match_queries = []
-            for word in words:
-                match_queries.append(Q("match", **{translate_columns[column]: word}))
+            must_queries = [Q("match", **{translate_columns[column]: word}) for word in must_words]
+            should_queries = [Q("match", **{translate_columns[column]: word}) for word in should_words]
 
-            bool_query = Q('bool', must=match_queries)
+            if must_queries and not should_queries:
+                bool_query = Q('bool', must=must_queries)
+            elif should_queries and not must_queries:
+                bool_query = Q('bool', should=should_queries, minimum_should_match=1)
+            else:
+                bool_query = Q('bool', must=must_queries, should=should_queries, minimum_should_match=1)
+
             filters.append(bool_query)
 
         elif column == "resourcePublicationYear":
@@ -355,3 +360,23 @@ def formulate_order_by(order_by):
 
         order_dict = {order_map[order_by]: {'order': direction}}
         return order_dict
+
+
+def words_to_must_and_should(the_string):
+    words = the_string.split()
+    must_words = []
+    should_words = []
+    last_word = ''
+    for word in words:
+        if last_word == "OR":
+            should_words.append(word)  # this attaches the current word, following an OR, to the should_words list
+        elif word == "AND":
+            continue  # ignore AND since it's the default. We don't need to search on it
+        elif word == "OR" and last_word != '':
+            # move the previous word from the must_words list to the should_words list
+            should_words.append(must_words.pop())
+        else:
+            must_words.append(word)
+        last_word = word
+
+    return must_words, should_words
