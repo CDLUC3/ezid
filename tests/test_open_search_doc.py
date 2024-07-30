@@ -81,7 +81,7 @@ def open_search_doc():
     km.date = '2022-01-01'
     km.type = 'Dataset/dataset'
     km.validatedDate = '2022'
-    km.validatedType = 'Dataset/dataset'
+    km.validatedType = 'Dataset/SquidCake'
 
     identifier.kernelMetadata = km
 
@@ -167,7 +167,7 @@ def test_searchable_resource_type(open_search_doc):
 
 
 def test_resource_type_words(open_search_doc):
-    assert open_search_doc.resource_type_words == 'Dataset dataset'
+    assert open_search_doc.resource_type_words == 'Dataset SquidCake Squid Cake'
 
 
 def test_word_bucket(open_search_doc):
