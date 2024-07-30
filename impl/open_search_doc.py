@@ -179,6 +179,7 @@ class OpenSearchDoc:
                 "publisher": self.resource_publisher,
                 "publication_date": self.resource_publication_date,
                 "type": self.resource_type,
+                "type_words": self.resource_type_words,
                 "searchable_type": self.searchable_resource_type}
 
     @property
