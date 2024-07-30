@@ -132,6 +132,7 @@ def test_resource(open_search_doc):
                          'publisher': 'Test Publisher',
                          'publication_date': '2022-01-01',
                          'type': 'Dataset/dataset',
+                         'type_words': 'Dataset SquidCake Squid Cake',
                          'searchable_type': 'D'}
     assert open_search_doc.resource == expected_resource
 
@@ -243,6 +244,7 @@ def test_dict_for_identifier(open_search_doc):
                          'publisher': 'Test Publisher',
                          'publication_date': '2022-01-01',
                          'type': 'Dataset/dataset',
+                         'type_words': 'Dataset SquidCake Squid Cake',
                          'searchable_type': 'D'},
                      'word_bucket': 'doi:10.25338/B8JG7X ; testuser ; testgroup ; http://example.com',
                      'has_metadata': True,
