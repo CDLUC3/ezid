@@ -246,6 +246,33 @@ class OpenSearchDoc:
         t = self.km.validatedType
         return validation.resourceTypes[t.split("/")[0]] if t is not None else ''
 
+    # The resource types have changed over time and different Datacite versions.
+    # It also seems like the expectation is that we have the most inclusive match
+    # on the resource type terms in search if anything related has been entered anywhere in resource type.
+    # This gloms all the words in that are present in the "validatedType" for full text searching.
+    # First it splits out words on whitespace, underscore, dash, and slash.
+    # Then it adds additional words for anything CamelCased to get the most inclusive words possible.
+    @property
+    @functools.lru_cache
+    def resource_type_words(self):
+        t = self.km.validatedType
+        if t is None or t == "":
+            return None
+
+        # split on whitespace, underscore, dash, and slash
+        obvious_words = re.split(r'[\s_\-/]+', t)
+
+        more_words = []
+        for word in obvious_words:
+            # Insert a space before each uppercase letter
+            spaced_text = re.sub(r'(?<=[a-z])(?=[A-Z])', ' ', word)
+            # Split the string on spaces
+            extra_words = spaced_text.split()
+            if len(extra_words) > 1:
+                more_words.extend(extra_words)
+
+        return ' '.join(obvious_words + more_words)  # a bucket of words for search
+
     @property
     @functools.lru_cache
     def word_bucket(self):

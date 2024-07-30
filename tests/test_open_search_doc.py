@@ -166,6 +166,10 @@ def test_searchable_resource_type(open_search_doc):
     assert open_search_doc.searchable_resource_type == 'D'
 
 
+def test_resource_type_words(open_search_doc):
+    assert open_search_doc.resource_type_words == 'Dataset dataset'
+
+
 def test_word_bucket(open_search_doc):
     expected_word_bucket = 'doi:10.25338/B8JG7X ; testuser ; testgroup ; http://example.com'
     assert open_search_doc.word_bucket == expected_word_bucket

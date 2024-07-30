@@ -243,6 +243,15 @@ OPEN_SEARCH_SCHEMA = {
                                 "ignore_above": 64
                             }
                         }
+                    },
+                    "resource_type_words": {
+                        "type": "text",
+                        "fields": {
+                            "keyword": {
+                                "type": "keyword",
+                                "ignore_above": 128
+                            }
+                        }
                     }
                 }
             },
