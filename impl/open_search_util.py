@@ -309,9 +309,13 @@ def formulate_query(
             if isinstance(value, str):
                 value = [value]
 
-            searchable_vals = [ezidapp.models.validation.resourceTypes.get(v, v) for v in value]
-            filter_dict = {"terms": {"resource.searchable_type.keyword": searchable_vals}}
-            filters.append(Q(filter_dict))
+            # take all the values in here and OR them together since I think that's the most likely case
+            # if there are multiple resource types given since not sure one DOI would normally have more than
+            # one resource type in the same record.
+            should_queries = [Q("match", **{"resource.type_words": word}) for word in value]
+
+            bool_query = Q('bool', should=should_queries, minimum_should_match=1)
+            filters.append(bool_query)
 
         else:
             assert False, "unrecognized column"
