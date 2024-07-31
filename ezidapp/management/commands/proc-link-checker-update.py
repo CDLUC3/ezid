@@ -38,7 +38,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     def add_arguments(self, parser):
         super().add_arguments(parser)
         parser.add_argument(
-            '--pagesize', help='Rows in each database page (100,000)', type=int, default=100000
+            '--pagesize', help='Rows in each database page (100,000)', type=int, default=10000
         )
 
     def run(self):
@@ -126,7 +126,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             qs = model.objects.filter(identifier__gt=lastIdentifier).order_by("identifier")
             if only is not None:
                 qs = qs.only(*only)
-            qs = list(qs[: self.opt.pagesize])
+            qs = qs[: self.opt.pagesize]
             if len(qs) == 0:
                 break
             for o in qs:
