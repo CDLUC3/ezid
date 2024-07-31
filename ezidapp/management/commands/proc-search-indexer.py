@@ -22,6 +22,9 @@ import logging
 import ezidapp.management.commands.proc_base
 import ezidapp.models.async_queue
 import ezidapp.models.identifier
+from impl.open_search_doc import OpenSearchDoc
+from django.db import transaction
+from django.db import DatabaseError
 
 log = logging.getLogger(__name__)
 
@@ -46,9 +49,26 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
     def delete(self, task_model):
         if not self._is_anonymous(task_model):
-            ezidapp.models.identifier.SearchIdentifier.objects.filter(
+            # search model
+            target_ids = ezidapp.models.identifier.SearchIdentifier.objects.filter(
                 identifier=task_model.refIdentifier.identifier,
-            ).delete()
+            )
+
+            try:
+                with transaction.atomic():
+                    for target_id in target_ids:
+                        open_s = OpenSearchDoc(identifier=task_model.refIdentifier)
+                        if not open_s.remove_from_index():
+                            raise DatabaseError('Error deleting from OpenSearch index')  # skip DB delete
+                    target_ids.delete()
+            except DatabaseError as e:
+                log.error(f'Error deleting, rolling transaction back: {e}')
+                if 'OpenSearch' not in str(e):
+                    # reindex the identifiers in OpenSearch that failed to delete from the database
+                    for target_id in target_ids:
+                        OpenSearchDoc.index_from_search_identifier(search_identifier=target_id)
+                raise e
+
 
     def _is_anonymous(self, task_model):
         return task_model.refIdentifier.owner is None
@@ -60,7 +80,25 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         log.debug(f'ref_id_model="{ref_id_model}"')
         search_id_model = self._ref_id_to_search_id(ref_id_model)
         search_id_model.computeComputedValues()
-        search_id_model.save()
+        try:
+            with transaction.atomic():
+                search_id_model.save()  # if error saving skips to exception
+                open_s = OpenSearchDoc(identifier=ref_id_model)
+                is_good = open_s.index_document()
+                if not is_good:
+                    raise DatabaseError('Error indexing in OpenSearch')  # should trigger rollback
+        except DatabaseError as e:
+            log.error(f'Error saving, rolling transaction back: {e}')
+            if 'OpenSearch' not in str(e):
+                # it didn't save to db, see if searchIdentifier exists in the database (from previous save)
+                existing_count = ezidapp.models.identifier.SearchIdentifier.objects.filter(
+                    identifier=search_id_model.identifier,
+                ).count()
+                if existing_count == 0:
+                    # it's not in the SearchIdentifier db table, so remove it from OpenSearch
+                    open_s = OpenSearchDoc(identifier=ref_id_model)
+                    open_s.remove_from_index()
+            raise e
 
     def _ref_id_to_search_id(self, ref_id_model):
         try:
