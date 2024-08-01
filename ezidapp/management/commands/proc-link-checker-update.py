@@ -127,10 +127,14 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             if only is not None:
                 qs = qs.only(*only)
             qs = qs[: self.opt.pagesize]
+
+            last_record = None
             for o in qs:
                 if filter is None or filter(o):
+                    last_record = o
                     yield o
-            if len(qs) == 0:
+            if last_record is None:
                 break
-            lastIdentifier = qs[-1].identifier
+            else:
+                lastIdentifier = last_record.identifier
         yield None
