@@ -122,7 +122,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             d += 86400
         return d
 
-    def _harvest_org(self, model, only=None, filter=None):
+    def _harvest(self, model, only=None, filter=None):
         lastIdentifier = ""
         while not self.terminated():
             qs = model.objects.filter(identifier__gt=lastIdentifier).order_by("identifier")
@@ -130,24 +130,14 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 qs = qs.only(*only)
             qs = qs[: self.opt.pagesize]
 
-            last_record = None
+            identifier = None
             for o in qs:
                 if filter is None or filter(o):
-                    last_record = o
+                    identifier = o.identifier
                     yield o
-            if last_record is None:
+            if identifier is None:
                 break
             else:
-                lastIdentifier = last_record.identifier
+                lastIdentifier = identifier
         yield None
 
-    def _harvest(self, model, only=None, filter=None):
-        qs = model.objects.all().order_by("identifier")
-        if only is not None:
-            qs = qs.only(*only)
-
-        for o in qs:
-            if filter is None or filter(o):
-                yield o
-
-        yield None
