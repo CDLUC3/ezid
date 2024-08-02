@@ -124,6 +124,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
     def _harvest(self, model, only=None, filter=None):
         lastIdentifier = ""
+        batch = 0
         while not self.terminated():
             qs = model.objects.filter(identifier__gt=lastIdentifier).order_by("identifier")
             if only is not None:
@@ -139,5 +140,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 break
             else:
                 lastIdentifier = identifier
+                batch += 1
+                print(f"#### batch: {batch}, lastID: {lastIdentifier}")
         yield None
 
