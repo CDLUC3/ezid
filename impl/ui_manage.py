@@ -520,6 +520,7 @@ def download(request):
             "_created",
             "_updated",
             "_status",
+            "_target",
         ],
     )
 
