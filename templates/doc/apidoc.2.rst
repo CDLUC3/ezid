@@ -2394,6 +2394,10 @@ encoding is UTF-8 and the metadata is compressed with either gzip_
 
      The identifier.
 
+   - _target
+
+     The resolved URL (Location).
+
    - _mappedCreator, _mappedTitle, _mappedPublisher, _mappedDate,
      _mappedType
 
