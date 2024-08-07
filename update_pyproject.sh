@@ -32,7 +32,6 @@ configparser
 ecs-logging
 celery
 sqlalchemy
-rst2html
 "
 for package in $DEPS; do
   poetry add ${package}@latest
