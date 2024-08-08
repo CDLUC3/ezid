@@ -265,6 +265,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 l.append(id_model.resourcePublicationDate)
             elif c == "_mappedType":
                 l.append(id_model.resourceType)
+            elif c == "_target":
+                l.append(id_model.target)
             else:
                 l.append(metadata.get(c, ""))
         w.writerow([self._csvEncode(c).decode('utf-8', errors='replace') for c in l])
