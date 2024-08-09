@@ -58,7 +58,6 @@ def enqueue(
         if updateExternalServices:
             queue_model_list.extend(
                 (
-                    ezidapp.models.async_queue.BinderQueue,
                     ezidapp.models.async_queue.CrossrefQueue,
                     ezidapp.models.async_queue.DataciteQueue,
                 )
