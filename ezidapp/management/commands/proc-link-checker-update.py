@@ -26,6 +26,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     setting = 'DAEMONS_LINKCHECK_UPDATE_ENABLED'
     # Number of records retrieved per database call in _harvest, 100000 seems ok
     # and balances time taken vs resource use
+    # 2024-08-09: reduce default pagesize to 10,000
 
     def __init__(self):
         super().__init__()
@@ -38,7 +39,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     def add_arguments(self, parser):
         super().add_arguments(parser)
         parser.add_argument(
-            '--pagesize', help='Rows in each database page (100,000)', type=int, default=100000
+            '--pagesize', help='Rows in each database page (100,000)', type=int, default=10000
         )
 
     def run(self):
