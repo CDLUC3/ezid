@@ -35,7 +35,6 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     setting = 'DAEMONS_QUEUE_CLEANUP_ENABLED'
 
     queueType = {
-        'binder': ezidapp.models.async_queue.BinderQueue,
         'crossref': ezidapp.models.async_queue.CrossrefQueue,
         'datacite': ezidapp.models.async_queue.DataciteQueue,
         'search': ezidapp.models.async_queue.SearchIndexerQueue
@@ -72,7 +71,6 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
                 # set status for each handle system
                 identifierStatus = {
-                    'binder' : False,
                     'crossref' : False,
                     'datacite' : False,
                     'search' : False
