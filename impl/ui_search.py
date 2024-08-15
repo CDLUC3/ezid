@@ -274,7 +274,11 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
             impl.userauth.getUser(request, returnAnonymous=True), c
         )
         d['total_results_str'] = format(d['total_results'], "n")
-        d['total_pages'] = int(math.ceil(float(d['total_results']) / float(d['ps'])))
+        if int(d['total_results']) > 10_000:
+            d['total_pages'] = int(math.ceil(float(10_000 / d['ps'])))
+        else:
+            d['total_pages'] = int(math.ceil(float(d['total_results']) / float(d['ps'])))
+
         if d['p'] > d['total_pages']:
             d['p'] = d['total_pages']
         d['p'] = max(d['p'], 1)
