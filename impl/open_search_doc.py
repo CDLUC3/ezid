@@ -33,8 +33,8 @@ INDEXED_PREFIX_LENGTH = 50
 """
 -- basic testing -- in "python manage.py shell"
 from impl.open_search_doc import OpenSearchDoc
-from ezidapp.models.identifier import Identifier
-open_s = OpenSearchDoc(identifier=Identifier.objects.get(identifier='doi:10.25338/B8JG7X'))
+from ezidapp.models.identifier import SearchIdentifier
+open_s = OpenSearchDoc(identifier=SearchIdentifier.objects.get(identifier='doi:10.25338/B8JG7X'))
 my_dict = open_s.dict_for_identifier()
 open_s.index_document()
 """
