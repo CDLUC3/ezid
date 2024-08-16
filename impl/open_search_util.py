@@ -377,8 +377,11 @@ def words_to_must_and_should(the_string):
         elif word == "AND":
             continue  # ignore AND since it's the default. We don't need to search on it
         elif word == "OR" and last_word != '':
-            # move the previous word from the must_words list to the should_words list
-            should_words.append(must_words.pop())
+            # move the previous word from the must_words list to the should_words list if it has been ORed
+            if last_word in must_words:
+                must_words.remove(last_word)
+            if last_word not in should_words:
+                should_words.append(last_word)
         else:
             must_words.append(word)
         last_word = word
