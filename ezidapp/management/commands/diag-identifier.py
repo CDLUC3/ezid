@@ -199,28 +199,6 @@ class Command(django.core.management.BaseCommand):
             help="Ending date for metrics"
         )
 
-        _syncmeta = subparsers.add_parser(
-            "syncmeta",
-            help=("Sends metadata to N2T for each row text file source. Rows starting with space or '#' are ignored.\n"
-                  "Example:\n"
-                  "  ./manage.py diag-identifier syncmeta -f pid_list.txt"
-                  )
-        )
-        _syncmeta.add_argument(
-            '-f',
-            '--from',
-            type=str,
-            help="Text file with one identifier per line.",
-            required=True
-        )
-        _syncmeta.add_argument(
-            '-s',
-            '--start',
-            type=str,
-            help="Identifier in list to start from",
-            default=None
-        )
-
 
     def diff_n2t(self, identifier:ezidapp.models.identifier)->dict:
         res = {}
@@ -240,52 +218,6 @@ class Command(django.core.management.BaseCommand):
             else:
                 res[k][1] = v
         return res
-
-
-    def prepare_n2t_metadata(self, identifier:ezidapp.models.identifier, n2t_meta:typing.Optional[dict]=None)->dict:
-        '''Prepare metadata for sending to N2T
-
-        Returns a dictionary of metadata for identifier that can be sent to
-        N2T using impl.noid_egg.setElements(identifier.identifier, m) to
-        set or update the N2T entry for identifier.
-
-        Metadata is sent to N2T for all states except Reserved DOIs, for which N2T is generally null.
-        '''
-        _legacy = identifier.toLegacy()
-        # See proc_binder.update
-        if n2t_meta is None:
-            # Retrieve the existing metadata from N2T
-            n2t_meta = impl.noid_egg.getElements(identifier.identifier)
-        # if no metadata on N2T then initialize a blank for population.
-        if n2t_meta is None:
-            n2t_meta = {}
-
-        if identifier.isReserved:
-            #special case - reserved  - do nothing
-            log.info("Reserved DOIs have null N2T metadata.")
-            # To delete metadata on N2T, send keys with empty values, but we don't want to
-            # delete all the keys since that has the effect of deleting the identifier from N2T.
-            #for k in n2t_meta:
-            #    n2t_meta[k] = ""
-            #return n2t_meta
-            return {}
-
-        # First, update m with provided metadata
-        for k, v in list(_legacy.items()):
-            # If the provided metadata matches existing, then ignore
-            if n2t_meta.get(k) == v:
-                del n2t_meta[k]
-            # Otherwise add property to list for sending back to N2T
-            else:
-                n2t_meta[k] = v
-        # If properties retrieved from N2T are not present in the supplied
-        # update metadata, then set the value of the field to an empty string.
-        # An empty value results in an "rm" (remove) operation for that field
-        # being sent to N2T.
-        for k in list(n2t_meta.keys()):
-            if k not in _legacy:
-                n2t_meta[k] = ""
-        return n2t_meta
 
 
     def handle_show(self, *args, **opts):
@@ -340,31 +272,6 @@ class Command(django.core.management.BaseCommand):
                     entry["cm_eq_metadata"] = _mequal
                 except zlib.error:
                     log.info("No cm section in %s", identifier.identifier)
-            n2t_meta = None
-            if opts["N2T"]:
-                # Retrieve entry from N2T
-                n2t_meta = impl.noid_egg.getElements(identifier.identifier)
-                entry["n2t"] = n2t_meta
-            if opts["sync"]:
-                _legacy = identifier.toLegacy()
-                # See proc_binder.update
-                # Retrieve the existing metadata from N2T
-                m = self.prepare_n2t_metadata(identifier, n2t_meta)
-                if len(m) > 0:
-                    log.warning("Updating N2T metadata for %s", identifier.identifier)
-                    log.info("Pending updates for %s:\n%s", identifier.identifier, m)
-                    self.stdout.write(f"About to update {identifier.identifier} !")
-                    response = input("Enter Y to continue, anything else aborts: ")
-                    if response.strip() == 'Y':
-                        impl.noid_egg.setElements(identifier.identifier, m)
-                        ##
-                        # Retrieve the updated metadata and add to the entry
-                        entry["n2t_updated"] = impl.noid_egg.getElements(identifier.identifier)
-                    else:
-                        self.stdout.write("Aborted.")
-                else:
-                    log.info("No pending updates for %s", identifier.identifier)
-
             entries.append(entry)
         self.stdout.write(json.dumps(entries, indent=2, sort_keys=True))
 
@@ -476,69 +383,6 @@ class Command(django.core.management.BaseCommand):
             for row in cursor.fetchall():
                 writer.writerow(row)
 
-
-    def handle_syncmeta(self, *args, **opts):
-        '''For each line in `from`:
-        update metadata
-        '''
-        fn_src = opts.get('from')
-        fn_dst = fn_src + ".json"
-        start_at = opts.get("start", None)
-        log.info("Recording changes to %s", fn_dst)
-        identifiers = []
-        add_id = True
-        if start_at is not None:
-            add_id = False
-            start_at = start_at.strip()
-        with open(fn_src) as _src:
-            for row in _src:
-                if row.startswith('ark:') or row.startswith('doi:'):
-                    if not add_id:
-                        if row.strip() == start_at:
-                            add_id = True
-                    if add_id:
-                        identifiers.append(row.strip())
-        log.info("Loaded %s identifiers from %s", len(identifiers), fn_src)
-        log.info("Loading status...")
-        with open(fn_dst, 'a') as f_dest:
-            for pid in identifiers:
-                self.stdout.write(pid)
-                result = {'pid':pid, 'original': {}, 'change': {}, 'updated':{}}
-                identifier = ezidapp.models.identifier.SearchIdentifier.objects.get(identifier=pid)
-                if identifier is None:
-                    log.error('Identifier %s could not be loaded!', pid)
-                    break
-                if identifier.isDatacite:
-                    # handle datacite target url
-                    doi = identifier.identifier[4:]
-                    datacenter = str(identifier.datacenter)
-                    log.info("Setting target for %s (%s) to %s", doi, datacenter, identifier.resolverTarget)
-                    r = impl.datacite.setTargetUrl(doi, identifier.resolverTarget, datacenter)
-                    if r is not None:
-                        # There was a failure in the request
-                        log.error("Failed to set target url for DataCite DOI: %s", doi)
-                    pass
-                elif identifier.isCrossref:
-                    # handle crossref target url
-                    pass
-                result['original'] = impl.noid_egg.getElements(identifier.identifier)
-                n2t_meta = copy.deepcopy(result['original'])
-                result['change'] = self.prepare_n2t_metadata(identifier, n2t_meta=n2t_meta)
-                self.stdout.write(json.dumps(result['change']))
-                if result['change'] != {}:
-                    # Send update request
-                    impl.noid_egg.setElements(identifier.identifier, result['change'])
-                    # Retrieve the updated n2t meta
-                    result['updated'] = impl.noid_egg.getElements(identifier.identifier)
-                else:
-                    # no change
-                    result['updated'] = result['original']
-                f_dest.write(json.dumps(result))
-                f_dest.write("\n")
-                f_dest.flush()
-
-
-
     def handle(self, *args, **opts):
         operation = opts['operation']
         if operation == 'show':
@@ -552,7 +396,5 @@ class Command(django.core.management.BaseCommand):
             self.handle_resolve(*args, **opts)
         elif operation == 'metrics':
             self.handle_metrics(*args, **opts)
-        elif operation =='syncmeta':
-            self.handle_syncmeta(*args, **opts)
 
 
