@@ -102,7 +102,6 @@ import impl.anvl
 import impl.datacite
 import impl.download
 import impl.ezid
-import impl.noid_egg
 import impl.resolver
 import impl.search_util
 import impl.statistics
@@ -427,9 +426,7 @@ def getStatus(request):
         if l == "*":
             l = "binder,datacite,search"
         for ss in [ss.strip() for ss in l.split(",") if len(ss.strip()) > 0]:
-            if ss == "binder":
-                body += f"binder: {impl.noid_egg.ping()}\n"
-            elif ss == "datacite":
+            if ss == "datacite":
                 body += f"datacite: {impl.datacite.ping()}\n"
             elif ss == "search":
                 body += f"search: {impl.search_util.ping()}\n"

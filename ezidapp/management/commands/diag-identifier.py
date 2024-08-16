@@ -9,8 +9,6 @@ of an identifier.
 This command does not alter any information in the database, and should be safe to run
 at any time, including a running production instance.
 
-Note however, that this command MAY alter the information in N2T when the --sync option
-is used. Confirmation is requested before any metadata updates are propagated to N2T.
 """
 
 import argparse
@@ -36,7 +34,6 @@ import ezidapp.models.group
 import ezidapp.models.identifier
 import ezidapp.models.user
 import impl.datacite
-import impl.noid_egg
 
 log = logging.getLogger(__name__)
 
@@ -67,7 +64,7 @@ class Command(django.core.management.BaseCommand):
 
         _show = subparsers.add_parser(
             "show",
-            help=("Show available metadata for an identifier, and optionally sync the N2T record.\n"
+            help=("Show available metadata for an identifier.\n"
                   "Example:\n"
                   "  Default:\n"
                   "    ./manage.py diag-identifier show ark:/62930/d1n739\n")
@@ -83,12 +80,6 @@ class Command(django.core.management.BaseCommand):
             '--identifier',
             action='store_true',
             help='Show Identifier instead of SearchIdentifier table entry',
-        )
-        _show.add_argument(
-            '-y',
-            '--legacy',
-            action='store_true',
-            help='Show legacy form of identifier record',
         )
         _show.add_argument(
             '-m',
@@ -107,17 +98,6 @@ class Command(django.core.management.BaseCommand):
             '--times',
             action='store_true',
             help='Convert timestamps to textual time representation',
-        )
-        _show.add_argument(
-            '-N',
-            '--N2T',
-            action='store_true',
-            help='Retrieve record from N2T if available',
-        )
-        _show.add_argument(
-            '--sync',
-            action='store_true',
-            help="Synchronize the N2T entry with metadata from the database.",
         )
 
         _list = subparsers.add_parser(
@@ -153,11 +133,6 @@ class Command(django.core.management.BaseCommand):
             action=SplitArgs,
             default=[],
             help="Comma separated list of fields in addition to identifier to list."
-        )
-        _list.add_argument(
-            '--compare',
-            action='store_true',
-            help='Show difference between EZID and N2T metadata.',
         )
         _list.add_argument(
             '-m',
@@ -199,27 +174,6 @@ class Command(django.core.management.BaseCommand):
             help="Ending date for metrics"
         )
 
-
-    def diff_n2t(self, identifier:ezidapp.models.identifier)->dict:
-        res = {}
-        n2t_meta = impl.noid_egg.getElements(identifier.identifier)
-        if n2t_meta is None:
-            n2t_meta = {}
-        _legacy = identifier.toLegacy()
-        for k, v in _legacy.items():
-            res[k] = [v, None]
-        # If properties retrieved from N2T are not present in the supplied
-        # update metadata, then set the value of the field to an empty string.
-        # An empty value results in an "rm" (remove) operation for that field
-        # being sent to N2T.
-        for k, v in n2t_meta.items():
-            if k not in res:
-                res[k] = [None, v]
-            else:
-                res[k][1] = v
-        return res
-
-
     def handle_show(self, *args, **opts):
         def jsonable_instance(o):
             if o is None:
@@ -250,9 +204,6 @@ class Command(django.core.management.BaseCommand):
             # but we want to futz around with the cm section and other fields for each instance.
             entry = jsonable_instance(identifier)
             entry["isAgentPid"] = identifier.isAgentPid
-            if opts["legacy"]:
-                # Get the "legacy" format, which is used for sending to N2T binder
-                entry["legacy"] = identifier.toLegacy()
             if opts["expanded"]:
                 for field_name in expand_fields:
                     entry["fields"][field_name] = jsonable_instance(getattr(identifier, field_name))
@@ -329,14 +280,10 @@ class Command(django.core.management.BaseCommand):
             identifier_class = ezidapp.models.identifier.Identifier
         identifiers = identifier_class.objects.filter(**_filter).order_by("-createTime")[:max_rows]
         dfields = _fields
-        if opts.get("compare", False):
-            dfields.append('n2t')
         writer = csv.DictWriter(self.stdout, dfields, dialect='excel')
         writer.writeheader()
         for identifier in identifiers:
             row = django.forms.models.model_to_dict(identifier, fields=_fields)
-            if opts.get('compare', False):
-                row['n2t'] = self.diff_n2t(identifier)
             writer.writerow(row)
 
 
