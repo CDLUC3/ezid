@@ -63,7 +63,7 @@ class OpenSearchDoc:
 
     # convenience method to index a document from an identifier
     @staticmethod
-    def index_from_from_identifier(identifier):
+    def index_from_identifier(identifier):
         open_s = OpenSearchDoc(identifier=identifier)
         return open_s.index_document()
 

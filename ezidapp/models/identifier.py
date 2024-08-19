@@ -1147,15 +1147,6 @@ class SearchIdentifier(IdentifierBase):
 
 class Identifier(IdentifierBase):
 
-    @property
-    def search_identifier(self):
-        try:
-            search_ident = ezidapp.models.identifier.SearchIdentifier.objects.get(identifier=self.identifier)
-        except ezidapp.models.identifier.SearchIdentifier.DoesNotExist:
-            search_ident = None
-        return search_ident
-
-
     class Meta:
         indexes = [
             django.db.models.Index(fields=['createTime']),
