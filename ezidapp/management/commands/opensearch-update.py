@@ -3,7 +3,6 @@ from django.conf import settings
 from ezidapp.models.identifier import SearchIdentifier
 from impl.open_search_doc import OpenSearchDoc
 import json
-import requests
 import datetime
 import impl.open_search_schema as oss
 from django.db.models import Q
@@ -114,25 +113,15 @@ class Command(BaseCommand):
 
     @staticmethod
     def _do_bulk_update(string_parts: list) -> bool:
-        # The URL for the OpenSearch endpoint
-        url = f'{settings.OPENSEARCH_BASE}/_bulk'
-        # Convert the dictionary into a JSON string
         json_string = "\n".join(string_parts) + "\n"  # must have a trailing newline
-        # Send POST request
-        response = requests.post(url,
-                                 data=json_string,
-                                 headers={'Content-Type': 'application/json'},
-                                 auth=(settings.OPENSEARCH_USER, settings.OPENSEARCH_PASSWORD),
-                                 verify=False)
 
-        # the response may have "errors": true if there are issues and has an items array with the errors
-        # the array has a dict with "status" (success in the 200s) and "error" (the error dict)
+        response = OpenSearchDoc.CLIENT.bulk(body=json_string)
 
         # Check the response
-        if response.status_code == 200:
-            return True
-        else:
+        if response['errors']:
             return False
+        else:
+            return True
 
 
 
