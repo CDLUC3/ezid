@@ -123,6 +123,7 @@ class IdentifierBase(django.db.models.Model):
         on_delete=django.db.models.PROTECT,
     )
 
+
     def updateFromUntrustedLegacy(self, d, allowRestrictedSettings=False):
         """Fill out a new identifier or (partially) updates an existing
         identifier from client-supplied (i.e., untrusted) legacy
