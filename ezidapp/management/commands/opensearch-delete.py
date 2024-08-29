@@ -5,33 +5,9 @@ from impl.open_search_doc import OpenSearchDoc
 import json
 from django.db import connection
 
-
-
-# this is only for the time being since I'm using a local server without correct SSL/https
-import urllib3
-from urllib3.exceptions import InsecureRequestWarning
-
-# Disable only the InsecureRequestWarning
-urllib3.disable_warnings(InsecureRequestWarning)
-# end suppression of urllib3 InsecureRequestWarning
-
 SPLIT_SIZE = 100
 
-# run: python manage.py opensearch-update
-# optional parameters: --starting_id 1234 --updated_since 2023-10-10T00:00:00Z
-# --starting_id is the primary key ID to start populating from (good for resuming after a crash while populating all)
-# --updated_since is a date in ISO 8601 format (YYYY-MM-DDTHH:MM:SS) to filter by updated time
-# it allows you to only populate items updated after a certain date/time, which should make the population much faster
-# because no need to repopulate all items for the entire history.
-
-# Even if items are already up-to-date, it doesn't hurt to repopulate them since it just updates from the
-# copy of record which is the database values. OpenSearach values are derived for search and display purposes.
-
-# NOTE: This script will need revision if the SearchIdentifier model is ever removed from EZID since it relies on the
-# SearchIdentifier update time to determine what to update in OpenSearch.  It could be modified to use the
-# Identifier update time instead, but that might be a different time that does not take into account the link checker
-# which is updates in the SearchIdentifier table and doesn't update the Identifier table.
-
+# run: python manage.py opensearch-delete
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
