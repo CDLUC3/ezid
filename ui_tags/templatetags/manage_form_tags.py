@@ -239,7 +239,13 @@ def pager_display(request, current_page, total_pages, page_size, select_position
     if total_pages < 2:
         return ''
     p_out = ''
-    s_total = str(total_pages)
+    # only show 10,000 results since that is all opensearch will give in a reasonable configuration
+    if total_pages * page_size > 10_000:
+        mod_total_pages = int(10_000 / page_size)
+        s_total = str(mod_total_pages)
+    else:
+        mod_total_pages = total_pages
+        s_total = str(total_pages)
     empty = ''
     if current_page > 1:
         p_out += (
@@ -278,7 +284,7 @@ def pager_display(request, current_page, total_pages, page_size, select_position
         + s_total
         + " "
     )
-    if current_page < total_pages:
+    if current_page < mod_total_pages:
         p_out += (
             page_link(
                 request,

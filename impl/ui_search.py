@@ -5,18 +5,20 @@ import locale
 import math
 import operator
 import re
+from datetime import datetime
 import urllib.error
 import urllib.parse
 import urllib.request
 import urllib.response
 
+from ezidapp.models.identifier import Identifier
+
 import django.conf
 import django.contrib.messages
 from django.utils.translation import gettext as _
 
-import ezidapp.models.identifier
 import impl.form_objects
-import impl.search_util
+import impl.open_search_util
 import impl.ui_common
 import impl.userauth
 import impl.util
@@ -194,7 +196,7 @@ def hasBrokenLinks(d, request):
     c = _buildAuthorityConstraints(request, "issues", user_id, group_id)
     c['hasIssues'] = True
     c['linkIsBroken'] = True
-    return impl.search_util.executeSearch(
+    return impl.open_search_util.executeSearch(
         impl.userauth.getUser(request, returnAnonymous=True), c, 0, 1
     )
 
@@ -263,16 +265,20 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
             c['crossref'] = True
             # noinspection PyTypeChecker
             c['crossrefStatus'] = [
-                ezidapp.models.identifier.Identifier.CR_RESERVED,
-                ezidapp.models.identifier.Identifier.CR_WORKING,
-                ezidapp.models.identifier.Identifier.CR_WARNING,
-                ezidapp.models.identifier.Identifier.CR_FAILURE,
+                Identifier.CR_RESERVED,
+                Identifier.CR_WORKING,
+                Identifier.CR_WARNING,
+                Identifier.CR_FAILURE,
             ]
-        d['total_results'] = impl.search_util.executeSearchCountOnly(
+        d['total_results'] = impl.open_search_util.executeSearchCountOnly(
             impl.userauth.getUser(request, returnAnonymous=True), c
         )
         d['total_results_str'] = format(d['total_results'], "n")
-        d['total_pages'] = int(math.ceil(float(d['total_results']) / float(d['ps'])))
+        if int(d['total_results']) > 10_000:
+            d['total_pages'] = int(math.ceil(float(10_000 / d['ps'])))
+        else:
+            d['total_pages'] = int(math.ceil(float(d['total_results']) / float(d['ps'])))
+
         if d['p'] > d['total_pages']:
             d['p'] = d['total_pages']
         d['p'] = max(d['p'], 1)
@@ -285,54 +291,58 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
         d['results'] = []
         rec_beg = (d['p'] - 1) * d['ps']
         rec_end = d['p'] * d['ps']
-        for id_model in impl.search_util.executeSearch(
+        response = impl.open_search_util.executeSearch(
             impl.userauth.getUser(request, returnAnonymous=True),
             c,
             rec_beg,
             rec_end,
             orderColumn,
-        ):
+        )
+        for hit in response.hits:
             if s_type in ('public', 'manage'):
                 result = {
-                    "c_create_time": id_model.createTime,
-                    "c_identifier": id_model.identifier,
-                    "c_title": _truncateStr(id_model.resourceTitle),
-                    "c_creator": _truncateStr(id_model.resourceCreator),
-                    "c_owner": id_model.owner.username,
-                    "c_object_type": id_model.resourceType,
-                    "c_publisher": _truncateStr(id_model.resourcePublisher),
-                    "c_pubyear": _truncateStr(id_model.resourcePublicationDate),
-                    "c_id_status": id_model.get_status_display(),
-                    "c_update_time": id_model.updateTime,
+                    "c_create_time": datetime.fromisoformat(hit['create_time']).timestamp(),
+                    "c_identifier": hit['id'],
+                    "c_title": _truncateStr(hit['resource']['title']),
+                    "c_creator": _truncateStr('; '.join(hit['resource']['creators'])),
+                    "c_owner": hit['owner']['username'],
+                    "c_object_type": hit['resource']['type'],
+                    "c_publisher": _truncateStr(hit['resource']['publisher']),
+                    "c_pubyear": _truncateStr(hit['resource']['publication_date']),
+                    "c_id_status": impl.open_search_util.friendly_status(hit),
+                    "c_update_time": datetime.fromisoformat(hit['update_time']).timestamp()
                 }
-                if id_model.isUnavailable and id_model.unavailableReason != "":
-                    result["c_id_status"] += " | " + id_model.unavailableReason
+                if hit['status'] == Identifier.UNAVAILABLE and hit['unavailable_reason'] != "":
+                    result["c_id_status"] += " | " + hit['unavailable_reason']
             elif s_type == 'issues':
                 result = {
-                    "c_identifier": id_model.identifier,
+                    "c_identifier": hit['id'],
                     "c_id_issue": "",
-                    "c_title": _truncateStr(id_model.resourceTitle),
-                    "c_update_time": id_model.updateTime,
+                    "c_title": _truncateStr(hit['resource']['title']),
+                    "c_update_time": datetime.fromisoformat(hit['update_time']).timestamp(),
                 }
-                ir = id_model.issueReasons()
+                ir = impl.open_search_util.issue_reasons(hit)
                 if ir:
                     result["c_id_issue"] += "; ".join(ir)
             elif s_type == 'crossref':
+                cr_date = datetime.fromisoformat(hit['create_time']).timestamp() if hit['create_time'] \
+                    else datetime.now().timestamp()
                 result = {
-                    "c_identifier": id_model.identifier,
-                    "c_crossref_date": id_model.createTime,
-                    "c_crossref_descr": id_model.get_crossrefStatus_display(),
+                    "c_identifier": hit['id'],
+                    "c_crossref_date": cr_date,
+                    "c_crossref_descr": hit['crossref_status']
                 }
-                if id_model.isCrossrefGood and id_model.crossrefStatus in [
-                    id_model.CR_WORKING,
-                    id_model.CR_RESERVED,
+                if impl.open_search_util.is_crossref_good(hit) and hit['crossref_status'] in [
+                    Identifier.CR_WORKING,
+                    Identifier.CR_RESERVED,
                 ]:
                     result["c_crossref_msg"] = _("No action necessary")
                 else:
-                    result["c_crossref_msg"] = id_model.crossrefMessage
+                    result["c_crossref_msg"] = hit['crossref_message']
             # noinspection PyUnboundLocalVariable
             d['results'].append(result)
         # end of result iteration loop
+
         if s_type == "public":
             rec_range = '0'
             if d['total_results'] > 0:

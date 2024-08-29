@@ -57,6 +57,11 @@ DATABASES_RECONNECT_DELAY = 60
 # we put them here to avoid any overt dependencies on MySQL.
 SEARCH_MINIMUM_WORD_LENGTH = 3
 
+OPENSEARCH_BASE = 'http://opensearch.example.com'
+OPENSEARCH_INDEX = 'ezid-test-index'
+OPENSEARCH_USER = 'test-user'
+OPENSEARCH_PASSWORD = 'test-password'
+
 # fmt:off
 SEARCH_STOPWORDS = [
     'about', 'are', 'com', 'for', 'from', 'how', 'that', 'the', 'this', 'was', 'what',
