@@ -37,8 +37,6 @@
   - name: return a single param based on ssm_root_path as variable
     ##debug: msg="{{ ssm_params['database_host'] }}"
     debug: msg="database_host {{ database_host }}"
-  - name: return binder_url
-    debug: msg="{{ binder_url }}"
   - name: return resolver_ark
     debug: msg="{{ resolver_ark }}"
 

@@ -69,7 +69,6 @@ record_crossref = {
 }
 
 queueType = {
-    'binder': ezidapp.models.async_queue.BinderQueue,
     'crossref': ezidapp.models.async_queue.CrossrefQueue,
     'datacite': ezidapp.models.async_queue.DataciteQueue,
     'search': ezidapp.models.async_queue.SearchIndexerQueue

@@ -424,7 +424,7 @@ def getStatus(request):
     if "subsystems" in options:
         l = options["subsystems"]
         if l == "*":
-            l = "binder,datacite,search"
+            l = "datacite,search"
         for ss in [ss.strip() for ss in l.split(",") if len(ss.strip()) > 0]:
             if ss == "datacite":
                 body += f"datacite: {impl.datacite.ping()}\n"
@@ -478,7 +478,6 @@ def _statusLineGenerator(includeSuccessLine):
             f"STATUS {'paused' if isPaused else 'running'} "
             f"activeOperations={sum(activeUsers.values())} "
             f"waitingRequests={sum(waitingUsers.values())} "
-            f"binderQueueLength={impl.statistics.getBinderQueueLength()} "
             f"dataciteQueueLength={impl.statistics.getDataCiteQueueLength()} "
             "\n"
         )
