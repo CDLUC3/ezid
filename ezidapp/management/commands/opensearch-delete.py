@@ -4,6 +4,7 @@ from ezidapp.models.identifier import SearchIdentifier
 from impl.open_search_doc import OpenSearchDoc
 import json
 from django.db import connection
+import time
 
 SPLIT_SIZE = 100
 
@@ -40,10 +41,7 @@ class Command(BaseCommand):
         while len(hits) > 0:
             ids = [hit['_id'] for hit in hits]
 
-            # Make a left join query which should be efficient for getting a list of items that are in the index but
-            # not in the database. MySQL makes it more complicated because it doesn't support FROM VALUES.
-
-            # Convert the list of identifiers to a string format suitable for SQL.  This UNION ALL is janky as hell
+            # Convert the list of identifiers to a string format suitable for SQL.  This UNION ALL is janky
             # but MySQL doesn't support FROM VALUES. The other option was to create a temporary table every time, but
             # that seemed like overkill.
             ids_union = ' UNION ALL '.join(f"SELECT '{identifier}' AS identifier" for identifier in ids)
@@ -81,10 +79,12 @@ class Command(BaseCommand):
 
             print("checked:", checked_count)
 
-            response = client.scroll(
-                scroll_id=scroll_id,
-                scroll='2m'
-            )
+            try:
+                response = self.scroll_with_retry(client, scroll_id)
+            except Exception as e:
+                print(e)
+                break
+
 
             scroll_id = response['_scroll_id']
             hits = response['hits']['hits']
@@ -93,3 +93,20 @@ class Command(BaseCommand):
         # Clear the scroll context
         client.clear_scroll(scroll_id=scroll_id)
         print("Done removing deleted IDs")
+
+    @staticmethod
+    def scroll_with_retry(client, scroll_id, max_retries=5, sleep_time=5):
+        for attempt in range(max_retries):
+            try:
+                response = client.scroll(
+                    scroll_id=scroll_id,
+                    scroll='2m'
+                )
+                return response
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    print(f"Scroll attempt {attempt + 1} failed, retrying in {sleep_time} seconds...")
+                    time.sleep(sleep_time)
+                else:
+                    print(f"Scroll attempt {attempt + 1} failed, no more retries.")
+                    raise e
