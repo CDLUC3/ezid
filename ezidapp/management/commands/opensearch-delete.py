@@ -105,8 +105,8 @@ class Command(BaseCommand):
                 return response
             except Exception as e:
                 if attempt < max_retries - 1:
-                    print(f"Scroll attempt {attempt + 1} failed, retrying in {sleep_time} seconds...")
+                    print(f"  Scroll attempt {attempt + 1} failed, retrying in {sleep_time} seconds...")
                     time.sleep(sleep_time)
                 else:
-                    print(f"Scroll attempt {attempt + 1} failed, no more retries.")
+                    print(f"  Scroll attempt {attempt + 1} failed, no more retries.")
                     raise e
