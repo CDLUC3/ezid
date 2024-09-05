@@ -73,9 +73,9 @@ class Command(BaseCommand):
 
                 # Check the response
                 if response['errors']:
-                    print(f"  Errors occurred during bulk delete of {missing_identifiers_list.join(', ')}")
+                    print(f"  Errors occurred during bulk delete of {', '.join(missing_identifiers_list)}")
                 else:
-                    print(f"  Bulk delete successful deleting {missing_identifiers_list.join(', ')}")
+                    print(f"  Bulk delete successful deleting {', '.join(missing_identifiers_list)}")
 
             print("checked:", checked_count)
 
