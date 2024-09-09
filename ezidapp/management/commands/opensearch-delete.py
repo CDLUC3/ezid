@@ -44,7 +44,7 @@ class Command(BaseCommand):
             # Convert the list of identifiers to a string format suitable for SQL.  This UNION ALL is janky
             # but MySQL doesn't support FROM VALUES. The other option was to create a temporary table every time, but
             # that seemed like overkill.
-            ids_union = ' UNION ALL '.join(f"SELECT '{identifier}' AS identifier" for identifier in ids)
+            ids_union = ' UNION ALL '.join(f"SELECT %s AS identifier" for _ in ids)
 
             # Raw SQL query to find identifiers in the list that are not in the database
             query = f"""
@@ -56,7 +56,7 @@ class Command(BaseCommand):
 
             # Execute the query
             with connection.cursor() as cursor:
-                cursor.execute(query)
+                cursor.execute(query, ids)
                 missing_identifiers = [row[0] for row in cursor.fetchall()]
 
             missing_identifiers_list = list(missing_identifiers)
