@@ -72,14 +72,6 @@ class ORMStats:
         # print(id_model)
         # pprint.pp(id_model.cm)
 
-        print('-' * 100)
-
-        impl.enqueue.enqueueBinderIdentifier(
-            identifier=id_model.identifier,
-            operation='update',
-            blob={'x': 'y'},
-        )
-
         # impl.nog.util.print_table(row_list, log.info)
 
     def print_all(self):

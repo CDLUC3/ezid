@@ -25,7 +25,6 @@ import impl.log
 import impl.nog_sql.filesystem
 import impl.nog_sql.shoulder
 import impl.nog_sql.util
-import impl.noid_egg
 
 APP_LABEL = 'ezidapp'
 

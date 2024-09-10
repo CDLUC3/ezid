@@ -51,9 +51,6 @@ TEMPLATE_VARS = {
     'admin_search_user_pid': 'ark:/99166/p9kw57h4w',
     'admin_search_group_pid': 'ark:/99166/p9g44hq02',
     # Misc
-    'binder_url': 'https://n2t-stg.n2t.net/a/ezid/b',
-    'binder_username': 'ezid',
-    'binder_password': '',
     'resolver_doi': 'https://doi.org',
     'resolver_ark': 'https://n2t-stg.n2t.net',
     'datacite_doi_url': 'https://mds.datacite.org/doi',

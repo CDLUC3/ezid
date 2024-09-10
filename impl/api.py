@@ -102,7 +102,6 @@ import impl.anvl
 import impl.datacite
 import impl.download
 import impl.ezid
-import impl.noid_egg
 import impl.resolver
 import impl.search_util
 import impl.statistics
@@ -425,11 +424,9 @@ def getStatus(request):
     if "subsystems" in options:
         l = options["subsystems"]
         if l == "*":
-            l = "binder,datacite,search"
+            l = "datacite,search"
         for ss in [ss.strip() for ss in l.split(",") if len(ss.strip()) > 0]:
-            if ss == "binder":
-                body += f"binder: {impl.noid_egg.ping()}\n"
-            elif ss == "datacite":
+            if ss == "datacite":
                 body += f"datacite: {impl.datacite.ping()}\n"
             elif ss == "search":
                 body += f"search: {impl.search_util.ping()}\n"
@@ -481,7 +478,6 @@ def _statusLineGenerator(includeSuccessLine):
             f"STATUS {'paused' if isPaused else 'running'} "
             f"activeOperations={sum(activeUsers.values())} "
             f"waitingRequests={sum(waitingUsers.values())} "
-            f"binderQueueLength={impl.statistics.getBinderQueueLength()} "
             f"dataciteQueueLength={impl.statistics.getDataCiteQueueLength()} "
             "\n"
         )
