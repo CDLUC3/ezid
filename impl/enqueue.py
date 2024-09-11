@@ -49,7 +49,7 @@ def enqueue(
     ref_id_model = create_ref_id_model(si_model)
 
     queue_model_list = [ezidapp.models.async_queue.SearchIndexerQueue]
-    # Do not add reserved identifiers to binder, crossref, or datacite queues
+    # Do not add reserved identifiers to crossref, or datacite queues
     # When the identifier entry is updated to not be reserved, then the various
     # external services will be called as appropriate.
     # See https://github.com/CDLUC3/ezid/blob/v2.0.6/impl/backproc.py#L117 for
@@ -58,7 +58,6 @@ def enqueue(
         if updateExternalServices:
             queue_model_list.extend(
                 (
-                    ezidapp.models.async_queue.BinderQueue,
                     ezidapp.models.async_queue.CrossrefQueue,
                     ezidapp.models.async_queue.DataciteQueue,
                 )

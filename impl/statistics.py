@@ -7,11 +7,6 @@ import django.db.models
 import ezidapp.models.async_queue
 
 
-def getBinderQueueLength():
-    """Return the length of the binder queue."""
-    return ezidapp.models.async_queue.BinderQueue.objects.count()
-
-
 def getDataCiteQueueLength():
     """Return the length of the DataCite queue."""
     return ezidapp.models.async_queue.DataciteQueue.objects.count()
