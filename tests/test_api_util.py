@@ -13,7 +13,13 @@ def factory():
 @pytest.mark.parametrize("val,expected",[
     ('text/plain', True),
     ('text/plain; charset=utf-8', True),
+    ('text/plain; charset=UTF-8', True),
+    ('TEXT/PLAIN; charset=utf-8', False),
     ('text/plain; charset=US-ASCII', False),
+    ('; charset=utf-8', True),      # mimetype=''
+    ('; charset=US-ASCII', False),  # mimetype=''
+    ('charset=utf-8', False),
+    ('charset=US-ASCII', False),
     ('text/html', False),
     ('text/xml; charset=utf-8', False),
     ('application/json', False),
