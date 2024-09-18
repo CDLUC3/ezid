@@ -180,6 +180,7 @@ def _computeTotals(table):
     return totals
 
 
+@impl.ui_common.user_login_required
 def csvStats(request):
     """Return all statistics to which a user is entitled as a CSV file
     'requestor' is the user, and should be a User object. The statistics
