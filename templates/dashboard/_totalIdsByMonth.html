@@ -5,6 +5,7 @@
   <div class="dashboard__month-range">
     <div class="fcontrol__select-group-inline">
       <form id="month_from_form" action="/dashboard" role="form">
+      <input name="owner_selected" type="hidden" value="{{ owner_selected|default_if_none:'' }}"/>
       <input name="month_to" type="hidden" value="{{month_to}}"/>
       <label for="month_from" class="fcontrol__select-label-hidden">{% trans "Month From" %}</label>
       <select id="month_from" name="month_from" class="fcontrol__select">
@@ -19,6 +20,7 @@
       </form>
       &nbsp;&nbsp;to&nbsp;&nbsp;
       <form id="month_to_form" action="/dashboard" role="form">
+      <input name="owner_selected" type="hidden" value="{{ owner_selected|default_if_none:'' }}"/>
       <input name="month_from" type="hidden" value="{{month_from}}"/>
       <label for="month_to" class="fcontrol__select-label-hidden">{% trans "Month To" %}</label>
       <select id="month_to" name="month_to" class="fcontrol__select">
