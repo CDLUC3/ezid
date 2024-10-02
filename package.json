@@ -13,7 +13,7 @@
   "author": "CDLUC3",
   "license": "MIT",
   "devDependencies": {
-    "browser-sync": "^3.0.3",
+    "browser-sync": "^3.0.2",
     "browsersync-ssi": "^0.2.4",
     "del": "^6.1.1",
     "gulp": "^4.0.2",
