@@ -97,21 +97,15 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                                 si2 = ezidapp.models.identifier.SearchIdentifier.objects.get(
                                     identifier=si.identifier
                                 )
-                                # get before values for OpenSearchDoc for link/issues
-                                before_link_is_broken = si2.linkIsBroken
-                                before_has_issues = si2.hasIssues
-
                                 si2.linkIsBroken = newValue
                                 si2.computeHasIssues()
 
-                                # only update if the record is "dirty" and the values have changed
-                                if before_link_is_broken != si2.linkIsBroken or before_has_issues != si2.hasIssues:
-                                    si2.updateTime = int(time.time())
-                                    si2.save(update_fields=["updateTime", "linkIsBroken", "hasIssues"])
-                                    open_s = OpenSearchDoc(identifier=si2)
-                                    open_s.update_link_issues(link_is_broken=si2.linkIsBroken,
-                                                              has_issues=si2.hasIssues,
-                                                              update_time=si2.updateTime)
+                                si2.updateTime = int(time.time())
+                                si2.save(update_fields=["updateTime", "linkIsBroken", "hasIssues"])
+                                open_s = OpenSearchDoc(identifier=si2)
+                                open_s.update_link_issues(link_is_broken=si2.linkIsBroken,
+                                                          has_issues=si2.hasIssues,
+                                                          update_time=si2.updateTime)
                         except ezidapp.models.identifier.SearchIdentifier.DoesNotExist:
                             log.exception('SearchIdentifier.DoesNotExist')
                         except opensearchpy.exceptions.OpenSearchException as e:
