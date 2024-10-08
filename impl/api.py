@@ -83,7 +83,6 @@ Identifier inflection (introspection):
 """
 import os
 import ast
-import cgi
 import datetime
 import json
 import logging
@@ -144,10 +143,21 @@ def _readInput(request):
 
 def is_text_plain_utf8(request):
     content_type = request.META.get('CONTENT_TYPE', '')
-    mimetype, options = cgi.parse_header(content_type)
+    mimetype = None
+    charset = None
+    if ';' in content_type:
+        [mimetype, charset] = content_type.split(';')
+        mimetype = mimetype.strip()
+        charset = charset.split('=')[1].strip()
+    else:
+        mimetype = content_type.strip()
+
+    print(mimetype)
+    print(charset)
+
     if mimetype not in ('text/plain', ''):
         return False
-    if options.get('charset', 'utf-8').lower() != 'utf-8':
+    if charset is not None and charset.lower() != 'utf-8':
         return False
     return True
 
