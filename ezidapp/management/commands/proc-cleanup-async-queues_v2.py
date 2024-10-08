@@ -116,8 +116,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             log.info(f"Checking ref Ids returned: {len(refIdsQS)} records")
 
             if not refIdsQS:
-                self.sleep(django.conf.settings.DAEMONS_LONG_SLEEP)
-                continue
+            #    self.sleep(django.conf.settings.DAEMONS_LONG_SLEEP)
+            #    continue
+                exit()
 
             # iterate over query set to check each identifier status
             for refId in refIdsQS:
