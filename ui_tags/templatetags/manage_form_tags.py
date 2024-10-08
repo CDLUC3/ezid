@@ -32,7 +32,7 @@ def column_choices(field_order, fields_mapped, fields_selected):
 
 def make_check_tag(item, friendly_names, selected):
     if item in selected:
-        checked_str = " checked='checked' "
+        checked_str = " checked='checked'"
     else:
         checked_str = ""
     return (
@@ -42,7 +42,7 @@ def make_check_tag(item, friendly_names, selected):
         + django.utils.html.escape(item)
         + "' value='t'"
         + checked_str
-        + " \> "
+        + " /> "
         + "<label for='"
         + django.utils.html.escape(item)
         + "'>"
