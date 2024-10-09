@@ -272,7 +272,7 @@ def test_update_link_issues(mock_client, open_search_doc):
     mock_client.update.return_value = mock_response
 
     # Act
-    result = open_search_doc.update_link_issues(link_is_broken=True, has_issues=True)
+    result = open_search_doc.update_link_issues(link_is_broken=True, has_issues=True, update_time=1727984570)
 
     # Assert
     mock_client.update.assert_called_once_with(
@@ -282,7 +282,8 @@ def test_update_link_issues(mock_client, open_search_doc):
             'open_search_updated': ANY,  # Use unittest.mock.ANY if the exact value doesn't matter
             'update_time': ANY,
             'link_is_broken': True,
-            'has_issues': True
+            'has_issues': True,
+            'update_time': '2024-10-03T19:42:50'
         }}
     )
     assert result is True
