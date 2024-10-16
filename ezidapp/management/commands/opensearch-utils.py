@@ -137,6 +137,7 @@ class Command(BaseCommand):
         print(f'Index {index} deleted successfully.')
 
 
+    # this method will create an alias for an index or update the target index for an alias if it already exists
     @staticmethod
     def create_alias(index, alias, **options):
         # Check if the destination index exists
