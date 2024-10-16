@@ -305,7 +305,7 @@ OPEN_SEARCH_SCHEMA = {
 client = OpenSearchDoc.CLIENT
 
 
-def create_index():
+def create_index(index_name=settings.OPENSEARCH_INDEX):
     body = {
         "settings": {
             "number_of_shards": 3,
@@ -313,8 +313,8 @@ def create_index():
         },
         "mappings": OPEN_SEARCH_SCHEMA["mappings"]
     }
-    client.indices.create(index=settings.OPENSEARCH_INDEX, body=body)
+    client.indices.create(index=index_name, body=body)
 
 
-def index_exists():
-    return OpenSearchDoc.index_exists()
+def index_exists(index_name=settings.OPENSEARCH_INDEX):
+    return OpenSearchDoc.index_exists(index_name=index_name)

@@ -374,8 +374,8 @@ class OpenSearchDoc:
         return "ark"
 
     @classmethod
-    def index_exists(cls):
-        return OpenSearchDoc.CLIENT.indices.exists(index=settings.OPENSEARCH_INDEX)
+    def index_exists(cls, index_name=settings.OPENSEARCH_INDEX):
+        return OpenSearchDoc.CLIENT.indices.exists(index=index_name)
 
     def index_document(self):
         os_doc = self.dict_for_identifier()
