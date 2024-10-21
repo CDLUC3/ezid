@@ -131,7 +131,6 @@ if DAEMONS_ENABLED == 'auto':
 # - True: The daemon is available to be started.
 # - False: The daemon cannot run.
 # - See the DAEMONS_ENABLED setting above.
-DAEMONS_BINDER_ENABLED = True
 DAEMONS_QUEUE_CLEANUP_ENABLED = True
 DAEMONS_CROSSREF_ENABLED = True
 DAEMONS_DATACITE_ENABLED = True
@@ -435,12 +434,6 @@ S3_BUCKET_DOWNLOAD_PATH = 'download'
 GZIP_COMMAND = '/usr/bin/gzip'
 ZIP_COMMAND = '/usr/bin/zip'
 
-BINDER_URL = '{{ binder_url }}'
-BINDER_USERNAME = '{{ binder_username }}'
-BINDER_PASSWORD = '{{ binder_password }}'
-BINDER_NUM_ATTEMPTS = 3
-BINDER_REATTEMPT_DELAY = 5
-
 # The ARK resolvers correspond to the above binders.
 RESOLVER_DOI = '{{ resolver_doi }}'
 RESOLVER_ARK = '{{ resolver_ark }}'
@@ -549,7 +542,7 @@ CLOUDWATCH_INSTANCE_NAME = '{{ cloudwatch_instance_name  }}'
 LINKCHECKER_TABLE_UPDATE_CYCLE = 604800
 # The converse, how often link checker results are incorporated back into the main EZID
 # tables.
-LINKCHECKER_RESULTS_UPLOAD_CYCLE = 3600
+LINKCHECKER_RESULTS_UPLOAD_CYCLE = 64800
 # If 'RESULTS_UPLOAD_SAME_TIME_OF_DAY' is True, then link checker results are
 # incorporated back once a day, and 'RESULTS_UPLOAD_CYCLE' is interpreted as an offset
 # from midnight. 'GOOD_RECHECK_MIN_INTERVAL' is the minimum elapsed time between

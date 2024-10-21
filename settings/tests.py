@@ -133,7 +133,6 @@ if DAEMONS_ENABLED == 'auto':
 # - True: The daemon is available to be started.
 # - False: The daemon cannot run.
 # - See the DAEMONS_ENABLED setting above.
-DAEMONS_BINDER_ENABLED = True
 DAEMONS_CROSSREF_ENABLED = True
 DAEMONS_DATACITE_ENABLED = True
 DAEMONS_DOWNLOAD_ENABLED = True
@@ -394,12 +393,6 @@ S3_BUCKET_DOWNLOAD_PATH = 'download'
 GZIP_COMMAND = '/usr/bin/gzip'
 ZIP_COMMAND = '/usr/bin/zip'
 
-BINDER_URL = 'https://n2t-stg.n2t.net/a/ezid/b'
-BINDER_USERNAME = 'ezid'
-BINDER_PASSWORD = ''
-BINDER_NUM_ATTEMPTS = 3
-BINDER_REATTEMPT_DELAY = 5
-
 # The ARK resolvers correspond to the above binders.
 RESOLVER_DOI = 'https://doi.org'
 RESOLVER_ARK = 'https://n2t-stg.n2t.net'
@@ -508,7 +501,7 @@ CLOUDWATCH_INSTANCE_NAME = 'uc3-ezidx2-dev'
 LINKCHECKER_TABLE_UPDATE_CYCLE = 604800
 # The converse, how often link checker results are incorporated back into the main EZID
 # tables.
-LINKCHECKER_RESULTS_UPLOAD_CYCLE = 3600
+LINKCHECKER_RESULTS_UPLOAD_CYCLE = 64800
 # If 'RESULTS_UPLOAD_SAME_TIME_OF_DAY' is True, then link checker results are
 # incorporated back once a day, and 'RESULTS_UPLOAD_CYCLE' is interpreted as an offset
 # from midnight. 'GOOD_RECHECK_MIN_INTERVAL' is the minimum elapsed time between

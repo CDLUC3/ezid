@@ -83,7 +83,6 @@ Identifier inflection (introspection):
 """
 import os
 import ast
-import cgi
 import datetime
 import json
 import logging
@@ -102,7 +101,6 @@ import impl.anvl
 import impl.datacite
 import impl.download
 import impl.ezid
-import impl.noid_egg
 import impl.resolver
 import impl.search_util
 import impl.statistics
@@ -145,10 +143,21 @@ def _readInput(request):
 
 def is_text_plain_utf8(request):
     content_type = request.META.get('CONTENT_TYPE', '')
-    mimetype, options = cgi.parse_header(content_type)
+    mimetype = None
+    charset = None
+    if ';' in content_type:
+        [mimetype, charset] = content_type.split(';')
+        mimetype = mimetype.strip()
+        charset = charset.split('=')[1].strip()
+    else:
+        mimetype = content_type.strip()
+
+    print(mimetype)
+    print(charset)
+
     if mimetype not in ('text/plain', ''):
         return False
-    if options.get('charset', 'utf-8').lower() != 'utf-8':
+    if charset is not None and charset.lower() != 'utf-8':
         return False
     return True
 
@@ -425,11 +434,9 @@ def getStatus(request):
     if "subsystems" in options:
         l = options["subsystems"]
         if l == "*":
-            l = "binder,datacite,search"
+            l = "datacite,search"
         for ss in [ss.strip() for ss in l.split(",") if len(ss.strip()) > 0]:
-            if ss == "binder":
-                body += f"binder: {impl.noid_egg.ping()}\n"
-            elif ss == "datacite":
+            if ss == "datacite":
                 body += f"datacite: {impl.datacite.ping()}\n"
             elif ss == "search":
                 body += f"search: {impl.search_util.ping()}\n"
@@ -481,7 +488,6 @@ def _statusLineGenerator(includeSuccessLine):
             f"STATUS {'paused' if isPaused else 'running'} "
             f"activeOperations={sum(activeUsers.values())} "
             f"waitingRequests={sum(waitingUsers.values())} "
-            f"binderQueueLength={impl.statistics.getBinderQueueLength()} "
             f"dataciteQueueLength={impl.statistics.getDataCiteQueueLength()} "
             "\n"
         )
