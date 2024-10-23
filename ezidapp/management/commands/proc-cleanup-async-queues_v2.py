@@ -20,12 +20,13 @@ from dateutil.parser import parse
 
 import django.conf
 import django.db
-import django.db.transaction
+from django.db import transaction
+from django.db.models import Q
 
 import ezidapp.management.commands.proc_base
 import ezidapp.models.identifier
 import ezidapp.models.shoulder
-from django.db.models import Q
+
 
 log = logging.getLogger(__name__)
 
@@ -163,7 +164,11 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                         "Delete identifier: " + refId.identifier + " from refIdentifier table.")
                     self.deleteRecord(self.refIdentifier, refId.pk, record_type='refId', identifier=refId.identifier)
 
-            self.sleep(django.conf.settings.DAEMONS_BATCH_SLEEP)
+            if len(refIdsQS) < BATCH_SIZE:
+                log.info(f"Finished - Checking ref Ids: {time_range_str}")
+                exit()
+            else:
+                self.sleep(django.conf.settings.DAEMONS_BATCH_SLEEP)
 
     def deleteRecord(self, queue, primary_key, record_type=None, identifier=None):
         """
@@ -181,10 +186,14 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             if (record_type is not None and record_type == 'refId'):
                 log.info(type(queue))
                 log.info("Delete refId: " + str(primary_key))
-                queue.objects.filter(id=primary_key).delete()
+                with transaction.atomic():
+                    obj = queue.objects.select_for_update().get(id=primary_key)
+                    obj.delete()
             else:
                 log.info("Delete async entry: " + str(primary_key))
-                queue.objects.filter(seq=primary_key).delete()
+                with transaction.atomic():
+                    obj = queue.objects.select_for_update().get(seq=primary_key)
+                    obj.delete()
         except Exception as e:
             log.error("Exception occured while processing identifier '" + identifier + "' for '" +
                         record_type + "' table")
