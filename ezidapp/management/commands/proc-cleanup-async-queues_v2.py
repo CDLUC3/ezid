@@ -100,6 +100,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 log.error(f"Input date/time error: {ex}")
                 exit()
         
+        last_id = 0
+        filter = None
         # keep running until terminated
         while not self.terminated():
             if updated_from is not None and updated_to is not None:
@@ -110,16 +112,12 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 time_range = Q(updateTime__lte=max_age_ts)
                 time_range_str = f"updated before: {self.seconds_to_date(max_age_ts)}"
             
+            filter = time_range & Q(id__gt=last_id)
             # retrieve identifiers with update timestamp within a date range
-            refIdsQS = self.refIdentifier.objects.filter(time_range).order_by("pk")[: BATCH_SIZE]
+            refIdsQS = self.refIdentifier.objects.filter(filter).order_by("pk")[: BATCH_SIZE]
 
             log.info(f"Checking ref Ids: {time_range_str}")
             log.info(f"Checking ref Ids returned: {len(refIdsQS)} records")
-
-            if not refIdsQS:
-            #    self.sleep(django.conf.settings.DAEMONS_LONG_SLEEP)
-            #    continue
-                exit()
 
             # iterate over query set to check each identifier status
             for refId in refIdsQS:
@@ -164,6 +162,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                         "Delete identifier: " + refId.identifier + " from refIdentifier table.")
                     self.deleteRecord(self.refIdentifier, refId.pk, record_type='refId', identifier=refId.identifier)
 
+            last_id = refId.pk
             if len(refIdsQS) < BATCH_SIZE:
                 log.info(f"Finished - Checking ref Ids: {time_range_str}")
                 exit()
@@ -215,15 +214,12 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         int: seconds since the Epotch
 
         """
-        print(f"date_time_str: {date_time_str}")
 
         # Parse the date and time string to a datetime object
         dt_object = parse(date_time_str)
-        print(f"dt_object: {dt_object}")
 
         # Convert the datetime object to seconds since the Epoch
         seconds_since_epoch = int(dt_object.timestamp())
-        print(f"seconds_since_epoch: {seconds_since_epoch}")
 
         return seconds_since_epoch
 
