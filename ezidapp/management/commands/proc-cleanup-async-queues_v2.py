@@ -79,7 +79,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             Args:
                 None
         """
-        ASYNC_CLEANUP_SLEEP = 60
+        ASYNC_CLEANUP_SLEEP = 60 * 10
 
         BATCH_SIZE = self.opt.pagesize
         if BATCH_SIZE is None:
