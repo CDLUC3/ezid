@@ -175,8 +175,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 else:
                     log.info(f"Sleep {ASYNC_CLEANUP_SLEEP} seconds before processing next batch")
                     self.sleep(ASYNC_CLEANUP_SLEEP)
-                    max_age_ts = min_age_ts
-                    min_age_ts = max_age_ts - ASYNC_CLEANUP_SLEEP
+                    min_age_ts = max_age_ts
+                    max_age_ts = min_age_ts + ASYNC_CLEANUP_SLEEP
                     time_range = Q(updateTime__gte=min_age_ts) & Q(updateTime__lte=max_age_ts)
                     time_range_str = f"updated between: {self.seconds_to_date(min_age_ts)} and {self.seconds_to_date(max_age_ts)}"
             else:
