@@ -54,7 +54,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             '--pagesize', help='Rows in each batch select.', type=int)
 
         parser.add_argument(
-            '--updated_from', type=str, required=True,
+            '--updated_range_from', type=str,
             help = (
                 'Updated date range from - local date/time in ISO 8601 format without timezone \n'
                 'YYYYMMDD, YYYYMMDDTHHMMSS, YYYY-MM-DD, YYYY-MM-DDTHH:MM:SS. \n'
@@ -63,7 +63,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         )
         
         parser.add_argument(
-            '--updated_to', type=str, required=True,
+            '--updated_range_to', type=str,
             help = (
                 'Updated date range to - local date/time in ISO 8601 format without timezone \n'
                 'YYYYMMDD, YYYYMMDDTHHMMSS, YYYY-MM-DD, YYYY-MM-DDTHH:MM:SS. \n'
@@ -79,14 +79,16 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             Args:
                 None
         """
+        ASYNC_CLEANUP_SLEEP = 60
+
         BATCH_SIZE = self.opt.pagesize
         if BATCH_SIZE is None:
             BATCH_SIZE = 10000
         
         updated_from = None
         updated_to = None
-        updated_from_str = self.opt.updated_from
-        updated_to_str = self.opt.updated_to
+        updated_from_str = self.opt.updated_range_from
+        updated_to_str = self.opt.updated_range_to
         if updated_from_str is not None:
             try:
                 updated_from = self.date_to_seconds(updated_from_str)
@@ -100,20 +102,23 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 log.error(f"Input date/time error: {ex}")
                 exit()
         
+        if updated_from is not None and updated_to is not None:
+            time_range = Q(updateTime__gte=updated_from) & Q(updateTime__lte=updated_to)
+            time_range_str = f"updated between: {updated_from_str} and {updated_to_str}"
+        elif updated_to is not None:
+            time_range = Q(updateTime__lte=updated_to)
+            time_range_str = f"updated before: {updated_to_str}"
+        else:
+            max_age_ts = int(time.time()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
+            min_age_ts = max_age_ts - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
+            time_range = Q(updateTime__gte=min_age_ts) & Q(updateTime__lte=max_age_ts)
+            time_range_str = f"updated between: {self.seconds_to_date(min_age_ts)} and {self.seconds_to_date(max_age_ts)}"
+
         last_id = 0
-        filter = None
         # keep running until terminated
         while not self.terminated():
-            if updated_from is not None and updated_to is not None:
-                time_range = Q(updateTime__gte=updated_from) & Q(updateTime__lte=updated_to)
-                time_range_str = f"updated between: {updated_from_str} and {updated_to_str}"
-            else:
-                max_age_ts = int(time.time()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
-                time_range = Q(updateTime__lte=max_age_ts)
-                time_range_str = f"updated before: {self.seconds_to_date(max_age_ts)}"
-            
-            filter = time_range & Q(id__gt=last_id)
             # retrieve identifiers with update timestamp within a date range
+            filter = time_range & Q(id__gt=last_id)
             refIdsQS = self.refIdentifier.objects.filter(filter).order_by("pk")[: BATCH_SIZE]
 
             log.info(f"Checking ref Ids: {time_range_str}")
@@ -164,8 +169,16 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
             last_id = refId.pk
             if len(refIdsQS) < BATCH_SIZE:
-                log.info(f"Finished - Checking ref Ids: {time_range_str}")
-                exit()
+                if updated_from is not None or updated_to is not None:
+                    log.info(f"Finished - Checking ref Ids: {time_range_str}")
+                    exit()
+                else:
+                    log.info(f"Sleep {ASYNC_CLEANUP_SLEEP} seconds before processing next batch")
+                    self.sleep(ASYNC_CLEANUP_SLEEP)
+                    max_age_ts = min_age_ts
+                    min_age_ts = max_age_ts - ASYNC_CLEANUP_SLEEP
+                    time_range = Q(updateTime__gte=min_age_ts) & Q(updateTime__lte=max_age_ts)
+                    time_range_str = f"updated between: {self.seconds_to_date(min_age_ts)} and {self.seconds_to_date(max_age_ts)}"
             else:
                 self.sleep(django.conf.settings.DAEMONS_BATCH_SLEEP)
 
@@ -189,7 +202,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     obj = queue.objects.select_for_update().get(id=primary_key)
                     obj.delete()
             else:
-                log.info("Delete async entry: " + str(primary_key))
+                log.info(f"Delete async queue {queue.__name__} entry: " + str(primary_key))
                 with transaction.atomic():
                     obj = queue.objects.select_for_update().get(seq=primary_key)
                     obj.delete()
