@@ -18,6 +18,7 @@ from opensearchpy import OpenSearch
 from opensearchpy.exceptions import NotFoundError
 from django.conf import settings
 import urllib
+import time
 
 # the functools allows memoizing the results of functions, so they're not recalculated every time (ie cached
 # results if called more than once on the same instance)
@@ -138,10 +139,11 @@ class OpenSearchDoc:
             return True
         return False
 
-    def update_link_issues(self, link_is_broken=False, has_issues=False):
+    # Note that this time is passed in as an integer, but it's converted to an iso datetime for opensearch
+    def update_link_issues(self, link_is_broken=False, has_issues=False, update_time=int(time.time())):
         dict_to_update = {
             'open_search_updated': datetime.datetime.now().isoformat(),
-            'update_time': datetime.datetime.now().isoformat(),
+            'update_time': datetime.datetime.utcfromtimestamp(update_time).isoformat(),
             'link_is_broken': link_is_broken,
             'has_issues': has_issues }
 

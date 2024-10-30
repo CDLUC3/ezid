@@ -18,6 +18,7 @@ import ezidapp.models.link_checker
 import impl.log
 from impl.open_search_doc import OpenSearchDoc
 import opensearchpy.exceptions
+import time
 
 log = logging.getLogger(__name__)
 
@@ -98,9 +99,13 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                                 )
                                 si2.linkIsBroken = newValue
                                 si2.computeHasIssues()
-                                si2.save(update_fields=["linkIsBroken", "hasIssues"])
+
+                                si2.updateTime = int(time.time())
+                                si2.save(update_fields=["updateTime", "linkIsBroken", "hasIssues"])
                                 open_s = OpenSearchDoc(identifier=si2)
-                                open_s.update_link_issues(link_is_broken=si2.linkIsBroken, has_issues=si2.hasIssues)
+                                open_s.update_link_issues(link_is_broken=si2.linkIsBroken,
+                                                          has_issues=si2.hasIssues,
+                                                          update_time=si2.updateTime)
                         except ezidapp.models.identifier.SearchIdentifier.DoesNotExist:
                             log.exception('SearchIdentifier.DoesNotExist')
                         except opensearchpy.exceptions.OpenSearchException as e:
