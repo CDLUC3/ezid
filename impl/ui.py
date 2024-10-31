@@ -95,7 +95,7 @@ def contact(request):
                     body=message,
                     from_email=django.conf.settings.SERVER_EMAIL,
                     to=emails,
-                    reply_to=P['email'],
+                    reply_to=[P['email']],
                 )
                 email.send(fail_silently=False)
                 # 'extra_tags' used for recording a Google Analytics event
