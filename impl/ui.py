@@ -10,7 +10,7 @@ import urllib.response
 
 import django.conf
 import django.contrib.messages
-import django.core.mail
+from django.core.mail import EmailMessage
 import django.http
 import django.template
 import django.template.loader
@@ -90,7 +90,14 @@ def contact(request):
                 else:
                     message += "Newsletter option NOT checked."
             try:
-                django.core.mail.send_mail(title, message, P['email'], emails)
+                email = EmailMessage(
+                    subject=title,
+                    body=message,
+                    from_email=django.conf.settings.SERVER_EMAIL,
+                    to=emails,
+                    reply_to=P['email'],
+                )
+                email.send(fail_silently=False)
                 # 'extra_tags' used for recording a Google Analytics event
                 django.contrib.messages.add_message(
                     request,
