@@ -126,6 +126,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
             # iterate over query set to check each identifier status
             for refId in refIdsQS:
+                last_id = refId.pk
 
                 # set status for each handle system
                 identifierStatus = {
@@ -167,7 +168,6 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                         "Delete identifier: " + refId.identifier + " from refIdentifier table.")
                     self.deleteRecord(self.refIdentifier, refId.pk, record_type='refId', identifier=refId.identifier)
 
-            last_id = refId.pk
             if len(refIdsQS) < BATCH_SIZE:
                 if updated_from is not None or updated_to is not None:
                     log.info(f"Finished - Checking ref Ids: {time_range_str}")
