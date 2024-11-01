@@ -76,7 +76,7 @@ REGEX_4DIGITYEAR = r'^(\d{4}|\(:unac\)|\(:unal\)|\(:unap\)|\(:unas\)|\(:unav\)|\
    \(:unkn\)|\(:none\)|\(:null\)|\(:tba\)|\(:etal\)|\(:at\))$'
 REGEX_GEOPOINT = r'-?(\d+(\.\d*)?|\.\d+)$'
 # http://stackoverflow.com/questions/3962543/how-can-i-validate-a-culture-code-with-a-regular-expression
-REGEX_LANGUAGE = '^[a-z]{2,3}(?:-[A-Z]{2,3}(?:-[a-zA-Z]{4})?)?$'
+REGEX_LANGUAGE = '^[a-z]{2,3}(?:-[a-zA-Z]{2,3}(?:-[a-zA-Z]{4})?)?$'
 ERR_4DIGITYEAR = _("Four digits required")
 ERR_DATE = _("Please use format YYYY-MM-DD.")
 ERR_CREATOR = _("Please fill in a value for creator.")
