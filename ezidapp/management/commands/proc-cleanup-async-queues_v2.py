@@ -173,8 +173,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     log.info(f"Finished - Checking ref Ids: {time_range_str}")
                     exit()
                 else:
-                    log.info(f"Sleep {ASYNC_CLEANUP_SLEEP} seconds before processing next batch")
+                    log.info(f"Sleep {ASYNC_CLEANUP_SLEEP} seconds before processing next time range.")
                     self.sleep(ASYNC_CLEANUP_SLEEP)
+                    last_id = 0
                     min_age_ts = max_age_ts
                     max_age_ts = min_age_ts + ASYNC_CLEANUP_SLEEP
                     time_range = Q(updateTime__gte=min_age_ts) & Q(updateTime__lte=max_age_ts)
