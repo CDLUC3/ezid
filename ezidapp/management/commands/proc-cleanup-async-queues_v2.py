@@ -196,8 +196,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         try:
             # check if the record to be deleted is a refIdentifier record
             if (record_type is not None and record_type == 'refId'):
-                log.info(type(queue))
-                log.info("Delete refId: " + str(primary_key))
+                log.info(f"Delete from {queue.__name__} refId: " + str(primary_key))
                 with transaction.atomic():
                     obj = queue.objects.select_for_update().get(id=primary_key)
                     obj.delete()
