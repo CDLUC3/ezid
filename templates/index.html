@@ -55,8 +55,7 @@
         <form id="create_form" action="{% url "ui_home.index" %}" method="post" class="form-horizontal" role="form">
         <input type="hidden" name="current_profile" id="current_profile" value="{{current_profile.name}}" />
 
-        <div class="fieldset-inline" role="group" aria-labelledby="fieldset__1">
-
+        <fieldset class="fieldset-inline" role="group" aria-labelledby="fieldset__1">
           <span id="fieldset__1" aria-label="{% trans "Step 1 - Choose an identifier type" %}" class="fieldset-inline__legend-number-1">{% trans "Choose an identifier type" %}</span>
 
       {% for p in prefixes %}
@@ -65,8 +64,7 @@
           </label>
       {% endfor %}
           {% help_icon "choose_id_demo" _("on choosing the type of identifier") %}
-
-        </div>
+        </fieldset>
 
         <div class="fieldset-stacked fieldset__top-border home__fieldset" role="group" aria-labelledby="fieldset__2">
 
