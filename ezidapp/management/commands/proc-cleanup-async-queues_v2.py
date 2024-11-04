@@ -177,7 +177,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     self.sleep(ASYNC_CLEANUP_SLEEP)
                     last_id = 0
                     min_age_ts = max_age_ts
-                    max_age_ts = min_age_ts + ASYNC_CLEANUP_SLEEP
+                    max_age_ts = int(time.time()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
                     time_range = Q(updateTime__gte=min_age_ts) & Q(updateTime__lte=max_age_ts)
                     time_range_str = f"updated between: {self.seconds_to_date(min_age_ts)} and {self.seconds_to_date(max_age_ts)}"
             else:
