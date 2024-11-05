@@ -173,10 +173,11 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     log.info(f"Finished - Checking ref Ids: {time_range_str}")
                     exit()
                 else:
-                    log.info(f"Sleep {ASYNC_CLEANUP_SLEEP} seconds before processing next batch")
+                    log.info(f"Sleep {ASYNC_CLEANUP_SLEEP} seconds before processing next time range.")
                     self.sleep(ASYNC_CLEANUP_SLEEP)
+                    last_id = 0
                     min_age_ts = max_age_ts
-                    max_age_ts = min_age_ts + ASYNC_CLEANUP_SLEEP
+                    max_age_ts = int(time.time()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
                     time_range = Q(updateTime__gte=min_age_ts) & Q(updateTime__lte=max_age_ts)
                     time_range_str = f"updated between: {self.seconds_to_date(min_age_ts)} and {self.seconds_to_date(max_age_ts)}"
             else:
@@ -196,8 +197,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         try:
             # check if the record to be deleted is a refIdentifier record
             if (record_type is not None and record_type == 'refId'):
-                log.info(type(queue))
-                log.info("Delete refId: " + str(primary_key))
+                log.info(f"Delete from {queue.__name__} refId: " + str(primary_key))
                 with transaction.atomic():
                     obj = queue.objects.select_for_update().get(id=primary_key)
                     obj.delete()
