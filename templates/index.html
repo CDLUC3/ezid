@@ -24,8 +24,8 @@
     <div class="home-banner">
       <div class="home-banner__lead-container">
       <div class="home-banner__lead">
-        <p class="home-banner__lead-text">{% trans "Create and manage long-term globally unique IDs for data and other sources using EZID" %}</p>
-        <a href="{% url "ui_home.learn" %}" class="home-banner__lead-button">{% trans "Learn More" %}</a>
+        <p class="home-banner__lead-text">{% trans "Create and manage long-term globally unique IDs for data and other sources" %}</p>
+        <a href="{% url "ui_home.learn" %}" class="home-banner__lead-button">{% trans "Learn more about EZID" %}</a>
       </div>
       </div>
     </div>
@@ -68,7 +68,10 @@
 
         <div class="fieldset-stacked fieldset__top-border home__fieldset" role="group" aria-labelledby="fieldset__2">
 
-          <div id="fieldset__2" aria-label="{% trans "Step 2 - Describe the identified object" %}" class="fieldset-stacked__legend-number-2">{% trans "Describe the identified object" %}</div>
+          <div id="fieldset__2" aria-label="{% trans "Step 2 - Describe the identified object" %}"
+            class="fieldset-stacked__legend-number-2">
+            {% trans "Describe the identified object" %}
+          </div>
 
           <div class="row">
             {{ form.non_field_errors }}
