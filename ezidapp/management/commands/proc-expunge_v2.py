@@ -13,7 +13,7 @@ import logging
 import time
 from datetime import datetime
 import urllib.error
-import urllib.parse
+from dateutil.parser import parse
 import urllib.request
 import urllib.response
 
@@ -90,19 +90,22 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 exit()
         
         if created_from is not None and created_to is not None:
-            time_range = Q(updateTime__gte=created_from) & Q(updateTime__lte=created_to)
+            time_range = Q(createTime__gte=created_from) & Q(createTime__lte=created_to)
             time_range_str = f"updated between: {created_from_str} and {created_to_str}"
         elif created_to is not None:
-            time_range = Q(updateTime__lte=created_to)
+            time_range = Q(createTime__lte=created_to)
             time_range_str = f"updated before: {created_to_str}"
         else:
             max_age_ts = int(time.time()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
             min_age_ts = max_age_ts - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
-            time_range = Q(updateTime__gte=min_age_ts) & Q(updateTime__lte=max_age_ts)
+            time_range = Q(createTime__gte=min_age_ts) & Q(createTime__lte=max_age_ts)
             time_range_str = f"updated between: {self.seconds_to_date(min_age_ts)} and {self.seconds_to_date(max_age_ts)}"
-
+        
         min_id, max_id = self.get_id_range_by_time(time_range)
         filter_by_id = None
+
+        print(f"time range: {time_range}")
+        print(f"min_id: {min_id}, max_id: {max_id}")
 
         while not self.terminated():
             # TODO: This is a heavy query which can be optimized with better indexes or
@@ -123,10 +126,6 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             if filter_by_id is not None:
                 combined_filter &= filter_by_id
 
-            print(min_age_ts)
-            print(max_age_ts)
-            print(min_id)
-            print(max_id)
             print(combined_filter)
 
             qs = (
