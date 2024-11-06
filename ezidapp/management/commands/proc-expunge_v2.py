@@ -104,8 +104,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         min_id, max_id = self.get_id_range_by_time(time_range)
         filter_by_id = None
 
-        print(f"time range: {time_range}")
-        print(f"min_id: {min_id}, max_id: {max_id}")
+        log.info(f"Initial time range: {time_range}")
+        log.info(f"Initial min & max IDs: {min_id} : {max_id}")
 
         while not self.terminated():
             # TODO: This is a heavy query which can be optimized with better indexes or
@@ -125,14 +125,16 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 )
             if filter_by_id is not None:
                 combined_filter &= filter_by_id
-
-            print(combined_filter)
+            else:
+                combined_filter &= time_range
 
             qs = (
                 ezidapp.models.identifier.Identifier.objects.filter(combined_filter)
                     .only("identifier").order_by("pk")[: BATCH_SIZE]
             )
 
+            log.info(f"filter: {combined_filter}")
+            log.info(f"Query returned {len(qs)} records.")
             for si in qs:
                 min_id = si.id
                 with django.db.transaction.atomic():
@@ -144,10 +146,13 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     log.info(f"Finished time range: {time_range_str}")
                     exit()
                 else:
-                    self.sleep(django.conf.settings.DAEMONS_LONG_SLEEP)
+                    sleep_time = django.conf.settings.DAEMONS_LONG_SLEEP
+                    log.info(f"Sleep {sleep_time} sec before running next batch.")
+                    self.sleep(sleep_time)
                     min_age_ts = max_age_ts
                     max_age_ts = int(time.time()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
-                    min_id, max_id = self.get_id_range_by_time(min_age_ts, max_age_ts)
+                    time_range = Q(createTime__gte=min_age_ts) & Q(createTime__lte=max_age_ts)
+                    min_id, max_id = self.get_id_range_by_time(time_range)
             else:
                 self.sleep(django.conf.settings.DAEMONS_BATCH_SLEEP)
 
