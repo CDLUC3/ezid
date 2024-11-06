@@ -11,6 +11,7 @@ requesting that the (live) EZID server delete them.
 
 import logging
 import time
+from datetime import datetime
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -42,12 +43,65 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     def __init__(self):
         super().__init__()
 
-    def run(self):
-        BATCH_SIZE = 10
-        max_age_ts = int(time.time()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
-        min_age_ts = max_age_ts - 2* django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
+    def add_arguments(self, parser):
+        super().add_arguments(parser)
+        parser.add_argument(
+            '--pagesize', help='Rows in each batch select.', type=int)
 
-        min_id, max_id = self.get_id_range_by_time(min_age_ts, max_age_ts)
+        parser.add_argument(
+            '--created_range_from', type=str,
+            help = (
+                'Created date range from - local date/time in ISO 8601 format without timezone \n'
+                'YYYYMMDD, YYYYMMDDTHHMMSS, YYYY-MM-DD, YYYY-MM-DDTHH:MM:SS. \n'
+                'Examples: 20241001, 20241001T131001, 2024-10-01, 2024-10-01T13:10:01 or 2024-10-01'
+            )
+        )
+        
+        parser.add_argument(
+            '--created_range_to', type=str,
+            help = (
+                'Created date range to - local date/time in ISO 8601 format without timezone \n'
+                'YYYYMMDD, YYYYMMDDTHHMMSS, YYYY-MM-DD, YYYY-MM-DDTHH:MM:SS. \n'
+                'Examples: 20241001, 20241001T131001, 2024-10-01, 2024-10-01T13:10:01 or 2024-10-01'
+            )
+        )
+    
+    def run(self):
+        
+        BATCH_SIZE = self.opt.pagesize
+        if BATCH_SIZE is None:
+            BATCH_SIZE = 1000
+        
+        created_from = None
+        created_to = None
+        created_from_str = self.opt.created_range_from
+        created_to_str = self.opt.created_range_to
+        if created_from_str is not None:
+            try:
+                created_from = self.date_to_seconds(created_from_str)
+            except Exception as ex:
+                log.error(f"Input date/time error: {ex}")
+                exit()
+        if created_to_str is not None:
+            try:
+                created_to = self.date_to_seconds(created_to_str)
+            except Exception as ex:
+                log.error(f"Input date/time error: {ex}")
+                exit()
+        
+        if created_from is not None and created_to is not None:
+            time_range = Q(updateTime__gte=created_from) & Q(updateTime__lte=created_to)
+            time_range_str = f"updated between: {created_from_str} and {created_to_str}"
+        elif created_to is not None:
+            time_range = Q(updateTime__lte=created_to)
+            time_range_str = f"updated before: {created_to_str}"
+        else:
+            max_age_ts = int(time.time()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
+            min_age_ts = max_age_ts - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
+            time_range = Q(updateTime__gte=min_age_ts) & Q(updateTime__lte=max_age_ts)
+            time_range_str = f"updated between: {self.seconds_to_date(min_age_ts)} and {self.seconds_to_date(max_age_ts)}"
+
+        min_id, max_id = self.get_id_range_by_time(time_range)
         filter_by_id = None
 
         while not self.terminated():
@@ -80,37 +134,31 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     .only("identifier").order_by("pk")[: BATCH_SIZE]
             )
 
-            if not qs:
-                self.sleep(django.conf.settings.DAEMONS_LONG_SLEEP)
-                min_age_ts = max_age_ts
-                max_age_ts = int(time.time()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
-                min_id, max_id = self.get_id_range_by_time(min_age_ts, max_age_ts)
-                continue
-
             for si in qs:
                 min_id = si.id
                 with django.db.transaction.atomic():
                     impl.enqueue.enqueue(si, "delete", updateExternalServices=True)
                     si.delete()
 
-            self.sleep(django.conf.settings.DAEMONS_BATCH_SLEEP)
-
-    def get_id_range_by_time(self, min_age_ts, max_age_ts):
-        first_id = last_id = None
-        filter_by_time = None
-        if min_age_ts is not None:
-            filter_by_time = Q(createTime__gte=min_age_ts)
-        if max_age_ts is not None:
-            if filter_by_time is not None:
-                filter_by_time &= Q(createTime__lte=max_age_ts)
+            if len(qs) < BATCH_SIZE:
+                if created_from is not None or created_to is not None:
+                    log.info(f"Finished time range: {time_range_str}")
+                    exit()
+                else:
+                    self.sleep(django.conf.settings.DAEMONS_LONG_SLEEP)
+                    min_age_ts = max_age_ts
+                    max_age_ts = int(time.time()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
+                    min_id, max_id = self.get_id_range_by_time(min_age_ts, max_age_ts)
             else:
-                filter_by_time = Q(createTime__lte=max_age_ts)
+                self.sleep(django.conf.settings.DAEMONS_BATCH_SLEEP)
+
+    def get_id_range_by_time(self, time_range: Q):
+        first_id = last_id = None
         
-        print(filter_by_time)
-        if filter_by_time is not None:
+        if time_range is not None:
             queryset = (
                 ezidapp.models.identifier.Identifier.objects
-                .filter(filter_by_time).only("id").order_by("pk")
+                .filter(time_range).only("id").order_by("pk")
             )
             
             first_record = queryset.first()
@@ -123,5 +171,38 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 last_id = last_record.id
         
         return first_id, last_id
+    
+    
+    def date_to_seconds(self, date_time_str: str) -> int:
+        """
+        Convert date/time string to seconds since the Epotch.
+        For example:
+        2024-01-01 00:00:00 => 1704096000
+        2024-10-10 00:00:00 => 1728543600
+
+        Parameter:
+        date_time_str: A date/time string in in ISO 8601 format without timezone.
+        For example: 'YYYYMMDD, YYYYMMDDTHHMMSS, YYYY-MM-DD, YYYY-MM-DDTHH:MM:SS.
+
+        Returns:
+        int: seconds since the Epotch
+
+        """
+
+        # Parse the date and time string to a datetime object
+        dt_object = parse(date_time_str)
+
+        # Convert the datetime object to seconds since the Epoch
+        seconds_since_epoch = int(dt_object.timestamp())
+
+        return seconds_since_epoch
+
+   
+    def seconds_to_date(self, seconds_since_epoch: int) -> str:
+        dt_object = datetime.fromtimestamp(seconds_since_epoch)
+
+        # Format the datetime object to a string in the desired format
+        formatted_time = dt_object.strftime("%Y-%m-%dT%H:%M:%S")
+        return formatted_time
 
 
