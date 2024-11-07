@@ -126,7 +126,14 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             if filter_by_id is not None:
                 combined_filter &= filter_by_id
             else:
-                combined_filter &= time_range
+                sleep_time = django.conf.settings.DAEMONS_LONG_SLEEP
+                log.info(f"Sleep {sleep_time} sec before running next batch.")
+                self.sleep(sleep_time)
+                min_age_ts = max_age_ts
+                max_age_ts = int(time.time()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
+                time_range = Q(createTime__gte=min_age_ts) & Q(createTime__lte=max_age_ts)
+                min_id, max_id = self.get_id_range_by_time(time_range)
+                continue
 
             qs = (
                 ezidapp.models.identifier.Identifier.objects.filter(combined_filter)
@@ -175,8 +182,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 last_id = last_record.id
         
         return first_id, last_id
-    
-    
+
     def date_to_seconds(self, date_time_str: str) -> int:
         """
         Convert date/time string to seconds since the Epotch.
