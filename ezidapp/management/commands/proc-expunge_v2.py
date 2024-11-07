@@ -76,6 +76,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         if BATCH_SIZE is None:
             BATCH_SIZE = 1000
         
+        # default scan window: 3 days
+        SCAN_WINDOW_IN_SEC = 3 * 24 * 60 * 60
+        
         created_from = None
         created_to = None
         created_from_str = self.opt.created_range_from
@@ -104,12 +107,12 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             time_range = Q(createTime__lte=created_to)
         else:
             self.max_age_ts = int(time.time()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
-            self.min_age_ts = self.max_age_ts - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
+            self.min_age_ts = self.max_age_ts - SCAN_WINDOW_IN_SEC
             self.time_range_str = f"between: {self.seconds_to_date(self.min_age_ts)} and {self.seconds_to_date(self.max_age_ts)}"
             time_range = Q(createTime__gte=self.min_age_ts) & Q(createTime__lte=self.max_age_ts)
         
         print(time_range)
-        
+
         self.min_id, self.max_id = self.get_id_range_by_time(time_range)
         filter_by_id = None
 
@@ -136,8 +139,11 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 combined_filter &= filter_by_id
             else:
                 log.info(f"No records returned for time range: {self.time_range_str}")
-                self.sleep_and_prepare_next_batch()
-                continue
+                if created_from is not None or created_to is not None:
+                    exit()
+                else:
+                    self.sleep_and_prepare_next_batch()
+                    continue
 
             qs = (
                 ezidapp.models.identifier.Identifier.objects.filter(combined_filter)
