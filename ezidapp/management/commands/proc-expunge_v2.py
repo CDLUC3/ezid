@@ -42,6 +42,11 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
     def __init__(self):
         super().__init__()
+        self.min_age_ts = None
+        self.max_age_ts = None
+        self.min_id = None
+        self.max_id = None
+        self.time_range_str = None
 
     def add_arguments(self, parser):
         super().add_arguments(parser)
@@ -67,7 +72,6 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         )
     
     def run(self):
-        
         BATCH_SIZE = self.opt.pagesize
         if BATCH_SIZE is None:
             BATCH_SIZE = 1000
@@ -90,33 +94,38 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 exit()
         
         if created_from is not None and created_to is not None:
+            self.min_age_ts = created_from
+            self.max_age_ts = created_to
+            self.time_range_str = f"between: {created_from_str} and {created_to_str}"
             time_range = Q(createTime__gte=created_from) & Q(createTime__lte=created_to)
-            time_range_str = f"updated between: {created_from_str} and {created_to_str}"
         elif created_to is not None:
+            self.max_age_ts = created_to
+            self.time_range_str = f"before: {created_to_str}"
             time_range = Q(createTime__lte=created_to)
-            time_range_str = f"updated before: {created_to_str}"
         else:
-            max_age_ts = int(time.time()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
-            min_age_ts = max_age_ts - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
-            time_range = Q(createTime__gte=min_age_ts) & Q(createTime__lte=max_age_ts)
-            time_range_str = f"updated between: {self.seconds_to_date(min_age_ts)} and {self.seconds_to_date(max_age_ts)}"
+            self.max_age_ts = int(time.time()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
+            self.min_age_ts = self.max_age_ts - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
+            self.time_range_str = f"between: {self.seconds_to_date(self.min_age_ts)} and {self.seconds_to_date(self.max_age_ts)}"
+            time_range = Q(createTime__gte=self.min_age_ts) & Q(createTime__lte=self.max_age_ts)
         
-        min_id, max_id = self.get_id_range_by_time(time_range)
+        print(time_range)
+        
+        self.min_id, self.max_id = self.get_id_range_by_time(time_range)
         filter_by_id = None
 
-        log.info(f"Initial time range: {time_range}")
-        log.info(f"Initial min & max IDs: {min_id} : {max_id}")
+        log.info(f"Initial time range: {self.time_range_str}, {time_range}")
+        log.info(f"Initial ID range: {self.min_id} : {self.max_id}")
 
         while not self.terminated():
             # TODO: This is a heavy query which can be optimized with better indexes or
             # flags in the DB.
-            if min_id is not None:
-                filter_by_id = Q(id__gte=min_id)
-            if max_id is not None:
+            if self.min_id is not None:
+                filter_by_id = Q(id__gte=self.min_id)
+            if self.max_id is not None:
                 if filter_by_id is not None:
-                    filter_by_id &= Q(id__lte=max_id)
+                    filter_by_id &= Q(id__lte=self.max_id)
                 else:
-                    filter_by_id = Q(id__lte=max_id)
+                    filter_by_id = Q(id__lte=self.max_id)
             
             combined_filter = (
                     Q(identifier__startswith=django.conf.settings.SHOULDERS_ARK_TEST)
@@ -126,13 +135,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             if filter_by_id is not None:
                 combined_filter &= filter_by_id
             else:
-                sleep_time = django.conf.settings.DAEMONS_LONG_SLEEP
-                log.info(f"Sleep {sleep_time} sec before running next batch.")
-                self.sleep(sleep_time)
-                min_age_ts = max_age_ts
-                max_age_ts = int(time.time()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
-                time_range = Q(createTime__gte=min_age_ts) & Q(createTime__lte=max_age_ts)
-                min_id, max_id = self.get_id_range_by_time(time_range)
+                log.info(f"No records returned for time range: {self.time_range_str}")
+                self.sleep_and_prepare_next_batch()
                 continue
 
             qs = (
@@ -143,23 +147,17 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             log.info(f"filter: {combined_filter}")
             log.info(f"Query returned {len(qs)} records.")
             for si in qs:
-                min_id = si.id
+                self.min_id = si.id
                 with django.db.transaction.atomic():
                     impl.enqueue.enqueue(si, "delete", updateExternalServices=True)
                     si.delete()
 
             if len(qs) < BATCH_SIZE:
+                log.info(f"Finished time range: {self.time_range_str}")
                 if created_from is not None or created_to is not None:
-                    log.info(f"Finished time range: {time_range_str}")
                     exit()
                 else:
-                    sleep_time = django.conf.settings.DAEMONS_LONG_SLEEP
-                    log.info(f"Sleep {sleep_time} sec before running next batch.")
-                    self.sleep(sleep_time)
-                    min_age_ts = max_age_ts
-                    max_age_ts = int(time.time()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
-                    time_range = Q(createTime__gte=min_age_ts) & Q(createTime__lte=max_age_ts)
-                    min_id, max_id = self.get_id_range_by_time(time_range)
+                    self.sleep_and_prepare_next_batch()
             else:
                 self.sleep(django.conf.settings.DAEMONS_BATCH_SLEEP)
 
@@ -214,5 +212,17 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         # Format the datetime object to a string in the desired format
         formatted_time = dt_object.strftime("%Y-%m-%dT%H:%M:%S")
         return formatted_time
+    
+    def sleep_and_prepare_next_batch(self):
+        sleep_time = django.conf.settings.DAEMONS_LONG_SLEEP
+        log.info(f"Sleep {sleep_time} sec before running next batch.")
+        self.sleep(sleep_time)
+        self.min_age_ts = self.max_age_ts
+        self.max_age_ts = int(time.time()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
+        time_range = Q(createTime__gte=self.min_age_ts) & Q(createTime__lte=self.max_age_ts)
+        self.min_id, self.max_id = self.get_id_range_by_time(time_range)
+        self.time_range_str = f"between: {self.seconds_to_date(self.min_age_ts)} and {self.seconds_to_date(self.max_age_ts)}"
+
+
 
 
