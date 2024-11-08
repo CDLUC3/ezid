@@ -1,0 +1,40 @@
+{% load i18n %}
+{% load layout_extras %}
+<form id="create_form" action="{% url "ui_home.index" %}" method="post" class="form-horizontal" role="form">
+<input type="hidden" name="current_profile" id="current_profile" value="{{current_profile.name}}"/>
+<input type="hidden" name="shoulder" id="form-shoulder" value="{{ shoulder }}"/>
+{% csrf_token %}
+
+<div class="fieldset-stacked fieldset__top-border home__fieldset" role="group" aria-labelledby="fieldset__2">
+
+  <div id="fieldset__2" aria-label="{% trans "Step 2 - Describe the identified object" %}"
+  class="fieldset-stacked__legend-number-2">
+  {% trans "Describe the identified object" %}
+</div>
+
+<div class="row">
+  {{ form.non_field_errors }}
+  {% for field in form %}
+  <div class="col-md-5 home__text-field">
+    <div class="fcontrol__group-stacked{% if field.errors %}--invalid{% endif %}">
+      {% if field|fieldtype == "TextInput" %}
+        <label for="{{ field.id_for_label }}" class="fcontrol__text-label-hidden">{{ field.label }}</label>
+        {{ field|add_attributes:"fcontrol__text-field-stacked" }}
+      {% else %}
+        <label for="{{ field.id_for_label }}" class="fcontrol__select-label-hidden">{{ field.label }}</label>
+        {{ field|add_attributes:"fcontrol__select" }}
+      {% endif %}
+      {% if field.errors %}
+        <span class="fcontrol__invalid-flag">{% for error in field.errors %}{{ error|escape }}{% endfor %}</span>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+
+  <div class="col-md-2 home__create-button">
+    <button class="home__button-primary">{% trans "Create" %}</button>
+  </div>
+
+</div>
+</div>
+</form>
