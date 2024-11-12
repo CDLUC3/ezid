@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-#  Copyright©2021, Regents of the University of California
+#  Copyright©2024, Regents of the University of California
 #  http://creativecommons.org/licenses/BSD
 
 """Expunge expired test identifiers
