@@ -46,6 +46,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         self.max_age_ts = None
         self.min_id = None
         self.max_id = None
+        self.time_range = None
         self.time_range_str = None
 
     def add_arguments(self, parser):
@@ -100,23 +101,21 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             self.min_age_ts = created_from
             self.max_age_ts = created_to
             self.time_range_str = f"between: {created_from_str} and {created_to_str}"
-            time_range = Q(createTime__gte=created_from) & Q(createTime__lte=created_to)
+            self.time_range = Q(createTime__gte=created_from) & Q(createTime__lte=created_to)
         elif created_to is not None:
             self.max_age_ts = created_to
             self.time_range_str = f"before: {created_to_str}"
-            time_range = Q(createTime__lte=created_to)
+            self.time_range = Q(createTime__lte=created_to)
         else:
             self.max_age_ts = int(time.time()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
             self.min_age_ts = self.max_age_ts - SCAN_WINDOW_IN_SEC
             self.time_range_str = f"between: {self.seconds_to_date(self.min_age_ts)} and {self.seconds_to_date(self.max_age_ts)}"
-            time_range = Q(createTime__gte=self.min_age_ts) & Q(createTime__lte=self.max_age_ts)
+            self.time_range = Q(createTime__gte=self.min_age_ts) & Q(createTime__lte=self.max_age_ts)
         
-        print(time_range)
-
-        self.min_id, self.max_id = self.get_id_range_by_time(time_range)
+        self.min_id, self.max_id = self.get_id_range_by_time(self.time_range)
         filter_by_id = None
 
-        log.info(f"Initial time range: {self.time_range_str}, {time_range}")
+        log.info(f"Initial time range: {self.time_range_str}, {self.time_range}")
         log.info(f"Initial ID range: {self.min_id} : {self.max_id}")
 
         while not self.terminated():
@@ -138,7 +137,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             if filter_by_id is not None:
                 combined_filter &= filter_by_id
             else:
-                log.info(f"No records returned for time range: {self.time_range_str}")
+                log.info(f"No records returned for time range: {self.time_range_str}, {self.time_range}")
                 if created_from is not None or created_to is not None:
                     exit()
                 else:
@@ -159,7 +158,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     si.delete()
 
             if len(qs) < BATCH_SIZE:
-                log.info(f"Finished time range: {self.time_range_str}")
+                log.info(f"Finished time range: {self.time_range_str}, {self.time_range}")
                 if created_from is not None or created_to is not None:
                     exit()
                 else:
@@ -225,10 +224,11 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         self.sleep(sleep_time)
         self.min_age_ts = self.max_age_ts
         self.max_age_ts = int(time.time()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
-        time_range = Q(createTime__gte=self.min_age_ts) & Q(createTime__lte=self.max_age_ts)
-        self.min_id, self.max_id = self.get_id_range_by_time(time_range)
+        self.time_range = Q(createTime__gte=self.min_age_ts) & Q(createTime__lte=self.max_age_ts)
+        self.min_id, self.max_id = self.get_id_range_by_time(self.time_range)
         self.time_range_str = f"between: {self.seconds_to_date(self.min_age_ts)} and {self.seconds_to_date(self.max_age_ts)}"
-
-
+        log.info(f"Processing next batch ...")
+        log.info(f"Time range: {self.time_range_str}, {self.time_range}")
+        log.info(f"ID range: {self.min_id} : {self.max_id}")
 
 
