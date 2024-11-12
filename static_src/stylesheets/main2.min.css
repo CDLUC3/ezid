@@ -61,8 +61,8 @@ Selector pattern using above mixin:
   border-radius: 3px; }
 
 .button__primary, .button__multline, .account__button-proxy-select, .customize-table__button-all, .customize-table__button-customize, .login-modal__submit, .dashboard__button-go, .home__button-primary, .manage__simple-search-button, .search__simple-button, .search__simple-button2, .search-results__simple-button {
-  background: -webkit-gradient(linear, left top, left bottom, from(#168b99), to(#056a7b));
-  background: linear-gradient(to bottom, #168b99, #056a7b); }
+  background: -webkit-gradient(linear, left top, left bottom, from(#065059), to(#014047));
+  background: linear-gradient(to bottom, #065059, #014047); }
 
 .button__multline {
   height: 46px; }
@@ -133,18 +133,21 @@ Selector pattern using above mixin:
 .fieldset-controls {
   margin: 0 0 1em; }
 
-@media (min-width: 480px) {
-  .fieldset-inline {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-        -ms-flex-flow: row wrap;
-            flex-flow: row wrap;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center; } }
+.fieldset-inline {
+  border: none;
+  padding: 0; }
+  @media (min-width: 480px) {
+    .fieldset-inline {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-orient: horizontal;
+      -webkit-box-direction: normal;
+          -ms-flex-flow: row wrap;
+              flex-flow: row wrap;
+      -webkit-box-align: center;
+          -ms-flex-align: center;
+              align-items: center; } }
 
 .fieldset-stacked__embedded-select-append-text,
 .fieldset-controls__legend, .fieldset-stacked__legend, .fieldset-inline__legend, .fieldset-stacked__legend-number-1,
@@ -739,8 +742,8 @@ Selector pattern using above mixin:
 .heading__primary-container {
   margin: 0 -10px;
   padding: 0 10px;
-  background: -webkit-gradient(linear, left top, left bottom, from(#168b99), to(#056a7b));
-  background: linear-gradient(to bottom, #168b99, #056a7b); }
+  background: -webkit-gradient(linear, left top, left bottom, from(#065059), to(#014047));
+  background: linear-gradient(to bottom, #065059, #014047); }
 
 .heading__primary-text {
   max-width: 1000px;
@@ -883,7 +886,8 @@ Selector pattern using above mixin:
 .literal-block, .pre-block {
   margin: 1em 0;
   padding: 0.5em;
-  border: 1px dotted;
+  border: 1px dotted #beb6af;
+  background-color: #edeae5;
   font-size: 0.85em; }
 
 .literal-block {

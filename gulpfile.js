@@ -31,7 +31,7 @@ var ghPages = require('gulp-gh-pages');
 exports.default = parallel(scss, start, watcher);
 
 // exports.build = series(clean, fonts, scsslint_legacy, scsslint, jslint, scss_legacy, scss, assemble, minifyCss, copyimages, fonts);
-exports.build = series(clean, fonts, jslint, scss_legacy, scss, assemble, minifyCss, copyimages, fonts);
+exports.build = series(clean, fonts, jslint, scss_legacy, scss, assemble, minifyCss, copyimages, fonts, copyCSS);
 
 exports.upload = githubpages;
 
@@ -121,6 +121,13 @@ function copyimages(cb) {
       interlaced: true
     })))
   .pipe(dest('ui_library/images'))
+  cb();
+}
+
+// Copy the minified css to the place it actually needs to go in order to function
+function copyCSS(cb) {
+  return src('ui_library/css/main2.min.css')
+    .pipe(dest('static_src/stylesheets'));
   cb();
 }
 
