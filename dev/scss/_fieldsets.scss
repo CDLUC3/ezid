@@ -26,6 +26,9 @@ $subfieldset-label-spacing: 0.3em;
 
 .fieldset-inline {
 
+	border: none;
+	padding: 0;
+
 	@include bp(screen1) {
 		display: flex;
 		flex-flow: row wrap;
