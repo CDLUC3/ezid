@@ -1521,7 +1521,9 @@ Selector pattern using above mixin:
   height: 15px;
   padding: 2px;
   background-color: white;
-  cursor: pointer; }
+  cursor: pointer;
+  -o-object-fit: contain;
+     object-fit: contain; }
 
 .login-modal__form {
   display: -webkit-box;
