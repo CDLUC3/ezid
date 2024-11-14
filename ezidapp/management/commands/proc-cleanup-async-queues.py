@@ -79,7 +79,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             Args:
                 None
         """
-        ASYNC_CLEANUP_SLEEP = 60 * 10
+        ASYNC_CLEANUP_SLEEP = 60 * 60
 
         BATCH_SIZE = self.opt.pagesize
         if BATCH_SIZE is None:
@@ -121,7 +121,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             filter = time_range & Q(id__gt=last_id)
             refIdsQS = self.refIdentifier.objects.filter(filter).order_by("pk")[: BATCH_SIZE]
 
-            log.info(f"Checking ref Ids: {time_range_str}")
+            log.info(f"Checking ref Ids: {time_range_str}, filter: {filter}")
             log.info(f"Checking ref Ids returned: {len(refIdsQS)} records")
 
             # iterate over query set to check each identifier status
@@ -170,7 +170,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
             if len(refIdsQS) < BATCH_SIZE:
                 if updated_from is not None or updated_to is not None:
-                    log.info(f"Finished - Checking ref Ids: {time_range_str}")
+                    log.info(f"Finished - Checking ref Ids: {time_range_str}, filter: {filter}")
                     exit()
                 else:
                     log.info(f"Sleep {ASYNC_CLEANUP_SLEEP} seconds before processing next time range.")
