@@ -375,6 +375,22 @@ hr {
   text-decoration: none;
 }
 
+/* Style the radio buttons */
+.fcontrol__radio-button-stacked:focus + span {
+    outline: 3px solid #007BFF; /* Blue focus outline */
+    outline-offset: 3px;        /* Space between outline and text */
+    border-radius: 4px;        /* Smooth edges */
+    background-color: #e9f5ff; /* Light blue background */
+}
+
+/* Style the labels to highlight the entire clickable area */
+.fcontrol__radio-label-inline:focus-within {
+    border: 2px solid #007BFF;
+    border-radius: 4px;
+    padding: 2px;
+    background-color: #e9f5ff;
+}
+
 .skip-link:focus {
   top: 0; /* Brings it into view when focused */
   left: 0;
