@@ -364,6 +364,24 @@ hr {
   overflow: visible;
   clip: auto; }
 
+.skip-link {
+  position: absolute;
+  top: -40px; /* Hides it above the viewport */
+  left: 0;
+  background-color: #FFF; /* High-contrast background */
+  color: #0000ff; /* High-contrast text */
+  padding: 8px 16px;
+  z-index: 1000;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: 0; /* Brings it into view when focused */
+  left: 0;
+  outline: 3px solid #fff; /* Optional focus outline */
+}
+
+
 .container {
   margin-right: auto;
   margin-left: auto;
