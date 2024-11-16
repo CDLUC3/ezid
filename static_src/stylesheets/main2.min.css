@@ -71,8 +71,8 @@ Selector pattern using above mixin:
   margin-top: 15px; }
 
 .button__pop, .header__loginout-link, .home-banner__lead-button {
-  background: -webkit-gradient(linear, left top, left bottom, from(#ff8e28), to(#ff701c));
-  background: linear-gradient(to bottom, #ff8e28, #ff701c); }
+  background: -webkit-gradient(linear, left top, left bottom, from(#bd4f28), to(#b34a00));
+  background: linear-gradient(to bottom, #bd4f28, #b34a00); }
 
 .button__plus, .button__minus {
   position: relative;
@@ -224,7 +224,7 @@ Selector pattern using above mixin:
   width: 1.8em;
   height: 1.8em;
   margin: 0 0.8em 0 0;
-  background: #ff7f22;
+  background: #b84d00;
   color: white;
   font-size: 0.8em;
   font-weight: normal; }
@@ -756,8 +756,8 @@ Selector pattern using above mixin:
 .heading__pop {
   margin: 0;
   padding: 0.8em 10px;
-  background: -webkit-gradient(linear, left top, left bottom, from(#ff8e28), to(#ff701c));
-  background: linear-gradient(to bottom, #ff8e28, #ff701c);
+  background: -webkit-gradient(linear, left top, left bottom, from(#bd4f28), to(#b34a00));
+  background: linear-gradient(to bottom, #bd4f28, #b34a00);
   color: black;
   font-size: 1.6em;
   font-weight: bold; }
@@ -861,10 +861,10 @@ Selector pattern using above mixin:
     color: #003961; }
 
 .link__pop, .login-modal__sign-up-link {
-  color: #ff7f22; }
+  color: #b84d00; }
   .link__pop:hover, .login-modal__sign-up-link:hover {
-    border-bottom: 1px solid #ff7f22;
-    color: #ff7f22; }
+    border-bottom: 1px solid #b84d00;
+    color: #b84d00; }
 
 .download__link {
   margin-left: 5px;
@@ -965,8 +965,8 @@ Selector pattern using above mixin:
   max-width: 1000px;
   margin: 0 auto 10px;
   padding: 10px;
-  background: -webkit-gradient(linear, left top, left bottom, from(#ff8e28), to(#ff701c));
-  background: linear-gradient(to bottom, #ff8e28, #ff701c); }
+  background: -webkit-gradient(linear, left top, left bottom, from(#bd4f28), to(#b34a00));
+  background: linear-gradient(to bottom, #bd4f28, #b34a00); }
   @media (min-width: 480px) {
     .customize-table {
       -webkit-box-orient: horizontal;
@@ -1325,13 +1325,13 @@ Selector pattern using above mixin:
       .header__nav-subitem:nth-of-type(6) {
         border-bottom: 1px dotted black; }
       .header__nav-subitem:nth-of-type(8) {
-        background: -webkit-gradient(linear, left top, left bottom, from(#ff8e28), to(#ff701c));
-        background: linear-gradient(to bottom, #ff8e28, #ff701c);
+        background: -webkit-gradient(linear, left top, left bottom, from(#bd4f28), to(#b34a00));
+        background: linear-gradient(to bottom, #bd4f28, #b34a00);
         color: white;
         font-weight: bold; }
       .header__nav-subitem:hover:nth-of-type(8), .header__nav-subitem:focus:nth-of-type(8) {
-        background: -webkit-gradient(linear, left top, left bottom, from(#ff8e28), to(#ff701c));
-        background: linear-gradient(to bottom, #ff8e28, #ff701c);
+        background: -webkit-gradient(linear, left top, left bottom, from(#bd4f28), to(#b34a00));
+        background: linear-gradient(to bottom, #bd4f28, #b34a00);
         text-decoration: underline; }
       .header__nav-subitem:hover {
         background: -webkit-gradient(linear, left top, left bottom, from(#d5c5a5), to(#d0be95));
@@ -1404,8 +1404,8 @@ Selector pattern using above mixin:
   height: auto;
   margin: 2vw 0 0;
   padding: 1.5vw 5vw 1.5vw 2vw;
-  background: url("../images/icon_double-arrow.svg") no-repeat, -webkit-gradient(linear, left top, left bottom, from(#ff8e28), to(#ff701c));
-  background: url("../images/icon_double-arrow.svg") no-repeat, linear-gradient(to bottom, #ff8e28, #ff701c);
+  background: url("../images/icon_double-arrow.svg") no-repeat, -webkit-gradient(linear, left top, left bottom, from(#bd4f28), to(#b34a00));
+  background: url("../images/icon_double-arrow.svg") no-repeat, linear-gradient(to bottom, #bd4f28, #b34a00);
   background-position: right 10px center;
   background-size: 0.8em;
   font-size: 2vw; }

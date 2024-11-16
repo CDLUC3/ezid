@@ -32,10 +32,10 @@ $design-secondary-footer-icon-bg: rgb(229, 219, 197); // #E5DBC5
 $design-secondary-lightest: rgb(236, 229, 214); // Beige  #ECE5D6
 
 // Orange colors
-$design-pop-color: rgb(255, 127, 34); // Bright Orange  #FF7F22
-$design-pop-gradient-top: rgb(255,142,40); // Slightly Lighter Orange  #FF8E28
-$design-pop-gradient-bottom: rgb(255,112,28); // Slightly Darker Orange  #FF701C
-$design-pop-dark: rgb(216,64,47); // Reddish Orange  #D8402F
+$design-pop-color: rgb(184, 77, 0); // # B84D00
+$design-pop-gradient-top: rgb(189,79,40); // Slightly Lighter #BD4F00
+$design-pop-gradient-bottom: rgb(179,74,0); // Slightly Darker #B34A00
+$design-pop-dark: rgb(176,48,33); // Reddish Orange  #B03021
 
 // These were missing so I'm guessing at the values and required to compile scss
 $gray-light: rgb(190, 182, 175); // #BEB6AF
