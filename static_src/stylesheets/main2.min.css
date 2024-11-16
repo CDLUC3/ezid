@@ -855,10 +855,10 @@ Selector pattern using above mixin:
 .link__over-beige, .footer__link, .footer__copyright-link {
   border-bottom: 1px solid #beb6af;
   background: #ece5d6;
-  color: #005695; }
+  color: #003961; }
   .link__over-beige:hover, .footer__link:hover, .footer__copyright-link:hover {
-    border-bottom: 1px solid #005695;
-    color: #005695; }
+    border-bottom: 1px solid #003961;
+    color: #003961; }
 
 .link__pop, .login-modal__sign-up-link {
   color: #ff7f22; }
@@ -1334,8 +1334,8 @@ Selector pattern using above mixin:
         background: linear-gradient(to bottom, #ff8e28, #ff701c);
         text-decoration: underline; }
       .header__nav-subitem:hover {
-        background: -webkit-gradient(linear, left top, left bottom, from(#c6b082), to(#b4975a));
-        background: linear-gradient(to bottom, #c6b082, #b4975a);
+        background: -webkit-gradient(linear, left top, left bottom, from(#d5c5a5), to(#d0be95));
+        background: linear-gradient(to bottom, #d5c5a5, #d0be95);
         color: white;
         font-weight: bold;
         text-decoration: none; } }
@@ -1419,8 +1419,8 @@ Selector pattern using above mixin:
 
 .login-menu__container {
   margin: 0 -10px;
-  background: -webkit-gradient(linear, left top, left bottom, from(#c6b082), to(#b4975a));
-  background: linear-gradient(to bottom, #c6b082, #b4975a); }
+  background: -webkit-gradient(linear, left top, left bottom, from(#d5c5a5), to(#d0be95));
+  background: linear-gradient(to bottom, #d5c5a5, #d0be95); }
 
 .login-menu {
   display: -webkit-box;
@@ -1471,10 +1471,10 @@ Selector pattern using above mixin:
       .login-menu__link:not(:first-child), .login-menu__link--selected:not(:first-child) {
         border-top: none; } }
   .login-menu__link:hover, .login-menu__link--selected:hover, .login-menu__link:focus, .login-menu__link--selected:focus {
-    color: white; }
+    color: #003961; }
 
 .login-menu__link--selected {
-  color: white; }
+  color: #003961; }
   @media (min-width: 480px) {
     .login-menu__link--selected::before {
       position: absolute;
@@ -1815,7 +1815,7 @@ Selector pattern using above mixin:
     top: -9999px;
     left: -9999px;
     padding: 0.5em;
-    background: #b4975a;
+    background: #d0be95;
     text-align: left; }
     @media (min-width: 480px) {
       .table1 th {
@@ -1861,14 +1861,14 @@ Selector pattern using above mixin:
   .table2 thead {
     display: block;
     float: left;
-    border-top: 1px solid #b4975a;
-    border-left: 1px solid #b4975a; }
+    border-top: 1px solid #d0be95;
+    border-left: 1px solid #d0be95; }
     .table2 thead tr {
       display: block; }
   .table2 th {
     display: block;
     position: relative;
-    background: #c7b183;
+    background: #d6c8a4;
     text-align: left; }
   .table2 .sorting {
     position: absolute;
@@ -1902,7 +1902,7 @@ Selector pattern using above mixin:
       -webkit-box-flex: 1;
           -ms-flex: 1 0 auto;
               flex: 1 0 auto;
-      border-top: 1px solid #b4975a; }
+      border-top: 1px solid #d0be95; }
   .table2 td {
     display: block; }
   .table2 th,
@@ -1910,8 +1910,8 @@ Selector pattern using above mixin:
     width: 10em;
     margin: 0;
     padding: 0.5em;
-    border-right: 1px solid #b4975a;
-    border-bottom: 1px solid #b4975a;
+    border-right: 1px solid #d0be95;
+    border-bottom: 1px solid #d0be95;
     text-overflow: ellipsis;
     overflow: hidden;
     vertical-align: top; }
@@ -1938,7 +1938,7 @@ Selector pattern using above mixin:
     width: auto;
     overflow: visible; }
     .table2 td:first-child {
-      border-left: 1px solid #b4975a; } }
+      border-left: 1px solid #d0be95; } }
 
 /*!
  * Copyright©2021, Regents of the University of California
@@ -1951,12 +1951,12 @@ Selector pattern using above mixin:
     margin: 10px auto;
     border-collapse: collapse; }
   .table3 thead tr {
-    background: #c7b183; }
+    background: #d6c8a4; }
   .table3 th,
   .table3 td {
     min-width: 80px;
     padding: 0.5em;
-    border: 1px solid #b4975a;
+    border: 1px solid #d0be95;
     vertical-align: top;
     /* https://kenneth.io/blog/2012/03/04/word-wrapping-hypernation-using-css/ */
     /* Warning: Needed for oldIE support, but words are broken up letter-by-letter */
@@ -2008,16 +2008,16 @@ Selector pattern using above mixin:
     left: -9999px; }
   .table3 tbody {
     margin: 0 0 15px;
-    border: 1px solid #b4975a; }
+    border: 1px solid #d0be95; }
     .table3 tbody tr:nth-child(even) {
-      border-top: 1px solid #b4975a;
-      border-bottom: 1px solid #b4975a;
-      background: #c7b183; }
+      border-top: 1px solid #d0be95;
+      border-bottom: 1px solid #d0be95;
+      background: #d6c8a4; }
   .table3 td {
     position: relative;
     margin: 0 0 0 150px;
     padding: 6px;
-    border-left: 1px solid #b4975a; }
+    border-left: 1px solid #d0be95; }
     .table3 td::before {
       position: absolute;
       top: 6px;
