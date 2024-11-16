@@ -162,7 +162,7 @@ Selector pattern using above mixin:
       -ms-flex-align: center;
           align-items: center;
   margin: 0 0.5em 0 0;
-  color: #00778a;
+  color: #005f70;
   font-size: 1.2em;
   font-weight: bold; }
   @media (min-width: 768px) {
@@ -180,7 +180,7 @@ Selector pattern using above mixin:
   display: -ms-flexbox;
   display: flex;
   margin: 0 0 0.5em;
-  color: #00778a;
+  color: #005f70;
   font-size: 1.05em;
   font-weight: bold; }
 
@@ -322,10 +322,10 @@ Selector pattern using above mixin:
   transition: border-color 0.15s ease-in-out 0s, -webkit-box-shadow 0.15s ease-in-out 0s;
   transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
   transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s, -webkit-box-shadow 0.15s ease-in-out 0s;
-  border-color: #00778a;
+  border-color: #005f70;
   outline: 0;
-  -webkit-box-shadow: 0 0 8px rgba(0, 119, 138, 0.6);
-          box-shadow: 0 0 8px rgba(0, 119, 138, 0.6); }
+  -webkit-box-shadow: 0 0 8px rgba(0, 95, 112, 0.6);
+          box-shadow: 0 0 8px rgba(0, 95, 112, 0.6); }
 
 .fcontrol__group-stacked, .fcontrol__group-stacked--invalid {
   display: -webkit-box;
@@ -353,7 +353,7 @@ Selector pattern using above mixin:
 
 .fcontrol__text-label-stacked {
   margin: 0 2px;
-  color: #00778a;
+  color: #005f70;
   font-size: 1em; }
   @media (min-width: 768px) {
     .fcontrol__text-label-stacked {
@@ -386,7 +386,7 @@ Selector pattern using above mixin:
 
 .fcontrol__text-label-inline {
   margin: 0 5px 0 0;
-  color: #00778a;
+  color: #005f70;
   font-size: 1em; }
   @media (min-width: 768px) {
     .fcontrol__text-label-inline {
@@ -442,7 +442,7 @@ Selector pattern using above mixin:
 
 .fcontrol__textarea-label-stacked {
   margin: 0 0 2px;
-  color: #00778a;
+  color: #005f70;
   font-size: 1em; }
   @media (min-width: 768px) {
     .fcontrol__textarea-label-stacked {
@@ -457,7 +457,7 @@ Selector pattern using above mixin:
 
 .fcontrol__textarea-label-inline {
   margin: 0 5px 0 0;
-  color: #00778a;
+  color: #005f70;
   font-size: 1em; }
   @media (min-width: 768px) {
     .fcontrol__textarea-label-inline {
@@ -525,7 +525,7 @@ Selector pattern using above mixin:
               align-items: center; } }
 
 .fcontrol__select-label-stacked, .fcontrol__select-label-inline, .fcontrol__checkbox-label-inline {
-  color: #00778a;
+  color: #005f70;
   font-size: 1em; }
   @media (min-width: 768px) {
     .fcontrol__select-label-stacked, .fcontrol__select-label-inline, .fcontrol__checkbox-label-inline {
@@ -573,7 +573,7 @@ Selector pattern using above mixin:
       align-self: stretch; }
 
 .fcontrol__radio-label-stacked, .fcontrol__radio-label-inline {
-  color: #00778a;
+  color: #005f70;
   font-size: 1em;
   font-weight: normal;
   cursor: pointer; }
@@ -605,7 +605,7 @@ Selector pattern using above mixin:
   background: #7c7e7f; }
 
 .fcontrol__radio-button-stacked:focus + span::before {
-  border-color: #00778a; }
+  border-color: #005f70; }
 
 .fcontrol__radio-button-inline {
   font-size: 1em; }
@@ -764,7 +764,7 @@ Selector pattern using above mixin:
 
 .heading__noicon {
   margin: 1em 0;
-  color: #00778a;
+  color: #005f70;
   font-size: 1.2em;
   font-weight: bold;
   text-transform: uppercase; }
@@ -774,7 +774,7 @@ Selector pattern using above mixin:
   background-repeat: no-repeat;
   background-position: left center;
   background-size: 30px;
-  color: #00778a;
+  color: #005f70;
   text-transform: uppercase; }
 
 .heading__icon-1, .heading__icon-2, .heading__icon-3, .heading__icon-4, .heading__icon-5, .heading__icon-6, .heading__icon-7, .heading__icon-8, .heading__icon-9, .heading__icon-10 {
@@ -847,10 +847,10 @@ Selector pattern using above mixin:
 
 .link__primary, .download__link, .footer__news-feed-link, .footer__news-link, .login-modal__forgot, .dashboard__csv-link {
   border-bottom: 1px solid #beb6af;
-  color: #00778a; }
+  color: #005f70; }
   .link__primary:hover, .download__link:hover, .footer__news-feed-link:hover, .footer__news-link:hover, .login-modal__forgot:hover, .dashboard__csv-link:hover {
-    border-bottom: 1px solid #00778a;
-    color: #00778a; }
+    border-bottom: 1px solid #005f70;
+    color: #005f70; }
 
 .link__over-beige, .footer__link, .footer__copyright-link {
   border-bottom: 1px solid #beb6af;
@@ -1144,7 +1144,7 @@ Selector pattern using above mixin:
               justify-content: flex-end;
       max-width: 1000px;
       margin: 10px auto;
-      color: #ff7f22; } }
+      color: #005f70; } }
 
 .header {
   display: -webkit-box;
@@ -1257,7 +1257,7 @@ Selector pattern using above mixin:
   background-repeat: no-repeat;
   background-position: 10px center;
   background-size: 23px 23px;
-  color: #00778a;
+  color: #005f70;
   font-size: 0.9em;
   font-weight: bold;
   text-decoration: none;
@@ -1307,7 +1307,7 @@ Selector pattern using above mixin:
   border: 1px solid #beb6af;
   border-top: none;
   background-color: white;
-  color: #00778a;
+  color: #005f70;
   font-size: 0.9em;
   font-weight: bold;
   text-decoration: none;
@@ -1364,7 +1364,7 @@ Selector pattern using above mixin:
 .home-banner {
   height: 64vw;
   margin: 0 -10px;
-  background-color: #00778a;
+  background-color: #005f70;
   background-repeat: no-repeat;
   background-position: bottom center;
   background-size: 100%; }
@@ -1513,7 +1513,7 @@ Selector pattern using above mixin:
 
 .login-modal__title {
   margin: 0 0 10px;
-  color: #00778a;
+  color: #005f70;
   font-size: 1.3em; }
 
 .login-modal__close {
@@ -1576,7 +1576,7 @@ Selector pattern using above mixin:
 
 .proxy-modal__title {
   margin: 20px 0 10px;
-  color: #00778a;
+  color: #005f70;
   font-size: 1.3em; }
 
 .pagination {
@@ -1616,7 +1616,7 @@ Selector pattern using above mixin:
 .pagination__next {
   border: none;
   background-color: transparent;
-  color: #00778a; }
+  color: #005f70; }
 
 .pagination__label {
   font-weight: normal; }
@@ -1674,7 +1674,7 @@ Selector pattern using above mixin:
   position: relative;
   margin: 0 0 30px;
   padding: 7px 0 7px 40px;
-  color: #00778a;
+  color: #005f70;
   font-size: 1.1em;
   font-weight: bold;
   text-transform: uppercase; }
@@ -1779,7 +1779,7 @@ Selector pattern using above mixin:
   padding: 0.5em 10px;
   border: 1px solid #beb6af;
   background: white;
-  color: #00778a;
+  color: #005f70;
   font-size: 1.2em;
   font-weight: normal;
   cursor: pointer;
@@ -2173,7 +2173,7 @@ Selector pattern using above mixin:
 .general__note {
   max-width: 1000px;
   margin: 30px auto;
-  color: #00778a;
+  color: #005f70;
   font-size: 1.4em;
   font-weight: bold; }
   @media (min-width: 768px) {
@@ -2237,7 +2237,7 @@ Selector pattern using above mixin:
 
 .home__identifier-lead-heading {
   margin: 0;
-  color: #00778a;
+  color: #005f70;
   font-size: 2em;
   line-height: 1;
   text-transform: uppercase; }
@@ -2305,7 +2305,7 @@ Selector pattern using above mixin:
 
 .loading__text {
   position: relative;
-  color: #00778a;
+  color: #005f70;
   font-size: 1.2em;
   font-weight: bold;
   text-align: center; }
