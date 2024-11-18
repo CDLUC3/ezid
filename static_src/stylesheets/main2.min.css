@@ -886,8 +886,8 @@ Selector pattern using above mixin:
 .literal-block, .pre-block {
   margin: 1em 0;
   padding: 0.5em;
-  border: 1px dotted #beb6af;
-  background-color: #edeae5;
+  border: 1px dotted #e6e6e6;
+  background-color: #f0f0f0;
   font-size: 0.85em; }
 
 .literal-block {
@@ -966,7 +966,8 @@ Selector pattern using above mixin:
   margin: 0 auto 10px;
   padding: 10px;
   background: -webkit-gradient(linear, left top, left bottom, from(#bd4f28), to(#b34a00));
-  background: linear-gradient(to bottom, #bd4f28, #b34a00); }
+  background: linear-gradient(to bottom, #bd4f28, #b34a00);
+  color: white; }
   @media (min-width: 480px) {
     .customize-table {
       -webkit-box-orient: horizontal;

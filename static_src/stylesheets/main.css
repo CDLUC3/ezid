@@ -299,10 +299,10 @@ textarea {
   line-height: inherit; }
 
 a {
-  color: #00778a;
+  color: #006170;
   text-decoration: none; }
   a:hover, a:focus {
-    color: #00353e;
+    color: #005160;
     text-decoration: underline; }
   a:focus {
     outline: thin dotted;
@@ -1405,7 +1405,7 @@ tbody.collapse.in {
       padding: 0 5px;
       color: #ccc; }
   .breadcrumb > .active {
-    color: #777777; }
+    color: 555555; }
 
 .alert {
   padding: 15px;
@@ -2501,7 +2501,7 @@ h2.id-creation {
 .api table.leftheaders {
   margin: 5 0 15 5; }
   .api table.leftheaders tr > td:first-child {
-    background-color: #c6b082;
+    background-color: #f0f0f0;
     font-size: 0.9em;
     font-weight: bold; }
 
@@ -2667,7 +2667,7 @@ blockquote p {
 
 .panel-body .heading_3 {
   margin-top: 18px;
-  color: #d8402f;
+  color: #A32C1F;
   font-weight: bold;
   font-size: 1.1em; }
 
