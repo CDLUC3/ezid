@@ -309,6 +309,17 @@ a {
     outline: 5px auto -webkit-focus-ring-color;
     outline-offset: -2px; }
 
+a.home-banner__lead-button{
+  color: #FFFFFF;
+  text-decoration: none; }
+  a:hover, a:focus {
+    color: #FFFFFF;
+    text-decoration: underline; }
+  a:focus {
+    outline: thin dotted;
+    outline: 5px auto -webkit-focus-ring-color;
+    outline-offset: -2px; }
+
 figure {
   margin: 0; }
 
