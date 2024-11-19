@@ -19,7 +19,7 @@ $(document).ready(function(){
     if($('#js-header__nav').attr('aria-expanded') == 'false') {
       $('#js-header__nav').attr('aria-expanded', 'true');
     } else {
-      $('#js-header__nav').attr('aria-hidden', 'false');
+      $('#js-header__nav').attr('aria-expanded', 'false');
     }
 
   });
