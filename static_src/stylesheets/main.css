@@ -313,7 +313,7 @@ a.home-banner__lead-button{
   color: #FFFFFF;
   text-decoration: none; }
   a:hover, a:focus {
-    color: #FFFFFF;
+    /* color: #FFFFFF; */
     text-decoration: underline; }
   a:focus {
     outline: thin dotted;
