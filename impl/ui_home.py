@@ -35,6 +35,24 @@ def index(request):
             "/id/" + urllib.parse.quote(result.split()[1], ":/")
         )  # ID Details page
 
+def ajax_index_form(request):
+    if request.method not in ["GET"]:
+        return impl.ui_common.methodNotAllowed(request)
+    d = {'menu_item': 'ui_home.index'}
+    d['prefixes'] = sorted(
+        django.conf.settings.TEST_SHOULDER_DICT, key=lambda p: p['namespace'].lower()
+    )
+    d['form_placeholder'] = True  # is this necessary?
+    d = impl.ui_create.simple_form(request, d)
+    result = d['id_gen_result']
+    if result == 'edit_page':
+        # noinspection PyUnresolvedReferences
+        # return impl.ui_common.render(request, 'index', d)  # ID Creation page
+        return impl.ui_common.render(request, 'create/_home_demo_form', d)
+        # return render(request, 'create/home_demo_form.html', d)
+    elif result == 'bad_request':
+        return impl.ui_common.badRequest(request)
+
 
 def learn(request):
     if request.method != "GET":
