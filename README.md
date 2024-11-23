@@ -172,9 +172,9 @@ automatically update minimum semantic versions in `pyproject.toml`.  To keep
    done
    ```
    Note:
-   * A script `pdate_pyproject.sh` was created to automate the above process.
+   * A script `update_pyproject.sh` was created to automate the above process.
    * The `django` entry is excluded from the list. Run `poetry add django@version` command to manually upgrade Django to a desired version.
-   * The `pdate_pyproject.sh` script includes a final step `poetry update` which is used to update package dependencies in `poetry.lock`.
+   * The `update_pyproject.sh` script includes a final step `poetry update` which is used to update package dependencies in `poetry.lock`.
 
 1. Review changes with `git diff pyproject.toml`.  Make alterations as needed:
    ```
