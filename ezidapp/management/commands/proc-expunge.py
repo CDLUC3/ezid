@@ -113,7 +113,6 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             self.time_range = Q(createTime__gte=self.min_age_ts) & Q(createTime__lte=self.max_age_ts)
         
         self.min_id, self.max_id = self.get_id_range_by_time(self.time_range)
-        filter_by_id = None
 
         log.info(f"Initial time range: {self.time_range_str}, {self.time_range}")
         log.info(f"Initial ID range: {self.min_id} : {self.max_id}")
@@ -121,6 +120,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         while not self.terminated():
             # TODO: This is a heavy query which can be optimized with better indexes or
             # flags in the DB.
+            filter_by_id = None
             if self.min_id is not None:
                 filter_by_id = Q(id__gte=self.min_id)
             if self.max_id is not None:
