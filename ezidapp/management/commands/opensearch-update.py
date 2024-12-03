@@ -17,7 +17,8 @@ from urllib3.exceptions import InsecureRequestWarning
 urllib3.disable_warnings(InsecureRequestWarning)
 # end suppression of urllib3 InsecureRequestWarning
 
-SPLIT_SIZE = 100
+SPLIT_SIZE = 5
+DB_PAGE_SIZE = 100
 
 # run: python manage.py opensearch-update
 # optional parameters: --starting_id 1234 --updated_since 2023-10-10T00:00:00Z
@@ -37,7 +38,7 @@ SPLIT_SIZE = 100
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        # Get all items from Identifier table 100 at a time manually since
+        # Get all items from Identifier table DB_PAGE_SIZE at a time manually since
         # I had lockup issues with the ORM, even with constructs that were
         # supposed to be lazy and handle large datasets. :shrug:
         #
@@ -68,7 +69,7 @@ class Command(BaseCommand):
 
         while True:
             iden_arr = (SearchIdentifier.objects.filter(id__gt=start_after_id)
-                        .filter(additional_filter).order_by('id')[:100])
+                        .filter(additional_filter).order_by('id')[:DB_PAGE_SIZE])
 
             # break when we run out of items
             if not iden_arr:
