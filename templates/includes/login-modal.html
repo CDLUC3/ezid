@@ -2,7 +2,9 @@
 <div id="js-login-modal" class="login-modal" aria-hidden="true" role="dialog" aria-labelledby="login-modal__title">
   <div class="login-modal__header">
     <div id="login-modal__title" class="login-modal__title">Access your account</div>
-    <a href="" aria-label="close"><img id="js-login-modal__close" src="/static/images/icon_cross.svg" class="login-modal__close"></a>
+    <a href="" aria-label="Close login modal" role="button">
+      <img id="js-login-modal__close" src="/static/images/icon_cross.svg" class="login-modal__close" alt="close">
+    </a>
   </div>
   <form id="js-login-modal__form" method="post" action="/login" class="login-modal__form">
     <input type="hidden" name="next" value="{{ request.get_full_path }}" />

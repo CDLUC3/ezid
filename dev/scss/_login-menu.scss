@@ -51,7 +51,7 @@
 
 	&:hover,
 	&:focus {
-		color: $design-white-color;
+		color: $text-link-over-beige;
 	}
 
 }
@@ -62,7 +62,7 @@
 
 .login-menu__link--selected {
 	@extend %login-menu__link;
-	color: $design-white-color;
+	color: $text-link-over-beige;
 
 	&::before {
 		@include bp(screen1) {
