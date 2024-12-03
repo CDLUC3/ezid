@@ -33,6 +33,7 @@
 	padding: 2px;
 	background-color: $design-white-color;
 	cursor: pointer;
+	object-fit: contain; // Or "cover" depending on the fit you need
 }
 
 .login-modal__form {

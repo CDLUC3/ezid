@@ -6,18 +6,20 @@ $(document).ready(function(){
 
   // Before toggling menu, change default header menu class to non-selected state and change default aria attribute:
 
+  // According to ChatGPT using aria-hidden for visual appearance isn't recommended and items should not be hidden from
+  // screen readers. Instead, use aria-expanded to indicate the state of the menu.
   $('#js-header__nav').attr('class', 'header__nav');
-  $('#js-header__nav').attr('aria-hidden', 'true');
+  $('#js-header__nav').attr('aria-expanded', 'false');
 
   // Toggle classes and attributes:
   $('#js-header__nav-button').click(function(){
     
     $('#js-header__nav').toggleClass('header__nav header__nav--selected', 300, 'easeInOutCubic');
 
-    if($('#js-header__nav').attr('aria-hidden') == 'true') {
-      $('#js-header__nav').attr('aria-hidden', 'false');
+    if($('#js-header__nav').attr('aria-expanded') == 'false') {
+      $('#js-header__nav').attr('aria-expanded', 'true');
     } else {
-      $('#js-header__nav').attr('aria-hidden', 'true');
+      $('#js-header__nav').attr('aria-expanded', 'false');
     }
 
   });
@@ -62,18 +64,25 @@ $(document).ready(function(){
   // Toggle open and closed from login button
 
   $('#js-header__loginout-button').click(function(){
+    if ($('#js-login-modal').attr('aria-hidden') == 'true') {
+      $('#js-login-modal').attr('aria-hidden', 'false');
+    }else {
+      $('#js-login-modal').attr('aria-hidden', 'true');
+    }
     $('#js-login-modal').fadeToggle(200);
   });
 
   // Close when close icon is clicked
 
   $('#js-login-modal__close').click(function(){
+    $('#js-login-modal').attr('aria-hidden', 'true');
     $('#js-login-modal').fadeToggle(200);
   });
 
   // Close when form is submitted
 
   $('#js-login-modal__form').submit(function(){
+    $('#js-login-modal').attr('aria-hidden', 'true');
     $('#js-login-modal').fadeToggle(200);
   });
 

@@ -125,19 +125,15 @@ def help_icon(
         "Click for additional help" + " " + str(specifics)
     )
     return django.utils.html.format_html(
-        '<a href="#" title="ID type information" class="button__icon-link" id={} role="button" data-toggle="popover" data-placement={} data-trigger="click" tabindex="0">'
-        '<img src="/static/images/iconHelp.svg" alt={}  class={} title={}/>'
+        '<a href="#" title="ID type information" class="button__icon-link" id="{}" role="button" data-toggle="popover" '
+        'data-placement="{}" data-trigger="click" tabindex="0">'
+        '<img src="/static/images/iconHelp.svg" alt="{}"  class="{}" title="{}" />'
         '</a>',
         id_of_help,
         placement,
         title,
         css_class,
         title
-        # '<a href="#" class="button__icon-link" id="' + str(id_of_help) + '" ' +
-        # 'role="button" data-toggle="popover" data-placement="' + placement + '" ' +
-        # 'data-trigger="click" tabindex="0">' +
-        # '<img src="/static/images/iconHelp.svg" alt="' + str(title) + '"' +
-        # ' class="' + str(css_class) + '" title="' + str(title) + '"/></a>'
     )
 
 

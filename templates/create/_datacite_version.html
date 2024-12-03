@@ -1,8 +1,8 @@
 {% load i18n %}
 
-<div class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="version">
+<div class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="version-head">
   <div class="fieldset-controls__container">
-    <div id="version" class="fieldset-controls__legend create__nested-legend">{% trans "Version" %}</div>
+    <div id="version-head" class="fieldset-controls__legend create__nested-legend">{% trans "Version" %}</div>
   </div>
   {% include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.version %}
 </div>

@@ -299,10 +299,21 @@ textarea {
   line-height: inherit; }
 
 a {
-  color: #00778a;
+  color: #006170;
   text-decoration: none; }
   a:hover, a:focus {
-    color: #00353e;
+    color: #005160;
+    text-decoration: underline; }
+  a:focus {
+    outline: thin dotted;
+    outline: 5px auto -webkit-focus-ring-color;
+    outline-offset: -2px; }
+
+a.home-banner__lead-button{
+  color: #FFFFFF;
+  text-decoration: none; }
+  a:hover, a:focus {
+    /* color: #FFFFFF; */
     text-decoration: underline; }
   a:focus {
     outline: thin dotted;
@@ -363,6 +374,40 @@ hr {
   margin: 0;
   overflow: visible;
   clip: auto; }
+
+.skip-link {
+  position: absolute;
+  top: -40px; /* Hides it above the viewport */
+  left: 0;
+  background-color: #FFF; /* High-contrast background */
+  color: #0000ff; /* High-contrast text */
+  padding: 8px 16px;
+  z-index: 1000;
+  text-decoration: none;
+}
+
+/* Style the radio buttons */
+.fcontrol__radio-button-stacked:focus + span {
+    outline: 3px solid #007BFF; /* Blue focus outline */
+    outline-offset: 3px;        /* Space between outline and text */
+    border-radius: 4px;        /* Smooth edges */
+    background-color: #e9f5ff; /* Light blue background */
+}
+
+/* Style the labels to highlight the entire clickable area */
+.fcontrol__radio-label-inline:focus-within {
+    border: 2px solid #007BFF;
+    border-radius: 4px;
+    padding: 2px;
+    background-color: #e9f5ff;
+}
+
+.skip-link:focus {
+  top: 0; /* Brings it into view when focused */
+  left: 0;
+  outline: 3px solid #fff; /* Optional focus outline */
+}
+
 
 .container {
   margin-right: auto;
@@ -1371,7 +1416,7 @@ tbody.collapse.in {
       padding: 0 5px;
       color: #ccc; }
   .breadcrumb > .active {
-    color: #777777; }
+    color: 555555; }
 
 .alert {
   padding: 15px;
@@ -2467,7 +2512,7 @@ h2.id-creation {
 .api table.leftheaders {
   margin: 5 0 15 5; }
   .api table.leftheaders tr > td:first-child {
-    background-color: #c6b082;
+    background-color: #f0f0f0;
     font-size: 0.9em;
     font-weight: bold; }
 
@@ -2633,7 +2678,7 @@ blockquote p {
 
 .panel-body .heading_3 {
   margin-top: 18px;
-  color: #d8402f;
+  color: #A32C1F;
   font-weight: bold;
   font-size: 1.1em; }
 

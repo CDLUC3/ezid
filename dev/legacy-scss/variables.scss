@@ -16,30 +16,30 @@ $breadcrumb-separator:          "/" !default; // now missing from bootstrap
 
 $text-link-color: rgb(176, 189, 202); // muted blue #B0BDCA
 
-$text-link-over-beige: rgb(0, 86, 149); // #005695 blue link over beige backgrounds
+$text-link-over-beige: rgb(0, 57, 97); // #003961 blue link over beige backgrounds
 
-$design-primary-color: rgb(0, 119, 138); // Teal Blue #00778b
-$design-primary-gradient-top: rgb(6, 80, 89); // Lighter Teal Blue #168b99 was #17A2AC
+$design-primary-color: rgb(0, 95, 112); // Teal Blue #005F70
+$design-primary-gradient-top: rgb(6, 80, 89); // Lighter #11616A
 $design-primary-gradient-bottom: rgb(1, 64, 71); // Slightly darker Teal Blue #056a7b
 
 // Brown colors
-$design-secondary-gradient-top: rgb(198, 176, 130); // #C6B082  Used for subnav
-$design-secondary-color: rgb(180, 151, 90); // Metallic Gold  #B4975A
-$design-secondary-lighter: rgb(199, 177, 131); // #C7B183   Used for table headers
+$design-secondary-gradient-top: rgb(213, 197, 165); // #D5C5A5
+$design-secondary-color: rgb(208, 190, 149); // #D0BE95
+$design-secondary-lighter: rgb(214, 200, 164); // #D6C8A4
 
 $design-secondary-footer-newsfeed: rgb(221, 208, 181); // #DDD0B5
 $design-secondary-footer-icon-bg: rgb(229, 219, 197); // #E5DBC5
 $design-secondary-lightest: rgb(236, 229, 214); // Beige  #ECE5D6
 
 // Orange colors
-$design-pop-color: rgb(255, 127, 34); // Bright Orange  #FF7F22
-$design-pop-gradient-top: rgb(255,142,40); // Slightly Lighter Orange  #FF8E28
-$design-pop-gradient-bottom: rgb(255,112,28); // Slightly Darker Orange  #FF701C
-$design-pop-dark: rgb(216,64,47); // Reddish Orange  #D8402F
+$design-pop-color: rgb(124, 24, 44); // # 7C182C
+$design-pop-gradient-top: rgb(138, 25, 48); // Slightly Lighter #8A1930
+$design-pop-gradient-bottom: rgb(116, 22, 41); // Slightly Darker #741629
+$design-pop-dark: rgb(106, 20, 37); // Deep Burgundy  #6A1425
 
 // These were missing so I'm guessing at the values and required to compile scss
-$gray-light: rgb(190, 182, 175); // #BEB6AF
-$gray-lighter: rgb(237, 234, 229); // #EDEAE5
+$gray-light: rgb(230, 230, 230); // #E6E6E6
+$gray-lighter: rgb(240, 240, 240); // #F0F0F0
 
 $design-light-gray-border-color: rgb(190, 182, 175);
 $design-light-gray-bg-color: rgb(249, 248, 247);  // #F9F8F7

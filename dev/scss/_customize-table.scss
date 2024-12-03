@@ -9,6 +9,7 @@
 	margin: 0 auto 10px;
 	padding: 10px;
 	background: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
+	color: $design-white-color;
 
 	@include bp(screen1) {
 		flex-flow: row nowrap;

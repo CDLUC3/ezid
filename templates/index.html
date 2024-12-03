@@ -19,6 +19,7 @@
   }
 {% endblock %}
 {% block content %}
+{% csrf_token %}
     <h1 style="display: none;">EZID: {% trans "Identifiers made easy" %}</h1>
     <!-- Home Banner -->
     <div class="home-banner">
@@ -33,7 +34,7 @@
     <div class="home__identifier-container">
 
       <div class="home__identifier-lead-box">
-        <p class="home__identifier-lead-heading">{% trans "See how easy it is" %}:</p>
+        <h2 class="home__identifier-lead-heading">{% trans "See how easy it is" %}:</h2>
         <p class="home__identifier-lead-note">
       {% comment %}Translators: Copy HTML tags over and only translate words outside of these tags
       i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p>
@@ -52,53 +53,20 @@
       </div>
 
       <div class="home__identifier-form">
-        <form id="create_form" action="{% url "ui_home.index" %}" method="post" class="form-horizontal" role="form">
-        <input type="hidden" name="current_profile" id="current_profile" value="{{current_profile.name}}" />
 
         <fieldset class="fieldset-inline" role="group" aria-labelledby="fieldset__1">
           <span id="fieldset__1" aria-label="{% trans "Step 1 - Choose an identifier type" %}" class="fieldset-inline__legend-number-1">{% trans "Choose an identifier type" %}</span>
 
       {% for p in prefixes %}
           <label for="{{p.prefix}}" class="fcontrol__radio-label-inline home__radio-labels">
-            <input id="{{p.prefix}}" class="fcontrol__radio-button-stacked" type="radio" value="{{p.prefix}}" name="shoulder" {% selected_radio "shoulder" forloop.counter p.prefix %}> <span>{% shoulder_display p "True" %}</span>
+            <input id="{{p.prefix}}" class="fcontrol__radio-button-stacked" type="radio" value="{{p.prefix}}" name="selshoulder" {% selected_radio "shoulder" forloop.counter p.prefix %}> <span>{% shoulder_display p "True" %}</span>
           </label>
       {% endfor %}
           {% help_icon "choose_id_demo" _("on choosing the type of identifier") %}
         </fieldset>
-
-        <div class="fieldset-stacked fieldset__top-border home__fieldset" role="group" aria-labelledby="fieldset__2">
-
-          <div id="fieldset__2" aria-label="{% trans "Step 2 - Describe the identified object" %}"
-            class="fieldset-stacked__legend-number-2">
-            {% trans "Describe the identified object" %}
-          </div>
-
-          <div class="row">
-            {{ form.non_field_errors }}
-            {% for field in form %}
-            <div class="col-md-5 home__text-field">
-              <div class="fcontrol__group-stacked{% if field.errors %}--invalid{% endif %}">
-              {% if field|fieldtype == "TextInput" %}
-                <label for="{{ field.id_for_label }}" class="fcontrol__text-label-hidden">{{ field.label }}</label>
-                {{ field|add_attributes:"fcontrol__text-field-stacked" }}
-              {% else %}
-                <label for="{{ field.id_for_label }}" class="fcontrol__select-label-hidden">{{ field.label }}</label>
-                {{ field|add_attributes:"fcontrol__select" }}
-              {% endif %}
-              {% if field.errors %}
-                <span class="fcontrol__invalid-flag">{% for error in field.errors %}{{ error|escape }}{% endfor %}</span>
-              {% endif %}
-              </div>
-            </div>
-            {% endfor %}
-
-            <div class="col-md-2 home__create-button">
-              <button class="home__button-primary">{% trans "Create" %}</button>
-            </div>
-
-          </div>
+        <div id="form-container">
+          {% include "create/_home_demo_form.html" %}
         </div>
-        </form>
       </div>
     </div>
     <script type="text/javascript">
@@ -125,7 +93,7 @@
       }
     </script>
 
-    <script type="text/javascript" src="/static/javascripts/simple_create.js"></script>
+    <script type="text/javascript" src="/static/javascripts/simple_create_ajax.js"></script>
     <script type="text/javascript" src="/static/javascripts/fix_target.js"></script>
     {% include "info/popup_help.html" %}
     <script type="text/javascript" src="/static/javascripts/help_box_.js"></script>

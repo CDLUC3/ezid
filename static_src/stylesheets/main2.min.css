@@ -71,8 +71,8 @@ Selector pattern using above mixin:
   margin-top: 15px; }
 
 .button__pop, .header__loginout-link, .home-banner__lead-button {
-  background: -webkit-gradient(linear, left top, left bottom, from(#ff8e28), to(#ff701c));
-  background: linear-gradient(to bottom, #ff8e28, #ff701c); }
+  background: -webkit-gradient(linear, left top, left bottom, from(#8a1930), to(#741629));
+  background: linear-gradient(to bottom, #8a1930, #741629); }
 
 .button__plus, .button__minus {
   position: relative;
@@ -162,7 +162,7 @@ Selector pattern using above mixin:
       -ms-flex-align: center;
           align-items: center;
   margin: 0 0.5em 0 0;
-  color: #00778a;
+  color: #005f70;
   font-size: 1.2em;
   font-weight: bold; }
   @media (min-width: 768px) {
@@ -180,7 +180,7 @@ Selector pattern using above mixin:
   display: -ms-flexbox;
   display: flex;
   margin: 0 0 0.5em;
-  color: #00778a;
+  color: #005f70;
   font-size: 1.05em;
   font-weight: bold; }
 
@@ -224,7 +224,7 @@ Selector pattern using above mixin:
   width: 1.8em;
   height: 1.8em;
   margin: 0 0.8em 0 0;
-  background: #ff7f22;
+  background: #7c182c;
   color: white;
   font-size: 0.8em;
   font-weight: normal; }
@@ -322,10 +322,10 @@ Selector pattern using above mixin:
   transition: border-color 0.15s ease-in-out 0s, -webkit-box-shadow 0.15s ease-in-out 0s;
   transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
   transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s, -webkit-box-shadow 0.15s ease-in-out 0s;
-  border-color: #00778a;
+  border-color: #005f70;
   outline: 0;
-  -webkit-box-shadow: 0 0 8px rgba(0, 119, 138, 0.6);
-          box-shadow: 0 0 8px rgba(0, 119, 138, 0.6); }
+  -webkit-box-shadow: 0 0 8px rgba(0, 95, 112, 0.6);
+          box-shadow: 0 0 8px rgba(0, 95, 112, 0.6); }
 
 .fcontrol__group-stacked, .fcontrol__group-stacked--invalid {
   display: -webkit-box;
@@ -353,7 +353,7 @@ Selector pattern using above mixin:
 
 .fcontrol__text-label-stacked {
   margin: 0 2px;
-  color: #00778a;
+  color: #005f70;
   font-size: 1em; }
   @media (min-width: 768px) {
     .fcontrol__text-label-stacked {
@@ -386,7 +386,7 @@ Selector pattern using above mixin:
 
 .fcontrol__text-label-inline {
   margin: 0 5px 0 0;
-  color: #00778a;
+  color: #005f70;
   font-size: 1em; }
   @media (min-width: 768px) {
     .fcontrol__text-label-inline {
@@ -442,7 +442,7 @@ Selector pattern using above mixin:
 
 .fcontrol__textarea-label-stacked {
   margin: 0 0 2px;
-  color: #00778a;
+  color: #005f70;
   font-size: 1em; }
   @media (min-width: 768px) {
     .fcontrol__textarea-label-stacked {
@@ -457,7 +457,7 @@ Selector pattern using above mixin:
 
 .fcontrol__textarea-label-inline {
   margin: 0 5px 0 0;
-  color: #00778a;
+  color: #005f70;
   font-size: 1em; }
   @media (min-width: 768px) {
     .fcontrol__textarea-label-inline {
@@ -525,7 +525,7 @@ Selector pattern using above mixin:
               align-items: center; } }
 
 .fcontrol__select-label-stacked, .fcontrol__select-label-inline, .fcontrol__checkbox-label-inline {
-  color: #00778a;
+  color: #005f70;
   font-size: 1em; }
   @media (min-width: 768px) {
     .fcontrol__select-label-stacked, .fcontrol__select-label-inline, .fcontrol__checkbox-label-inline {
@@ -573,7 +573,7 @@ Selector pattern using above mixin:
       align-self: stretch; }
 
 .fcontrol__radio-label-stacked, .fcontrol__radio-label-inline {
-  color: #00778a;
+  color: #005f70;
   font-size: 1em;
   font-weight: normal;
   cursor: pointer; }
@@ -605,7 +605,7 @@ Selector pattern using above mixin:
   background: #7c7e7f; }
 
 .fcontrol__radio-button-stacked:focus + span::before {
-  border-color: #00778a; }
+  border-color: #005f70; }
 
 .fcontrol__radio-button-inline {
   font-size: 1em; }
@@ -756,15 +756,15 @@ Selector pattern using above mixin:
 .heading__pop {
   margin: 0;
   padding: 0.8em 10px;
-  background: -webkit-gradient(linear, left top, left bottom, from(#ff8e28), to(#ff701c));
-  background: linear-gradient(to bottom, #ff8e28, #ff701c);
+  background: -webkit-gradient(linear, left top, left bottom, from(#8a1930), to(#741629));
+  background: linear-gradient(to bottom, #8a1930, #741629);
   color: black;
   font-size: 1.6em;
   font-weight: bold; }
 
 .heading__noicon {
   margin: 1em 0;
-  color: #00778a;
+  color: #005f70;
   font-size: 1.2em;
   font-weight: bold;
   text-transform: uppercase; }
@@ -774,7 +774,7 @@ Selector pattern using above mixin:
   background-repeat: no-repeat;
   background-position: left center;
   background-size: 30px;
-  color: #00778a;
+  color: #005f70;
   text-transform: uppercase; }
 
 .heading__icon-1, .heading__icon-2, .heading__icon-3, .heading__icon-4, .heading__icon-5, .heading__icon-6, .heading__icon-7, .heading__icon-8, .heading__icon-9, .heading__icon-10 {
@@ -847,24 +847,24 @@ Selector pattern using above mixin:
 
 .link__primary, .download__link, .footer__news-feed-link, .footer__news-link, .login-modal__forgot, .dashboard__csv-link {
   border-bottom: 1px solid #beb6af;
-  color: #00778a; }
+  color: #005f70; }
   .link__primary:hover, .download__link:hover, .footer__news-feed-link:hover, .footer__news-link:hover, .login-modal__forgot:hover, .dashboard__csv-link:hover {
-    border-bottom: 1px solid #00778a;
-    color: #00778a; }
+    border-bottom: 1px solid #005f70;
+    color: #005f70; }
 
 .link__over-beige, .footer__link, .footer__copyright-link {
   border-bottom: 1px solid #beb6af;
   background: #ece5d6;
-  color: #005695; }
+  color: #003961; }
   .link__over-beige:hover, .footer__link:hover, .footer__copyright-link:hover {
-    border-bottom: 1px solid #005695;
-    color: #005695; }
+    border-bottom: 1px solid #003961;
+    color: #003961; }
 
 .link__pop, .login-modal__sign-up-link {
-  color: #ff7f22; }
+  color: #7c182c; }
   .link__pop:hover, .login-modal__sign-up-link:hover {
-    border-bottom: 1px solid #ff7f22;
-    color: #ff7f22; }
+    border-bottom: 1px solid #7c182c;
+    color: #7c182c; }
 
 .download__link {
   margin-left: 5px;
@@ -886,8 +886,8 @@ Selector pattern using above mixin:
 .literal-block, .pre-block {
   margin: 1em 0;
   padding: 0.5em;
-  border: 1px dotted #beb6af;
-  background-color: #edeae5;
+  border: 1px dotted #e6e6e6;
+  background-color: #f0f0f0;
   font-size: 0.85em; }
 
 .literal-block {
@@ -965,8 +965,9 @@ Selector pattern using above mixin:
   max-width: 1000px;
   margin: 0 auto 10px;
   padding: 10px;
-  background: -webkit-gradient(linear, left top, left bottom, from(#ff8e28), to(#ff701c));
-  background: linear-gradient(to bottom, #ff8e28, #ff701c); }
+  background: -webkit-gradient(linear, left top, left bottom, from(#8a1930), to(#741629));
+  background: linear-gradient(to bottom, #8a1930, #741629);
+  color: white; }
   @media (min-width: 480px) {
     .customize-table {
       -webkit-box-orient: horizontal;
@@ -1144,7 +1145,7 @@ Selector pattern using above mixin:
               justify-content: flex-end;
       max-width: 1000px;
       margin: 10px auto;
-      color: #ff7f22; } }
+      color: #005f70; } }
 
 .header {
   display: -webkit-box;
@@ -1257,7 +1258,7 @@ Selector pattern using above mixin:
   background-repeat: no-repeat;
   background-position: 10px center;
   background-size: 23px 23px;
-  color: #00778a;
+  color: #005f70;
   font-size: 0.9em;
   font-weight: bold;
   text-decoration: none;
@@ -1307,7 +1308,7 @@ Selector pattern using above mixin:
   border: 1px solid #beb6af;
   border-top: none;
   background-color: white;
-  color: #00778a;
+  color: #005f70;
   font-size: 0.9em;
   font-weight: bold;
   text-decoration: none;
@@ -1325,17 +1326,17 @@ Selector pattern using above mixin:
       .header__nav-subitem:nth-of-type(6) {
         border-bottom: 1px dotted black; }
       .header__nav-subitem:nth-of-type(8) {
-        background: -webkit-gradient(linear, left top, left bottom, from(#ff8e28), to(#ff701c));
-        background: linear-gradient(to bottom, #ff8e28, #ff701c);
+        background: -webkit-gradient(linear, left top, left bottom, from(#8a1930), to(#741629));
+        background: linear-gradient(to bottom, #8a1930, #741629);
         color: white;
         font-weight: bold; }
       .header__nav-subitem:hover:nth-of-type(8), .header__nav-subitem:focus:nth-of-type(8) {
-        background: -webkit-gradient(linear, left top, left bottom, from(#ff8e28), to(#ff701c));
-        background: linear-gradient(to bottom, #ff8e28, #ff701c);
+        background: -webkit-gradient(linear, left top, left bottom, from(#8a1930), to(#741629));
+        background: linear-gradient(to bottom, #8a1930, #741629);
         text-decoration: underline; }
       .header__nav-subitem:hover {
-        background: -webkit-gradient(linear, left top, left bottom, from(#c6b082), to(#b4975a));
-        background: linear-gradient(to bottom, #c6b082, #b4975a);
+        background: -webkit-gradient(linear, left top, left bottom, from(#d5c5a5), to(#d0be95));
+        background: linear-gradient(to bottom, #d5c5a5, #d0be95);
         color: white;
         font-weight: bold;
         text-decoration: none; } }
@@ -1364,7 +1365,7 @@ Selector pattern using above mixin:
 .home-banner {
   height: 64vw;
   margin: 0 -10px;
-  background-color: #00778a;
+  background-color: #005f70;
   background-repeat: no-repeat;
   background-position: bottom center;
   background-size: 100%; }
@@ -1404,8 +1405,8 @@ Selector pattern using above mixin:
   height: auto;
   margin: 2vw 0 0;
   padding: 1.5vw 5vw 1.5vw 2vw;
-  background: url("../images/icon_double-arrow.svg") no-repeat, -webkit-gradient(linear, left top, left bottom, from(#ff8e28), to(#ff701c));
-  background: url("../images/icon_double-arrow.svg") no-repeat, linear-gradient(to bottom, #ff8e28, #ff701c);
+  background: url("../images/icon_double-arrow.svg") no-repeat, -webkit-gradient(linear, left top, left bottom, from(#8a1930), to(#741629));
+  background: url("../images/icon_double-arrow.svg") no-repeat, linear-gradient(to bottom, #8a1930, #741629);
   background-position: right 10px center;
   background-size: 0.8em;
   font-size: 2vw; }
@@ -1419,8 +1420,8 @@ Selector pattern using above mixin:
 
 .login-menu__container {
   margin: 0 -10px;
-  background: -webkit-gradient(linear, left top, left bottom, from(#c6b082), to(#b4975a));
-  background: linear-gradient(to bottom, #c6b082, #b4975a); }
+  background: -webkit-gradient(linear, left top, left bottom, from(#d5c5a5), to(#d0be95));
+  background: linear-gradient(to bottom, #d5c5a5, #d0be95); }
 
 .login-menu {
   display: -webkit-box;
@@ -1471,10 +1472,10 @@ Selector pattern using above mixin:
       .login-menu__link:not(:first-child), .login-menu__link--selected:not(:first-child) {
         border-top: none; } }
   .login-menu__link:hover, .login-menu__link--selected:hover, .login-menu__link:focus, .login-menu__link--selected:focus {
-    color: white; }
+    color: #003961; }
 
 .login-menu__link--selected {
-  color: white; }
+  color: #003961; }
   @media (min-width: 480px) {
     .login-menu__link--selected::before {
       position: absolute;
@@ -1513,7 +1514,7 @@ Selector pattern using above mixin:
 
 .login-modal__title {
   margin: 0 0 10px;
-  color: #00778a;
+  color: #005f70;
   font-size: 1.3em; }
 
 .login-modal__close {
@@ -1521,7 +1522,9 @@ Selector pattern using above mixin:
   height: 15px;
   padding: 2px;
   background-color: white;
-  cursor: pointer; }
+  cursor: pointer;
+  -o-object-fit: contain;
+     object-fit: contain; }
 
 .login-modal__form {
   display: -webkit-box;
@@ -1574,7 +1577,7 @@ Selector pattern using above mixin:
 
 .proxy-modal__title {
   margin: 20px 0 10px;
-  color: #00778a;
+  color: #005f70;
   font-size: 1.3em; }
 
 .pagination {
@@ -1614,7 +1617,7 @@ Selector pattern using above mixin:
 .pagination__next {
   border: none;
   background-color: transparent;
-  color: #00778a; }
+  color: #005f70; }
 
 .pagination__label {
   font-weight: normal; }
@@ -1672,7 +1675,7 @@ Selector pattern using above mixin:
   position: relative;
   margin: 0 0 30px;
   padding: 7px 0 7px 40px;
-  color: #00778a;
+  color: #005f70;
   font-size: 1.1em;
   font-weight: bold;
   text-transform: uppercase; }
@@ -1777,7 +1780,7 @@ Selector pattern using above mixin:
   padding: 0.5em 10px;
   border: 1px solid #beb6af;
   background: white;
-  color: #00778a;
+  color: #005f70;
   font-size: 1.2em;
   font-weight: normal;
   cursor: pointer;
@@ -1813,7 +1816,7 @@ Selector pattern using above mixin:
     top: -9999px;
     left: -9999px;
     padding: 0.5em;
-    background: #b4975a;
+    background: #d0be95;
     text-align: left; }
     @media (min-width: 480px) {
       .table1 th {
@@ -1859,14 +1862,14 @@ Selector pattern using above mixin:
   .table2 thead {
     display: block;
     float: left;
-    border-top: 1px solid #b4975a;
-    border-left: 1px solid #b4975a; }
+    border-top: 1px solid #d0be95;
+    border-left: 1px solid #d0be95; }
     .table2 thead tr {
       display: block; }
   .table2 th {
     display: block;
     position: relative;
-    background: #c7b183;
+    background: #d6c8a4;
     text-align: left; }
   .table2 .sorting {
     position: absolute;
@@ -1900,7 +1903,7 @@ Selector pattern using above mixin:
       -webkit-box-flex: 1;
           -ms-flex: 1 0 auto;
               flex: 1 0 auto;
-      border-top: 1px solid #b4975a; }
+      border-top: 1px solid #d0be95; }
   .table2 td {
     display: block; }
   .table2 th,
@@ -1908,8 +1911,8 @@ Selector pattern using above mixin:
     width: 10em;
     margin: 0;
     padding: 0.5em;
-    border-right: 1px solid #b4975a;
-    border-bottom: 1px solid #b4975a;
+    border-right: 1px solid #d0be95;
+    border-bottom: 1px solid #d0be95;
     text-overflow: ellipsis;
     overflow: hidden;
     vertical-align: top; }
@@ -1936,7 +1939,7 @@ Selector pattern using above mixin:
     width: auto;
     overflow: visible; }
     .table2 td:first-child {
-      border-left: 1px solid #b4975a; } }
+      border-left: 1px solid #d0be95; } }
 
 /*!
  * Copyright©2021, Regents of the University of California
@@ -1949,12 +1952,12 @@ Selector pattern using above mixin:
     margin: 10px auto;
     border-collapse: collapse; }
   .table3 thead tr {
-    background: #c7b183; }
+    background: #d6c8a4; }
   .table3 th,
   .table3 td {
     min-width: 80px;
     padding: 0.5em;
-    border: 1px solid #b4975a;
+    border: 1px solid #d0be95;
     vertical-align: top;
     /* https://kenneth.io/blog/2012/03/04/word-wrapping-hypernation-using-css/ */
     /* Warning: Needed for oldIE support, but words are broken up letter-by-letter */
@@ -2006,16 +2009,16 @@ Selector pattern using above mixin:
     left: -9999px; }
   .table3 tbody {
     margin: 0 0 15px;
-    border: 1px solid #b4975a; }
+    border: 1px solid #d0be95; }
     .table3 tbody tr:nth-child(even) {
-      border-top: 1px solid #b4975a;
-      border-bottom: 1px solid #b4975a;
-      background: #c7b183; }
+      border-top: 1px solid #d0be95;
+      border-bottom: 1px solid #d0be95;
+      background: #d6c8a4; }
   .table3 td {
     position: relative;
     margin: 0 0 0 150px;
     padding: 6px;
-    border-left: 1px solid #b4975a; }
+    border-left: 1px solid #d0be95; }
     .table3 td::before {
       position: absolute;
       top: 6px;
@@ -2171,7 +2174,7 @@ Selector pattern using above mixin:
 .general__note {
   max-width: 1000px;
   margin: 30px auto;
-  color: #00778a;
+  color: #005f70;
   font-size: 1.4em;
   font-weight: bold; }
   @media (min-width: 768px) {
@@ -2235,7 +2238,7 @@ Selector pattern using above mixin:
 
 .home__identifier-lead-heading {
   margin: 0;
-  color: #00778a;
+  color: #005f70;
   font-size: 2em;
   line-height: 1;
   text-transform: uppercase; }
@@ -2303,7 +2306,7 @@ Selector pattern using above mixin:
 
 .loading__text {
   position: relative;
-  color: #00778a;
+  color: #005f70;
   font-size: 1.2em;
   font-weight: bold;
   text-align: center; }

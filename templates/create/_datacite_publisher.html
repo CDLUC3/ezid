@@ -1,8 +1,8 @@
 {% load i18n %}
 
-<div id="publisher_set" class="fieldset-stacked create__nested-fieldset fieldset__bottom-border" role="group" aria-labelledby="publisher">
+<div id="publisher_set" class="fieldset-stacked create__nested-fieldset fieldset__bottom-border" role="group" aria-labelledby="publisher-head">
   <div class="fieldset-controls__container">
-    <div id="publisher" class="fieldset-controls__legend create__nested-legend">{% trans "Publisher" %}</div>
+    <div id="publisher-head" class="fieldset-controls__legend create__nested-legend">{% trans "Publisher" %}</div>
   </div>
 
   {% for p_field in form.publisher_form %}

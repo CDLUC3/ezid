@@ -25,7 +25,7 @@ Welcome {{ authenticatedUser.username }}!
 
   <nav role="navigation" id="js-header__nav" class="header__nav--selected" aria-hidden="false">
     <a class="header__nav-item-search" href="/search">Search</a>
-    <details id="header__nav-details-learn" aria-expanded="false">
+    <details id="header__nav-details-learn" aria-expanded="false" aria-label="Learn about EZID">
       <summary class="header__nav-item-learn" role="button">Learn</summary>
       <div class="header__subnav-panel">
         <a class="header__nav-subitem" href="{% url "ui_home.learn" %}#01">What Is EZID?</a>
@@ -45,7 +45,10 @@ Welcome {{ authenticatedUser.username }}!
           <button class="header__loginout-link" aria-label="Logout">Logout</button>
         </form>
       {% else %}
-      <button id="js-header__loginout-button" class="header__loginout-link" aria-label="Login">Login</button>
+      <button id="js-header__loginout-button" class="header__loginout-link" aria-label="Login" aria-haspopup="dialog"
+          aria-controls="js-login-modal">
+        Login
+      </button>
       {% endif %}
       {% include "includes/login-modal.html" %}
     </div>
