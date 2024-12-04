@@ -225,10 +225,11 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         self.min_age_ts = self.max_age_ts
         self.max_age_ts = int(time.time()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
         self.time_range = Q(createTime__gte=self.min_age_ts) & Q(createTime__lte=self.max_age_ts)
-        self.min_id, self.max_id = self.get_id_range_by_time(self.time_range)
         self.time_range_str = f"between: {self.seconds_to_date(self.min_age_ts)} and {self.seconds_to_date(self.max_age_ts)}"
         log.info(f"Processing next batch ...")
         log.info(f"Time range: {self.time_range_str}, {self.time_range}")
+
+        self.min_id, self.max_id = self.get_id_range_by_time(self.time_range)
         log.info(f"ID range: {self.min_id} : {self.max_id}")
 
 
