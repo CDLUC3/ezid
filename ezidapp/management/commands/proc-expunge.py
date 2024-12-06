@@ -139,50 +139,59 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             else:
                 log.info(f"No records returned for time range: {self.time_range_str}, {self.time_range}")
                 if created_from is not None or created_to is not None:
+                    log.info("End of processing.")
                     exit()
                 else:
                     self.sleep_and_prepare_next_batch()
                     continue
 
-            qs = (
-                ezidapp.models.identifier.Identifier.objects.filter(combined_filter)
-                    .only("identifier").order_by("pk")[: BATCH_SIZE]
-            )
-
             log.info(f"filter: {combined_filter}")
-            log.info(f"Query returned {len(qs)} records.")
-            for si in qs:
-                self.min_id = si.id
-                with django.db.transaction.atomic():
-                    impl.enqueue.enqueue(si, "delete", updateExternalServices=True)
-                    si.delete()
+            try:
+                qs = (
+                    ezidapp.models.identifier.Identifier.objects.filter(combined_filter)
+                        .order_by("id")[: BATCH_SIZE]
+                )
 
-            if len(qs) < BATCH_SIZE:
-                log.info(f"Finished time range: {self.time_range_str}, {self.time_range}")
-                if created_from is not None or created_to is not None:
-                    exit()
+                log.info(f"Query returned {len(qs)} records.")
+                for si in qs:
+                    self.min_id = si.id
+                    with django.db.transaction.atomic():
+                        impl.enqueue.enqueue(si, "delete", updateExternalServices=True)
+                        si.delete()
+
+                if len(qs) < BATCH_SIZE:
+                    log.info(f"Finished time range: {self.time_range_str}, {self.time_range}")
+                    if created_from is not None or created_to is not None:
+                        log.info("End of processing")
+                        exit()
+                    else:
+                        self.sleep_and_prepare_next_batch()
                 else:
-                    self.sleep_and_prepare_next_batch()
-            else:
-                self.sleep(django.conf.settings.DAEMONS_BATCH_SLEEP)
+                    self.sleep(django.conf.settings.DAEMONS_BATCH_SLEEP)
+            except Exception as ex:
+                log.error(f"Database error: {ex}")
+
 
     def get_id_range_by_time(self, time_range: Q):
         first_id = last_id = None
         
         if time_range is not None:
-            queryset = (
-                ezidapp.models.identifier.Identifier.objects
-                .filter(time_range).only("id").order_by("pk")
-            )
-            
-            first_record = queryset.first()
-            last_record = queryset.last()
-            
-            if first_record is not None:
-                first_id = first_record.id
+            try:
+                queryset = (
+                    ezidapp.models.identifier.Identifier.objects
+                    .filter(time_range).only("id").order_by("id")
+                )
+                
+                first_record = queryset.first()
+                last_record = queryset.last()
+                
+                if first_record is not None:
+                    first_id = first_record.id
 
-            if last_record is not None:
-                last_id = last_record.id
+                if last_record is not None:
+                    last_id = last_record.id
+            except Exception as ex:
+                log.error(f"Database error while retrieving first and last record from Identifier: {ex}")
         
         return first_id, last_id
 
