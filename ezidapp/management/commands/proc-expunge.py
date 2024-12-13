@@ -192,6 +192,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     last_id = last_record.id
             except Exception as ex:
                 log.error(f"Database error while retrieving first and last record from Identifier: {ex}")
+                # add retry logic here
         
         return first_id, last_id
 
@@ -229,7 +230,10 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     
     def sleep_and_prepare_next_batch(self):
         sleep_time = django.conf.settings.DAEMONS_LONG_SLEEP
+        django.db.connections["default"].close()
+        log.info(f'Closing DB connections before entering sleep mode.')
         log.info(f"Sleep {sleep_time} sec before running next batch.")
+        
         self.sleep(sleep_time)
         self.min_age_ts = self.max_age_ts
         self.max_age_ts = int(time.time()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
