@@ -58,3 +58,63 @@
   }
 
 }
+
+/* trying to get tabs that work well if not ordered in some weird way which makes accessibility bad */
+
+/* General tab container styling */
+.tabsnew {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+}
+
+/* Hide radio inputs */
+.tabnew__input {
+  display: none;
+}
+
+/* Tab labels */
+.tabnew__label {
+  display: inline-block;
+  padding: 10px 20px;
+  cursor: pointer;
+  background: #f0f0f0;
+  border-bottom: 2px solid transparent;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.tabnew__label:hover {
+  background: #e0e0e0;
+}
+
+/* Active tab label styling */
+.tabnew__input:checked + .tabnew__label {
+  background: #ffffff;
+  border-bottom: 2px solid #007bff;
+  font-weight: bold;
+}
+
+/* Tab content */
+.tabnew__content {
+  padding: 20px;
+  background: #ffffff;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.tabnew__input:checked + .tabnew__label + .tabnew__content {
+  display: block;
+}
+
+/* Accessibility improvements */
+.tabnew__label:focus {
+  outline: 2px solid #007bff;
+}
+
