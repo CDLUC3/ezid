@@ -1823,20 +1823,48 @@ Selector pattern using above mixin:
   overflow: hidden;
   font-family: Arial, sans-serif; }
 
+/* Tab header container */
+.tabnew__header {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+  /* Align tabs to the left */
+  border-bottom: 1px solid #ccc; }
+
 /* Hide radio inputs */
 .tabnew__input {
   display: none; }
 
 /* Tab labels */
 .tabnew__label {
-  display: inline-block;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
   padding: 10px 20px;
+  /* control spacing around text */
+  /* display: inline-block; */
   cursor: pointer;
   background: #f0f0f0;
   border-bottom: 2px solid transparent;
   text-align: center;
   -webkit-transition: all 0.3s ease;
-  transition: all 0.3s ease; }
+  transition: all 0.3s ease;
+  margin-right: 5px;
+  /* add spacing between tabs */
+  border-radius: 4px 4px 0 0; }
 
 .tabnew__label:hover {
   background: #e0e0e0; }

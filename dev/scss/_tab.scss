@@ -74,6 +74,14 @@
   font-family: Arial, sans-serif;
 }
 
+/* Tab header container */
+.tabnew__header {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start; /* Align tabs to the left */
+  border-bottom: 1px solid #ccc;
+}
+
 /* Hide radio inputs */
 .tabnew__input {
   display: none;
@@ -81,13 +89,18 @@
 
 /* Tab labels */
 .tabnew__label {
-  display: inline-block;
-  padding: 10px 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px; /* control spacing around text */
+  /* display: inline-block; */
   cursor: pointer;
   background: #f0f0f0;
   border-bottom: 2px solid transparent;
   text-align: center;
   transition: all 0.3s ease;
+  margin-right: 5px; /* add spacing between tabs */
+  border-radius: 4px 4px 0 0;
 }
 
 .tabnew__label:hover {
