@@ -16,26 +16,30 @@
   <div class="tabnew__content">
     <form id="create_form" action="{% url "ui_create.simple" %}" method="post" class="form-horizontal" role="form">
     <input name="action" id="action"  type="hidden" value="create"/>
-    <div class="row">
+    <div class="bs-create__row">
 
-      <div class="col-md-4 col-md-push-8 create__sidebox">
-        <div class="sidebox">
-          <h2 class="sidebox__heading">{% trans "Quick Start Guide" %}</h2>
-          <ul class="sidebox__list">
-            <li><a href="/static/locale/en/EZID_SimpleCreate.pdf" class="link__primary" title="PDF Document" target="_blank">{% trans "Simple ID Creation" %}</a></li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="col-md-8 col-md-pull-4">
-      {% include "includes/simple_id_type.html" %}
+      <!-- main content (top part of form) -->
+      <div class="bs-create__main">
+        {% include "includes/simple_id_type.html" %}
       </div>
 
     </div>
 
-    {% include "includes/simple_describe.html" %}
+    <!-- rest of the form -->
+    <div class="bs-fieldset-stacked" role="group" aria-labelledby="create__fieldset7">
+      {% include "includes/simple_describe.html" %}
+      {% include "includes/create_button.html" with calling_page="create" id_type="simple" %}
+    </div>
 
-    {% include "includes/create_button.html" with calling_page="create" id_type="simple" %}
+    <!-- sidebar -->
+    <div class="bs-create__sidebox">
+      <div class="sidebox">
+        <h2 class="sidebox__heading">{% trans "Quick Start Guide" %}</h2>
+        <ul class="sidebox__list">
+          <li><a href="/static/locale/en/EZID_SimpleCreate.pdf" class="link__primary" title="PDF Document" target="_blank">{% trans "Simple ID Creation" %}</a></li>
+        </ul>
+      </div>
+    </div>
 
     </form>
   </div>
