@@ -4,12 +4,14 @@
 {% block title %}{% block title-twitter %}{% trans "Create an Advanced Identifier" %}{% endblock %}{% endblock %}
 {% block heading %}{% content_heading _("Create an Advanced Identifier") %}{% endblock %}
 {% block content %}
-<div class="tab create__tab">
-  <input class="tab__input" id="tab-1" type="radio" name="name" aria-checked="false"/>
-  <label class="tab__label" id="tab-1-label" for="tab-1" tabindex="0">{% trans "Simple" %}</label>
-  <input class="tab__input" id="tab-2" type="radio" name="name" checked="checked" aria-checked="true"/>
-  <label class="tab__label" for="tab-2" tabindex="0">{% trans "Advanced" %}</label>
-  <div class="tab__content">
+<div class="tabsnew create__tab">
+  <div class="tabnew__header">
+    <input class="tabnew__input" id="tab-1" type="radio" name="name" aria-checked="false"/>
+    <label class="tabnew__label" id="tab-1-label" for="tab-1" tabindex="0">{% trans "Simple" %}</label>
+    <input class="tabnew__input" id="tab-2" type="radio" name="name" checked="checked" aria-checked="true"/>
+    <label class="tabnew__label" for="tab-2" tabindex="0">{% trans "Advanced" %}</label>
+  </div>
+  <div class="tabnew__content">
     <form id="create_form" action="{% url "ui_create.advanced" %}" method="post" class="form-horizontal" role="form">
     <input name="action" id="action" type="hidden" value="create"/>
     <div class="row">
