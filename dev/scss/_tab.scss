@@ -68,10 +68,6 @@
   width: 100%;
   max-width: 600px;
   margin: 0 auto;
-  /*
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  */
   overflow: hidden;
   font-family: Arial, sans-serif;
 }
@@ -91,19 +87,6 @@
 
 /* Tab labels */
 .tabnew__label {
-  /*
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 20px;
-  cursor: pointer;
-  background: #f0f0f0;
-  border-bottom: 2px solid transparent;
-  text-align: center;
-  transition: all 0.3s ease;
-  margin-right: 5px;
-  border-radius: 4px 4px 0 0;
-  */
   display: inline-flex;
   margin: 0 10px 0 0;
   padding: 0.5em 10px;
