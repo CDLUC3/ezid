@@ -1882,25 +1882,16 @@ Selector pattern using above mixin:
 
 /* Active tab label styling */
 .tabnew__input:checked + .tabnew__label {
-  /*
-  background: #ffffff;
-  border-bottom: 2px solid #007bff;
-  font-weight: bold;
-   */
   border-bottom: 1px solid #f9f8f7;
   background: #f9f8f7;
   color: black; }
+  .tabnew__input:checked + .tabnew__label + .tabnew__content {
+    display: block; }
 
 /* Tab content */
 .tabnew__content {
-  /*
-  padding: 20px;
-  background: #ffffff;
-  font-size: 16px;
-  line-height: 1.5;
-   */
   width: 100%;
-  margin-top: -1px;
+  margin-top: -2px;
   padding: 10px;
   border: 1px solid #beb6af;
   background: #f9f8f7; }

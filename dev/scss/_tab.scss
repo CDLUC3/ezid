@@ -130,27 +130,19 @@
 
 /* Active tab label styling */
 .tabnew__input:checked + .tabnew__label {
-  /*
-  background: #ffffff;
-  border-bottom: 2px solid #007bff;
-  font-weight: bold;
-   */
   border-bottom: 1px solid $design-light-gray-bg-color;
   background: $design-light-gray-bg-color;
   color: $design-black-color;
+
+  + .tabnew__content {
+    display: block;
+  }
 }
 
 /* Tab content */
 .tabnew__content {
-  /*
-  padding: 20px;
-  background: #ffffff;
-  font-size: 16px;
-  line-height: 1.5;
-   */
-
   width: 100%;
-  margin-top: -1px;
+  margin-top: -2px;
   padding: 10px;
   border: 1px solid $design-light-gray-border-color;
   background: $design-light-gray-bg-color;
