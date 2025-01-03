@@ -1818,8 +1818,10 @@ Selector pattern using above mixin:
   width: 100%;
   max-width: 600px;
   margin: 0 auto;
+  /*
   border: 1px solid #ccc;
   border-radius: 4px;
+  */
   overflow: hidden;
   font-family: Arial, sans-serif; }
 
@@ -1844,50 +1846,74 @@ Selector pattern using above mixin:
 
 /* Tab labels */
 .tabnew__label {
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
+  /*
   display: inline-flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+  align-items: center;
+  justify-content: center;
   padding: 10px 20px;
-  /* control spacing around text */
-  /* display: inline-block; */
   cursor: pointer;
   background: #f0f0f0;
   border-bottom: 2px solid transparent;
   text-align: center;
-  -webkit-transition: all 0.3s ease;
   transition: all 0.3s ease;
   margin-right: 5px;
-  /* add spacing between tabs */
-  border-radius: 4px 4px 0 0; }
+  border-radius: 4px 4px 0 0;
+  */
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  margin: 0 10px 0 0;
+  padding: 0.5em 10px;
+  border: 1px solid #beb6af;
+  background: white;
+  color: #005f70;
+  font-size: 1.2em;
+  font-weight: normal;
+  cursor: pointer;
+  z-index: 1; }
+  @media (min-width: 768px) {
+    .tabnew__label {
+      padding: 0.5em 30px; } }
+  .tabnew__label:not(:first-of-type) {
+    margin-left: -1px; }
 
 .tabnew__label:hover {
   background: #e0e0e0; }
 
 /* Active tab label styling */
 .tabnew__input:checked + .tabnew__label {
+  /*
   background: #ffffff;
   border-bottom: 2px solid #007bff;
-  font-weight: bold; }
+  font-weight: bold;
+   */
+  border-bottom: 1px solid #f9f8f7;
+  background: #f9f8f7;
+  color: black; }
 
 /* Tab content */
 .tabnew__content {
+  /*
   padding: 20px;
   background: #ffffff;
   font-size: 16px;
-  line-height: 1.5; }
+  line-height: 1.5;
+   */
+  width: 100%;
+  margin-top: -1px;
+  padding: 10px;
+  border: 1px solid #beb6af;
+  background: #f9f8f7; }
+  @media (min-width: 768px) {
+    .tabnew__content {
+      padding: 30px; } }
 
 .tabnew__input:checked + .tabnew__label + .tabnew__content {
   display: block; }
 
 /* Accessibility improvements */
 .tabnew__label:focus {
-  outline: 2px solid #007bff; }
+  outline: 2px solid #fbb714; }
 
 .table1 {
   width: 100%;

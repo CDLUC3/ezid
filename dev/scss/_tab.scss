@@ -26,10 +26,10 @@
 .tab__label {
   margin: 0 10px 0 0;
   padding: 0.5em 10px;
-	border: 1px solid $design-light-gray-border-color;
-	background: $design-white-color;
-	color: $design-primary-color;
-	font-size: 1.2em;
+  border: 1px solid $design-light-gray-border-color;
+  background: $design-white-color;
+  color: $design-primary-color;
+  font-size: 1.2em;
   font-weight: normal;
 	cursor: pointer;
 	z-index: 1;
@@ -68,8 +68,10 @@
   width: 100%;
   max-width: 600px;
   margin: 0 auto;
+  /*
   border: 1px solid #ccc;
   border-radius: 4px;
+  */
   overflow: hidden;
   font-family: Arial, sans-serif;
 }
@@ -89,18 +91,37 @@
 
 /* Tab labels */
 .tabnew__label {
+  /*
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 20px; /* control spacing around text */
-  /* display: inline-block; */
+  padding: 10px 20px;
   cursor: pointer;
   background: #f0f0f0;
   border-bottom: 2px solid transparent;
   text-align: center;
   transition: all 0.3s ease;
-  margin-right: 5px; /* add spacing between tabs */
+  margin-right: 5px;
   border-radius: 4px 4px 0 0;
+  */
+  display: inline-flex;
+  margin: 0 10px 0 0;
+  padding: 0.5em 10px;
+  border: 1px solid $design-light-gray-border-color;
+  background: $design-white-color;
+  color: $design-primary-color;
+  font-size: 1.2em;
+  font-weight: normal;
+  cursor: pointer;
+  z-index: 1;
+
+  @include bp(screen2) {
+    padding: 0.5em 30px;
+  }
+
+  &:not(:first-of-type) {
+    margin-left: -1px;
+  }
 }
 
 .tabnew__label:hover {
@@ -109,17 +130,34 @@
 
 /* Active tab label styling */
 .tabnew__input:checked + .tabnew__label {
+  /*
   background: #ffffff;
   border-bottom: 2px solid #007bff;
   font-weight: bold;
+   */
+  border-bottom: 1px solid $design-light-gray-bg-color;
+  background: $design-light-gray-bg-color;
+  color: $design-black-color;
 }
 
 /* Tab content */
 .tabnew__content {
+  /*
   padding: 20px;
   background: #ffffff;
   font-size: 16px;
   line-height: 1.5;
+   */
+
+  width: 100%;
+  margin-top: -1px;
+  padding: 10px;
+  border: 1px solid $design-light-gray-border-color;
+  background: $design-light-gray-bg-color;
+
+  @include bp(screen2) {
+    padding: 30px;
+  }
 }
 
 .tabnew__input:checked + .tabnew__label + .tabnew__content {
@@ -128,6 +166,6 @@
 
 /* Accessibility improvements */
 .tabnew__label:focus {
-  outline: 2px solid #007bff;
+  outline: 2px solid $design-mark-color
 }
 
