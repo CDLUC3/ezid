@@ -60,9 +60,6 @@ xmltodict = "^0.13.0"
 pymysql = "^1.1.1"
 configparser = "^7.1.0"
 ecs-logging = "^2.2.0"
-celery = "^5.4.0"
-sqlalchemy = "^2.0.35"
-django-matomo-api-tracking = {git = "https://github.com/CDLUC3/django-matomo-api-tracking", rev = "0.1.4"}
 opensearch-dsl = "^2.1.0"
 
 
