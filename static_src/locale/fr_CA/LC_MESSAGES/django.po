@@ -2148,11 +2148,11 @@ msgid ""
 msgstr ""
 
 #: templates/info/doi_services_faq.html:6
-msgid "DOI Services FAQ"
+msgid "Registration Services FAQ"
 msgstr ""
 
 #: templates/info/doi_services_faq.html:7
-msgid "DOI Services: Frequently Asked Questions"
+msgid "Frequently Asked Questions"
 msgstr ""
 
 #. Translators: Copy HTML tags over and only translate words outside of these tags
@@ -2160,15 +2160,11 @@ msgstr ""
 #. i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a>
 #: templates/info/doi_services_faq.html:18
 msgid ""
-"<p><strong>Can I get a new DOI account?</strong></p> <p>We are no longer "
-"able to issue new DOI service accounts to non-University of California "
-"entities. <p><strong>Can I get a new ARK account?</strong></p> <p>Yes. "
-"<p><strong>Why are you changing EZID's service offering in this way?</"
-"strong></p> <p>DOI service providers have evolved considerably over the last "
-"5-10 years, and after careful consideration, we have adopted the following "
-"new strategy direction: to endorse and support DataCite's long-term "
-"sustainability, while maintaining our own distinct role in the persistent "
-"identifier (PID) space. <p><strong>What alternatives do I have for DOI "
+"<p><strong>How do I obtain a new account?</strong></p> <p>New accounts for ARK "
+"and DOI services are available to University of California users only, with "
+"access being managed at the campus-level through the library. Please reach "
+"out to your campus library directly to obtain an account.</p>"
+"<p><strong>What alternatives do I have for DOI "
 "services?</strong></p> <p>Option 1: Direct membership in <a href=\"http://"
 "www.datacite.org/\" class=\"ext-link\">DataCite</a>. This is an especially "
 "good option if you seek a participatory role in the data citation and data "
