@@ -961,10 +961,6 @@ msgstr ""
 msgid "How did you hear about us?"
 msgstr ""
 
-#: code/form_objects.py:1047
-msgid "Subscribe to the EZID newsletter"
-msgstr ""
-
 #: code/form_objects.py:1048
 msgid "Human test: How many drop down menus are in this form?"
 msgstr ""
