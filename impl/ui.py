@@ -84,11 +84,6 @@ def contact(request):
                 + P['hear_about']
                 + "\r\n\r\n"
             )
-            if 'newsletter' in P:
-                if P['newsletter'] == 'on':
-                    message += "YES, I'd like to subscribe to the EZID newsletter."
-                else:
-                    message += "Newsletter option NOT checked."
             try:
                 email = EmailMessage(
                     subject=title,

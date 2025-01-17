@@ -3,49 +3,63 @@
 {% load menus %}
 {% load i18n %}
 
-{% block title %}{% block title-twitter %}{% trans "DOI Services FAQ" %}{% endblock %}{% endblock %}
-{% block heading %}{% content_heading _("DOI Services: Frequently Asked Questions") %}{% endblock %}
+{% block title %}{% block title-twitter %}{% trans "Registration Services FAQ" %}{% endblock %}{% endblock %}
+{% block heading %}{% content_heading _("Frequently Asked Questions") %}{% endblock %}
 {% block content %}
 
 {% comment %}Don't need to translate this{% endcomment %}
-{% learn_breadcrumb 'DOI Services FAQ' 'FAQ' '#05' %}
+{% learn_breadcrumb 'Registration Services FAQ' 'FAQ' '#05' %}
 <div class="container api">
 {% comment %}Translators: Copy HTML tags over and only translate words outside of these tags 
 i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p> 
 i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a> 
 {% endcomment %}
 {% blocktrans trimmed %}
-<p><strong>Can I get a new DOI account?</strong></p>
+  <h2 class="heading_2">How do I obtain a new account?</h2>
 
-<p>We are no longer able to issue new DOI service accounts to non-University of California entities. 
+<p>
+  New accounts for ARK and DOI services are available to University of California users only, with access being
+  managed at the campus-level through the library. Please reach out to your campus library directly to obtain an account.
+</p>
+<br/>
+<h2 class="heading_2">What alternatives do I have for DOI and ARK registration services?</h2>
 
-<p><strong>Can I get a new ARK account?</strong></p>
+<h3 class="heading_3">For DOI services:</h3>
 
-<p>Yes.
+<p>Option 1: Use the services of a repository that provides DOIs, such as
+  <a href="https://datadryad.org" class="ext-link">Dryad</a>,
+  <a href="https://dataverse.harvard.edu/" class="ext-link">Dataverse</a> or
+  <a href="https://figshare.com/" class="ext-link">figshare</a>.
+  This is a good option if you need only a very small number of DOIs.
+</p>
 
-<p><strong>Why are you changing EZID's service offering in this way?</strong></p>
+<p>
+  Option 2: Direct membership in <a href="https://www.datacite.org" class="ext-link">DataCite</a>.
+  See <a href="https://www.datacite.org" class="ext-link">https://www.datacite.org</a> for additional details.
+</p>
 
-<p>DOI service providers have evolved considerably over the last 5-10 years, and after careful consideration, we have adopted the following new strategy direction: to endorse and support DataCite's long-term sustainability, while maintaining our own distinct role in the persistent identifier (PID) space. 
+<p>
+  Option 3: Direct membership in <a href="https://www.crossref.org" class="ext-link">Crossref</a>.
+  See <a href="https://www.crossref.org" class="ext-link">https://www.crossref.org</a> for additional details.
+</p>
 
-<p><strong>What alternatives do I have for DOI services?</strong></p>
+<h3 class="heading_3">For ARK services:</h3>
 
-<p>Option 1: Direct membership in <a href="http://www.datacite.org/" class="ext-link">DataCite</a>. This is an especially good option if you seek a participatory role in the data citation and data curation community. In addition, we are working closely with DataCite to make sure popular EZID features (such as link checking and the usage dashboard) make their way into DataCite's feature set. If you'd like to know more, visit <a href="http://www.datacite.org/contact.html" class="ext-link">https://www.datacite.org/contact.html</a>.
+<p>
+  The <a href="https://arks.org" class="ext-link">ARK Alliance</a> offers many
+  resources to help users get started with ARKs, including
+  setting up your own infrastructure. See
+  <a href="https://arks.org" class="ext-link">https://arks.org</a> for additional details.
+</p>
 
-<p>Option 2: Become a client of another DataCite member. Here is a list of current members:  <a href="http://www.datacite.org/members.html" class="ext-link">https://www.datacite.org/members.html</a>.
+  <br/>
+<h2 class="heading_2">
+  If I already have an EZID account, can I upgrade or change it?
+</h2>
 
-<p>Option 3: Use the services of a repository that provides DOIs, such as  <a href="http://www.datadryad.org/" class="ext-link">Dryad</a>,  <a href="http://dataverse.harvard.edu/" class="ext-link">Dataverse</a> or  <a href="http://www.figshare.com/" class="ext-link">figshare</a>. This is a good option if you need only a very small number of DOIs. 
-
-<p>Option 4: Become a client of  <a href="http://www.crossref.org/" class="ext-link">Crossref</a>. Crossref's annual member fee is based on the publishing revenue of the organization. For those organizations with less than $1M in publishing revenue the annual fee is $275. Crossref accepts data, text and preprints. You can explore Crossref's website for more information and when you are ready to apply for membership, complete this form:  <a href="http://www.crossref.org/membership/join" class="ext-link">http://www.crossref.org/membership/join</a>.
-
-<p>If you would like help assessing the differences between Crossref and DataCite services, please <a href="/contact" class="link__primary">contact us</a>
-
-<p><strong>If I already have an EZID account, can I upgrade or change it?</strong></p>
-
-<p>You can certainly add new ARK services. If you have other questions, please <a href="/contact" class="link__primary">contact us</a>.</p>
-
-<p><strong>How does all of this affect University of California EZID account holders?</strong></p>
-
-<p>University of California clients and prospective clients are <strong>not</strong> affected by this change. If you have any questions, please <a href="/contact" class="link__primary">contact us</a>.</p>
+<p>
+  For assistance with changes to existing accounts, please contact us.
+</p>
 
 {% endblocktrans %}
 </div>
