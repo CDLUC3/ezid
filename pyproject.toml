@@ -40,7 +40,6 @@ packages = [
 python = "^3.11"
 django = "4.2.17"
 aiomysql = "^0.2.0"
-mysqlclient = "^2.2.4"
 boto3 = "^1.35.29"
 mysql = "^0.0.3"
 myloginpath = "^0.0.4"
@@ -60,10 +59,8 @@ xmltodict = "^0.13.0"
 pymysql = "^1.1.1"
 configparser = "^7.1.0"
 ecs-logging = "^2.2.0"
-celery = "^5.4.0"
-sqlalchemy = "^2.0.35"
-django-matomo-api-tracking = {git = "https://github.com/CDLUC3/django-matomo-api-tracking", rev = "0.1.4"}
 opensearch-dsl = "^2.1.0"
+mysqlclient = "^2.2.7"
 
 
 [tool.poetry.scripts]
