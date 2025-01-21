@@ -93,12 +93,12 @@ $(document).ready(function () {
 document.addEventListener('DOMContentLoaded', () => {
   const detailsElement = document.getElementById('header__nav-details-learn');
   const summaryElement = detailsElement.querySelector('summary');
+  const focusableElements = detailsElement.querySelectorAll('a');
 
   // Close menu when clicking outside
   document.addEventListener('click', (event) => {
     if (!detailsElement.contains(event.target)) {
-      detailsElement.removeAttribute('open');
-      detailsElement.setAttribute('aria-expanded', 'false');
+      closeMenu();
     }
   });
 
@@ -108,35 +108,38 @@ document.addEventListener('DOMContentLoaded', () => {
     detailsElement.setAttribute('aria-expanded', String(!isOpen));
   });
 
+  // Close menu when tabbing out
+  detailsElement.addEventListener('keydown', (event) => {
+    if (event.key === 'Tab') {
+      const focusArray = Array.from(focusableElements);
+      const firstElement = focusArray[0];
+      const lastElement = focusArray[focusArray.length - 1];
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        // Shift + Tab on the first element
+        event.preventDefault();
+        closeMenu();
+        summaryElement.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        // Tab on the last element
+        event.preventDefault();
+        closeMenu();
+        summaryElement.focus();
+      }
+    }
+  });
+
   // Keyboard navigation
   detailsElement.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
-      detailsElement.removeAttribute('open');
-      detailsElement.setAttribute('aria-expanded', 'false');
+      closeMenu();
       summaryElement.focus();
     }
   });
 
-  // Manage focus within menu
-  const focusableElements = detailsElement.querySelectorAll('a');
-  detailsElement.addEventListener('keydown', (event) => {
-    const focusArray = Array.from(focusableElements);
-    const currentIndex = focusArray.indexOf(document.activeElement);
-
-    if (event.key === 'Tab') {
-      if (event.shiftKey) {
-        // Tab backwards
-        if (currentIndex === 0 || currentIndex === -1) {
-          event.preventDefault();
-          focusArray[focusArray.length - 1].focus();
-        }
-      } else {
-        // Tab forwards
-        if (currentIndex === focusArray.length - 1) {
-          event.preventDefault();
-          focusArray[0].focus();
-        }
-      }
-    }
-  });
+  // Helper function to close the menu
+  function closeMenu() {
+    detailsElement.removeAttribute('open');
+    detailsElement.setAttribute('aria-expanded', 'false');
+  }
 });
