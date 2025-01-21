@@ -64,10 +64,10 @@ $(document).ready(function () {
   // Toggle open and closed from login button
 
   $('#js-header__loginout-button').click(function () {
-    if ($('#js-login-modal').attr('aria-hidden') == 'true') {
-      $('#js-login-modal').attr('aria-hidden', 'false');
+    if ($('#js-login-modal').attr('aria-expanded') == 'false') {
+      $('#js-login-modal').attr('aria-expanded', 'true');
     } else {
-      $('#js-login-modal').attr('aria-hidden', 'true');
+      $('#js-login-modal').attr('aria-expanded', 'false');
     }
     $('#js-login-modal').fadeToggle(200);
   });
@@ -75,14 +75,14 @@ $(document).ready(function () {
   // Close when close icon is clicked
 
   $('#js-login-modal__close').click(function () {
-    $('#js-login-modal').attr('aria-hidden', 'true');
+    $('#js-login-modal').attr('aria-expanded', 'false');
     $('#js-login-modal').fadeToggle(200);
   });
 
   // Close when form is submitted
 
   $('#js-login-modal__form').submit(function () {
-    $('#js-login-modal').attr('aria-hidden', 'true');
+    $('#js-login-modal').attr('aria-expanded', 'false');
     $('#js-login-modal').fadeToggle(200);
   });
 
