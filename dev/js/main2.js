@@ -59,36 +59,6 @@ $(document).ready(function () {
     $(this).siblings('.fcontrol__text-label-inline').addClass('fcontrol__label-required');
   });
 
-  // ***** Modal Login ***** //
-
-
-/*
-  // Toggle open and closed from login button
-  $('#js-header__loginout-button').click(function () {
-    if ($('#js-login-modal').attr('aria-expanded') == 'false') {
-      $('#js-login-modal').attr('aria-expanded', 'true');
-    } else {
-      $('#js-login-modal').attr('aria-expanded', 'false');
-    }
-    $('#js-login-modal').fadeToggle(200);
-  });
-
-  // Close when close icon is clicked
-
-  $('#js-login-modal__close').click(function (e) {
-    e.preventDefault();
-    $('#js-login-modal').attr('aria-expanded', 'false');
-    $('#js-login-modal').fadeToggle(200);
-  });
-
-  // Close when form is submitted
-
-  $('#js-login-modal__form').submit(function () {
-    $('#js-login-modal').attr('aria-expanded', 'false');
-    $('#js-login-modal').fadeToggle(200);
-  });
-*/
-
 }); // Close $(document).ready(function()
 
 // ***** The "Learn" menu needs more flexibility for keyboard navigation ***** //
@@ -148,14 +118,18 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-
 // ***** Modal Login ***** //
 document.addEventListener('DOMContentLoaded', () => {
   const modal = document.getElementById('js-login-modal');
-  const closeButton = document.getElementById('js-login-modal__close');
+  const closeButton = document.getElementById('js-login-modal__close').parentElement;
   const formElements = modal.querySelectorAll('input, button, a');
   const firstFocusable = formElements[0];
   const lastFocusable = formElements[formElements.length - 1];
+  const openButton = document.getElementById('js-header__loginout-button');
+
+  // Ensure aria-expanded is set to false initially
+  modal.setAttribute('aria-expanded', 'false');
+  modal.style.display = 'none';
 
   const openModal = () => {
     modal.setAttribute('aria-expanded', 'true');
@@ -165,13 +139,13 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const closeModal = (event) => {
-    console.log("Closing modal");
     if (event) {
       event.preventDefault();
     }
     modal.setAttribute('aria-expanded', 'false');
     modal.style.display = 'none';
     // modal.classList.remove('open');
+    openButton.focus();
   };
 
   const handleKeydown = (event) => {
@@ -180,33 +154,44 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (event.key === 'Tab') {
-      // Manage focus trapping
+      // Allow tabbing outside and close modal if tabbing out
       if (event.shiftKey) {
         // Shift + Tab: focus backwards
         if (document.activeElement === firstFocusable) {
-          event.preventDefault();
-          lastFocusable.focus();
+          closeModal();
         }
       } else {
         // Tab: focus forwards
         if (document.activeElement === lastFocusable) {
-          event.preventDefault();
-          firstFocusable.focus();
+          closeModal();
         }
       }
     }
   };
 
   // Add event listeners
+  // Close modal when clicking outside
+  document.addEventListener('click', (event) => {
+    if (!modal.contains(event.target) && event.target !== openButton &&
+        modal.getAttribute('aria-expanded') === 'true') {
+      closeModal();
+    }
+  });
+
   closeButton.addEventListener('click', closeModal);
+  closeButton.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      closeModal(event);
+    }
+  });
   document.addEventListener('keydown', handleKeydown);
 
-  const openButton = document.getElementById('js-header__loginout-button');
+
   if (openButton) {
     openButton.addEventListener('click', () => {
       const expanded = modal.getAttribute('aria-expanded');
       if (expanded === null || expanded === 'false') {
-        console.log("Opening modal");
         openModal();
       } else {
         closeModal();
@@ -214,3 +199,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
