@@ -88,6 +88,19 @@ import ezidapp.models.identifier
 import ezidapp.models.user
 import impl
 import impl.util
+import traceback
+
+def simple_error(e):
+    """Extracts the exception name, HTTP status code (if applicable), and line number."""
+    tb = traceback.extract_tb(e.__traceback__)[-1]  # Get last traceback entry
+    error_msg = f"{type(e).__name__} at line {tb.lineno}"
+
+    # If it's an HTTPError, include the status code
+    if isinstance(e, urllib.error.HTTPError):
+        error_msg += f" (HTTP {e.code})"
+
+    return error_msg
+
 
 log = logging.getLogger(__name__)
 _lock = threading.Lock()
@@ -578,7 +591,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                         returnCode = -1
                         lc.checkFailed(returnCode, impl.util.formatException(e))
                 except urllib.error.HTTPError as e:
-                    log.error('HTTPError')
+                    log.error(simple_error(e))
                     success = False
                     returnCode = e.code
                 except Exception as e:
@@ -605,7 +618,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 self.markLinkChecked(index)
 
         except Exception as e:
-            log.exception('Exception: ' + str(e))
+            log.error(f"Exception: \n{simple_error(e)}")
 
 
 class OwnerWorkset(Command):
