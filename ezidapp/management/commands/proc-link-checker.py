@@ -595,7 +595,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     success = False
                     returnCode = e.code
                 except Exception as e:
-                    log.error('Exception')
+                    log.error(simple_error(e))
                     success = False
                     returnCode = -1
                     lc.checkFailed(returnCode, impl.util.formatException(e))
