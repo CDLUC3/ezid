@@ -91,12 +91,12 @@ import impl.util
 import traceback
 
 def simple_error(e):
-    """Extracts the exception name, HTTP status code (if applicable), and line number."""
+    """Extracts the exception name, HTTP status code (if applicable), filename, and line number."""
     tb = traceback.extract_tb(e.__traceback__)[-1]  # Get last traceback entry
-    error_msg = f"{type(e).__name__} at line {tb.lineno}"
+    error_msg = f"{type(e).__name__} in {tb.filename} at line {tb.lineno}"
 
     # If it's an HTTPError, include the status code
-    if isinstance(e, urllib.error.HTTPError):
+    if isinstance(e, urllib.error.HTTPError) or isinstance(e, requests.exceptions.HTTPError):
         error_msg += f" (HTTP {e.code})"
 
     return error_msg
