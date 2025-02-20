@@ -1805,6 +1805,91 @@ Selector pattern using above mixin:
     .tab__content {
       padding: 30px; } }
 
+/* trying to get tabs that work well if not ordered in some weird way which makes accessibility bad */
+/* General tab container styling */
+.tabsnew {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  overflow: hidden;
+  font-family: Arial, sans-serif; }
+
+/* Tab header container */
+.tabnew__header {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+  /* Align tabs to the left */
+  border-bottom: 1px solid #ccc; }
+
+/* Hide radio inputs */
+.tabnew__input {
+  display: none; }
+
+/* Tab labels */
+.tabnew__label {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  margin: 0 10px 0 0;
+  padding: 0.5em 10px;
+  border: 1px solid #beb6af;
+  background: white;
+  color: #005f70;
+  font-size: 1.2em;
+  font-weight: normal;
+  cursor: pointer;
+  z-index: 1; }
+  @media (min-width: 768px) {
+    .tabnew__label {
+      padding: 0.5em 30px; } }
+  .tabnew__label:not(:first-of-type) {
+    margin-left: -1px; }
+
+.tabnew__label:hover {
+  background: #e0e0e0; }
+
+/* Active tab label styling */
+.tabnew__input:checked + .tabnew__label {
+  border-bottom: 1px solid #f9f8f7;
+  background: #f9f8f7;
+  color: black; }
+  .tabnew__input:checked + .tabnew__label + .tabnew__content {
+    display: block; }
+
+/* Tab content */
+.tabnew__content {
+  position: relative;
+  width: 100%;
+  margin-top: -2px;
+  padding: 10px;
+  border: 1px solid #beb6af;
+  background: #f9f8f7; }
+  @media (min-width: 768px) {
+    .tabnew__content {
+      padding: 30px; } }
+
+.tabnew__input:checked + .tabnew__label + .tabnew__content {
+  display: block; }
+
+/* Accessibility improvements */
+.tabnew__label:focus {
+  outline: 2px solid #fbb714; }
+
 .table1 {
   width: 100%;
   border-collapse: collapse; }
@@ -2059,6 +2144,31 @@ Selector pattern using above mixin:
     .create__sidebox {
       padding: 0 0 20px 20px; } }
 
+/* START special styles to imitate bootstrap so that item order is correct for screen readers :-/ */
+/* Custom row for the layout */
+.bs-create__row {
+  position: relative; }
+
+/* Custom class for main content */
+.bs-create__main {
+  width: 66.66%;
+  float: left; }
+
+/* Custom class for sidebar */
+.bs-create__sidebox {
+  position: absolute;
+  padding-top: 28px;
+  padding-right: 30px;
+  right: 0;
+  top: 0;
+  width: 31.2%; }
+
+/* Clear the floated/absolute positioning below the row */
+.bs-fieldset-stacked {
+  width: 100%;
+  float: left; }
+
+/* END special styles to imitate bootstrap so that item order is correct for screen readers :-/ */
 .create__radio-button {
   margin: 0 0 20px 45px; }
 
