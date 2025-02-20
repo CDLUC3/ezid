@@ -16,14 +16,14 @@
     <input name="simpleToAdvanced" id="simpleToAdvanced"  type="hidden" value="False"/>
 
   <div class="fcontrol__group-inline general__form-element-group">
-    <label for="account_username" class="fcontrol__text-label-inline general__form-label">{% trans "Identifier" %}</label>
-    <div class="fcontrol__text-nofield">
+    <label for="lbl_identifier_display" class="fcontrol__text-label-inline general__form-label">{% trans "Identifier" %}</label>
+    <div id="lbl_identifier_display" class="fcontrol__text-nofield">
       <strong>{% identifier_display id_text testPrefixes %}</strong>
     </div>
   </div>
 
   <div class="fcontrol__group-inline general__form-element-group">
-    <label for="account_username" class="fcontrol__text-label-inline general__form-label">{% trans "Identifier as URL" %}</label>
+    <label for="url_to_copy" class="fcontrol__text-label-inline general__form-label">{% trans "Identifier as URL" %}</label>
     <div id="id_as_url__box" class="fcontrol__text-nofield">
       <span id="url_to_copy">{{ id_as_url }}</span>
       <span id="copy_message">{% trans "Link copied to your clipboard" %}</span>
@@ -78,26 +78,26 @@
     </div>
   </div>
   <div class="fcontrol__group-inline general__form-element-group">
-    <label for="account_username" class="fcontrol__text-label-inline general__form-label">{{internal_profile.owner.displayName}}</label>
-    <div class="fcontrol__text-nofield">{% display_value identifier internal_profile.owner %}</div>
+    <label for="internal_profile_owner" class="fcontrol__text-label-inline general__form-label">{{internal_profile.owner.displayName}}</label>
+    <div id="internal_profile_owner" class="fcontrol__text-nofield">{% display_value identifier internal_profile.owner %}</div>
   </div>
   <div class="fcontrol__group-inline general__form-element-group">
-    <label for="account_username" class="fcontrol__text-label-inline general__form-label">{{internal_profile.ownergroup.displayName}}</label>
-    <div class="fcontrol__text-nofield">{% display_value identifier internal_profile.ownergroup %}</div>
+    <label for="internal_profile_ownergroup" class="fcontrol__text-label-inline general__form-label">{{internal_profile.ownergroup.displayName}}</label>
+    <div id="internal_profile_ownergroup" class="fcontrol__text-nofield">{% display_value identifier internal_profile.ownergroup %}</div>
   </div>
   <div class="fcontrol__group-inline general__form-element-group">
-    <label for="account_username" class="fcontrol__text-label-inline general__form-label">{{internal_profile.created.displayName}}</label>
-    <div class="fcontrol__text-nofield">{% display_value identifier internal_profile.created %}</div>
+    <label for="internal_profile_created" class="fcontrol__text-label-inline general__form-label">{{internal_profile.created.displayName}}</label>
+    <div id="internal_profile_created" class="fcontrol__text-nofield">{% display_value identifier internal_profile.created %}</div>
   </div>
   <div class="fcontrol__group-inline general__form-element-group">
-    <label for="account_username" class="fcontrol__text-label-inline general__form-label">{{internal_profile.updated.displayName}}</label>
-    <div class="fcontrol__text-nofield">{% display_value identifier internal_profile.updated %}</div>
+    <label for="internal_profile_updated" class="fcontrol__text-label-inline general__form-label">{{internal_profile.updated.displayName}}</label>
+    <div id="internal_profile_updated" class="fcontrol__text-nofield">{% display_value identifier internal_profile.updated %}</div>
   </div>
 
 
-<div class="fieldset-stacked" role="group" aria-labelledby="fieldset-publish">
-  <div class="fieldset-inline create__form-element-group" role="group" aria-labelledby="status">
-    <span id="status" class="fieldset-inline__legend create__inline-nested-legend">{{internal_profile.status.displayName}}</span>
+<div class="fieldset-stacked" role="group">
+  <fieldset class="fieldset-inline create__form-element-group" role="group" aria-labelledby="status">
+    <legend id="status" class="fieldset-inline__legend create__inline-nested-legend">{{internal_profile.status.displayName}}</legend>
   {% if orig_status == 'reserved' %}
     <label for="_status_reserved" class="fcontrol__radio-label-inline">
       <input id="_status_reserved" class="fcontrol__radio-button-stacked" type="radio" value="reserved" name="_status" 
@@ -128,7 +128,7 @@
   {% else %}
     {% help_icon "decide_public_unavail" _("on making an identifier public or unavailable") %}
   {% endif %}
-  </div>
+  </fieldset>
   <div id="unavailable_reason_row" 
     {% if pub_status == 'unavailable' %}
       style="display: visible;"
@@ -145,8 +145,8 @@
       {% endif %}
       class="fcontrol__text-field-inline" />
   </div>
-  <div id="harv_index" class="fieldset-inline create__form-element-group" role="group" aria-labelledby="fieldset-harvesting">
-    <span id="fieldset-harvesting" class="fieldset-inline__legend create__inline-nested-legend">{% trans "Allow harvesting/indexing?" %}</span>
+  <fieldset id="harv_index" class="fieldset-inline create__form-element-group" role="group" aria-labelledby="fieldset-harvesting">
+    <legend id="fieldset-harvesting" class="fieldset-inline__legend create__inline-nested-legend">{% trans "Allow harvesting/indexing?" %}</legend>
     <label for="export_yes" class="fcontrol__radio-label-inline">
       <input id="export_yes" class="fcontrol__radio-button-stacked" type="radio" value="yes" name="_export"
       {% if export == 'yes' %}
@@ -162,7 +162,7 @@
       > <span>{% trans "No" %}</span>
     </label>
     {% help_icon "decide_export" _("on harvesting/indexing") %}
-  </div>
+  </fieldset>
 </div>
 
 
