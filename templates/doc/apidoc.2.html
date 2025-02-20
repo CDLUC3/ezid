@@ -152,7 +152,7 @@ both) but their behavior is different.  For example, in the API a GET
 operation on an EZID URL returns client-parseable metadata (see
 <a class="reference internal" href="#operation-get-identifier-metadata">Operation: get identifier metadata</a> below), but in the UI it returns
 an HTML page.</p>
-<p>To distinguish between the two interfaces EZID employs HTTP <a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec12.html">content
+<p>To distinguish between the two interfaces EZID employs HTTP <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9110.html#name-content-negotiation">content
 negotiation</a> <span class="ext-icon"></span>.  If a request comes in with an HTTP
 Accept header that expresses a preference for any form of HTML or XML,
 the UI is invoked; otherwise, the API is invoked.  A preference for
@@ -277,7 +277,7 @@ whitespace in names and values is not significant.  Neither element
 names nor element values may be empty.  (When updating an identifier,
 an uploaded empty value is treated as a command to delete the element
 entirely.)</p>
-<p>Metadata dictionaries are serialized using a subset of <a class="reference external" href="https://wiki.ucop.edu/display/Curation/Anvl">A Name-Value
+<p>Metadata dictionaries are serialized using a subset of <a class="reference external" href="https://ia902903.us.archive.org/25/items/ark_13030_c7x921j3h/anvlspec_2005.pdf">A Name-Value
 Language (ANVL)</a> <span class="ext-icon"></span> rules:</p>
 <ul class="simple">
 <li>One element name/value pair per line.</li>
@@ -1185,7 +1185,7 @@ citation profiles or no citation profile at all.  However, EZID's UI
 is, and its future metadata cross-walking support will be, limited to
 those profiles that it explicitly supports.</p>
 <ol class="arabic simple" id="profile-erc">
-<li><strong>Profile &quot;erc&quot;</strong>.  These elements are drawn from <a class="reference external" href="https://wiki.ucop.edu/display/Curation/ERC">Kernel Metadata
+<li><strong>Profile &quot;erc&quot;</strong>.  These elements are drawn from <a class="reference external" href="https://arks.org/specs/">Kernel Metadata
 and Electronic Resource Citations (ERCs)</a> <span class="ext-icon"></span>.  This
 profile aims at universal citations: any kind of object (digital,
 physical, abstract) or agent (person, group, software, satellite)
@@ -1568,7 +1568,7 @@ registration failure | xml error...&quot;.  Warnings and errors may also be
 viewed in the EZID UI and may also be emailed to a specified mailbox.
 Warnings and errors can be removed only by submitting new metadata and
 re-registering identifiers.</p>
-<p>Crossref deposit metadata should adhere to the <a class="reference external" href="http://help.crossref.org/deposit_schema">Crossref Deposit
+<p>Crossref deposit metadata should adhere to the <a class="reference external" href="https://www.crossref.org/documentation/schema-library/">Crossref Deposit
 Schema</a> <span class="ext-icon"></span>, version 4.3.0 or later.  The metadata should
 consist of the immediate child element of a &lt;body&gt; element, i.e., one
 of the following elements:</p>
