@@ -1703,8 +1703,8 @@ class ContactForm(django.forms.Form):
         CONTACT_REASONS = (
             ("None Entered", _("Choose One")),
             (
-                "I would like to inquire about getting a new account for ARKs",
-                _("I would like to inquire about getting a new account for ARKs *"),
+                "I would like to inquire about getting a new account",
+                _("I would like to inquire about getting a new account *"),
             ),
             (
                 "I have a problem or question about existing account",
@@ -1754,11 +1754,6 @@ class ContactForm(django.forms.Form):
             choices=REFERRAL_SOURCES,
             label=_("How did you hear about us?"),
         )
-        # noinspection PySimplifyBooleanCheck
-        if self.localized == False:
-            self.fields["newsletter"] = django.forms.BooleanField(
-                required=False, label=_("Subscribe to the EZID newsletter")
-            )
         self.fields["question"] = django.forms.CharField(
             max_length=200,
             label=_("Human test: How many drop down menus are in this form?"),

@@ -62,14 +62,6 @@ def learn(request):
     return impl.ui_common.render(request, 'learn', d)
 
 
-def ark_open_faq(request):
-    if request.method != "GET":
-        return impl.ui_common.methodNotAllowed(request)
-    d = {'menu_item': 'ui_home.learn'}
-    # noinspection PyUnresolvedReferences
-    return impl.ui_common.render(request, 'info/ark_open_faq', d)
-
-
 def crossref_faq(request):
     if request.method != "GET":
         return impl.ui_common.methodNotAllowed(request)

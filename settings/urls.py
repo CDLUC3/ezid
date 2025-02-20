@@ -35,7 +35,6 @@ urlpatterns = [
     django.urls.re_path("^$",                              impl.ui_home.index,                 name="ui_home.index"),
     django.urls.re_path("^home/ajax_index_form$",          impl.ui_home.ajax_index_form,       name="ui_home.ajax_index_form"),
     django.urls.re_path("^learn/$",                        impl.ui_home.learn,                 name="ui_home.learn"),
-    django.urls.re_path("^learn/ark_open_faq$",            impl.ui_home.ark_open_faq,          name="ui_home.ark_open_faq"),
     django.urls.re_path("^learn/crossref_faq$",            impl.ui_home.crossref_faq,          name="ui_home.crossref_faq"),
     django.urls.re_path("^learn/doi_services_faq$",        impl.ui_home.doi_services_faq,      name="ui_home.doi_services_faq",),
     django.urls.re_path("^learn/id_basics$",               impl.ui_home.id_basics,             name="ui_home.id_basics"),
