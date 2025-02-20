@@ -1,8 +1,10 @@
 
-<div id="js-login-modal" class="login-modal" aria-hidden="true" role="dialog" aria-labelledby="login-modal__title">
+<div id="js-login-modal" class="login-modal" aria-expanded="false" role="dialog" aria-labelledby="login-modal__title">
 	<div class="login-modal__header">
 		<div id="login-modal__title" class="login-modal__title">Access your account</div>
-		<img id="js-login-modal__close" src="images/icon_cross.svg" alt="close" class="login-modal__close">
+		<button type="button" id="js-login-modal__close" class="login-modal__close" aria-label="Close modal">
+  		<img src="images/icon_cross.svg" alt="close">
+		</button>
 	</div>
 	<form id="js-login-modal__form" action="url-here" class="login-modal__form">
     <div class="login-modal__form-element fcontrol__group-stacked">
