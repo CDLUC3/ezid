@@ -24,7 +24,7 @@
 
 - name: install poetry
   ansible.builtin.pip:
-    name: poetry
+    name: poetry==1.8.5
 
 - name: run pip install
   ansible.builtin.command:

@@ -4,44 +4,46 @@
 {% block title %}{% block title-twitter %}{% trans "Create an Advanced Identifier" %}{% endblock %}{% endblock %}
 {% block heading %}{% content_heading _("Create an Advanced Identifier") %}{% endblock %}
 {% block content %}
-<div class="tab create__tab">
-  <input class="tab__input" id="tab-1" type="radio" name="name" aria-checked="false"/>
-  <label class="tab__label" id="tab-1-label" for="tab-1" tabindex="0">{% trans "Simple" %}</label>
-  <div class="tab__content">
-    <div>This page cannot be loaded unless you have JavaScript activated in your browser.</div>
+<div class="tabsnew create__tab">
+  <div class="tabnew__header">
+    <input class="tabnew__input" id="tab-1" type="radio" name="name" aria-checked="false"/>
+    <label class="tabnew__label" id="tab-1-label" for="tab-1" tabindex="0">{% trans "Simple" %}</label>
+    <input class="tabnew__input" id="tab-2" type="radio" name="name" checked="checked" aria-checked="true"/>
+    <label class="tabnew__label" for="tab-2" tabindex="0">{% trans "Advanced" %}</label>
   </div>
-  <input class="tab__input" id="tab-2" type="radio" name="name" checked="checked" aria-checked="true"/>
-  <label class="tab__label" for="tab-2" tabindex="0">{% trans "Advanced" %}</label>
-  <div class="tab__content">
+  <div class="tabnew__content">
     <form id="create_form" action="{% url "ui_create.advanced" %}" method="post" class="form-horizontal" role="form">
     <input name="action" id="action" type="hidden" value="create"/>
-    <div class="row">
-      <div class="col-md-4 col-md-push-8 create__sidebox">
-        <div class="sidebox">
-          <h2 class="sidebox__heading">{% trans "Quick Start Guides" %}</h2>
-          <ul class="sidebox__list">
-            <li><a href="/static/locale/en/EZID_CustomRemainders.pdf" class="link__primary" title="PDF Document" target="_blank">{% trans "Custom Remainder Rules" %}</a></li>
-            <li><a href="/static/locale/en/EZID_AdvancedCreate.pdf" class="link__primary" title="PDF Document" target="_blank">{% trans "Advanced Create for DOIs" %}</a></li>
-            <li><a href="/static/locale/en/EZID_ResourceTypes.pdf" title="PDF Document" class="link__primary" target="_blank">{% trans "Resource Types" %}</a></li>
-            <li><a href="/static/locale/en/EZID_ContributorTypes.pdf" title="PDF Document" class="link__primary" target="_blank">{% trans "Contributor Types" %}</a></li>
-            <li><a href="/static/locale/en/EZID_RelationTypes.pdf" title="PDF Document" class="link__primary" target="_blank">{% trans "Relation Types" %}</a></li>
-            <li><a href="/static/locale/en/EZID_InfoUnavailable.pdf" title="PDF Document" class="link__primary" target="_blank">{% trans "Don't have info for required fields? Use placeholder codes." %}</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md-8 col-md-pull-4">
-      {% include "includes/simple_id_type.html" with calling_page="create" %}
+    <div class="bs-create__row">
+
+      <!-- main content (top part of form) -->
+      <div class="bs-create__main">
+        {% include "includes/simple_id_type.html" with calling_page="create" %}
         {% include "includes/advanced_remainder.html" %}
         {% include "includes/advanced_publish_id.html" %}
       </div>
+
     </div>
 
-    <div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset7">
+    <!-- rest of the form -->
+    <div class="bs-fieldset-stacked" role="group" aria-labelledby="create__fieldset7">
+      {% include "includes/advanced_describe.html" %}
+      {% include "includes/create_button.html" with calling_page="create" id_type="advanced" %}
+    </div>
 
-      {% include "includes/advanced_describe.html" %} 
-     
-      {% include "includes/create_button.html" with calling_page="create" id_type="advanced" %} 
-
+    <!-- sidebar -->
+    <div class="bs-create__sidebox">
+      <div class="sidebox">
+        <h2 class="sidebox__heading">{% trans "Quick Start Guides" %}</h2>
+        <ul class="sidebox__list">
+          <li><a href="/static/locale/en/EZID_CustomRemainders.pdf" class="link__primary" title="PDF Document" target="_blank">{% trans "Custom Remainder Rules" %}</a></li>
+          <li><a href="/static/locale/en/EZID_AdvancedCreate.pdf" class="link__primary" title="PDF Document" target="_blank">{% trans "Advanced Create for DOIs" %}</a></li>
+          <li><a href="/static/locale/en/EZID_ResourceTypes.pdf" title="PDF Document" class="link__primary" target="_blank">{% trans "Resource Types" %}</a></li>
+          <li><a href="/static/locale/en/EZID_ContributorTypes.pdf" title="PDF Document" class="link__primary" target="_blank">{% trans "Contributor Types" %}</a></li>
+          <li><a href="/static/locale/en/EZID_RelationTypes.pdf" title="PDF Document" class="link__primary" target="_blank">{% trans "Relation Types" %}</a></li>
+          <li><a href="/static/locale/en/EZID_InfoUnavailable.pdf" title="PDF Document" class="link__primary" target="_blank">{% trans "Don't have info for required fields? Use placeholder codes." %}</a></li>
+        </ul>
+      </div>
     </div>
     </form>
   </div>

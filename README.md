@@ -27,7 +27,7 @@ tools.  Here is a quick tour of the our EZID `pyproject.toml`:
 We declare Poetry as our build tool
 ```
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=1.0.0,<2.0.0"]
 build-backend = "poetry.core.masonry.api"
 ```
 

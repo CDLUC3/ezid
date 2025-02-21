@@ -26,10 +26,10 @@
 .tab__label {
   margin: 0 10px 0 0;
   padding: 0.5em 10px;
-	border: 1px solid $design-light-gray-border-color;
-	background: $design-white-color;
-	color: $design-primary-color;
-	font-size: 1.2em;
+  border: 1px solid $design-light-gray-border-color;
+  background: $design-white-color;
+  color: $design-primary-color;
+  font-size: 1.2em;
   font-weight: normal;
 	cursor: pointer;
 	z-index: 1;
@@ -58,3 +58,90 @@
   }
 
 }
+
+/* trying to get tabs that work well if not ordered in some weird way which makes accessibility bad */
+
+/* General tab container styling */
+.tabsnew {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+}
+
+/* Tab header container */
+.tabnew__header {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start; /* Align tabs to the left */
+  border-bottom: 1px solid #ccc;
+}
+
+/* Hide radio inputs */
+.tabnew__input {
+  display: none;
+}
+
+/* Tab labels */
+.tabnew__label {
+  display: inline-flex;
+  margin: 0 10px 0 0;
+  padding: 0.5em 10px;
+  border: 1px solid $design-light-gray-border-color;
+  background: $design-white-color;
+  color: $design-primary-color;
+  font-size: 1.2em;
+  font-weight: normal;
+  cursor: pointer;
+  z-index: 1;
+
+  @include bp(screen2) {
+    padding: 0.5em 30px;
+  }
+
+  &:not(:first-of-type) {
+    margin-left: -1px;
+  }
+}
+
+.tabnew__label:hover {
+  background: #e0e0e0;
+}
+
+/* Active tab label styling */
+.tabnew__input:checked + .tabnew__label {
+  border-bottom: 1px solid $design-light-gray-bg-color;
+  background: $design-light-gray-bg-color;
+  color: $design-black-color;
+
+  + .tabnew__content {
+    display: block;
+  }
+}
+
+/* Tab content */
+.tabnew__content {
+  position: relative;
+  width: 100%;
+  margin-top: -2px;
+  padding: 10px;
+  border: 1px solid $design-light-gray-border-color;
+  background: $design-light-gray-bg-color;
+
+  @include bp(screen2) {
+    padding: 30px;
+  }
+}
+
+.tabnew__input:checked + .tabnew__label + .tabnew__content {
+  display: block;
+}
+
+/* Accessibility improvements */
+.tabnew__label:focus {
+  outline: 2px solid $design-mark-color
+}
+

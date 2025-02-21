@@ -25,6 +25,37 @@ $form-element-end-group-spacing: 32px;
 
 }
 
+/* START special styles to imitate bootstrap so that item order is correct for screen readers :-/ */
+
+/* Custom row for the layout */
+.bs-create__row {
+  position: relative;
+}
+
+/* Custom class for main content */
+.bs-create__main {
+  width: 66.66%;
+  float: left;
+}
+
+/* Custom class for sidebar */
+.bs-create__sidebox {
+	position: absolute;
+	padding-top: 28px;
+	padding-right: 30px;
+  	right: 0;
+	top: 0;
+  	width: 31.2%;
+}
+
+/* Clear the floated/absolute positioning below the row */
+.bs-fieldset-stacked {
+  width: 100%;
+  float: left;
+}
+
+/* END special styles to imitate bootstrap so that item order is correct for screen readers :-/ */
+
 .create__radio-button {
 	margin: 0 0 $form-element-group-spacing 45px;
 }

@@ -40,8 +40,7 @@ def render(request, template, context={}):
         "feed_cache": [],  # ezidapp.management.commands.newsfeed.getLatestItems(),
         "matomo_site_id": django.conf.settings.MATOMO_SITE_ID,
         "debug": django.conf.settings.DEBUG,
-        "matomo_site_url": django.conf.settings.MATOMO_SITE_URL,
-        "matomo_site_id": django.conf.settings.MATOMO_SITE_ID,
+        "matomo_site_url": django.conf.settings.MATOMO_SITE_URL
     }
     ctx.update(context)
     templ = django.template.loader.get_template(f'{template}.html')

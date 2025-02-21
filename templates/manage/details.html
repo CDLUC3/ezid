@@ -24,9 +24,9 @@
   <div class="row vertical-buffer-bot">
     <div class="col-md-8">
       <div class="row">
-        <label class="col-md-4 vertical-buffer-xxs">{% trans "Identifier" %}:</label>
-        <div class="col-md-8 vertical-buffer-bot-md"><strong>{% identifier_display id_text testPrefixes %}</strong></div>
-        <label class="col-md-4 vertical-buffer-xxs">{% trans "Identifier as URL" %}:</label>
+        <label for="identifier_info" class="col-md-4 vertical-buffer-xxs">{% trans "Identifier" %}:</label>
+        <div id="identifier_info" class="col-md-8 vertical-buffer-bot-md"><strong>{% identifier_display id_text testPrefixes %}</strong></div>
+        <label for="url_to_copy" class="col-md-4 vertical-buffer-xxs">{% trans "Identifier as URL" %}:</label>
         <div class="col-md-7">
           <div id="id_as_url__box" class="vertical-buffer-xxs">
             <span id="url_to_copy">{{ id_as_url }}</span>
@@ -86,15 +86,15 @@
     </div>
   </div>
   <div class="row vertical-buffer-bot">
-    <label class="col-sm-2">{{internal_profile.target.displayName}}: </label>
-    <div class="col-sm-7">{% display_value identifier internal_profile.target %}</div>
+    <label for="internal_profile_target" class="col-sm-2">{{internal_profile.target.displayName}}: </label>
+    <div id="internal_profile_target" class="col-sm-7">{% display_value identifier internal_profile.target %}</div>
   </div>
 	    
   {% if not has_block_data %}
     {% for e in current_profile.elements %}
   <div class="row vertical-buffer-bot">
-    <label class="col-sm-2">{{e.displayName}}:</label>
-    <div class="col-sm-7">{% display_value identifier e %}</div>
+    <label for="an-element{{forloop.counter}}" class="col-sm-2">{{e.displayName}}:</label>
+    <div id="an-element{{forloop.counter}}" class="col-sm-7">{% display_value identifier e %}</div>
   </div>
     {% endfor %}
   {% endif %}
@@ -117,41 +117,41 @@
   <hr/>
   <div class="row vertical-buffer-bot">
     <div class="inline-header">
-      <h2 class="heading__icon-4">{% trans "About the Identifier's Status" %}</h2>
+      <h2 class="heading__icon-4">{% trans "About the Identifier's Status" %} kdlkjklsjfkslj</h2>
     </div>
   </div>
   <div class="row vertical-buffer-bot">
-    <label class="col-sm-2">{{internal_profile.owner.displayName}}:</label>
-    <div class="col-sm-7">{% display_value identifier internal_profile.owner %}</div>
+    <label for="profile_owner" class="col-sm-2">{{internal_profile.owner.displayName}}:</label>
+    <div id="profile_owner" class="col-sm-7">{% display_value identifier internal_profile.owner %}</div>
   </div>
   <div class="row vertical-buffer-bot">
-    <label class="col-sm-2">{{internal_profile.ownergroup.displayName}}:</label>
-    <div class="col-sm-7">{% display_value identifier internal_profile.ownergroup %}</div>
+    <label for="ownergroup" class="col-sm-2">{{internal_profile.ownergroup.displayName}}:</label>
+    <div id="ownergroup" class="col-sm-7">{% display_value identifier internal_profile.ownergroup %}</div>
   </div>
   <div class="row vertical-buffer-bot">
-    <label class="col-sm-2">{{internal_profile.created.displayName}}:</label>
-    <div class="col-sm-7">{% display_value identifier internal_profile.created %}</div>
+    <label for="created_displayname" class="col-sm-2">{{internal_profile.created.displayName}}:</label>
+    <div id="created_displayname" class="col-sm-7">{% display_value identifier internal_profile.created %}</div>
   </div>
   <div class="row vertical-buffer-bot">
-    <label class="col-sm-2">{{internal_profile.updated.displayName}}:</label>
-    <div class="col-sm-7">{% display_value identifier internal_profile.updated %}</div>
+    <label for="updated_displayname" class="col-sm-2">{{internal_profile.updated.displayName}}:</label>
+    <div id="updated_displayname" class="col-sm-7">{% display_value identifier internal_profile.updated %}</div>
   </div>
   <div class="row vertical-buffer-bot">
-    <label class="col-sm-2">{{internal_profile.status.displayName}}:</label>
-    <div class="col-sm-7">{{pub_status}}</div>
+    <label for="status_displayname" class="col-sm-2">{{internal_profile.status.displayName}}:</label>
+    <div id="status_displayname" class="col-sm-7">{{pub_status}}</div>
   </div>
 	    
   {% if stat_reason %}
   <div class="row vertical-buffer-bot">
-    <label class="col-sm-2">&nbsp;</label>
-    <div class="col-sm-7">{{ stat_reason }}</div>
+    <label for="stat_reason" class="col-sm-2">&nbsp;</label>
+    <div id="stat_reason" class="col-sm-7">{{ stat_reason }}</div>
   </div>
   {% endif %}
 			
   {% if pub_status == 'public' %}
   <div class="row vertical-buffer-bot">
-    <label class="col-sm-2">{{internal_profile.export.displayName}}</label>
-    <div class="col-sm-7">{% display_value identifier internal_profile.export %}</div>
+    <label for="internal_profile_export" class="col-sm-2">{{internal_profile.export.displayName}}</label>
+    <div id="internal_profile_export"class="col-sm-7">{% display_value identifier internal_profile.export %}</div>
   </div>
   {% endif %}
 

@@ -183,23 +183,27 @@ def data_row(
 
 
 FUNCTIONS_FOR_FORMATTING = {
-    'datetime': lambda x, tp, href: datetime_disp(x, href),
+    'datetime': lambda x, tp: datetime_disp(x),
     'identifier': lambda x, tp, href: identifier_disp(x, tp),
-    'string': lambda x, tp, href: string_value(x, href),
+    'string': lambda x, tp: string_value(x),
 }
 
 
 def formatted_field(record, field_name, field_display_types, testPrefixes, href):
     value = record[field_name]
     formatting = field_display_types[field_name]
-    return FUNCTIONS_FOR_FORMATTING[formatting](value, testPrefixes, href)
+    # only the identifier gets linked now
+    if formatting == 'identifier':
+        return FUNCTIONS_FOR_FORMATTING[formatting](value, testPrefixes, href)
+    else:
+        return FUNCTIONS_FOR_FORMATTING[formatting](value, testPrefixes)
 
 
-def string_value(x, href):
+def string_value(x):
     if x is None or x.strip() == '':
         return '&nbsp;'
     else:
-        return href + django.utils.html.escape(x) + "</a>"
+        return django.utils.html.escape(x)
 
 
 @register.simple_tag
@@ -222,15 +226,14 @@ def identifier_disp(x, testPrefixes):
     )
 
 
-def datetime_disp(x, href):
+def datetime_disp(x):
     return (
-        href
-        + django.utils.html.escape(
+        django.utils.html.escape(
             datetime.datetime.utcfromtimestamp(x).strftime(
                 django.conf.settings.TIME_FORMAT_UI_METADATA
             )
         )
-        + " UTC</a>"
+        + " UTC"
     )
 
 

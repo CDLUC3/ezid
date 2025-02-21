@@ -961,10 +961,6 @@ msgstr ""
 msgid "How did you hear about us?"
 msgstr ""
 
-#: code/form_objects.py:1047
-msgid "Subscribe to the EZID newsletter"
-msgstr ""
-
 #: code/form_objects.py:1048
 msgid "Human test: How many drop down menus are in this form?"
 msgstr ""
@@ -2073,66 +2069,6 @@ msgid ""
 "will enable data sharing and publication. </p>"
 msgstr ""
 
-#: templates/info/ark_open_faq.html:6
-msgid "ARKs in the Open FAQ"
-msgstr ""
-
-#: templates/info/ark_open_faq.html:7
-msgid "ARKs in the Open: Frequently Asked Questions"
-msgstr ""
-
-#. Translators: Copy HTML tags over and only translate words outside of these tags
-#. i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p>
-#. i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a>
-#: templates/info/ark_open_faq.html:18
-msgid ""
-"<p><strong>What is ARKs in the Open?</strong></p> <p>ARKs in the Open is a "
-"collaboration between CDL and <a href=\"http://duraspace.org/about\" "
-"class=ext-link\">DuraSpace</a> aimed at building an open, international "
-"community around <a href=\"http://n2t.net/e/ark_ids.html\" class=\"ext-link"
-"\">Archival Resource Keys (ARKs)</a> and their use as persistent identifiers "
-"in the open scholarly ecosystem.</p> <p><strong>Why is CDL working on the "
-"ARKs in the Open initiative</strong></p> <p>We (CDL) are launching this "
-"pilot project as a first step toward ensuring the ongoing health and "
-"development of the ARK infrastructure. By \"ARK infrastructure,\" we mean "
-"open source software tools and systems, the ARK specification, and "
-"production-grade resolver services. Community ownership of ARK identifier "
-"assets has been under discussion for over a decade, and the project makes a "
-"start by establishing an active ARK community group with the aims of:</p> "
-"<p>1.       Maintaining two key assets: the ARK specification and the NAAN "
-"registry, and</p> <p>2.       Submitting the current ARK specification to "
-"the IETF as in Internet Informational RFC.</p> <p><strong>What is "
-"DuraSpace's role</strong></p> <p>Since 2001, CDL has served as the "
-"\"incubator\" for ARKs. Now, to achieve long-term sustainability, ARKs and "
-"the ARK infrastructure must emerge from CDL and mature in partnership with "
-"multiple organizations and community participants to guide its future. To "
-"jumpstart the process, CDL sought a collaboration with DuraSpace, an "
-"independent not-for-profit organization providing leadership for open "
-"technologies and communities such as Fedora, DSpace, and VIVO.</p> "
-"<p><strong>Does this mean EZID or CDL will stop offering ARK identifiers?</"
-"strong></p> <p>Not at all. EZID will continue to provide full services for "
-"the creation and maintenance of ARKs and other identifiers. CDL expects to "
-"play a prominent role in whatever community partnership emerges around ARKs "
-"and ARK infrastructure. </p> <p><strong>Where can I get more detailed "
-"information about ARKs in the Open?</strong></p> <p>The project's home "
-"page:  <a href=\"https://wiki.duraspace.org/display/DSP/ARKs+in+the+Open"
-"+Project\" class=ext-link\">https://wiki.duraspace.org/display/DSP/ARKs+in"
-"+the+Open+Project</a></p> <p><strong>How can I stay informed about ARKs in "
-"the Open?</strong></p> <p>Regular updates will be posted to the ARK mailing "
-"list. Join the list here:  <a href=\"https://groups.google.com/forum/#!forum/"
-"arks-forum\" class=ext-link\">https://groups.google.com/forum/#!forum/arks-"
-"forum</a></p> <p><strong>How can I get more involved?</strong></p> "
-"<p>Express your interest here: <a href=\"http://bit.ly/2C4fU8f\" class=ext-"
-"link\">http://bit.ly/2C4fU8f</a></p> <p>Or give us feedback here: <a href="
-"\"https://wiki.duraspace.org/display/DSP/Project+Vision\" class=ext-link"
-"\">https://wiki.duraspace.org/display/DSP/Project+Vision</a></p> "
-"<p><strong>I have more questions about ARKs. Where can I get answers?</"
-"strong></p> <p>All about ARKs: <a href=\"http://n2t.net/e/ark_ids.html\" "
-"class=ext-link\">http://n2t.net/e/ark_ids.html</a></p> <p>Or, contact the <a "
-"class=\"link__primary\" href=\"mailto:arks@ucop.edu\">CDL ARKs in the Open "
-"team</a></p>"
-msgstr ""
-
 #: templates/info/crossref_faq.html:6
 msgid "Crossref FAQ"
 msgstr ""
@@ -2212,11 +2148,11 @@ msgid ""
 msgstr ""
 
 #: templates/info/doi_services_faq.html:6
-msgid "DOI Services FAQ"
+msgid "Registration Services FAQ"
 msgstr ""
 
 #: templates/info/doi_services_faq.html:7
-msgid "DOI Services: Frequently Asked Questions"
+msgid "Frequently Asked Questions"
 msgstr ""
 
 #. Translators: Copy HTML tags over and only translate words outside of these tags
@@ -2224,15 +2160,11 @@ msgstr ""
 #. i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a>
 #: templates/info/doi_services_faq.html:18
 msgid ""
-"<p><strong>Can I get a new DOI account?</strong></p> <p>We are no longer "
-"able to issue new DOI service accounts to non-University of California "
-"entities. <p><strong>Can I get a new ARK account?</strong></p> <p>Yes. "
-"<p><strong>Why are you changing EZID's service offering in this way?</"
-"strong></p> <p>DOI service providers have evolved considerably over the last "
-"5-10 years, and after careful consideration, we have adopted the following "
-"new strategy direction: to endorse and support DataCite's long-term "
-"sustainability, while maintaining our own distinct role in the persistent "
-"identifier (PID) space. <p><strong>What alternatives do I have for DOI "
+"<p><strong>How do I obtain a new account?</strong></p> <p>New accounts for ARK "
+"and DOI services are available to University of California users only, with "
+"access being managed at the campus-level through the library. Please reach "
+"out to your campus library directly to obtain an account.</p>"
+"<p><strong>What alternatives do I have for DOI "
 "services?</strong></p> <p>Option 1: Direct membership in <a href=\"http://"
 "www.datacite.org/\" class=\"ext-link\">DataCite</a>. This is an especially "
 "good option if you seek a participatory role in the data citation and data "

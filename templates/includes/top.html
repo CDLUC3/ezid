@@ -23,17 +23,15 @@ Welcome {{ authenticatedUser.username }}!
     <img src="/static/images/mobile-menu.svg" alt="Show or hide navigation" class="header__nav-button-icon">
   </button>
 
-  <nav role="navigation" id="js-header__nav" class="header__nav--selected" aria-hidden="false">
+  <nav role="navigation" id="js-header__nav" class="header__nav--selected">
     <a class="header__nav-item-search" href="/search">Search</a>
     <details id="header__nav-details-learn" aria-expanded="false" aria-label="Learn about EZID">
       <summary class="header__nav-item-learn" role="button">Learn</summary>
       <div class="header__subnav-panel">
         <a class="header__nav-subitem" href="{% url "ui_home.learn" %}#01">What Is EZID?</a>
         <a class="header__nav-subitem" href="{% url "ui_home.learn" %}#02">Current Users</a>
-        <a class="header__nav-subitem" href="{% url "ui_home.learn" %}#03">Pricing</a>
         <a class="header__nav-subitem" href="{% url "ui_home.learn" %}#04">Documentation</a>
-        <a class="header__nav-subitem" href="{% url "ui_home.learn" %}#05">FAQ</a>
-        <a class="header__nav-subitem" href="{% url "ui_home.learn" %}#06">Media</a>
+        <a class="header__nav-subitem" href="/learn/doi_services_faq">FAQ</a>
         <a class="header__nav-subitem" href="/doc/apidoc.html">API Guide</a>
         <a class="header__nav-subitem" href="{% url "ui_demo.index" %}">EZID Demo</a>
       </div>

@@ -108,7 +108,7 @@ $(document).ready(function() {
       frm.attr('action', location.pathname + '?publish=' +
         $("[name='publish']").val() + '&remainder=' + $("#remainder").val());
       if (includeAnchor) {
-        var input = $("<input>", { type: "hidden", name: "anchor", value: "create__publish" });
+        var input = $("<input>", { type: "hidden", name: "anchor", value: "current_profile" });
         frm.append($(input));
       }
       frm.unbind('submit');
