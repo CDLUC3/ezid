@@ -77,7 +77,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     task_model.status = self.queue.IGNORED
                 except Exception as e:
                     log.error('#' * 100)
-                    log.exception(f'Exception when handling task "{task_model}"')
+                    log.error(f'Exception when handling task "{task_model}"')
                     task_model.error = str(e)
                     # if self.is_permanent_error(e):
                     if True:
@@ -247,19 +247,19 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     'unexpected return from metadata submission: ' + r
                 )
             except urllib.error.HTTPError as e:
-                log.exception('HTTPError')
+                log.error('HTTPError')
                 msg = None
                 if e.fp is not None:
                     try:
                         msg = e.fp.read().decode('utf-8')
                     except Exception:
-                        log.exception('Exception')
+                        log.error('Exception')
                 raise Exception(msg) from e
             finally:
                 if c:
                     c.close()
         except Exception as e:
-            log.exception('Exception')
+            log.error('Exception')
             impl.log.otherError(
                 'crossref._submitDeposit',
                 self._wrapException(f'error submitting deposit, doi {doi}, batch {batchId}', e),
@@ -413,13 +413,13 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             )
             response = c.read()
         except urllib.error.HTTPError as e:
-            log.exception('HTTPError')
+            log.error('HTTPError')
             msg = None
             if e.fp is not None:
                 try:
                     msg = e.fp.read().decode('utf-8')
                 except Exception:
-                    log.exception('Exception')
+                    log.error('Exception')
             raise Exception(msg) from e
         finally:
             if c:
@@ -430,7 +430,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             # the embedded encoding declaration.
             root = lxml.etree.XML(response)
         except Exception as e:
-            log.exception('Exception')
+            log.error('Exception')
             assert False, 'XML parse error: ' + str(e)
 
         assert root.tag == 'doi_batch_diagnostic', 'unexpected response root element: ' + root.tag
@@ -504,7 +504,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 subject_str, body_str, from_str, [to_str], fail_silently=True
             )
         except Exception as e:
-            log.exception('Exception')
+            log.error('Exception')
             raise self._wrapException('error sending email', e)
 
     def _wrapException(self, context, exception):

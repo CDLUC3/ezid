@@ -80,7 +80,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 # Don't sleep while work is in progress
                 doSleep = False
             except Exception as e:
-                self.log.exception('Exception')
+                self.log.error('Exception')
                 impl.log.otherError("download.run", e)
                 doSleep = True
 
@@ -170,7 +170,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             # probe the file to find its size.
             n = f.tell()
         except Exception as e:
-            self.log.exception('Exception')
+            self.log.error('Exception')
             raise self._wrapException("error creating file", e)
         else:
             # This is run if there's no exception thrown
@@ -315,7 +315,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                         _total += 1
                 self._flushFile(f)
             except Exception as e:
-                self.log.exception('Exception')
+                self.log.error('Exception')
                 raise self._wrapException("error writing file", e)
             r.lastId = ids[-1].identifier
             r.fileSize = f.tell()
@@ -334,7 +334,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 f.seek(r.fileSize)
                 f.truncate()
             except Exception as e:
-                self.log.exception('Exception')
+                self.log.error('Exception')
                 raise self._wrapException("error re-opening/seeking/truncating file", e)
             start = r.currentIndex
             for i in range(r.currentIndex, len(r.toHarvest.split(","))):
@@ -348,7 +348,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     f.write("</records>")
                     self._flushFile(f)
                 except Exception as e:
-                    self.log.exception('Exception')
+                    self.log.error('Exception')
                     raise self._wrapException("error writing file footer", e)
             r.stage = ezidapp.models.async_queue.DownloadQueue.COMPRESS
             r.save()
@@ -399,7 +399,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 p.returncode == 0 and stderr == b''
             ), f"compression command returned status code {p.returncode:d}, stderr '{stderr}'"
         except Exception as e:
-            self.log.exception('Exception')
+            self.log.error('Exception')
             raise self._wrapException("error compressing file", e)
         else:
             r.stage = ezidapp.models.async_queue.DownloadQueue.DELETE
@@ -415,7 +415,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             if os.path.exists(self._path(r, 1)):
                 os.unlink(self._path(r, 1))
         except Exception as e:
-            self.log.exception('Exception')
+            self.log.error('Exception')
             raise self._wrapException("error deleting uncompressed file", e)
         else:
             r.stage = ezidapp.models.async_queue.DownloadQueue.MOVE
@@ -432,7 +432,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             else:
                 assert os.path.exists(self._path(r, 3)), "file has disappeared"
         except Exception as e:
-            self.log.exception('Exception')
+            self.log.error('Exception')
             raise self._wrapException("error moving compressed file", e)
         else:
             r.stage = ezidapp.models.async_queue.DownloadQueue.NOTIFY
@@ -444,7 +444,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             f = open(self._path(r, 4), mode="w", encoding="utf-8")
             f.write(f"{ezidapp.models.util.getUserByPid(r.requestor).username}\n{r.rawRequest}\n")
         except Exception as e:
-            self.log.exception('Exception')
+            self.log.error('Exception')
             raise self._wrapException("error writing sidecar file", e)
         finally:
             if f:
@@ -475,7 +475,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     fail_silently=True,
                 )
             except Exception as e:
-                self.log.exception('Exception')
+                self.log.error('Exception')
                 raise self._wrapException("error sending email", e)
         r.delete()
 

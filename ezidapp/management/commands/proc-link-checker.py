@@ -252,7 +252,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 try:
                     user, flag = l.split()
                 except ValueError:
-                    log.exception('ValueError')
+                    log.error('ValueError')
                     assert False, "syntax error on line %d" % n
                 assert flag in ["permanent", "temporary"], "syntax error on line %d" % n
 
@@ -263,14 +263,14 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                         ezidapp.models.user.User.objects.get(username=user).id
                     )
                 except ezidapp.models.user.User.DoesNotExist:
-                    log.exception('User.DoesNotExist')
+                    log.error('User.DoesNotExist')
                     assert False, "no such user: " + user
             _permanentExcludes = pe
             _temporaryExcludes = te
             _exclusionFileModifyTime = s.st_mtime
             log.info("exclusion file successfully loaded")
         except Exception as e:
-            log.exception('Exception')
+            log.error('Exception')
             if s is not None:
                 _exclusionFileModifyTime = s.st_mtime
             log.error("error loading exclusion file: " + str(e))
