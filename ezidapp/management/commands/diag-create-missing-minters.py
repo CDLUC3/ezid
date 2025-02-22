@@ -61,7 +61,7 @@ class Command(django.core.management.BaseCommand):
             if django.conf.settings.DEBUG:
                 import logging
 
-                logging.exception('#' * 100)
+                logging.error('#' * 100)
             if opt.debug:
                 raise
             raise django.core.management.CommandError(

@@ -107,14 +107,14 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                                                           has_issues=si2.hasIssues,
                                                           update_time=si2.updateTime)
                         except ezidapp.models.identifier.SearchIdentifier.DoesNotExist:
-                            log.exception('SearchIdentifier.DoesNotExist')
+                            log.error('SearchIdentifier.DoesNotExist')
                         except opensearchpy.exceptions.OpenSearchException as e:
-                            log.exception('OpenSearchException in link checker', e)
+                            log.error('OpenSearchException in link checker', e)
 
                     si = next(siGenerator)
 
             except Exception as e:
-                log.exception('Exception')
+                log.error('Exception')
                 impl.log.otherError("linkcheck_update._linkcheckUpdateDaemon", e)
 
             siGenerator = lcGenerator = si = lc = si2 = None

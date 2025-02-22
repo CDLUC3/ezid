@@ -94,7 +94,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                         self.log.error(e)
                     else:
                         self.log.error('#' * 100)
-                        self.log.exception(f'Exception when handling task "{task_model}"')
+                        self.log.error(f'Exception when handling task "{task_model}"')
 
                     task_model.error = str(e)
                     # if self.is_permanent_error(e):

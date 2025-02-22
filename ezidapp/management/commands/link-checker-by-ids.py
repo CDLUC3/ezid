@@ -244,7 +244,7 @@ class Command(django.core.management.BaseCommand):
             mimeType = c.info().get("Content-Type", "unknown")
             content = c.read(django.conf.settings.LINKCHECKER_MAX_READ)
         except http.client.IncompleteRead as e:
-            log.exception('http.client.IncompleteRead')
+            log.error('http.client.IncompleteRead')
             # Some servers deliver a complete HTML document, but,
             # apparently expecting further requests from a web browser
             # that never arrive, hold the connection open and ultimately
@@ -261,12 +261,12 @@ class Command(django.core.management.BaseCommand):
                 returnCode = -1
                 error = "IncompleteRead: " + str(e)[:200]
         except urllib.error.HTTPError as e:
-            log.exception('HTTPError')
+            log.error('HTTPError')
             success = False
             returnCode = e.code
             error = "HTTPError: " + str(e)[:200]
         except Exception as e:
-            log.exception('Exception')
+            log.error('Exception')
             success = False
             returnCode = -1
             error = "Exception: " + str(e)[:200]

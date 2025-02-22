@@ -76,7 +76,7 @@ def check_url(url: str)->Dict[str, Union[str, int]]:
             success = True
             log.info("Received complete HTML page when error occurred: " + error)
         else:
-            log.exception(error)
+            log.error(error)
     except Exception as e:
         error = "Exception: " + str(e)[:200]
 

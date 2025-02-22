@@ -131,7 +131,7 @@ class User(django.db.models.Model):
                 password, self.password
             )
         except Exception as e:
-            logger.exception('failed')
+            logger.error('failed')
 
         if not django.contrib.auth.hashers.check_password(password, self.password):
             logger.debug('Auth denied. Password check failed')

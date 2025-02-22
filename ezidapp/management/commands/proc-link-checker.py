@@ -88,6 +88,19 @@ import ezidapp.models.identifier
 import ezidapp.models.user
 import impl
 import impl.util
+import traceback
+
+def simple_error(e):
+    """Extracts the exception name, HTTP status code (if applicable), filename, and line number."""
+    tb = traceback.extract_tb(e.__traceback__)[0]  # Get last traceback entry
+    error_msg = f"{type(e).__name__} in {tb.filename} at line {tb.lineno}"
+
+    # If it's an HTTPError, include the status code
+    if isinstance(e, urllib.error.HTTPError):
+        error_msg += f" (HTTP {e.code})"
+
+    return error_msg
+
 
 log = logging.getLogger(__name__)
 _lock = threading.Lock()
@@ -239,7 +252,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 try:
                     user, flag = l.split()
                 except ValueError:
-                    log.exception('ValueError')
+                    log.error('ValueError')
                     assert False, "syntax error on line %d" % n
                 assert flag in ["permanent", "temporary"], "syntax error on line %d" % n
 
@@ -250,14 +263,14 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                         ezidapp.models.user.User.objects.get(username=user).id
                     )
                 except ezidapp.models.user.User.DoesNotExist:
-                    log.exception('User.DoesNotExist')
+                    log.error('User.DoesNotExist')
                     assert False, "no such user: " + user
             _permanentExcludes = pe
             _temporaryExcludes = te
             _exclusionFileModifyTime = s.st_mtime
             log.info("exclusion file successfully loaded")
         except Exception as e:
-            log.exception('Exception')
+            log.error('Exception')
             if s is not None:
                 _exclusionFileModifyTime = s.st_mtime
             log.error("error loading exclusion file: " + str(e))
@@ -561,7 +574,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     mimeType = c.info().get("Content-Type", "unknown")
                     content = c.read(django.conf.settings.LINKCHECKER_MAX_READ)
                 except http.client.IncompleteRead as e:
-                    log.exception('http.client.IncompleteRead')
+                    log.error('http.client.IncompleteRead')
                     # Some servers deliver a complete HTML document, but,
                     # apparently expecting further requests from a web browser
                     # that never arrive, hold the connection open and ultimately
@@ -578,11 +591,11 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                         returnCode = -1
                         lc.checkFailed(returnCode, impl.util.formatException(e))
                 except urllib.error.HTTPError as e:
-                    log.exception('HTTPError')
+                    log.error(simple_error(e))
                     success = False
                     returnCode = e.code
                 except Exception as e:
-                    log.exception('Exception')
+                    log.error(simple_error(e))
                     success = False
                     returnCode = -1
                     lc.checkFailed(returnCode, impl.util.formatException(e))
@@ -605,7 +618,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 self.markLinkChecked(index)
 
         except Exception as e:
-            log.exception('Exception: ' + str(e))
+            log.error(f"Exception: \n{simple_error(e)}")
 
 
 class OwnerWorkset(Command):
