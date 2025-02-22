@@ -96,7 +96,7 @@ def simple_error(e):
     error_msg = f"{type(e).__name__} in {tb.filename} at line {tb.lineno}"
 
     # If it's an HTTPError, include the status code
-    if isinstance(e, urllib.error.HTTPError) or isinstance(e, requests.exceptions.HTTPError):
+    if isinstance(e, urllib.error.HTTPError):
         error_msg += f" (HTTP {e.code})"
 
     return error_msg
