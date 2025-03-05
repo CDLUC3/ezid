@@ -494,7 +494,7 @@ class NewAccountWorksheetAdmin(django.contrib.admin.ModelAdmin):
                     )
                 except Exception as e:
                     if django.conf.settings.DEBUG:
-                        logging.exception('#' * 100)
+                        logging.error('#' * 100)
 
                     django.contrib.messages.error(
                         request, "Error sending status change email: " + str(e)

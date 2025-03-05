@@ -137,7 +137,7 @@ def _readInput(request):
         return f"error: bad request - ANVL parse error ({str(e)})"
     except Exception:
         msg_str = "error: bad request - malformed or incomplete request body"
-        logging.exception(msg_str)
+        logging.error(msg_str)
         return msg_str
 
 

@@ -43,7 +43,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                             link=entry.link,
                         ).save()
             except Exception as e:
-                log.exception('Exception')
+                log.error('Exception')
                 impl.log.otherError("newsfeed._newsDaemon", e)
 
             self.sleep(django.conf.settings.NEWSFEED_POLLING_INTERVAL)

@@ -161,7 +161,7 @@ def badRequest(transactionId):
     faulty."""
     # _log.info("%s END BADREQUEST" % transactionId.hex)
     msg_str = f'{transactionId.hex} END BADREQUEST'
-    logging.exception(msg_str)
+    logging.error(msg_str)
     _log.info(msg_str)
 
 
