@@ -98,6 +98,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 exit()
         
         if created_from is not None and created_to is not None:
+            if created_from >= created_to:
+                log.error(f"Created_from date/time {created_from} should be earlier than created_to date/time {created_to}")
+                exit()
             self.min_age_ts = created_from
             self.max_age_ts = created_to
             self.time_range_str = f"between: {created_from_str} and {created_to_str}"
@@ -141,9 +144,6 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 if created_from is not None or created_to is not None:
                     log.info("End of processing.")
                     exit()
-                else:
-                    self.sleep_and_prepare_next_batch()
-                    continue
 
             log.info(f"filter: {combined_filter}")
             try:
@@ -161,13 +161,10 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
                 if len(qs) < BATCH_SIZE:
                     log.info(f"Finished time range: {self.time_range_str}, {self.time_range}")
-                    if created_from is not None or created_to is not None:
-                        log.info("End of processing")
-                        exit()
-                    else:
-                        self.sleep_and_prepare_next_batch()
+                    log.info("End of processing")
+                    exit()
                 else:
-                    self.sleep(django.conf.settings.DAEMONS_BATCH_SLEEP)
+                    time.sleep(django.conf.settings.DAEMONS_BATCH_SLEEP)
             except Exception as ex:
                 log.error(f"Database error: {ex}")
 
@@ -191,7 +188,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 if last_record is not None:
                     last_id = last_record.id
             except Exception as ex:
-                log.error(f"Database error while retrieving first and last record from Identifier: {ex}")
+                log.error(f"Database error while retrieving records from Identifier for time range: {time_range} : {ex}")
                 # add retry logic here
         
         return first_id, last_id
@@ -228,21 +225,5 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         formatted_time = dt_object.strftime("%Y-%m-%dT%H:%M:%S")
         return formatted_time
     
-    def sleep_and_prepare_next_batch(self):
-        sleep_time = django.conf.settings.DAEMONS_LONG_SLEEP
-        django.db.connections["default"].close()
-        log.info(f'Closing DB connections before entering sleep mode.')
-        log.info(f"Sleep {sleep_time} sec before running next batch.")
-        
-        self.sleep(sleep_time)
-        self.min_age_ts = self.max_age_ts
-        self.max_age_ts = int(time.time()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
-        self.time_range = Q(createTime__gte=self.min_age_ts) & Q(createTime__lte=self.max_age_ts)
-        self.time_range_str = f"between: {self.seconds_to_date(self.min_age_ts)} and {self.seconds_to_date(self.max_age_ts)}"
-        log.info(f"Processing next batch ...")
-        log.info(f"Time range: {self.time_range_str}, {self.time_range}")
-
-        self.min_id, self.max_id = self.get_id_range_by_time(self.time_range)
-        log.info(f"ID range: {self.min_id} : {self.max_id}")
 
 
