@@ -106,31 +106,35 @@ class Command(django.core.management.BaseCommand):
                 log.error(f"Input date/time error: {ex}")
                 exit()
         
+        log.info(f"created_range_from: {created_from_str}")
+        log.info(f"created_range_to: {created_to_str}")
+        
         if created_from is not None and created_to is not None:
             if created_from >= created_to:
-                log.error(f"Created_from date/time {created_from} should be earlier than created_to date/time {created_to}")
+                log.error(f"The date/time of created_range_from {created_from_str} should be earlier than created_range_to {created_to_str}.")
                 exit()
             self.min_age_ts = created_from
             self.max_age_ts = created_to
             self.time_range_str = f"between: {created_from_str} and {created_to_str}"
             self.time_range = Q(createTime__gte=created_from) & Q(createTime__lte=created_to)
-        elif created_to is not None:
-            self.max_age_ts = created_to
-            self.time_range_str = f"before: {created_to_str}"
-            self.time_range = Q(createTime__lte=created_to)
-        else:
+            log.info(f"Use command options for date/time range.")
+        elif created_from is None and created_to is None:
+            log.info(f"Setup default time range")
             midnight = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
             self.max_age_ts = int(midnight.timestamp()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
             self.min_age_ts = self.max_age_ts - SCAN_WINDOW_IN_SEC
             self.time_range_str = f"between: {self.seconds_to_date(self.min_age_ts)} and {self.seconds_to_date(self.max_age_ts)}"
-            self.time_range = Q(createTime__gte=self.min_age_ts) & Q(createTime__lte=self.max_age_ts)
+            self.time_range = Q(createTime__gte=self.min_age_ts) & Q(createTime__lte=self.max_age_ts)      
+        else:
+            log.error(f"The created_range_from and created_range_to options should be provied in pairs.")
+            exit()
         
-        self.min_id, self.max_id = self.get_id_range_by_time(self.time_range)
-
         log.info(f"Initial time range: {self.time_range_str}, {self.time_range}")
+
+        self.min_id, self.max_id = self.get_id_range_by_time(self.time_range)
         log.info(f"Initial ID range: {self.min_id} : {self.max_id}")
 
-        while not self.terminated():
+        while True:
             # TODO: This is a heavy query which can be optimized with better indexes or
             # flags in the DB.
             filter_by_id = None
@@ -147,15 +151,14 @@ class Command(django.core.management.BaseCommand):
                     | Q(identifier__startswith=django.conf.settings.SHOULDERS_DOI_TEST)
                     | Q(identifier__startswith=django.conf.settings.SHOULDERS_CROSSREF_TEST)
                 )
-            if filter_by_id is not None:
-                combined_filter &= filter_by_id
-            else:
+            if filter_by_id is None:
                 log.info(f"No records returned for time range: {self.time_range_str}, {self.time_range}")
-                if created_from is not None or created_to is not None:
-                    log.info("End of processing.")
-                    exit()
+                log.info("End of processing.")
+                exit()
 
+            combined_filter &= filter_by_id
             log.info(f"filter: {combined_filter}")
+        
             try:
                 qs = (
                     ezidapp.models.identifier.Identifier.objects.filter(combined_filter)
@@ -166,6 +169,7 @@ class Command(django.core.management.BaseCommand):
                 for si in qs:
                     self.min_id = si.id
                     with django.db.transaction.atomic():
+                        log.info(f"Delete testing ID: {si.identifier}")
                         impl.enqueue.enqueue(si, "delete", updateExternalServices=True)
                         si.delete()
 
@@ -175,6 +179,7 @@ class Command(django.core.management.BaseCommand):
                     exit()
                 else:
                     time.sleep(django.conf.settings.DAEMONS_BATCH_SLEEP)
+
             except Exception as ex:
                 log.error(f"Database error: {ex}")
 
