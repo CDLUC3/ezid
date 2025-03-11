@@ -42,17 +42,10 @@ class Command(django.core.management.BaseCommand):
 
     def __init__(self):
         super(Command, self).__init__()
-        self.opt = None
-        self.min_age_ts = None
-        self.max_age_ts = None
-        self.min_id = None
-        self.max_id = None
-        self.time_range = None
-        self.time_range_str = None
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--pagesize', help='Rows in each batch select.', type=int)
+            '--batchsize', help='Rows in each batch select.', type=int)
 
         parser.add_argument(
             '--created_range_from', type=str,
@@ -79,29 +72,29 @@ class Command(django.core.management.BaseCommand):
         )
     
     def handle(self, *_, **opt):
-        self.opt = opt = argparse.Namespace(**opt)
-        impl.nog_sql.util.log_setup(__name__, opt.debug)
+        options = argparse.Namespace(**opt)
+        impl.nog_sql.util.log_setup(__name__, options.debug)
 
-        BATCH_SIZE = self.opt.pagesize
+        BATCH_SIZE = options.batchsize
         if BATCH_SIZE is None:
             BATCH_SIZE = 1000
         
         # default scan window: 1 day
         SCAN_WINDOW_IN_SEC = 24 * 60 * 60
         
-        created_from = None
-        created_to = None
-        created_from_str = self.opt.created_range_from
-        created_to_str = self.opt.created_range_to
+        created_from_ts = None
+        created_to_ts = None
+        created_from_str = options.created_range_from
+        created_to_str = options.created_range_to
         if created_from_str is not None:
             try:
-                created_from = self.date_to_seconds(created_from_str)
+                created_from_ts = self.date_to_seconds(created_from_str)
             except Exception as ex:
                 log.error(f"Input date/time error: {ex}")
                 exit()
         if created_to_str is not None:
             try:
-                created_to = self.date_to_seconds(created_to_str)
+                created_to_ts = self.date_to_seconds(created_to_str)
             except Exception as ex:
                 log.error(f"Input date/time error: {ex}")
                 exit()
@@ -109,42 +102,41 @@ class Command(django.core.management.BaseCommand):
         log.info(f"created_range_from: {created_from_str}")
         log.info(f"created_range_to: {created_to_str}")
         
-        if created_from is not None and created_to is not None:
-            if created_from >= created_to:
+        if created_from_ts is not None and created_to_ts is not None:
+            if created_from_ts >= created_to_ts:
                 log.error(f"The date/time of created_range_from {created_from_str} should be earlier than created_range_to {created_to_str}.")
                 exit()
-            self.min_age_ts = created_from
-            self.max_age_ts = created_to
-            self.time_range_str = f"between: {created_from_str} and {created_to_str}"
-            self.time_range = Q(createTime__gte=created_from) & Q(createTime__lte=created_to)
+            time_range_str = f"between: {created_from_str} and {created_to_str}"
+            time_range = Q(createTime__gte=created_from_ts) & Q(createTime__lte=created_to_ts)
             log.info(f"Use command options for date/time range.")
-        elif created_from is None and created_to is None:
-            log.info(f"Setup default time range")
+        elif created_from_ts is None and created_to_ts is None:
+            log.info(f"Setup default time range.")
             midnight = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
-            self.max_age_ts = int(midnight.timestamp()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
-            self.min_age_ts = self.max_age_ts - SCAN_WINDOW_IN_SEC
-            self.time_range_str = f"between: {self.seconds_to_date(self.min_age_ts)} and {self.seconds_to_date(self.max_age_ts)}"
-            self.time_range = Q(createTime__gte=self.min_age_ts) & Q(createTime__lte=self.max_age_ts)      
+            created_to_ts = int(midnight.timestamp()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
+            created_from_ts = created_to_ts - SCAN_WINDOW_IN_SEC
+            time_range_str = f"between: {self.seconds_to_date(created_from_ts)} and {self.seconds_to_date(created_to_ts)}"
+            time_range = Q(createTime__gte=created_from_ts) & Q(createTime__lte=created_to_ts)      
         else:
             log.error(f"The created_range_from and created_range_to options should be provied in pairs.")
             exit()
-        
-        log.info(f"Initial time range: {self.time_range_str}, {self.time_range}")
 
-        self.min_id, self.max_id = self.get_id_range_by_time(self.time_range)
-        log.info(f"Initial ID range: {self.min_id} : {self.max_id}")
+        min_id, max_id = self.get_id_range_by_time(time_range)
+
+        log.info(f"Initial time range: {time_range_str}, {time_range}")
+        log.info(f"Initial ID range: {min_id} : {max_id}")
+        log.info(f"Batch size: {BATCH_SIZE}")
 
         while True:
             # TODO: This is a heavy query which can be optimized with better indexes or
             # flags in the DB.
             filter_by_id = None
-            if self.min_id is not None:
-                filter_by_id = Q(id__gte=self.min_id)
-            if self.max_id is not None:
+            if min_id is not None:
+                filter_by_id = Q(id__gte=min_id)
+            if max_id is not None:
                 if filter_by_id is not None:
-                    filter_by_id &= Q(id__lte=self.max_id)
+                    filter_by_id &= Q(id__lte=max_id)
                 else:
-                    filter_by_id = Q(id__lte=self.max_id)
+                    filter_by_id = Q(id__lte=max_id)
             
             combined_filter = (
                     Q(identifier__startswith=django.conf.settings.SHOULDERS_ARK_TEST)
@@ -152,12 +144,12 @@ class Command(django.core.management.BaseCommand):
                     | Q(identifier__startswith=django.conf.settings.SHOULDERS_CROSSREF_TEST)
                 )
             if filter_by_id is None:
-                log.info(f"No records returned for time range: {self.time_range_str}, {self.time_range}")
+                log.info(f"No records returned for time range: {time_range_str}, {time_range}")
                 log.info("End of processing.")
                 exit()
 
             combined_filter &= filter_by_id
-            log.info(f"filter: {combined_filter}")
+            log.info(f"Combined filter: {combined_filter}")
         
             try:
                 qs = (
@@ -165,19 +157,20 @@ class Command(django.core.management.BaseCommand):
                         .order_by("id")[: BATCH_SIZE]
                 )
 
-                log.info(f"Query returned {len(qs)} records.")
+                log.info(f"Query with BATCH_SIZE {BATCH_SIZE} returned {len(qs)} records.")
                 for si in qs:
-                    self.min_id = si.id
+                    min_id = si.id
                     with django.db.transaction.atomic():
-                        log.info(f"Delete testing ID: {si.identifier}")
+                        log.info(f"Delete testing identifier: {si.identifier}")
                         impl.enqueue.enqueue(si, "delete", updateExternalServices=True)
                         si.delete()
 
                 if len(qs) < BATCH_SIZE:
-                    log.info(f"Finished time range: {self.time_range_str}, {self.time_range}")
+                    log.info(f"Finished time range: {time_range_str}, {time_range}")
                     log.info("End of processing")
                     exit()
                 else:
+                    log.info("Continue processing next batch ...")
                     time.sleep(django.conf.settings.DAEMONS_BATCH_SLEEP)
 
             except Exception as ex:
