@@ -12,7 +12,7 @@ requesting that the (live) EZID server delete them.
 import logging
 import argparse
 import time
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from dateutil.parser import parse
 
 import django.conf
@@ -111,8 +111,11 @@ class Command(django.core.management.BaseCommand):
             log.info(f"Use command options for date/time range.")
         elif created_from_ts is None and created_to_ts is None:
             log.info(f"Setup default time range.")
-            midnight = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
-            created_to_ts = int(midnight.timestamp()) - django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC
+            expunge_max_age_days = django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC / (60 * 60 * 24)
+            created_to_date = date.today() - timedelta(days=expunge_max_age_days)
+            # midnight_time in YYYY-MM-DD 00:00:00
+            midnight_time = datetime.combine(created_to_date, datetime.min.time())
+            created_to_ts = int(midnight_time.timestamp())
             created_from_ts = created_to_ts - SCAN_WINDOW_IN_SEC
             time_range_str = f"between: {self.seconds_to_date(created_from_ts)} and {self.seconds_to_date(created_to_ts)}"
             time_range = Q(createTime__gte=created_from_ts) & Q(createTime__lte=created_to_ts)      
