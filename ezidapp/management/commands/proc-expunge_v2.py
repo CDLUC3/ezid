@@ -78,10 +78,7 @@ class Command(django.core.management.BaseCommand):
         BATCH_SIZE = options.batchsize
         if BATCH_SIZE is None:
             BATCH_SIZE = 1000
-        
-        # default scan window: 1 day
-        SCAN_WINDOW_IN_SEC = 24 * 60 * 60
-        
+                
         created_from_ts = None
         created_to_ts = None
         created_from_str = options.created_range_from
@@ -112,11 +109,9 @@ class Command(django.core.management.BaseCommand):
         elif created_from_ts is None and created_to_ts is None:
             log.info(f"Setup default time range.")
             expunge_max_age_days = django.conf.settings.DAEMONS_EXPUNGE_MAX_AGE_SEC / (60 * 60 * 24)
-            created_to_date = date.today() - timedelta(days=expunge_max_age_days)
-            # midnight_time in YYYY-MM-DD 00:00:00
-            midnight_time = datetime.combine(created_to_date, datetime.min.time())
-            created_to_ts = int(midnight_time.timestamp())
-            created_from_ts = created_to_ts - SCAN_WINDOW_IN_SEC
+            expunge_date = date.today() - timedelta(days=expunge_max_age_days + 1)
+            created_from_ts = int(datetime.combine(expunge_date, datetime.min.time()).timestamp())
+            created_to_ts = int(datetime.combine(expunge_date, datetime.max.time()).timestamp())
             time_range_str = f"between: {self.seconds_to_date(created_from_ts)} and {self.seconds_to_date(created_to_ts)}"
             time_range = Q(createTime__gte=created_from_ts) & Q(createTime__lte=created_to_ts)      
         else:
