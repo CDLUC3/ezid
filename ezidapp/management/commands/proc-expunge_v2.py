@@ -98,7 +98,7 @@ class Command(django.core.management.BaseCommand):
         
         self.start_time = datetime.now()
 
-        log.info(f"expunge started: {self.start_time}")
+        log.info(f"Expunge started: {self.start_time}")
         log.info(f"created_range_from: {created_from_str}")
         log.info(f"created_range_to: {created_to_str}")
         
@@ -121,6 +121,7 @@ class Command(django.core.management.BaseCommand):
             log.error(f"The created_range_from and created_range_to options should be provied in pairs.")
             exit()
 
+        log.info(f"Get identifier's ID range by time range:")
         min_id, max_id = self.get_id_range_by_time(time_range)
 
         log.info(f"Initial time range: {time_range_str}, {time_range}")
@@ -193,7 +194,8 @@ class Command(django.core.management.BaseCommand):
                 if last_record is not None:
                     last_id = last_record.id
             except Exception as ex:
-                log.error(f"Database error while retrieving records from Identifier for time range: {time_range} : {ex}")
+                error_msg = f"Database error while retrieving records from Identifier for time range: {time_range} : {ex}"
+                self.exit_proc(error_msg, error=1)
         
         return first_id, last_id
 
@@ -235,8 +237,8 @@ class Command(django.core.management.BaseCommand):
             log.error(message)
         else:
             log.info(message)
-        log.info(f"expunge ended: {end_time}")
-        log.info(f"execution time: {end_time - self.start_time}")
+        log.info(f"Expunge ended: {end_time}")
+        log.info(f"Execution time: {end_time - self.start_time}")
         exit()
     
 
