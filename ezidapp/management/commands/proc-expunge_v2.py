@@ -96,6 +96,9 @@ class Command(django.core.management.BaseCommand):
                 log.error(f"Input date/time error: {ex}")
                 exit()
         
+        self.start_time = datetime.now()
+
+        log.info(f"expunge started: {self.start_time}")
         log.info(f"created_range_from: {created_from_str}")
         log.info(f"created_range_to: {created_to_str}")
         
@@ -142,9 +145,7 @@ class Command(django.core.management.BaseCommand):
                     | Q(identifier__startswith=django.conf.settings.SHOULDERS_CROSSREF_TEST)
                 )
             if filter_by_id is None:
-                log.info(f"No records returned for time range: {time_range_str}, {time_range}")
-                log.info("End of processing.")
-                exit()
+                self.exit_proc(f"No records returned for time range: {time_range_str}, {time_range}")
 
             combined_filter &= filter_by_id
             log.info(f"Combined filter: {combined_filter}")
@@ -164,15 +165,13 @@ class Command(django.core.management.BaseCommand):
                         si.delete()
 
                 if len(qs) < BATCH_SIZE:
-                    log.info(f"Finished time range: {time_range_str}, {time_range}")
-                    log.info("End of processing")
-                    exit()
+                    self.exit_proc(f"Finished time range: {time_range_str}, {time_range}")
                 else:
                     log.info("Continue processing next batch ...")
                     time.sleep(django.conf.settings.DAEMONS_BATCH_SLEEP)
 
             except Exception as ex:
-                log.error(f"Database error: {ex}")
+                self.exit_proc(f"Database error: {ex}", error=1)
 
 
     def get_id_range_by_time(self, time_range: Q):
@@ -195,7 +194,6 @@ class Command(django.core.management.BaseCommand):
                     last_id = last_record.id
             except Exception as ex:
                 log.error(f"Database error while retrieving records from Identifier for time range: {time_range} : {ex}")
-                # add retry logic here
         
         return first_id, last_id
 
@@ -230,6 +228,16 @@ class Command(django.core.management.BaseCommand):
         # Format the datetime object to a string in the desired format
         formatted_time = dt_object.strftime("%Y-%m-%dT%H:%M:%S")
         return formatted_time
+    
+    def exit_proc(self, message: str, error=None):
+        end_time = datetime.now()
+        if error is not None:
+            log.error(message)
+        else:
+            log.info(message)
+        log.info(f"expunge ended: {end_time}")
+        log.info(f"execution time: {end_time - self.start_time}")
+        exit()
     
 
 
