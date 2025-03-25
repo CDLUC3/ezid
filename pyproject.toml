@@ -61,8 +61,6 @@ configparser = "^7.2.0"
 ecs-logging = "^2.2.0"
 opensearch-dsl = "^2.1.0"
 mysqlclient = "^2.2.7"
-celery = "^5.4.0"
-sqlalchemy = "^2.0.39"
 
 
 [tool.poetry.scripts]
