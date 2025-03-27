@@ -30,8 +30,6 @@ xmltodict
 pymysql
 configparser
 ecs-logging
-celery
-sqlalchemy
 "
 for package in $DEPS; do
   poetry add ${package}@latest
