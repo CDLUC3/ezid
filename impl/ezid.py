@@ -297,12 +297,13 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
         impl.log.badRequest(tid)
         return "error: bad request - " + impl.util.formatValidationError(e)
     except django.db.utils.IntegrityError as e:
-        logger.error(str(e))
-        impl.log.badRequest(tid)
         if updateIfExists:
+            logger.info(f"create or update with update_if_exists=yes; identifier already exists, update; identifier={identifier}")
             return setMetadata(identifier, user, metadata, internalCall=True)
         else:
-            return "error: bad request - identifier already exists"
+            logger.error(str(e))
+            impl.log.badRequest(tid)
+            return "error: bad request - identifier already exists, cannot create"
     except Exception as e:
         impl.log.error(tid, e)
         if hasattr(sys, 'is_running_under_pytest'):
