@@ -2367,7 +2367,6 @@ Selector pattern using above mixin:
       width: 100%;
       margin: 30px 15px;
       padding: 30px 50px 0;
-      background-image: url("../images/arrow.png");
       background-repeat: no-repeat;
       background-position: top 27px left -8px; } }
 
