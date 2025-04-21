@@ -751,6 +751,9 @@ def upgradeDcmsRecord(record, parseString=True, returnString=True):
     """Convert a DataCite Metadata Scheme <http://schema.datacite.org/> record to the
     latest version of the schema (currently, version 4)
 
+    Note (2025-04-21): This function is deprecated when EZID withdraw support of old schema versions (2 & 3).
+    It is kept for furture reference when supporting old schema version is needed.
+
     Args:
         record:
         parseString:
@@ -853,8 +856,10 @@ def upgradeDcmsRecord(record, parseString=True, returnString=True):
         return root
 
 def upgradeDcmsRecord_v2(record, parseString=True, returnString=True):
-    """Convert a DataCite Metadata Scheme <http://schema.datacite.org/> record to the
-    latest version of the schema (currently, version 4)
+    """Setup DataCite Metadata Scheme version 4 schemaLocation.
+    Report error if schema versions is not supported by EZID.
+    Note (2025-04-21): This function is derived from funciton 'upgradeDcmsRecord()' 
+    when EZID withdraw support of old schema versions (2 & 3).
 
     Args:
         record:
@@ -871,14 +876,15 @@ def upgradeDcmsRecord_v2(record, parseString=True, returnString=True):
         root = impl.util.parseXmlString(record)
     else:
         root = record
+    
     root.attrib["{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"] = (
         "http://datacite.org/schema/kernel-4 "
         + "http://schema.datacite.org/meta/kernel-4/metadata.xsd"
     )
+
     m = _SCHEMA_VERSION_RE.match(root.tag)
     version = m.group(1)
     if version == "4":
-        # Nothing to do.
         if returnString:
             return lxml.etree.tostring(root, encoding=str)
         else:
