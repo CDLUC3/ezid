@@ -250,11 +250,9 @@ def validateDcmsRecord(identifier, record, schemaValidate=True):
     m = ROOT_TAG_RE.match(root.tag)
     assert m, "Not a DataCite record"
     version = m.group(2)
-    # Upgrade schema versions that have been deprecated by DataCite.
+    # Report error if schema versions have been deprecated by DataCite.
     if version in ["2.1", "2.2", "3"]:
-        root = upgradeDcmsRecord(root, parseString=False, returnString=False)
-        m = ROOT_TAG_RE.match(root.tag)
-        version = m.group(2)
+        assert False, "DataCite schema version {} is deprecated".format(version)
     schema = _SCHEMAS_DICT.get(version, None)
     assert schema is not None, "Unsupported DataCite record version"
     i = root.xpath("N:identifier", namespaces={"N": m.group(1)})
@@ -853,6 +851,40 @@ def upgradeDcmsRecord(record, parseString=True, returnString=True):
         return lxml.etree.tostring(root, encoding=str)
     else:
         return root
+
+def upgradeDcmsRecord_v2(record, parseString=True, returnString=True):
+    """Convert a DataCite Metadata Scheme <http://schema.datacite.org/> record to the
+    latest version of the schema (currently, version 4)
+
+    Args:
+        record:
+        parseString:
+            The record must be supplied as an unencoded Unicode string if 'parseString'
+            is true, or a root lxml.etree.Element object if not.
+        returnString:
+            If true, the record is returned as an unencoded Unicode string, in which
+            case the record has no XML declaration. Otherwise, an lxml.etree.Element
+            object is returned. In both cases, the root element's xsi:schemaLocation
+            attribute is set or added as necessary.
+    """
+    if parseString:
+        root = impl.util.parseXmlString(record)
+    else:
+        root = record
+    root.attrib["{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"] = (
+        "http://datacite.org/schema/kernel-4 "
+        + "http://schema.datacite.org/meta/kernel-4/metadata.xsd"
+    )
+    m = _SCHEMA_VERSION_RE.match(root.tag)
+    version = m.group(1)
+    if version == "4":
+        # Nothing to do.
+        if returnString:
+            return lxml.etree.tostring(root, encoding=str)
+        else:
+            return root
+    else:
+        assert False, "DataCite schema version {} is not supported".format(version)
 
 
 def _deactivate(doi, datacenter):
