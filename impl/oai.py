@@ -200,7 +200,7 @@ def _doGetRecord(oaiRequest):
     if oaiRequest[1]["metadataPrefix"] == "oai_dc":
         me = _buildDublinCoreRecord(identifier)
     elif oaiRequest[1]["metadataPrefix"] == "datacite":
-        me = impl.datacite.upgradeDcmsRecord(
+        me = impl.datacite.upgradeDcmsRecord_v2(
             identifier.dataciteMetadata(), returnString=False
         )
     else:
@@ -337,7 +337,7 @@ def _doHarvest(oaiRequest, batchSize, includeMetadata):
             if prefix == "oai_dc":
                 me = _buildDublinCoreRecord(ids[i])
             elif prefix == "datacite":
-                me = impl.datacite.upgradeDcmsRecord(
+                me = impl.datacite.upgradeDcmsRecord_v2(
                     ids[i].dataciteMetadata(), returnString=False
                 )
             else:

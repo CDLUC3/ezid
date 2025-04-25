@@ -77,7 +77,7 @@ def _get_metadata_with_xml(id_ns, test_docs, meta_type):
 
 
 NAMESPACE_DICT = {
-    'datacite': 'http://datacite.org/schema/kernel-3',
+    'datacite': 'http://datacite.org/schema/kernel-4',
     'crossref': 'http://www.crossref.org/schema/4.4.0',
     'dc': 'http://ns.dataone.org/metadata/schema/onedcx/v1.0',
     'dcterms': 'http://purl.org/dc/terms/',
