@@ -72,7 +72,7 @@ def dataciteXmlToFormElements(document):
 
     <br> elements in descriptions are replaced with newlines.
     """
-    document = impl.datacite.upgradeDcmsRecord(document)
+    document = impl.datacite.upgradeDcmsRecord_v2(document)
     d = {}
 
     def tagName(tag):
