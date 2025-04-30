@@ -135,6 +135,7 @@ def publicationDate(date):
 
 resourceTypes = {
     "Audiovisual": "A",
+    "Award": "Aw",
     "Book": "B",
     "BookChapter": "Bc",
     "Collection": "C",
@@ -155,6 +156,7 @@ resourceTypes = {
     "PeerReview": "Pr",
     "PhysicalObject": "P",
     "Preprint": "Pe",
+    "Project": "Pr",
     "Report": "R",
     "Service": "Se",
     "Software": "So",
