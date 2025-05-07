@@ -94,6 +94,7 @@ TEMPLATE_DIR = PROJECT_ROOT / 'templates'  # /apps/ezid/ezid/templates
 # Dirs above PROJECT_ROOT
 HOME_DIR = (PROJECT_ROOT / '..').resolve()  # /apps/ezid
 LOG_DIR = HOME_DIR / 'logs'  # /apps/ezid/logs
+DATA_DIR = HOME_DIR / 'var/data'  # /apps/ezid/var/data
 
 ROOT_URLCONF = 'settings.urls'
 
@@ -527,6 +528,10 @@ LINKCHECKER_USER_AGENT = 'EZID (EZID link checker; https://ezid.cdlib.org/)'
 LINKCHECKER_MAX_READ = 104_857_600
 # EZID Link checker e-mails
 LINK_CHECKER_ADMIN = {{ link_checker_admin }}
+LINKCHECKER_EXCLUSION_ENABLED = True
+# Full path to the file containing the list of user accounts to be excluded from link checking.
+# None or empty string means no exclusion file.
+LINKCHECKER_EXCLUSION_FILE = DATA_DIR / 'link_check_exclusion_list.txt'
 
 # Internal settings
 

@@ -120,11 +120,11 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         self._exclusionFile = None
 
     def run(self):
-        if len(sys.argv) > 2:
-            sys.stderr.write("usage: link-checker [exclusion-file]\n")
-            sys.exit(1)
-        if len(sys.argv) == 2:
-            _exclusionFile = sys.argv[1]
+        if django.conf.settings.LINKCHECKER_EXCLUSION_ENABLED:
+            if django.conf.settings.LINKCHECKER_EXCLUSION_FILE is not None:
+                self._exclusionFile = django.conf.settings.LINKCHECKER_EXCLUSION_FILE
+                log.info(f"Link checker exclusion enabled with file: {self._exclusionFile}")
+
         while not self.terminated():
             self.check_all()
 
@@ -232,7 +232,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             return
         if self.now_int() - self._lastExclusionFileCheckTime < 10:
             return
-        _lastExclusionFileCheckTime = self.now_int()
+        self._lastExclusionFileCheckTime = self.now_int()
         f = None
         s = None
         try:
@@ -265,14 +265,14 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 except ezidapp.models.user.User.DoesNotExist:
                     log.error('User.DoesNotExist')
                     assert False, "no such user: " + user
-            _permanentExcludes = pe
-            _temporaryExcludes = te
-            _exclusionFileModifyTime = s.st_mtime
+            self._permanentExcludes = pe
+            self._temporaryExcludes = te
+            self._exclusionFileModifyTime = s.st_mtime
             log.info("exclusion file successfully loaded")
         except Exception as e:
             log.error('Exception')
             if s is not None:
-                _exclusionFileModifyTime = s.st_mtime
+                self._exclusionFileModifyTime = s.st_mtime
             log.error("error loading exclusion file: " + str(e))
         finally:
             if f is not None:
