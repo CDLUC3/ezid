@@ -119,11 +119,21 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         self._temporaryExcludes = []
         self._exclusionFile = None
 
+        self._idExclusionFileModifyTime = -1
+        self._idLastExclusionFileCheckTime = -1
+        self._idExclusionFile = None
+        self._idExclusionRegex = None
+
     def run(self):
         if django.conf.settings.LINKCHECKER_EXCLUSION_ENABLED:
             if django.conf.settings.LINKCHECKER_EXCLUSION_FILE is not None:
                 self._exclusionFile = django.conf.settings.LINKCHECKER_EXCLUSION_FILE
                 log.info(f"Link checker exclusion enabled with file: {self._exclusionFile}")
+
+        if django.conf.settings.LINKCHECKER_ID_EXCLUSION_ENABLED:
+            if django.conf.settings.LINKCHECKER_ID_EXCLUSION_FILE is not None:
+                self._idExclusionFile = django.conf.settings.LINKCHECKER_ID_EXCLUSION_FILE
+                log.info(f"Link checker ID exclusion enabled with file: {self._idExclusionFile}")
 
         while not self.terminated():
             self.check_all()
@@ -227,6 +237,51 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     def daysSince(self, when):
         return int((self.now() - when) / 86400)
 
+    def loadIdExclusionFile(self):
+        if self._idExclusionFile is None:
+            return
+        if self.now_int() - self._idLastExclusionFileCheckTime < 10:
+            return
+        self._idLastExclusionFileCheckTime = self.now_int()
+        f = None
+        s = None
+        try:
+            # noinspection PyTypeChecker
+            s = os.stat(self._idExclusionFile)
+            if s.st_mtime == self._idExclusionFileModifyTime:
+                return
+            # noinspection PyTypeChecker
+            f = open(self._idExclusionFile)
+
+            id_exclusion = []
+            n = 0
+            for l in f:
+                n += 1
+                if l.strip() == "" or l.startswith("#"):
+                    continue
+                try:
+                    re.compile(l.strip(), re.IGNORECASE)
+                    # To let each sub-pattern anchor separately, you can embed the anchors inside the
+                    # non-capturing group (the (?: ... ) part)
+                    id_exclusion.append(f"(?:{l.strip()})")
+                except re.error:
+                    log.error('Regular expression error in id exclusion file')
+                    assert False, "regular expression error on line %d" % n
+
+            combined = "|".join(id_exclusion)
+            self._idExclusionRegex = re.compile(combined, re.IGNORECASE)
+            self._exclusionFileModifyTime = s.st_mtime
+            log.info("id exclusion file successfully loaded")
+        except Exception as e:
+            log.error('Exception')
+            if s is not None:
+                self._exclusionFileModifyTime = s.st_mtime
+            log.error("error loading exclusion file: " + str(e))
+        finally:
+            if f is not None:
+                f.close()
+
+
     def loadExclusionFile(self):
         if self._exclusionFile is None:
             return
@@ -288,7 +343,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             if len(qs) == 0:
                 break
             for o in qs:
-                if filter is None or filter(o):
+                # added to exclude ID patterns if they match the id exclusion regex in addition to normal filtering
+                if (filter is None or filter(o)) and \
+                     (self._idExclusionRegex is None or not self._idExclusionRegex.search(o.identifier)):
                     # log.debug(f'Generator returning: {str(o)}')
                     yield o
             lastIdentifier = qs[-1].identifier
@@ -296,6 +353,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
 
     def updateDatabaseTable(self):
         self.loadExclusionFile()
+        self.loadIdExclusionFile()
         log.info("begin update table")
         numIdentifiers = 0
         numAdditions = 0
@@ -413,6 +471,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     def loadWorkset(self):
         self._workset = None
         self.loadExclusionFile()
+        self.loadIdExclusionFile()
         log.info("begin load workset")
         _workset = []
         numOwnersCapped = 0
@@ -490,6 +549,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         _lock.acquire()
         try:
             self.loadExclusionFile()
+            self.loadIdExclusionFile()
             startingIndex = self._index
             allFinished = True
             t = self.now()
