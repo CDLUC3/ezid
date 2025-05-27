@@ -60,6 +60,25 @@ its identifiers and target URLs are not entered into the link checker's table at
 
 The link checker notices within a few seconds when the exclusion file has been modified.
 Examine the link checker's log file to confirm that it has been reloaded successfully.
+
+There is also the option to exclude identifiers based on a regular expression which will
+usually be used to exclude shoulders, but can be more flexible if needed. These
+variables in the settings file control this behavior:
+
+    LINKCHECKER_ID_EXCLUSION_ENABLED = True
+    LINKCHECKER_ID_EXCLUSION_FILE = 'path/to/id_exclusion_file.txt'
+
+The id exclusion file should contain regular expression patterns, one per line, that
+match identifiers to be excluded. Lines starting with '#' or empty lines are ignored.
+
+The regular expressions are case-insensitive and would typically be things such as
+`^ark:/13030/c8` which anchor at the beginning of the identifier for shoulder matching.
+
+The regular expressions are combined into a single regex pattern that is used for matching any (|).
+This approach should work for a moderate number of patterns (say less than 1,000) and if we have large
+numbers of patterns, we may need to consider a different approach because performance may degrade.
+I suspect that only a limited number of patterns (shoulders) will be needed for exclusion in practice
+so we will likely not need to worry about performance issues from having too many patterns.
 """
 
 # noinspection PyUnresolvedReferences
