@@ -68,17 +68,10 @@ variables in the settings file control this behavior:
     LINKCHECKER_ID_EXCLUSION_ENABLED = True
     LINKCHECKER_ID_EXCLUSION_FILE = 'path/to/id_exclusion_file.txt'
 
-The id exclusion file should contain regular expression patterns, one per line, that
-match identifiers to be excluded. Lines starting with '#' or empty lines are ignored.
+The id exclusion file should contain shoulder patterns that match identifiers. Such as `ark:/13030/c8`
+blank lines and comment lines starting with `#` are ignored.
 
-The regular expressions are case-insensitive and would typically be things such as
-`^ark:/13030/c8` which anchor at the beginning of the identifier for shoulder matching.
-
-The regular expressions are combined into a single regex pattern that is used for matching any (|).
-This approach should work for a moderate number of patterns (say less than 1,000) and if we have large
-numbers of patterns, we may need to consider a different approach because performance may degrade.
-I suspect that only a limited number of patterns (shoulders) will be needed for exclusion in practice
-so we will likely not need to worry about performance issues from having too many patterns.
+internally things are compiled into a regular expression to check (probably performs fast up to about 1,000 exclusions or maybe more).
 """
 
 # noinspection PyUnresolvedReferences
@@ -279,10 +272,10 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 if l.strip() == "" or l.startswith("#"):
                     continue
                 try:
-                    re.compile(l.strip(), re.IGNORECASE)
+                    re.compile(f"^{re.escape(l.strip())}", re.IGNORECASE)
                     # To let each sub-pattern anchor separately, you can embed the anchors inside the
                     # non-capturing group (the (?: ... ) part)
-                    id_exclusion.append(f"(?:{l.strip()})")
+                    id_exclusion.append(f"(?:^{re.escape(l.strip())})")
                 except re.error:
                     log.error('Regular expression error in id exclusion file')
                     assert False, "regular expression error on line %d" % n
