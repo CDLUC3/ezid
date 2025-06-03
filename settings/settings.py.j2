@@ -529,9 +529,13 @@ LINKCHECKER_MAX_READ = 104_857_600
 # EZID Link checker e-mails
 LINK_CHECKER_ADMIN = {{ link_checker_admin }}
 LINKCHECKER_EXCLUSION_ENABLED = True
+LINKCHECKER_ID_EXCLUSION_ENABLED = True
 # Full path to the file containing the list of user accounts to be excluded from link checking.
 # None or empty string means no exclusion file.
 LINKCHECKER_EXCLUSION_FILE = DATA_DIR / 'link_check_exclusion_list.txt'
+
+# the ID exclusion file contains startswith identifier patterns to be excluded.
+LINKCHECKER_ID_EXCLUSION_FILE = DATA_DIR / 'linkchecker_id_exclusion_list.txt'
 
 # Internal settings
 
