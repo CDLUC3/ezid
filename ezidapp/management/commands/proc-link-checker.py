@@ -266,7 +266,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 if l.strip() == "" or l.startswith("#"):
                     continue
 
-                id_exclusion.append(l.strip())
+                id_exclusion.append(l.strip().casefold())  # Store as lowercase for case-insensitive matching
 
             self._idExclusionTuple = tuple(id_exclusion)
             self._exclusionFileModifyTime = s.st_mtime
@@ -343,10 +343,13 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 break
             for o in qs:
                 # added to exclude ID patterns if they match the id exclusion tuple in addition to normal filtering
-                if (filter is None or filter(o)) and \
-                     (self._idExclusionTuple is None or not o.identifier.startswith(self._idExclusionTuple)):
-                    # log.debug(f'Generator returning: {str(o)}')
-                    yield o
+                if filter is None or filter(o):
+                    if self._idExclusionTuple is None or (o.identifier is not None and
+                            not o.identifier.casefold().startswith(self._idExclusionTuple)):
+                        yield o
+                    else:
+                        log.debug('Skipping identifier %s due to ID shoulder exclusion', o.identifier)
+
             lastIdentifier = qs[-1].identifier
         yield None
 
