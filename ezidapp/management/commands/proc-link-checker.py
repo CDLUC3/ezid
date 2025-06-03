@@ -134,7 +134,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         self._idExclusionFileModifyTime = -1
         self._idLastExclusionFileCheckTime = -1
         self._idExclusionFile = None
-        self._idExclusionRegex = None
+        self._idExclusionTuple = None
 
     def run(self):
         if django.conf.settings.LINKCHECKER_EXCLUSION_ENABLED:
@@ -271,17 +271,10 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 n += 1
                 if l.strip() == "" or l.startswith("#"):
                     continue
-                try:
-                    re.compile(f"^{re.escape(l.strip())}", re.IGNORECASE)
-                    # To let each sub-pattern anchor separately, you can embed the anchors inside the
-                    # non-capturing group (the (?: ... ) part)
-                    id_exclusion.append(f"(?:^{re.escape(l.strip())})")
-                except re.error:
-                    log.error('Regular expression error in id exclusion file')
-                    assert False, "regular expression error on line %d" % n
 
-            combined = "|".join(id_exclusion)
-            self._idExclusionRegex = re.compile(combined, re.IGNORECASE)
+                id_exclusion.append(l.strip())
+
+            self._idExclusionTuple = tuple(id_exclusion)
             self._exclusionFileModifyTime = s.st_mtime
             log.info("id exclusion file successfully loaded")
         except Exception as e:
@@ -355,9 +348,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             if len(qs) == 0:
                 break
             for o in qs:
-                # added to exclude ID patterns if they match the id exclusion regex in addition to normal filtering
+                # added to exclude ID patterns if they match the id exclusion tuple in addition to normal filtering
                 if (filter is None or filter(o)) and \
-                     (self._idExclusionRegex is None or not self._idExclusionRegex.search(o.identifier)):
+                     (self._idExclusionTuple is None or not o.identifier.startswith(self._idExclusionTuple)):
                     # log.debug(f'Generator returning: {str(o)}')
                     yield o
             lastIdentifier = qs[-1].identifier
