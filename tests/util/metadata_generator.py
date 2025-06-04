@@ -68,7 +68,9 @@ def _get_metadata_with_xml(id_ns, test_docs, meta_type):
     'dc (Dublin Core)'.
     """
     meta_dict = _TYPE_DICT[meta_type]
-    root_el = _parse_xml((test_docs / meta_dict['xml']).read_text())
+    # use read_bytes() instad of read_text() to avoid decoding issues for XML files with encoding
+    # declarations (e.g. <?xml version="1.0" encoding="UTF-8"?>)
+    root_el = _parse_xml((test_docs / meta_dict['xml']).read_bytes())
     anvl_dict = meta_dict['anvl'].copy()
     meta_dict['set_id'](root_el, id_ns)
     xml_str = _to_compact_string(root_el)
