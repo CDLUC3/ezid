@@ -71,7 +71,7 @@ NAMESPACE_LIST = [
 META_TYPE_LIST = [
     'datacite',
     # todo: commented out for faster testing
-    # 'crossref',
+    'crossref',
     # 'dc',
     # 'unknown',
 ]
