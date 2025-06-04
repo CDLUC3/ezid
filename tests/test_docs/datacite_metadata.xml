@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Example with all properties from datacite-example-full-v4 -->
 <resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://datacite.org/schema/kernel-4" xsi:schemaLocation="http://datacite.org/schema/kernel-4 https://schema.datacite.org/meta/kernel-4/metadata.xsd">
-    <identifier identifierType="DOI">A DOI on form 10.9999/* will be inserted here</identifier>
+    <identifier identifierType="DOI">10.82433/B09Z-4K37</identifier>
     <creators>
         <creator>
             <creatorName nameType="Personal">ExampleFamilyName, ExampleGivenName</creatorName>
