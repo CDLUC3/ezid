@@ -157,38 +157,32 @@ class TestAPI:
     #   response body: status line
 
 
-    def test_1020(
-        self,
+    
+
+    def test_1020(self,
         apitest_client,
         minters,
         test_docs,
         meta_type,
     ):
         """
-        View an identifier:
-          GET /id/{identifier}   [authentication optional]
-            ?prefix_match={yes|no}
-          response body: status line, metadata
+        Test: bad requests
+            Create an identifier without user permissions
+            Invalid identifier
 
-
-        Test the path from an create/update/delete operation coming in from the API, through to
-        tasks queued for the async processes, to final push of operation to N2T, Crossref and
-        DataCite.
         """
-        # print(apitest_client)
 
         result_list = []
         ns, arg_tup = minters
+
+        # apitest does not have permission to mint on this shoulder
         result_dict = self._mint(apitest_client, ns, meta_type, test_docs)
         
         log.debug(f'result_dict mint="{result_dict}"')
         assert result_dict['status_message'] == b'forbidden'
         assert result_dict['status'] == b'error'
 
-        minted_id = result_dict['status_message']
-
-        # GET: Get
-
+        minted_id = "XYZ:12345"  # This is a made-up identifier for testing purposes.
         response = apitest_client.get(
             "/id/{}".format(tests.util.util.encode(minted_id)),
             # Content-Type other than HTML is dispatched to the API
@@ -207,6 +201,30 @@ class TestAPI:
 
         impl.util.log_obj(result_list, msg='result_list')
         tests.util.sample.assert_match(result_list, 'view')
+
+
+    def test_1021(
+        self,
+        apitest_client,
+        minters,
+        test_docs,
+        meta_type,
+    ):
+        """
+        View an identifier:
+          GET /id/{identifier}   [authentication optional]
+            ?prefix_match={yes|no}
+          response body: status line, metadata
+
+
+        Test the path from an create/update/delete operation coming in from the API, through to
+        tasks queued for the async processes, to final push of operation to N2T, Crossref and
+        DataCite.
+        """
+        # print(apitest_client)
+        # Not implemented yet.
+        pass
+
 
     def test_1030(
         self,
