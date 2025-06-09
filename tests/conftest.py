@@ -60,7 +60,7 @@ NAMESPACE_LIST = [
     # (NS.from_str('ark:/99934/x2'), tuple()),
     # (NS.from_str('ark:/99933/x3y4/'), ('supershoulder',)),
     # (NS.from_str('ark:/99934/'), ('supershoulder', 'force')),
-    # (NS.from_str('doi:10.9935/X5'), tuple()),
+    (NS.from_str('doi:10.9935/X5'), tuple()),
     # (NS.from_str('doi:10.19936/X6Y7'), tuple()),
     # (NS.from_str('doi:10.9935/X8'), tuple()),
     # (NS.from_str('doi:10.19936/X9Y0'), tuple()),

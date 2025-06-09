@@ -75,6 +75,10 @@ class TestAPI:
         ns, arg_tup = minters
         result_dict = self._mint(ez_admin, ns, meta_type, test_docs)
         minted_id = result_dict['status_message']
+        # ARK: ark:/99999/fk4989sj8r
+        # DOI: doi:10.15697/FK2Z81B | ark:/c5697/fk2z81b
+        minted_id = minted_id.split(b"|", 1)[0].strip(b" ")
+
         response = ez_admin.get(
             "/id/{}".format(tests.util.util.encode(minted_id)),
             content_type="text/plain; charset=utf-8",
@@ -82,6 +86,27 @@ class TestAPI:
         result_dict = tests.util.anvl.response_to_dict(response.content)
         result_dict['_url'] = str(ns)
         assert result_dict['status'] == b'success'
+
+        # verify that the identifier is in the metadata
+        # ARK: ark:/99999/fk4989sj8r
+        # DOI: doi:10.15697/FK2Z81B
+        id_type, id_value = minted_id.split(b":", 1)
+        if id_value.startswith(b"/"):
+            id_value = id_value[1:]
+        id_type = id_type.decode('utf-8').upper()
+        id_value = id_value.decode('utf-8')
+
+        if meta_type == 'datacite':
+             expected_id_in_metadata = f'<identifier identifierType="{id_type}">{id_value}</identifier>'
+        elif meta_type == 'crossref':
+            if id_type == 'ARK':
+                expected_id_in_metadata = f'<doi>(:tba)</doi>'
+            elif id_type == 'DOI':
+                expected_id_in_metadata = f'<doi>{id_value}</doi>'
+        
+        if meta_type in ['datacite', 'crossref']:
+            assert expected_id_in_metadata in result_dict[meta_type].decode('utf-8')
+
 
     # =============================================================================
     #
@@ -130,6 +155,7 @@ class TestAPI:
     #   POST /download_request   [authentication required]
     #   request body: application/x-www-form-urlencoded
     #   response body: status line
+
 
     def test_1020(
         self,
