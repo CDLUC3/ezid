@@ -80,7 +80,7 @@ def _get_metadata_with_xml(id_ns, test_docs, meta_type):
 
 NAMESPACE_DICT = {
     'datacite': 'http://datacite.org/schema/kernel-4',
-    'crossref': 'http://www.crossref.org/schema/4.4.0',
+    'crossref': 'http://www.crossref.org/schema/5.4.0',
     'dc': 'http://ns.dataone.org/metadata/schema/onedcx/v1.0',
     'dcterms': 'http://purl.org/dc/terms/',
 }
@@ -121,7 +121,10 @@ def _set_crossref_identifier(root_el, id_ns):
     # id_type: Always DOI
     # id_value: /database/doi_data/doi/text()
     log.debug(_to_pretty_string(root_el))
-    el = root_el.xpath('.//crossref:doi_data/crossref:doi', namespaces=NAMESPACE_DICT)[0]
+    # v4.4.0
+    # el = root_el.xpath('.//crossref:doi_data/crossref:doi', namespaces=NAMESPACE_DICT)[0]
+    # v5.4.0, journal_article
+    el = root_el.xpath('.//crossref:journal_article/crossref:doi_data/crossref:doi', namespaces=NAMESPACE_DICT)[0]
     el.text = str(id_ns)
 
 
