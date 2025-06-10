@@ -87,7 +87,7 @@ class TestAPI:
         result_dict['_url'] = str(ns)
         assert result_dict['status'] == b'success'
 
-        # verify that the identifier is in the metadata
+        # verify that the minted identifier is in the metadata
         # ARK: ark:/99999/fk4989sj8r
         # DOI: doi:10.15697/FK2Z81B
         id_type, id_value = minted_id.split(b":", 1)
@@ -157,8 +157,6 @@ class TestAPI:
     #   response body: status line
 
 
-    
-
     def test_1020(self,
         apitest_client,
         minters,
@@ -169,13 +167,12 @@ class TestAPI:
         Test: bad requests
             Create an identifier without user permissions
             Invalid identifier
-
         """
 
         result_list = []
         ns, arg_tup = minters
 
-        # apitest does not have permission to mint on this shoulder
+        # apitest account does not have permission to mint on this shoulder
         result_dict = self._mint(apitest_client, ns, meta_type, test_docs)
         
         log.debug(f'result_dict mint="{result_dict}"')
@@ -221,8 +218,7 @@ class TestAPI:
         tasks queued for the async processes, to final push of operation to N2T, Crossref and
         DataCite.
         """
-        # print(apitest_client)
-        # Not implemented yet.
+        # Described initially in test_1020 but not yet implemented - 2025-06-10, jjiang.
         pass
 
 
@@ -245,26 +241,10 @@ class TestAPI:
         # We requested the apitest_client and apitest_minter fixtures, so the apitest
         # user has been successfully authenticated, and has a shoulder with minter at this point.
 
-        # r = apitest_client.get(f'/login', auth=('apitest', 'apitest'))
-
-        # r.raise_for_status()
-        # print(f'Login result: {r}')
-        # result_list = []
-        # client.login(username=username, password=password)
-        # r = client.get('/', auth=('apitest', 'apitest'))
-        # r:HttpResponse
-        # assert r.status_code == 200
-
-        # print(apitest_minter)
-        #
-        # return
-
-        # ns, arg_tup = minters
-
         # meta_list = tests.util.metadata_generator.get_metadata('doi:10.39999/SD2')
+        # create a DC metadata record with data field 'dc.identifier': 'qwer'
         meta_list = tests.util.metadata_generator.get_metadata('qwer')
         data_bytes = tests.util.anvl.format_request(meta_list).encode('utf-8')
-        # metadata_anvl=anvl.format_request().response_to_dict(response.content)
 
         result_list = []
         result_dict = self._mint_by_client(apitest_client, apitest_minter)
@@ -289,5 +269,23 @@ class TestAPI:
 
         # r = impl.datacite.uploadMetadata(doi[4:], {}, metadata, True, datacenter)
         # assert type(r) is not str, "unexpected return: " + r
+
+
+    def test_1031(
+        self,
+        apitest_client,
+        apitest_minter,
+    ):
+        """
+        Update an identifier:
+          POST /id/{identifier}   [authentication required]
+            ?update_external_services={yes|no}
+          request body: optional metadata
+          response body: status line
+
+        Test the path from an update operation coming in from the API, through to tasks queued for
+        the async processes, to final push of operation to N2T, Crossref and DataCite.
+        """
+        # Described initially in test_1030 but not yet implemented - 2025-06-10, jjiang
 
         pass
