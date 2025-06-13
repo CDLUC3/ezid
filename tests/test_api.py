@@ -75,6 +75,10 @@ class TestAPI:
         ns, arg_tup = minters
         result_dict = self._mint(ez_admin, ns, meta_type, test_docs)
         minted_id = result_dict['status_message']
+        # ARK: ark:/99999/fk4989sj8r
+        # DOI: doi:10.15697/FK2Z81B | ark:/c5697/fk2z81b
+        minted_id = minted_id.split(b"|", 1)[0].strip(b" ")
+
         response = ez_admin.get(
             "/id/{}".format(tests.util.util.encode(minted_id)),
             content_type="text/plain; charset=utf-8",
@@ -82,6 +86,27 @@ class TestAPI:
         result_dict = tests.util.anvl.response_to_dict(response.content)
         result_dict['_url'] = str(ns)
         assert result_dict['status'] == b'success'
+
+        # verify that the minted identifier is in the metadata
+        # ARK: ark:/99999/fk4989sj8r
+        # DOI: doi:10.15697/FK2Z81B
+        id_type, id_value = minted_id.split(b":", 1)
+        if id_value.startswith(b"/"):
+            id_value = id_value[1:]
+        id_type = id_type.decode('utf-8').upper()
+        id_value = id_value.decode('utf-8')
+
+        if meta_type == 'datacite':
+             expected_id_in_metadata = f'<identifier identifierType="{id_type}">{id_value}</identifier>'
+        elif meta_type == 'crossref':
+            if id_type == 'ARK':
+                expected_id_in_metadata = f'<doi>(:tba)</doi>'
+            elif id_type == 'DOI':
+                expected_id_in_metadata = f'<doi>{id_value}</doi>'
+        
+        if meta_type in ['datacite', 'crossref']:
+            assert expected_id_in_metadata in result_dict[meta_type].decode('utf-8')
+
 
     # =============================================================================
     #
@@ -131,38 +156,30 @@ class TestAPI:
     #   request body: application/x-www-form-urlencoded
     #   response body: status line
 
-    def test_1020(
-        self,
+
+    def test_1020(self,
         apitest_client,
         minters,
         test_docs,
         meta_type,
     ):
         """
-        View an identifier:
-          GET /id/{identifier}   [authentication optional]
-            ?prefix_match={yes|no}
-          response body: status line, metadata
-
-
-        Test the path from an create/update/delete operation coming in from the API, through to
-        tasks queued for the async processes, to final push of operation to N2T, Crossref and
-        DataCite.
+        Test: bad requests
+            Create an identifier without user permissions
+            Invalid identifier
         """
-        # print(apitest_client)
 
         result_list = []
         ns, arg_tup = minters
+
+        # apitest account does not have permission to mint on this shoulder
         result_dict = self._mint(apitest_client, ns, meta_type, test_docs)
         
         log.debug(f'result_dict mint="{result_dict}"')
         assert result_dict['status_message'] == b'forbidden'
         assert result_dict['status'] == b'error'
 
-        minted_id = result_dict['status_message']
-
-        # GET: Get
-
+        minted_id = "XYZ:12345"  # This is a made-up identifier for testing purposes.
         response = apitest_client.get(
             "/id/{}".format(tests.util.util.encode(minted_id)),
             # Content-Type other than HTML is dispatched to the API
@@ -181,6 +198,29 @@ class TestAPI:
 
         impl.util.log_obj(result_list, msg='result_list')
         tests.util.sample.assert_match(result_list, 'view')
+
+
+    def test_1021(
+        self,
+        apitest_client,
+        minters,
+        test_docs,
+        meta_type,
+    ):
+        """
+        View an identifier:
+          GET /id/{identifier}   [authentication optional]
+            ?prefix_match={yes|no}
+          response body: status line, metadata
+
+
+        Test the path from an create/update/delete operation coming in from the API, through to
+        tasks queued for the async processes, to final push of operation to N2T, Crossref and
+        DataCite.
+        """
+        # Described initially in test_1020 but not yet implemented - 2025-06-10, jjiang.
+        pass
+
 
     def test_1030(
         self,
@@ -201,26 +241,10 @@ class TestAPI:
         # We requested the apitest_client and apitest_minter fixtures, so the apitest
         # user has been successfully authenticated, and has a shoulder with minter at this point.
 
-        # r = apitest_client.get(f'/login', auth=('apitest', 'apitest'))
-
-        # r.raise_for_status()
-        # print(f'Login result: {r}')
-        # result_list = []
-        # client.login(username=username, password=password)
-        # r = client.get('/', auth=('apitest', 'apitest'))
-        # r:HttpResponse
-        # assert r.status_code == 200
-
-        # print(apitest_minter)
-        #
-        # return
-
-        # ns, arg_tup = minters
-
         # meta_list = tests.util.metadata_generator.get_metadata('doi:10.39999/SD2')
+        # create a DC metadata record with data field 'dc.identifier': 'qwer'
         meta_list = tests.util.metadata_generator.get_metadata('qwer')
         data_bytes = tests.util.anvl.format_request(meta_list).encode('utf-8')
-        # metadata_anvl=anvl.format_request().response_to_dict(response.content)
 
         result_list = []
         result_dict = self._mint_by_client(apitest_client, apitest_minter)
@@ -245,5 +269,23 @@ class TestAPI:
 
         # r = impl.datacite.uploadMetadata(doi[4:], {}, metadata, True, datacenter)
         # assert type(r) is not str, "unexpected return: " + r
+
+
+    def test_1031(
+        self,
+        apitest_client,
+        apitest_minter,
+    ):
+        """
+        Update an identifier:
+          POST /id/{identifier}   [authentication required]
+            ?update_external_services={yes|no}
+          request body: optional metadata
+          response body: status line
+
+        Test the path from an update operation coming in from the API, through to tasks queued for
+        the async processes, to final push of operation to N2T, Crossref and DataCite.
+        """
+        # Described initially in test_1030 but not yet implemented - 2025-06-10, jjiang
 
         pass
