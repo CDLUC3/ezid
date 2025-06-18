@@ -53,7 +53,7 @@ ROOT_TAG_LIST = [
 ]
 
 # noinspection HttpUrlsUsage
-TAG_REGEX = re.compile("{(http://www\\.crossref\\.org/schema/(4\.[34]\.\d|5\.[3]\.\d))}([-\\w.]+)$")
+TAG_REGEX = re.compile("{(http://www\\.crossref\\.org/schema/(4\.[34]\.\d|5\.[34]\.\d))}([-\\w.]+)$")
 
 def _notOne (n):
   if n == 0:

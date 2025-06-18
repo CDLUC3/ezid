@@ -1,0 +1,17 @@
+The test_impl_util_to-exchange-ID.sample files were created for testing
+the impl_util_to-exchange() function which performs metadata format conversion.
+Metadata schema version such as DataCite version 3, 4 etc. has no impact to the test results.
+So there is no need to update these test datasets following DataCite schema upgrade.
+
+Sample content of the test file:
+
+input_json=
+{}
+~~~~~~~~~~
+dict_pp=
+{}
+~~~~~~~~~~
+keys=
+
+~~~~~~~~~~
+output_exchange=
