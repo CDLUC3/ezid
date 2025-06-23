@@ -43,6 +43,8 @@ def response_to_dict(response, format_timestamps=True, decode=False):
         return res
     response = response.splitlines()
     # Treat the first response line as the status
+    # success: ark:/99999/fk4989sj8r
+    # success: doi:10.15697/FK2Z81B | ark:/c5697/fk2z81b
     K, V = response[0].split(b":", 1)
     res["status"] = K
     res["status_message"] = V.strip(b" ")
@@ -59,7 +61,8 @@ def response_to_dict(response, format_timestamps=True, decode=False):
                     lambda m: chr(int(m.group(1), 16)),
                     V,
                 )
-            # log.debug("K : V = %s : %s", K, V)
+            K = K.decode('utf-8')
+            log.debug("K : V = %s : %s", K, V)
             res[K] = V
         except ValueError:
             res["body"] += line
