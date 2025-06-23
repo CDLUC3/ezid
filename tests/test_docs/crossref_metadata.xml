@@ -1,28 +1,50 @@
-<?xml version="1.0"?>
-<database xmlns="http://www.crossref.org/schema/4.4.0"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://www.crossref.org/schema/4.4.0
-          http://www.crossref.org/schema/deposit/crossref4.4.0.xsd"
->
-  <contributors>
-    <person_name contributor_role="author" sequence="first">
-      <surname>Test Surname</surname>
-    </person_name>
-  </contributors>
-  <titles>
-    <title>Test title for a CrossRef metadata record</title>
-  </titles>
-  <publisher_item>
-    <item_number item_number_type="Test publisher item">12345</item_number>
-  </publisher_item>
-  <publisher>
-    <publisher_name>Test publisher name</publisher_name>
-  </publisher>
-  <publication_date>
-    <year>1999</year>
-  </publication_date>
-  <doi_data>
-    <doi>A DOI on form 10.9999/* will be inserted here</doi>
-    <resource>https://invalid.invalid</resource>
-  </doi_data>
-</database>
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- example from working DOI:10.5070/P5.47442 for Journal article-->
+<journal xmlns="http://www.crossref.org/schema/5.4.0" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.crossref.org/schema/5.4.0 http://www.crossref.org/schema/deposit/crossref5.4.0.xsd">
+  <journal_metadata>
+    <full_title>Parks Stewardship Forum</full_title>
+    <abbrev_title>Parks Stewardship Forum</abbrev_title>
+    <issn media_type="electronic">2688-187X</issn>
+  </journal_metadata>
+  <journal_issue>
+    <publication_date media_type="online">
+      <month>5</month>
+      <day>15</day>
+      <year>2025</year>
+    </publication_date>
+    <journal_volume>
+      <volume>41</volume>
+    </journal_volume>
+    <issue>2</issue>
+  </journal_issue>
+  <journal_article publication_type="full_text">
+    <titles>
+      <title>Appalachia As Ghost</title>
+    </titles>
+    <contributors>
+      <person_name contributor_role="author" sequence="additional">
+        <given_name>Trish J.</given_name>
+        <surname>Gibson</surname>
+      </person_name>
+    </contributors>
+    <abstract xmlns="http://www.ncbi.nlm.nih.gov/JATS1">
+      <p>A poem in the "Verse in Place" section of Parks Stewardship Forum.</p>
+    </abstract>
+    <publication_date media_type="online">
+      <month>5</month>
+      <day>15</day>
+      <year>2025</year>
+    </publication_date>
+    <doi_data>
+      <doi>A DOI on form 10.9999/* will be inserted here</doi>
+      <resource>https://escholarship.org/uc/item/9ks4n8gd</resource>
+      <collection property="text-mining">
+        <item>
+          <resource mime_type="application/pdf"> https://escholarship.org/content/qt9ks4n8gd/qt9ks4n8gd.pdf </resource>
+        </item>
+      </collection>
+    </doi_data>
+  </journal_article>
+</journal>

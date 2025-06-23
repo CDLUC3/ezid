@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database xmlns="http://www.crossref.org/schema/4.4.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.crossref.org/schema/4.4.0
+          http://www.crossref.org/schema/deposit/crossref4.4.0.xsd"
+>
+  <contributors>
+    <person_name contributor_role="author" sequence="first">
+      <surname>Test Surname</surname>
+    </person_name>
+  </contributors>
+  <titles>
+    <title>Test title for a CrossRef metadata record</title>
+  </titles>
+  <publisher_item>
+    <item_number item_number_type="Test publisher item">12345</item_number>
+  </publisher_item>
+  <publisher>
+    <publisher_name>Test publisher name</publisher_name>
+  </publisher>
+  <publication_date>
+    <year>1999</year>
+  </publication_date>
+  <doi_data>
+    <doi>A DOI on form 10.9999/* will be inserted here</doi>
+    <resource>https://invalid.invalid</resource>
+  </doi_data>
+</database>
