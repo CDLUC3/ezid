@@ -1075,13 +1075,16 @@ class RelatedItemForm(django.forms.Form):
         self.fields["relatedItemType"] = django.forms.ChoiceField(
             required=False, label=_("Related Item Type"), choices=RESOURCE_TYPES
         )
+        self.fields["relationType"] = django.forms.ChoiceField(
+            required=False, label=_("Relation Type"), choices=RELATION_TYPES
+        )
         self.fields["relatedItemIdentifier"] = django.forms.CharField(
             required=False, label=_("Item Identifier")
         )
-        self.fields["relatedItemIdentifierType"] = django.forms.ChoiceField(
+        self.fields["relatedItemIdentifier-relatedItemIdentifierType"] = django.forms.ChoiceField(
             required=False, label=_("Identifier Type"), choices=RELATED_ID_TYPES
         )
-        self.fields["creatorName"] = django.forms.CharField(
+        self.fields["creator-creatorName"] = django.forms.CharField(
             required=False, label=_("Creator Name")
         )
         NAME_TYPES = (
@@ -1089,19 +1092,19 @@ class RelatedItemForm(django.forms.Form):
             ("Organizational", "Organizational"),
             ("Personal", "Personal"),
         )
-        self.fields["creatorName-nameType"] = django.forms.ChoiceField(
-            required=False, label=_("Creator Name Type"), choices=NAME_TYPES
+        self.fields["creator-creatorName-nameType"] = django.forms.ChoiceField(
+            required=False, label=_("Name Type"), choices=NAME_TYPES
         )
-        self.fields["creatorName-familyName"] = django.forms.CharField(
+        self.fields["creator-creatorName-familyName"] = django.forms.CharField(
             required=False, label=_("Family Name")
         )
-        self.fields["creatorName-givenName"] = django.forms.CharField(
+        self.fields["creator-creatorName-givenName"] = django.forms.CharField(
             required=False, label=_("Given Name")
         )
         self.fields["title"] = django.forms.CharField(
             required=False, label=_("Title")
         )
-        self.fields["titleType"] = django.forms.ChoiceField(
+        self.fields["title-titleType"] = django.forms.ChoiceField(
             required=False,
             label=_("Type"),
             widget=django.forms.RadioSelect(
@@ -1146,16 +1149,16 @@ class RelatedItemForm(django.forms.Form):
         self.fields["contributor-contributorType"] = django.forms.ChoiceField(
             required=False, label=_("Contributor Type"), choices=CONTRIB_TYPES
         )
-        self.fields["contributorName"] = django.forms.CharField(
-            required=False, label=_("Name")
+        self.fields["contributor-contributorName"] = django.forms.CharField(
+            required=False, label=_("Contributor Name")
         )
-        self.fields["contributorName-nameType"] = django.forms.ChoiceField(
-            required=False, label=_("Name"), choices=NAME_TYPES
+        self.fields["contributor-contributorName-nameType"] = django.forms.ChoiceField(
+            required=False, label=_("Name Type"), choices=NAME_TYPES
         )
-        self.fields["contributor-familyName"] = django.forms.CharField(
+        self.fields["contributor-contributorName-familyName"] = django.forms.CharField(
             required=False, label=_("Family Name")
         )
-        self.fields["contributor-givenName"] = django.forms.CharField(
+        self.fields["contributor-contributorName-givenName"] = django.forms.CharField(
             required=False, label=_("Given Name")
         )
 

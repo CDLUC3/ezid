@@ -31,6 +31,7 @@ _repeatableElementContainers = [
     "descriptions",
     "geoLocations",
     "fundingReferences",
+    "relatedItems"
 ]
 
 _numberedElementContainers = {
@@ -259,18 +260,27 @@ _elementList = [
     "geoLocationBox",
     "geoLocationPolygon",
     "polygonPoint",
-    "fundingReferences",
-    "fundingReference",
-    "funderName",
-    "funderIdentifier",
-    "awardNumber",
-    "awardTitle",
     "pointLongitude",
     "pointLatitude",
     "westBoundLongitude",
     "eastBoundLongitude",
     "southBoundLatitude",
     "northBoundLatitude",
+    "fundingReferences",
+    "fundingReference",
+    "funderName",
+    "funderIdentifier",
+    "awardNumber",
+    "awardTitle",
+    "relatedItems",
+    "relatedItem",
+    "relatedItemIdentifier",
+    "volume",
+    "issue",
+    "number",
+    "fisrtPage",
+    "lastPage",
+    "edition",
 ]
 
 _elements = dict((e, i) for i, e in enumerate(_elementList))
