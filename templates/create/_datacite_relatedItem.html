@@ -1,0 +1,55 @@
+{% load i18n %}
+{% load layout_extras %}
+
+<script type="text/javascript">
+  $(function() {
+    $('#relateditem_set .form-container').formset({
+      auto_id: '',
+      prefix: '{{ form.relateditem_set.prefix }}',
+      deleteCssId: 'button__minus-relateditem',
+      addCssId: 'button__plus-relateditem'
+    });
+  })
+</script>
+
+<div id="relateditem_set" class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="relateditem_form_set">
+  <div class="fieldset-controls__container">
+    <div id="relateditem_form_set" class="fieldset-controls__legend create__nested-legend">{% trans "Related Item" %}</div>
+  {% include "create/_datacite_buttons.html" with element="relateditem" %}
+  </div>
+{% for form in form.relateditem_set %}
+  <div class="form-container">
+  {{ form.non_field_errors }}
+
+  {% include "create/_datacite_inlineselect.html" with field=form.relatedItemType %}
+  {% include "create/_datacite_inlineselect.html" with field=form.relationType %}
+
+  {% include "create/_datacite_inlineselect.html" with field=form|get_field:"relatedItemIdentifier-relatedItemIdentifierType" %}
+  {% include "create/_datacite_inlinetext.html" with field=form.relatedItemIdentifier %}
+
+  {% include "create/_datacite_inlinetext.html" with field=form|get_field:"creator-creatorName" %}
+  {% include "create/_datacite_inlineselect.html" with field=form|get_field:"creator-creatorName-nameType" %}
+  {% include "create/_datacite_inlinetext.html" with field=form|get_field:"creator-creatorName-familyName" %}
+  {% include "create/_datacite_inlinetext.html" with field=form|get_field:"creator-creatorName-givenName" %}
+
+  {% include "create/_datacite_inlinetext.html" with field=form.title %}
+  {% include "create/_datacite_inlineselect.html" with field=form|get_field:"title-titleType" %}
+
+  {% include "create/_datacite_inlinetext.html" with field=form.publicationYear %}
+  {% include "create/_datacite_inlinetext.html" with field=form.volume %}
+  {% include "create/_datacite_inlinetext.html" with field=form.issue %}
+  {% include "create/_datacite_inlinetext.html" with field=form.number %}
+  {% include "create/_datacite_inlinetext.html" with field=form.firstPage %}
+  {% include "create/_datacite_inlinetext.html" with field=form.lastPage %}
+  {% include "create/_datacite_inlinetext.html" with field=form.publisher %}
+  {% include "create/_datacite_inlinetext.html" with field=form.edition %}
+
+  {% include "create/_datacite_inlinetext.html" with field=form|get_field:"contributor-contributorName" %}
+  {% include "create/_datacite_inlineselect.html" with field=form|get_field:"contributor-contributorName-nameType" %}
+  {% include "create/_datacite_inlinetext.html" with field=form|get_field:"contributor-contributorName-familyName" %}
+  {% include "create/_datacite_inlinetext.html" with field=form|get_field:"contributor-contributorName-givenName" %}
+
+  </div>
+{% endfor %}
+</div>
+{{ form.relateditem_set.management_form }}
