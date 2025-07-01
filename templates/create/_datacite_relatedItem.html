@@ -27,27 +27,50 @@
   {% include "create/_datacite_inlineselect.html" with field=form|get_field:"relatedItemIdentifier-relatedItemIdentifierType" %}
   {% include "create/_datacite_inlinetext.html" with field=form.relatedItemIdentifier %}
 
-  {% include "create/_datacite_inlinetext.html" with field=form|get_field:"creator-creatorName" %}
-  {% include "create/_datacite_inlineselect.html" with field=form|get_field:"creator-creatorName-nameType" %}
-  {% include "create/_datacite_inlinetext.html" with field=form|get_field:"creator-creatorName-familyName" %}
-  {% include "create/_datacite_inlinetext.html" with field=form|get_field:"creator-creatorName-givenName" %}
+  <details id="accordion__section-1_relateditem" class="accordion__section create__accordion-section" {{accordions_open}}>
+      <summary class="accordion__title create__accordion-title">{% trans "Creator" %}</summary>
+      {% include "create/_datacite_inlinetext.html" with field=form|get_field:"creator-creatorName" %}
+      {% include "create/_datacite_inlineselect.html" with field=form|get_field:"creator-creatorName-nameType" %}
+      {% include "create/_datacite_inlinetext.html" with field=form|get_field:"creator-creatorName-familyName" %}
+      {% include "create/_datacite_inlinetext.html" with field=form|get_field:"creator-creatorName-givenName" %}
+  </details>
 
   {% include "create/_datacite_inlinetext.html" with field=form.title %}
-  {% include "create/_datacite_inlineselect.html" with field=form|get_field:"title-titleType" %}
+
+  <fieldset class="fieldset-inline create__form-element-group" role="group" aria-labelledby="relateditem-title-type">
+    <span id="relateditem-title-type" class="fieldset-inline__legend create__inline-nested-legend">
+      {% with field=form|get_field:"title-titleType" %}
+        {{ field.label_tag }}
+      {% endwith %}
+    </span>
+    <div>
+      {% for radio in form|get_field:"title-titleType" %}
+        <label for="{{ radio.id_for_label }}" class="fcontrol__radio-label-inline">
+          {{ radio.tag }}
+          <span>{{ radio.choice_label }}</span>
+        </label>
+      {% endfor %}
+    </div>
+  </fieldset>
+  
 
   {% include "create/_datacite_inlinetext.html" with field=form.publicationYear %}
   {% include "create/_datacite_inlinetext.html" with field=form.volume %}
   {% include "create/_datacite_inlinetext.html" with field=form.issue %}
   {% include "create/_datacite_inlinetext.html" with field=form.number %}
+  {% include "create/_datacite_inlineselect.html" with field=form|get_field:"number-numberType" %}
   {% include "create/_datacite_inlinetext.html" with field=form.firstPage %}
   {% include "create/_datacite_inlinetext.html" with field=form.lastPage %}
   {% include "create/_datacite_inlinetext.html" with field=form.publisher %}
   {% include "create/_datacite_inlinetext.html" with field=form.edition %}
 
-  {% include "create/_datacite_inlinetext.html" with field=form|get_field:"contributor-contributorName" %}
-  {% include "create/_datacite_inlineselect.html" with field=form|get_field:"contributor-contributorName-nameType" %}
-  {% include "create/_datacite_inlinetext.html" with field=form|get_field:"contributor-contributorName-familyName" %}
-  {% include "create/_datacite_inlinetext.html" with field=form|get_field:"contributor-contributorName-givenName" %}
+    <details id="accordion__section-2_relateditem" class="accordion__section create__accordion-section" {{accordions_open}}>
+      <summary class="accordion__title create__accordion-title">{% trans "Contributor" %}</summary>
+        {% include "create/_datacite_inlinetext.html" with field=form|get_field:"contributor-contributorName" %}
+        {% include "create/_datacite_inlineselect.html" with field=form|get_field:"contributor-contributorName-nameType" %}
+        {% include "create/_datacite_inlinetext.html" with field=form|get_field:"contributor-contributorName-familyName" %}
+        {% include "create/_datacite_inlinetext.html" with field=form|get_field:"contributor-contributorName-givenName" %}
+  </details>
 
   </div>
 {% endfor %}

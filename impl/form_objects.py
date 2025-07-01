@@ -1106,7 +1106,7 @@ class RelatedItemForm(django.forms.Form):
         )
         self.fields["title-titleType"] = django.forms.ChoiceField(
             required=False,
-            label=_("Type"),
+            label=_("Title Type"),
             widget=django.forms.RadioSelect(
                 attrs={'class': 'fcontrol__radio-button-stacked'}
             ),
