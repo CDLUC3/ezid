@@ -1067,7 +1067,9 @@ class FundingRefForm(django.forms.Form):
 
 class RelatedItemForm(django.forms.Form):
     """Form object for Related Items in DataCite Advanced (XML)
-    profile."""
+    profile.
+    See 'temp_mockFormElements()' in datacite_xml.py for field name conventions.
+    """
 
     def __init__(self, *args, **kwargs):
         super(RelatedItemForm, self).__init__(*args, **kwargs)
@@ -1081,10 +1083,10 @@ class RelatedItemForm(django.forms.Form):
         self.fields["relatedItemIdentifier"] = django.forms.CharField(
             required=False, label=_("Item Identifier")
         )
-        self.fields["relatedItemIdentifier-relatedItemIdentifierType"] = django.forms.ChoiceField(
+        self.fields["relatedItemIdentifierType"] = django.forms.ChoiceField(
             required=False, label=_("Identifier Type"), choices=RELATED_ID_TYPES
         )
-        self.fields["creator-creatorName"] = django.forms.CharField(
+        self.fields["creators-creator-0-creatorName"] = django.forms.CharField(
             required=False, label=_("Creator Name")
         )
         NAME_TYPES = (
@@ -1092,19 +1094,19 @@ class RelatedItemForm(django.forms.Form):
             ("Organizational", "Organizational"),
             ("Personal", "Personal"),
         )
-        self.fields["creator-creatorName-nameType"] = django.forms.ChoiceField(
+        self.fields["creators-creator-0-nameType"] = django.forms.ChoiceField(
             required=False, label=_("Name Type"), choices=NAME_TYPES
         )
-        self.fields["creator-creatorName-familyName"] = django.forms.CharField(
+        self.fields["creators-creator-0-familyName"] = django.forms.CharField(
             required=False, label=_("Family Name")
         )
-        self.fields["creator-creatorName-givenName"] = django.forms.CharField(
+        self.fields["creators-creator-0-givenName"] = django.forms.CharField(
             required=False, label=_("Given Name")
         )
-        self.fields["title"] = django.forms.CharField(
+        self.fields["titles-title-0-title"] = django.forms.CharField(
             required=False, label=_("Title")
         )
-        self.fields["title-titleType"] = django.forms.ChoiceField(
+        self.fields["titles-title-0-titleType"] = django.forms.ChoiceField(
             required=False,
             label=_("Title Type"),
             widget=django.forms.RadioSelect(
@@ -1131,7 +1133,7 @@ class RelatedItemForm(django.forms.Form):
             ("Report", _("Report")),
             ("Other", "Other"),
         )
-        self.fields["number-numberType"] = django.forms.ChoiceField(
+        self.fields["numberType"] = django.forms.ChoiceField(
             required=False, label=_("Number Type"), choices=NUMBER_TYPES
         )
         self.fields["firstPage"] = django.forms.CharField(
@@ -1146,26 +1148,36 @@ class RelatedItemForm(django.forms.Form):
         self.fields["edition"] = django.forms.CharField(
             required=False, label=_("Edition")
         )
-        self.fields["contributor-contributorType"] = django.forms.ChoiceField(
+        self.fields["contributors-contributor-0-contributorType"] = django.forms.ChoiceField(
             required=False, label=_("Contributor Type"), choices=CONTRIB_TYPES
         )
-        self.fields["contributor-contributorName"] = django.forms.CharField(
+        self.fields["contributors-contributor-0-contributorName"] = django.forms.CharField(
             required=False, label=_("Contributor Name")
         )
-        self.fields["contributor-contributorName-nameType"] = django.forms.ChoiceField(
+        self.fields["contributors-contributor-0-nameType"] = django.forms.ChoiceField(
             required=False, label=_("Name Type"), choices=NAME_TYPES
         )
-        self.fields["contributor-contributorName-familyName"] = django.forms.CharField(
+        self.fields["contributors-contributor-0-familyName"] = django.forms.CharField(
             required=False, label=_("Family Name")
         )
-        self.fields["contributor-contributorName-givenName"] = django.forms.CharField(
+        self.fields["contributors-contributor-0-givenName"] = django.forms.CharField(
             required=False, label=_("Given Name")
         )
+
+    def clean(self):
+        cleaned_data = super(RelatedItemForm, self).clean()
+        print(f"related item cleaned_data: {cleaned_data}")
+        
+        errs = None
+        if errs:
+            raise django.core.exceptions.ValidationError(errs)
+
+        return cleaned_data
 
 # noinspection PyUnusedLocal
 def getIdForm_datacite_xml(form_coll=None, request=None):
     """For Advanced Datacite elements On GET, displays 'form_coll' (named
-    tuple) data translated from XML doc On POST (when editing an ID or creating
+    tuple) data translated from XML doc. On POST (when editing an ID or creating
     a new ID), uses request.POST.
 
     Returns all elements combined into one dict of Django forms and
