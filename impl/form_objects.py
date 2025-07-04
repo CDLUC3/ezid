@@ -1069,6 +1069,8 @@ class RelatedItemForm(django.forms.Form):
     """Form object for Related Items in DataCite Advanced (XML)
     profile.
     See 'temp_mockFormElements()' in datacite_xml.py for field name conventions.
+    Note: pay attention on how hyphenhyphen "-" and underscore "_" are used to
+    handle element, sub-element, repeated element and attribute.
     """
 
     def __init__(self, *args, **kwargs):
@@ -1083,7 +1085,7 @@ class RelatedItemForm(django.forms.Form):
         self.fields["relatedItemIdentifier"] = django.forms.CharField(
             required=False, label=_("Item Identifier")
         )
-        self.fields["relatedItemIdentifierType"] = django.forms.ChoiceField(
+        self.fields["relatedItemIdentifier-relatedItemIdentifierType"] = django.forms.ChoiceField(
             required=False, label=_("Identifier Type"), choices=RELATED_ID_TYPES
         )
         self.fields["creators-creator-0-creatorName"] = django.forms.CharField(
@@ -1094,7 +1096,7 @@ class RelatedItemForm(django.forms.Form):
             ("Organizational", "Organizational"),
             ("Personal", "Personal"),
         )
-        self.fields["creators-creator-0-nameType"] = django.forms.ChoiceField(
+        self.fields["creators-creator-0-creatorName-nameType"] = django.forms.ChoiceField(
             required=False, label=_("Name Type"), choices=NAME_TYPES
         )
         self.fields["creators-creator-0-familyName"] = django.forms.CharField(
@@ -1133,7 +1135,7 @@ class RelatedItemForm(django.forms.Form):
             ("Report", _("Report")),
             ("Other", "Other"),
         )
-        self.fields["numberType"] = django.forms.ChoiceField(
+        self.fields["number-numberType"] = django.forms.ChoiceField(
             required=False, label=_("Number Type"), choices=NUMBER_TYPES
         )
         self.fields["firstPage"] = django.forms.CharField(
@@ -1154,7 +1156,7 @@ class RelatedItemForm(django.forms.Form):
         self.fields["contributors-contributor-0-contributorName"] = django.forms.CharField(
             required=False, label=_("Contributor Name")
         )
-        self.fields["contributors-contributor-0-nameType"] = django.forms.ChoiceField(
+        self.fields["contributors-contributor-0-contributorName-nameType"] = django.forms.ChoiceField(
             required=False, label=_("Name Type"), choices=NAME_TYPES
         )
         self.fields["contributors-contributor-0-familyName"] = django.forms.CharField(

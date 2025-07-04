@@ -24,13 +24,13 @@
   {% include "create/_datacite_inlineselect.html" with field=form.relatedItemType %}
   {% include "create/_datacite_inlineselect.html" with field=form.relationType %}
 
-  {% include "create/_datacite_inlineselect.html" with field=form.relatedItemIdentifierType %}
+  {% include "create/_datacite_inlineselect.html" with field=form|get_field:"relatedItemIdentifier-relatedItemIdentifierType" %}
   {% include "create/_datacite_inlinetext.html" with field=form.relatedItemIdentifier %}
 
   <details id="accordion__section-1_relateditem" class="accordion__section create__accordion-section" {{accordions_open}}>
     <summary class="accordion__title create__accordion-title">{% trans "Creator" %}</summary>
       {% include "create/_datacite_inlinetext.html" with field=form|get_field:"creators-creator-0-creatorName" %}
-      {% include "create/_datacite_inlineselect.html" with field=form|get_field:"creators-creator-0-nameType" %}
+      {% include "create/_datacite_inlineselect.html" with field=form|get_field:"creators-creator-0-creatorName-nameType" %}
       {% include "create/_datacite_inlinetext.html" with field=form|get_field:"creators-creator-0-familyName" %}
       {% include "create/_datacite_inlinetext.html" with field=form|get_field:"creators-creator-0-givenName" %}
   </details>
@@ -57,7 +57,7 @@
   {% include "create/_datacite_inlinetext.html" with field=form.volume %}
   {% include "create/_datacite_inlinetext.html" with field=form.issue %}
   {% include "create/_datacite_inlinetext.html" with field=form.number %}
-  {% include "create/_datacite_inlineselect.html" with field=form.numberType %}
+  {% include "create/_datacite_inlineselect.html" with field=form|get_field:"number-numberType" %}
   {% include "create/_datacite_inlinetext.html" with field=form.firstPage %}
   {% include "create/_datacite_inlinetext.html" with field=form.lastPage %}
   {% include "create/_datacite_inlinetext.html" with field=form.publisher %}
@@ -66,7 +66,7 @@
   <details id="accordion__section-2_relateditem" class="accordion__section create__accordion-section" {{accordions_open}}>
     <summary class="accordion__title create__accordion-title">{% trans "Contributor" %}</summary>
       {% include "create/_datacite_inlinetext.html" with field=form|get_field:"contributors-contributor-0-contributorName" %}
-      {% include "create/_datacite_inlineselect.html" with field=form|get_field:"contributors-contributor-0-nameType" %}
+      {% include "create/_datacite_inlineselect.html" with field=form|get_field:"contributors-contributor-0-contributorName-nameType" %}
       {% include "create/_datacite_inlinetext.html" with field=form|get_field:"contributors-contributor-0-familyName" %}
       {% include "create/_datacite_inlinetext.html" with field=form|get_field:"contributors-contributor-0-givenName" %}
   </details>

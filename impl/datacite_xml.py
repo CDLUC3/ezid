@@ -278,7 +278,7 @@ _elementList = [
     "volume",
     "issue",
     "number",
-    "fisrtPage",
+    "firstPage",
     "lastPage",
     "edition",
 ]
