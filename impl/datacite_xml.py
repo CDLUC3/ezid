@@ -360,7 +360,7 @@ def formElementsToDataciteXml(d, shoulder=None, identifier=None):
     def sortChildren(node):
         if (
             tagName(node.tag) not in _repeatableElementContainers
-            and tagName(node.tag) != "geoLocationPolygon"
+            and tagName(node.tag) != "geoLocationPolygon" and tagName(node.tag) != "relatedItem"
         ):
             children = node.getchildren()
             children.sort(key=lambda c: sortValue(c))

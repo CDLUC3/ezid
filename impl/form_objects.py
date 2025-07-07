@@ -1168,7 +1168,7 @@ class RelatedItemForm(django.forms.Form):
 
     def clean(self):
         cleaned_data = super(RelatedItemForm, self).clean()
-        print(f"related item cleaned_data: {cleaned_data}")
+        print(f"## debug - related item cleaned_data: {cleaned_data}")
         
         errs = None
         if errs:

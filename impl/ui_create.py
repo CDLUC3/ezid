@@ -79,6 +79,7 @@ def advanced(request):
         # noinspection PyUnresolvedReferences
         return impl.ui_common.render(request, 'create/no_shoulders', d)
     d = adv_form(request, d)
+    print(f"## debug - adv_form d: {d}")
     return impl.ui_common.renderIdPage(request, 'create/advanced', d)
 
 

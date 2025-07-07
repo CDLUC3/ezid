@@ -65,6 +65,7 @@
 
   <details id="accordion__section-2_relateditem" class="accordion__section create__accordion-section" {{accordions_open}}>
     <summary class="accordion__title create__accordion-title">{% trans "Contributor" %}</summary>
+      {% include "create/_datacite_inlineselect.html" with field=form|get_field:"contributors-contributor-0-contributorType" %}
       {% include "create/_datacite_inlinetext.html" with field=form|get_field:"contributors-contributor-0-contributorName" %}
       {% include "create/_datacite_inlineselect.html" with field=form|get_field:"contributors-contributor-0-contributorName-nameType" %}
       {% include "create/_datacite_inlinetext.html" with field=form|get_field:"contributors-contributor-0-familyName" %}
