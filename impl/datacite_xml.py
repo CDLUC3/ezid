@@ -216,7 +216,11 @@ def _id_type(str):
 # The following exhaustive list of DataCite XML elements must form a
 # partial topological order, that is, if two elements have the same
 # parent, they must appear in the list in the same order that they
-# must appear in an XML document.
+# must appear in an XML document defined in datacite/metadata.xsd.
+# Embedded elements such as the titles, creators and contributors in 
+# the relatedItems may have a different topological order than what 
+# they appear at the element level. Define the order in a sub-elements 
+# list when needed.
 
 _elementList = [
     "identifier",
@@ -283,7 +287,32 @@ _elementList = [
     "edition",
 ]
 
+_elementList_relatedItem = [
+    "relatedItemIdentifier",
+    "creators",
+    "creator",
+    "creatorName",
+    "titles",
+    "title",
+    "publicationYear",
+    "volume",
+    "issue",
+    "number",
+    "firstPage",
+    "lastPage",
+    "publisher",
+    "edition",
+    "contributors",
+    "contributor",
+    "givenName",
+    "familyName",
+]
+
+# elements with topological order, such as:
+# {'identifier': 0, 'creators': 1, 'creator': 2, 'creatorName': 3, etc.
 _elements = dict((e, i) for i, e in enumerate(_elementList))
+
+_elements_relatedItem = dict((e, i) for i, e in enumerate(_elementList_relatedItem))
 
 
 def formElementsToDataciteXml(d, shoulder=None, identifier=None):
@@ -349,21 +378,25 @@ def formElementsToDataciteXml(d, shoulder=None, identifier=None):
                 node.attrib[k] = value
             key = remainder
 
-    def sortValue(node):
+    def sortValue(node, ordered_elements):
         v = tagName(node.tag)
         m = re.match(".*_(\\d+)$", v)
         if m:
-            return _elements[v.split("_", 1)[0]], int(m.group(1))
+            return ordered_elements[v.split("_", 1)[0]], int(m.group(1))
         else:
-            return _elements[v], 0
+            return ordered_elements[v], 0
 
     def sortChildren(node):
         if (
             tagName(node.tag) not in _repeatableElementContainers
-            and tagName(node.tag) != "geoLocationPolygon" and tagName(node.tag) != "relatedItem"
+            and tagName(node.tag) != "geoLocationPolygon"
         ):
+            if tagName(node.tag) == "relatedItem":
+                ordered_elements = _elements_relatedItem
+            else:
+                ordered_elements = _elements
             children = node.getchildren()
-            children.sort(key=lambda c: sortValue(c))
+            children.sort(key=lambda c: sortValue(c, ordered_elements))
             for i, c in enumerate(children):
                 node.insert(i, c)
         for c in node.iterchildren():
