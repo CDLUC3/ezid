@@ -172,7 +172,7 @@ def _separateByFormType(d):
     """ Representation of django forms and formsets used for DataCite XML """
     FormColl = collections.namedtuple(
         'FormColl',
-        'nonRepeating publisher resourceType creators titles descrs subjects contribs dates altids relids sizes formats rights geoLocations fundingReferences',
+        'nonRepeating publisher resourceType creators titles descrs subjects contribs dates altids relids sizes formats rights geoLocations fundingReferences relatedItems',
     )
 
     return FormColl(
@@ -192,6 +192,7 @@ def _separateByFormType(d):
         rights=dict_generate(d, 'rightsList'),
         geoLocations=dict_generate(d, 'geoLocations'),
         fundingReferences=dict_generate(d, 'fundingReferences'),
+        relatedItems=dict_generate(d, 'relatedItems')
     )
 
 # commnented out for now, as it was created for testing in the edit function in ui_manage.py.
@@ -308,7 +309,7 @@ _elementList_relatedItem = [
     "familyName",
 ]
 
-# elements with topological order, such as:
+# elements with topological order in sequence number, such as:
 # {'identifier': 0, 'creators': 1, 'creator': 2, 'creatorName': 3, etc.
 _elements = dict((e, i) for i, e in enumerate(_elementList))
 
