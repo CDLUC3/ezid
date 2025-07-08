@@ -527,23 +527,27 @@ def _relatedItem_validate_error(related_item, field_name, err, field_name_in_err
         err[field_name] = f"{field_name_in_err_msg} is required if you fill in info for relatedItem."
 
 def _relatedItem_creator_validate_error(related_item, err):
-    sub_fields = {
-        'creators-creator-0-creatorName': related_item.get('creators-creator-0-creatorName'),
-        'creators-creator-0-creatorName-nameType': related_item.get('creators-creator-0-creatorName-nameType'),
-        'creators-creator-0-familyName': related_item.get('creators-creator-0-familyName'),
-        'creators-creator-0-givenName': related_item.get('creators-creator-0-givenName'),
-    }
+    sub_fields_list = [
+        'creators-creator-0-creatorName',
+        'creators-creator-0-creatorName-nameType',
+        'creators-creator-0-familyName',
+        'creators-creator-0-givenName',
+    ]
+    sub_fields = dict((field, related_item.get(field)) for field in sub_fields_list)
+
     if any(sub_fields.values()):
         _relatedItem_validate_error(related_item, 'creators-creator-0-creatorName', err, field_name_in_err_msg='Creator Name')
 
 def _relatedItem_contributor_validate_error(related_item, err):
-    sub_fields = {
-        'contributors-contributor-0-contributorType': related_item.get('contributors-contributor-0-contributorType'),
-        'contributors-contributor-0-contributorName': related_item.get('contributors-contributor-0-contributorName'),
-        'contributors-contributor-0-contributorName-nameType': related_item.get('contributors-contributor-0-contributorName-nameType'),
-        'contributors-contributor-0-familyName': related_item.get('contributors-contributor-0-familyName'),
-        'contributors-contributor-0-givenName': related_item.get('contributors-contributor-0-givenName'),
-    }
+    sub_fields_list = [
+        'contributors-contributor-0-contributorType',
+        'contributors-contributor-0-contributorName',
+        'contributors-contributor-0-contributorName-nameType',
+        'contributors-contributor-0-familyName',
+        'contributors-contributor-0-givenName',
+    ]
+    sub_fields = dict((field, related_item.get(field)) for field in sub_fields_list)
+
     if any(sub_fields.values()):
         _relatedItem_validate_error(related_item, 'contributors-contributor-0-contributorType', err, field_name_in_err_msg='Contributor Type')
         _relatedItem_validate_error(related_item, 'contributors-contributor-0-contributorName', err, field_name_in_err_msg='Contributor Name')
@@ -1208,7 +1212,6 @@ class RelatedItemForm(django.forms.Form):
 
     def clean(self):
         cleaned_data = super(RelatedItemForm, self).clean()
-        print(f"## debug - related item cleaned_data: {cleaned_data}")
         
         errors = _validateRelatedItem(cleaned_data)
         if errors:

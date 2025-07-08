@@ -215,7 +215,6 @@ def edit(request, identifier):
                 d['identifier']['datacite']
             )
             # This is the only item from internal profile that needs inclusion in django form framework
-            print(f"## debug - form_coll: {form_coll}")
             form_coll.nonRepeating['target'] = id_metadata['_target']
             d['form'] = impl.form_objects.getIdForm_datacite_xml(form_coll, request)
             if not impl.form_objects.isValidDataciteXmlForm(d['form']):
