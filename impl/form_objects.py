@@ -509,6 +509,46 @@ def _validate_geolat(n):
     if not m or float(n) < -90 or float(n) > 90:
         raise django.core.exceptions.ValidationError(ERR_GEOPOINT_LAT)
 
+def _validateRelatedItem(related_item):
+    err={}
+    if any(related_item.values()):
+        _relatedItem_validate_error(related_item, 'relatedItemType', err)
+        _relatedItem_validate_error(related_item, 'relationType', err)
+        _relatedItem_validate_error(related_item, 'titles-title-0-title', err, field_name_in_err_msg='Title')
+        _relatedItem_creator_validate_error(related_item, err)
+        _relatedItem_contributor_validate_error(related_item, err)
+
+    return err
+
+def _relatedItem_validate_error(related_item, field_name, err, field_name_in_err_msg=None):
+    if field_name_in_err_msg is None:
+        field_name_in_err_msg = field_name
+    if related_item.get(field_name) is None or related_item.get(field_name) == '':
+        err[field_name] = f"{field_name_in_err_msg} is required if you fill in info for relatedItem."
+
+def _relatedItem_creator_validate_error(related_item, err):
+    sub_fields = {
+        'creators-creator-0-creatorName': related_item.get('creators-creator-0-creatorName'),
+        'creators-creator-0-creatorName-nameType': related_item.get('creators-creator-0-creatorName-nameType'),
+        'creators-creator-0-familyName': related_item.get('creators-creator-0-familyName'),
+        'creators-creator-0-givenName': related_item.get('creators-creator-0-givenName'),
+    }
+    if any(sub_fields.values()):
+        _relatedItem_validate_error(related_item, 'creators-creator-0-creatorName', err, field_name_in_err_msg='Creator Name')
+
+def _relatedItem_contributor_validate_error(related_item, err):
+    sub_fields = {
+        'contributors-contributor-0-contributorType': related_item.get('contributors-contributor-0-contributorType'),
+        'contributors-contributor-0-contributorName': related_item.get('contributors-contributor-0-contributorName'),
+        'contributors-contributor-0-contributorName-nameType': related_item.get('contributors-contributor-0-contributorName-nameType'),
+        'contributors-contributor-0-familyName': related_item.get('contributors-contributor-0-familyName'),
+        'contributors-contributor-0-givenName': related_item.get('contributors-contributor-0-givenName'),
+    }
+    if any(sub_fields.values()):
+        _relatedItem_validate_error(related_item, 'contributors-contributor-0-contributorType', err, field_name_in_err_msg='Contributor Type')
+        _relatedItem_validate_error(related_item, 'contributors-contributor-0-contributorName', err, field_name_in_err_msg='Contributor Name')
+
+
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 ################# Advanced Datacite ID Form/Elements #################
@@ -1170,9 +1210,9 @@ class RelatedItemForm(django.forms.Form):
         cleaned_data = super(RelatedItemForm, self).clean()
         print(f"## debug - related item cleaned_data: {cleaned_data}")
         
-        errs = None
-        if errs:
-            raise django.core.exceptions.ValidationError(errs)
+        errors = _validateRelatedItem(cleaned_data)
+        if errors:
+            raise django.core.exceptions.ValidationError(errors)
 
         return cleaned_data
 
