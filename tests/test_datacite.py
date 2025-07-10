@@ -3,8 +3,10 @@
 
 """Test impl.datacite
 """
+import collections
 
 import impl.datacite
+import impl.datacite_xml
 
 test_records_one_creator = [
     # An item with 1 Creator, one title without lang code
@@ -391,4 +393,228 @@ def  test_rm_xml_namespace_2():
         assert brief_record['datacite.resourcetype'] == 'Dataset'
 
     
+def temp_mockxml():
+    return [
+    # An item whose Creator has two nameIDs and two affiliations.
+    # The item has multiple contributors, one with multiple nameIDs and affiliations.
+    str("""
+        <resource xmlns="http://datacite.org/schema/kernel-4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+               xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-4/metadata.xsd">
+            <identifier identifierType="ARK"/>
+            <creators>
+                <creator>
+                    <creatorName>test creator</creatorName><givenName>Elizabeth</givenName><familyName>Miller</familyName>
+                    <nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0001-5000-0001</nameIdentifier>
+                    <nameIdentifier schemeURI="http://orcid.org/2" nameIdentifierScheme="ORCID2">0000-0001-5000-0002</nameIdentifier>
+                    <affiliation>DataCite1</affiliation>
+                    <affiliation>DataCite2</affiliation>
+                </creator>
+            </creators>
+            <titles><title xml:lang="en-us">test title 1</title></titles>
+            <publisher>test</publisher>
+            <publicationYear>1990</publicationYear>
+            <subjects>
+                <subject xml:lang="ar-afb" schemeURI="testURI" subjectScheme="testScheme">TESTTESTTESTTEST</subject>
+                <subject xml:lang="en" subjectScheme="testScheme2" schemeURI="testURI2">test2</subject>
+            </subjects>
+            <contributors>
+                <contributor contributorType="ProjectLeader">
+                    <contributorName>Starr, Joan</contributorName>
+                    <nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0002-7285-027X</nameIdentifier>
+                    <nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0002-7285-1000</nameIdentifier>
+                    <nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0002-7285-2222</nameIdentifier>
+                    <nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0002-7285-3333</nameIdentifier>
+                    <nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0002-7285-4444</nameIdentifier>
+                    <nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0002-7285-5555</nameIdentifier>
+                    <affiliation>California Digital Library</affiliation>
+                    <affiliation>National SPAM Committee</affiliation>
+                    <affiliation>NASCAR</affiliation>
+                </contributor>
+                <contributor contributorType="ProjectLeader"><contributorName>Rawls, Lou</contributorName>
+                    <nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0002-7285-027X</nameIdentifier>
+                    <affiliation>Chicago</affiliation>
+                </contributor>
+            </contributors>
+            <resourceType resourceTypeGeneral="Dataset">Dataset</resourceType>
+            <descriptions>
+                <description xml:lang="es-419" descriptionType="Abstract">testDescr</description>
+                <description xml:lang="zh-Hans" descriptionType="Other">testDescr2</description>
+                <description xml:lang="ast" descriptionType="SeriesInformation">testDescr3</description>
+            </descriptions>
+        </resource>
+               """),
+
+    # An item with 2 Creators, both with three nameIDs
+    str("""
+        <resource xmlns="http://datacite.org/schema/kernel-4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+               xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-4/metadata.xsd">
+            <identifier identifierType="ARK"/>
+            <creators>
+                <creator>
+                    <creatorName>test creator 0</creatorName><givenName>Elizabeth 0</givenName><familyName>Miller</familyName>
+                    <nameIdentifier schemeURI="http://orcid.org/0" nameIdentifierScheme="ORCID0">0000-0001-5000-0000</nameIdentifier>
+                    <nameIdentifier schemeURI="http://orcid.org/1" nameIdentifierScheme="ORCID1">0000-0001-5000-0001</nameIdentifier>
+                    <nameIdentifier schemeURI="http://orcid.org/2" nameIdentifierScheme="ORCID2">0000-0001-5000-0002</nameIdentifier>
+                    <affiliation>DataCite1</affiliation><affiliation>DataCite2</affiliation>
+               </creator>
+               <creator>
+                <creatorName>test creator 1</creatorName><givenName>Elizabeth 1</givenName><familyName>Miller</familyName>
+                <nameIdentifier schemeURI="http://orcid.org/3" nameIdentifierScheme="ORCID3">0000-0001-5000-0003</nameIdentifier>
+                <nameIdentifier schemeURI="http://orcid.org/4" nameIdentifierScheme="ORCID4">0000-0001-5000-0004</nameIdentifier>
+                <nameIdentifier schemeURI="http://orcid.org/5" nameIdentifierScheme="ORCID5">0000-0001-5000-0005</nameIdentifier>
+                <affiliation>DataCite3</affiliation><affiliation>DataCite4</affiliation>
+               </creator>
+            </creators>
+            <titles><title xml:lang="en-us">test title</title></titles>
+            <publisher>test publisher</publisher>
+            <publicationYear>1990</publicationYear>
+            <subjects>
+               <subject xml:lang="ar-afb" schemeURI="testURI" subjectScheme="testScheme">test subject 0</subject>
+               <subject xml:lang="en" subjectScheme="testScheme2" schemeURI="testURI2">test subject 1</subject>
+            </subjects>
+            <resourceType resourceTypeGeneral="Dataset">Dataset</resourceType>
+            <descriptions>
+               <description xml:lang="es-419" descriptionType="Abstract">testDescr</description>
+               <description xml:lang="zh-Hans" descriptionType="Other">testDescr2</description>
+               <description xml:lang="ast" descriptionType="SeriesInformation">testDescr3</description>
+            </descriptions>
+        </resource>
+        """),
+    ]
+
+
+expected_form_collections = [
+    impl.datacite_xml.FormColl(
+        nonRepeating={'identifier-identifierType': 'ARK', 'publisher': 'test', 'publicationYear': '1990'},
+        publisher={'publisher': 'test'},
+        resourceType={'resourceType-resourceTypeGeneral': 'Dataset', 'resourceType': 'Dataset'},
+        creators={
+		    'creators-creator-0-creatorName': 'test creator',
+            'creators-creator-0-givenName': 'Elizabeth',
+            'creators-creator-0-familyName': 'Miller',
+            'creators-creator-0-nameIdentifier_0-schemeURI': 'http://orcid.org/',
+            'creators-creator-0-nameIdentifier_0-nameIdentifierScheme': 'ORCID',
+            'creators-creator-0-nameIdentifier_0-nameIdentifier': '0000-0001-5000-0001',
+            'creators-creator-0-nameIdentifier_1-schemeURI': 'http://orcid.org/2',
+            'creators-creator-0-nameIdentifier_1-nameIdentifierScheme': 'ORCID2',
+            'creators-creator-0-nameIdentifier_1-nameIdentifier': '0000-0001-5000-0002',
+            'creators-creator-0-affiliation': 'DataCite1 ; DataCite2'},
+        titles={'titles-title-0-{http://www.w3.org/XML/1998/namespace}lang': 'en-us', 'titles-title-0-title': 'test title 1'},
+        descrs={
+            'descriptions-description-0-{http://www.w3.org/XML/1998/namespace}lang': 'es-419',
+            'descriptions-description-0-descriptionType': 'Abstract',
+            'descriptions-description-0-description': 'testDescr',
+            'descriptions-description-1-{http://www.w3.org/XML/1998/namespace}lang': 'zh-Hans',
+            'descriptions-description-1-descriptionType': 'Other',
+            'descriptions-description-1-description': 'testDescr2',
+            'descriptions-description-2-{http://www.w3.org/XML/1998/namespace}lang': 'ast',
+            'descriptions-description-2-descriptionType': 'SeriesInformation',
+            'descriptions-description-2-description': 'testDescr3'},
+        subjects={
+            'subjects-subject-0-{http://www.w3.org/XML/1998/namespace}lang': 'ar-afb',
+            'subjects-subject-0-schemeURI': 'testURI',
+            'subjects-subject-0-subjectScheme': 'testScheme',
+            'subjects-subject-0-subject': 'TESTTESTTESTTEST',
+            'subjects-subject-1-{http://www.w3.org/XML/1998/namespace}lang': 'en',
+            'subjects-subject-1-subjectScheme': 'testScheme2',
+            'subjects-subject-1-schemeURI': 'testURI2',
+            'subjects-subject-1-subject': 'test2'},
+        contribs={
+            'contributors-contributor-0-contributorType': 'ProjectLeader',
+            'contributors-contributor-0-contributorName': 'Starr, Joan',
+            'contributors-contributor-0-nameIdentifier_0-schemeURI': 'http://orcid.org/',
+            'contributors-contributor-0-nameIdentifier_0-nameIdentifierScheme': 'ORCID',
+            'contributors-contributor-0-nameIdentifier_0-nameIdentifier': '0000-0002-7285-027X',
+            'contributors-contributor-0-nameIdentifier_1-schemeURI': 'http://orcid.org/',
+            'contributors-contributor-0-nameIdentifier_1-nameIdentifierScheme': 'ORCID',
+            'contributors-contributor-0-nameIdentifier_1-nameIdentifier': '0000-0002-7285-1000',
+            'contributors-contributor-0-nameIdentifier_2-schemeURI': 'http://orcid.org/',
+            'contributors-contributor-0-nameIdentifier_2-nameIdentifierScheme': 'ORCID',
+            'contributors-contributor-0-nameIdentifier_2-nameIdentifier': '0000-0002-7285-2222',
+            'contributors-contributor-0-nameIdentifier_3-schemeURI': 'http://orcid.org/',
+            'contributors-contributor-0-nameIdentifier_3-nameIdentifierScheme': 'ORCID',
+            'contributors-contributor-0-nameIdentifier_3-nameIdentifier': '0000-0002-7285-3333',
+            'contributors-contributor-0-nameIdentifier_4-schemeURI': 'http://orcid.org/',
+            'contributors-contributor-0-nameIdentifier_4-nameIdentifierScheme': 'ORCID',
+            'contributors-contributor-0-nameIdentifier_4-nameIdentifier': '0000-0002-7285-4444',
+            'contributors-contributor-0-nameIdentifier_5-schemeURI': 'http://orcid.org/',
+            'contributors-contributor-0-nameIdentifier_5-nameIdentifierScheme': 'ORCID',
+            'contributors-contributor-0-nameIdentifier_5-nameIdentifier': '0000-0002-7285-5555',
+            'contributors-contributor-0-affiliation': 'California Digital Library ; National SPAM Committee ; NASCAR',
+            'contributors-contributor-1-contributorType': 'ProjectLeader',
+            'contributors-contributor-1-contributorName': 'Rawls, Lou',
+            'contributors-contributor-1-nameIdentifier_0-schemeURI': 'http://orcid.org/',
+            'contributors-contributor-1-nameIdentifier_0-nameIdentifierScheme': 'ORCID',
+            'contributors-contributor-1-nameIdentifier_0-nameIdentifier': '0000-0002-7285-027X',
+            'contributors-contributor-1-affiliation': 'Chicago'},
+        dates=None, altids=None, relids=None, sizes=None, formats=None, rights=None, geoLocations=None, fundingReferences=None, relatedItems=None
+            ),
+    impl.datacite_xml.FormColl(
+        nonRepeating={'identifier-identifierType': 'ARK', 'publisher': 'test publisher', 'publicationYear': '1990'},
+        publisher={'publisher': 'test publisher'},
+        resourceType={'resourceType-resourceTypeGeneral': 'Dataset', 'resourceType': 'Dataset'},
+        creators={
+            'creators-creator-0-creatorName': 'test creator 0',
+            'creators-creator-0-givenName': 'Elizabeth 0',
+            'creators-creator-0-familyName': 'Miller',
+            'creators-creator-0-nameIdentifier_0-schemeURI': 'http://orcid.org/0',
+            'creators-creator-0-nameIdentifier_0-nameIdentifierScheme': 'ORCID0',
+            'creators-creator-0-nameIdentifier_0-nameIdentifier': '0000-0001-5000-0000',
+            'creators-creator-0-nameIdentifier_1-schemeURI': 'http://orcid.org/1',
+            'creators-creator-0-nameIdentifier_1-nameIdentifierScheme': 'ORCID1',
+            'creators-creator-0-nameIdentifier_1-nameIdentifier': '0000-0001-5000-0001',
+            'creators-creator-0-nameIdentifier_2-nameIdentifierScheme': 'ORCID2',
+            'creators-creator-0-nameIdentifier_2-nameIdentifier': '0000-0001-5000-0002',
+            'creators-creator-0-nameIdentifier_2-schemeURI': 'http://orcid.org/2',
+            'creators-creator-0-affiliation': 'DataCite1 ; DataCite2',
+            'creators-creator-1-creatorName': 'test creator 1',
+            'creators-creator-1-givenName': 'Elizabeth 1',
+            'creators-creator-1-familyName': 'Miller',
+            'creators-creator-1-nameIdentifier_0-schemeURI': 'http://orcid.org/3',
+            'creators-creator-1-nameIdentifier_0-nameIdentifierScheme': 'ORCID3',
+            'creators-creator-1-nameIdentifier_0-nameIdentifier': '0000-0001-5000-0003',
+            'creators-creator-1-nameIdentifier_1-schemeURI': 'http://orcid.org/4',
+            'creators-creator-1-nameIdentifier_1-nameIdentifierScheme': 'ORCID4',
+            'creators-creator-1-nameIdentifier_1-nameIdentifier': '0000-0001-5000-0004',
+            'creators-creator-1-nameIdentifier_2-schemeURI': 'http://orcid.org/5',
+            'creators-creator-1-nameIdentifier_2-nameIdentifierScheme': 'ORCID5',
+            'creators-creator-1-nameIdentifier_2-nameIdentifier': '0000-0001-5000-0005',
+            'creators-creator-1-affiliation': 'DataCite3 ; DataCite4'},
+        titles={'titles-title-0-{http://www.w3.org/XML/1998/namespace}lang': 'en-us', 'titles-title-0-title': 'test title'},
+        descrs={
+            'descriptions-description-0-{http://www.w3.org/XML/1998/namespace}lang': 'es-419',
+            'descriptions-description-0-descriptionType': 'Abstract',
+            'descriptions-description-0-description': 'testDescr',
+            'descriptions-description-1-{http://www.w3.org/XML/1998/namespace}lang': 'zh-Hans',
+            'descriptions-description-1-descriptionType': 'Other',
+            'descriptions-description-1-description': 'testDescr2',
+            'descriptions-description-2-{http://www.w3.org/XML/1998/namespace}lang': 'ast',
+            'descriptions-description-2-descriptionType': 'SeriesInformation',
+            'descriptions-description-2-description': 'testDescr3'},
+        subjects={
+            'subjects-subject-0-{http://www.w3.org/XML/1998/namespace}lang': 'ar-afb',
+            'subjects-subject-0-schemeURI': 'testURI',
+            'subjects-subject-0-subjectScheme': 'testScheme',
+            'subjects-subject-0-subject': 'test subject 0',
+            'subjects-subject-1-{http://www.w3.org/XML/1998/namespace}lang': 'en',
+            'subjects-subject-1-subjectScheme': 'testScheme2',
+            'subjects-subject-1-schemeURI': 'testURI2',
+            'subjects-subject-1-subject': 'test subject 1'},
+        contribs=None,
+        dates=None,
+        altids=None,
+        relids=None,
+        sizes=None,
+        formats=None,
+        rights=None,
+        geoLocations=None,
+        fundingReferences=None,
+        relatedItems=None),
+]
+
+def test_dataciteXmlToFormElements():
     
+    for i, xml in enumerate(temp_mockxml()):
+        form_coll = impl.datacite_xml.dataciteXmlToFormElements(xml)
+        expected_form_coll = expected_form_collections[i]
+        assert form_coll == expected_form_coll
