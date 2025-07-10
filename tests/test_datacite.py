@@ -3,7 +3,7 @@
 
 """Test impl.datacite
 """
-import collections
+from lxml import etree
 
 import impl.datacite
 import impl.datacite_xml
@@ -613,8 +613,143 @@ expected_form_collections = [
 ]
 
 def test_dataciteXmlToFormElements():
-    
     for i, xml in enumerate(temp_mockxml()):
         form_coll = impl.datacite_xml.dataciteXmlToFormElements(xml)
         expected_form_coll = expected_form_collections[i]
         assert form_coll == expected_form_coll
+
+
+form_elements = {
+    'creators-creator-0-affiliation': 'ExampleAffiliation for creator',
+    'creators-creator-0-affiliation-affiliationIdentifier': 'https://ror.org/04wxnsj81',
+    'creators-creator-0-affiliation-affiliationIdentifierScheme': 'ROR',
+    'creators-creator-0-affiliation-schemeURI': 'https://ror.org',
+    'creators-creator-0-creatorName': 'Creator Name',
+    'creators-creator-0-familyName': 'CreatorFamilyName',
+    'creators-creator-0-givenName': 'CreatorGivenName',
+    'creators-creator-0-nameIdentifier_0-nameIdentifier': 'https://orcid.org/0000-0001-5727-2427',
+    'creators-creator-0-nameIdentifier_0-nameIdentifierScheme': 'ORCID',
+    'creators-creator-0-nameIdentifier_0-schemeURI': 'https://orcid.org',
+    'creators-creator-0-nameIdentifier_1-nameIdentifier': 'https://ror.org/04wxnsj81',
+    'creators-creator-0-nameIdentifier_1-nameIdentifierScheme': 'ROR',
+    'creators-creator-0-nameIdentifier_1-schemeURI': 'https://ror.org',
+    'titles-title-0-title': 'test',
+    'titles-title-0-titleType': '',
+    'titles-title-0-{http://www.w3.org/XML/1998/namespace}lang': '',
+    'publisher': 'test',
+    'publicationYear': '1999',
+    'resourceType': 'Dataset',
+    'resourceType-resourceTypeGeneral': 'Dataset',
+    'subjects-subject-0-schemeURI': '',
+    'subjects-subject-0-subject': '',
+    'subjects-subject-0-subjectScheme': '',
+    'subjects-subject-0-valueURI': '',
+    'subjects-subject-0-{http://www.w3.org/XML/1998/namespace}lang': '',
+    'contributors-contributor-0-affiliation': 'ExampleAffiliation',
+    'contributors-contributor-0-affiliation-affiliationIdentifier': 'https://ror.org/04wxnsj81',
+    'contributors-contributor-0-affiliation-affiliationIdentifierScheme': 'ROR',
+    'contributors-contributor-0-affiliation-schemeURI': 'https://ror.org',
+    'contributors-contributor-0-contributorName': 'Contributor Name',
+    'contributors-contributor-0-contributorType': 'ContactPerson',
+    'contributors-contributor-0-familyName': 'ContributorFamilyName',
+    'contributors-contributor-0-givenName': 'ContributorGivenName',
+    'contributors-contributor-0-nameIdentifier_0-nameIdentifier': 'https://orcid.org/0000-0001-5727-1234',
+    'contributors-contributor-0-nameIdentifier_0-nameIdentifierScheme': 'ORCID',
+    'contributors-contributor-0-nameIdentifier_0-schemeURI': 'https://orcid.org',
+    'contributors-contributor-0-nameIdentifier_1-nameIdentifier': 'https://orcid.org/0000-0001-5727-2427',
+    'contributors-contributor-0-nameIdentifier_1-nameIdentifierScheme': 'ORCID',
+    'contributors-contributor-0-nameIdentifier_1-schemeURI': 'https://orcid.org',
+    'dates-date-0-date': '2024-01-01',
+    'dates-date-0-dateType': 'Other',
+    'dates-date-0-dateInformation': 'ExampleDateInformation',
+    'language': 'en',
+    'alternateIdentifiers-alternateIdentifier-0-alternateIdentifier': '12345',
+    'alternateIdentifiers-alternateIdentifier-0-alternateIdentifierType': 'Local accession number',
+    'sizes-size-0-size': '',
+    'formats-format-0-format': 'application/xml',
+    'version': '1',
+    'rightsList-rights-0-rights': '',
+    'rightsList-rights-0-rightsURI': '',
+    'descriptions-description-0-description': 'Example Abstract',
+    'descriptions-description-0-descriptionType': 'Abstract',
+    'descriptions-description-0-{http://www.w3.org/XML/1998/namespace}lang': 'en',
+    'geoLocations-geoLocation-0-geoLocationBox': '',
+    'geoLocations-geoLocation-0-geoLocationPlace': '',
+    'geoLocations-geoLocation-0-geoLocationPoint': '',
+    'fundingReferences-fundingReference-0-awardNumber': '12345',
+    'fundingReferences-fundingReference-0-awardTitle': 'Example AwardTitle',
+    'fundingReferences-fundingReference-0-awardNumber-awardURI': 'https://example.com/example-award-uri',
+    'fundingReferences-fundingReference-0-funderIdentifier': 'https://doi.org/10.13039/501100000780',
+    'fundingReferences-fundingReference-0-funderIdentifier-funderIdentifierType': 'Crossref Funder ID',
+    'fundingReferences-fundingReference-0-funderName': 'Example Funder',
+    'relatedIdentifiers-relatedIdentifier-0-relatedIdentifier': '',
+    'relatedIdentifiers-relatedIdentifier-0-relatedIdentifierType': '',
+    'relatedIdentifiers-relatedIdentifier-0-relatedMetadataScheme': '',
+    'relatedIdentifiers-relatedIdentifier-0-relationType': '',
+    'relatedIdentifiers-relatedIdentifier-0-schemeType': '',
+    'relatedIdentifiers-relatedIdentifier-0-schemeURI': '',
+    }
+
+expected_xml = """
+<resource xmlns="http://datacite.org/schema/kernel-4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4/metadata.xsd">
+    <identifier identifierType="ARK">ark:/99999/fk12345</identifier>
+    <creators>
+        <creator>
+            <creatorName>Creator Name</creatorName>
+            <givenName>CreatorGivenName</givenName>
+            <familyName>CreatorFamilyName</familyName>
+            <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org">https://orcid.org/0000-0001-5727-2427</nameIdentifier>
+            <nameIdentifier nameIdentifierScheme="ROR" schemeURI="https://ror.org">https://ror.org/04wxnsj81</nameIdentifier>
+            <affiliation affiliationIdentifier="https://ror.org/04wxnsj81" affiliationIdentifierScheme="ROR" schemeURI="https://ror.org">ExampleAffiliation for creator</affiliation>
+        </creator>
+    </creators>
+    <titles><title>test</title></titles>
+    <publisher>test</publisher>
+    <publicationYear>1999</publicationYear>
+    <resourceType resourceTypeGeneral="Dataset">Dataset</resourceType>
+    <contributors>
+        <contributor contributorType="ContactPerson">
+            <contributorName>Contributor Name</contributorName>
+            <givenName>ContributorGivenName</givenName>
+            <familyName>ContributorFamilyName</familyName>
+            <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org">https://orcid.org/0000-0001-5727-1234</nameIdentifier>
+            <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org">https://orcid.org/0000-0001-5727-2427</nameIdentifier>
+            <affiliation affiliationIdentifier="https://ror.org/04wxnsj81" affiliationIdentifierScheme="ROR" schemeURI="https://ror.org">ExampleAffiliation</affiliation>
+        </contributor>
+    </contributors>
+    <dates>
+        <date dateType="Other" dateInformation="ExampleDateInformation">2024-01-01</date>
+    </dates>
+    <language>en</language>
+    <alternateIdentifiers>
+        <alternateIdentifier alternateIdentifierType="Local accession number">12345</alternateIdentifier>
+    </alternateIdentifiers>
+    <formats>
+        <format>application/xml</format>
+    </formats>
+    <version>1</version>
+    <descriptions>
+        <description xml:lang="en" descriptionType="Abstract">Example Abstract</description>
+    </descriptions>
+    <fundingReferences>
+        <fundingReference>
+            <funderName>Example Funder</funderName>
+            <funderIdentifier funderIdentifierType="Crossref Funder ID">https://doi.org/10.13039/501100000780</funderIdentifier>
+            <awardNumber awardURI="https://example.com/example-award-uri">12345</awardNumber>
+            <awardTitle>Example AwardTitle</awardTitle>
+        </fundingReference>
+    </fundingReferences>
+</resource>"""
+
+
+def normalize(xml_string):
+    """Parse XML, remove blank text nodes, return canonical string."""
+    parser = etree.XMLParser(remove_blank_text=True)
+    root = etree.fromstring(xml_string.encode(), parser)
+    return etree.tostring(root, method="c14n")
+
+def test_formElementsToDataciteXml():
+    returned_xml = impl.datacite_xml.formElementsToDataciteXml(form_elements, identifier='ark:/99999/fk12345')
+    assert normalize(returned_xml) == normalize(expected_xml)
+
