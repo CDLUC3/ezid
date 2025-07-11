@@ -392,363 +392,13 @@ def  test_rm_xml_namespace_2():
         assert brief_record['datacite.publicationyear'] == '1990'
         assert brief_record['datacite.resourcetype'] == 'Dataset'
 
-    
-def temp_mockxml():
-    return [
-    # An item whose Creator has two nameIDs and two affiliations.
-    # The item has multiple contributors, one with multiple nameIDs and affiliations.
-    str("""
-        <resource xmlns="http://datacite.org/schema/kernel-4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-               xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-4/metadata.xsd">
-            <identifier identifierType="ARK"/>
-            <creators>
-                <creator>
-                    <creatorName>test creator</creatorName><givenName>Elizabeth</givenName><familyName>Miller</familyName>
-                    <nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0001-5000-0001</nameIdentifier>
-                    <nameIdentifier schemeURI="http://orcid.org/2" nameIdentifierScheme="ORCID2">0000-0001-5000-0002</nameIdentifier>
-                    <affiliation>DataCite1</affiliation>
-                    <affiliation>DataCite2</affiliation>
-                </creator>
-            </creators>
-            <titles><title xml:lang="en-us">test title 1</title></titles>
-            <publisher>test</publisher>
-            <publicationYear>1990</publicationYear>
-            <subjects>
-                <subject xml:lang="ar-afb" schemeURI="testURI" subjectScheme="testScheme">TESTTESTTESTTEST</subject>
-                <subject xml:lang="en" subjectScheme="testScheme2" schemeURI="testURI2">test2</subject>
-            </subjects>
-            <contributors>
-                <contributor contributorType="ProjectLeader">
-                    <contributorName>Starr, Joan</contributorName>
-                    <nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0002-7285-027X</nameIdentifier>
-                    <nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0002-7285-1000</nameIdentifier>
-                    <nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0002-7285-2222</nameIdentifier>
-                    <nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0002-7285-3333</nameIdentifier>
-                    <nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0002-7285-4444</nameIdentifier>
-                    <nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0002-7285-5555</nameIdentifier>
-                    <affiliation>California Digital Library</affiliation>
-                    <affiliation>National SPAM Committee</affiliation>
-                    <affiliation>NASCAR</affiliation>
-                </contributor>
-                <contributor contributorType="ProjectLeader"><contributorName>Rawls, Lou</contributorName>
-                    <nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0002-7285-027X</nameIdentifier>
-                    <affiliation>Chicago</affiliation>
-                </contributor>
-            </contributors>
-            <resourceType resourceTypeGeneral="Dataset">Dataset</resourceType>
-            <descriptions>
-                <description xml:lang="es-419" descriptionType="Abstract">testDescr</description>
-                <description xml:lang="zh-Hans" descriptionType="Other">testDescr2</description>
-                <description xml:lang="ast" descriptionType="SeriesInformation">testDescr3</description>
-            </descriptions>
-        </resource>
-               """),
 
-    # An item with 2 Creators, both with three nameIDs
-    str("""
-        <resource xmlns="http://datacite.org/schema/kernel-4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-               xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-4/metadata.xsd">
-            <identifier identifierType="ARK"/>
-            <creators>
-                <creator>
-                    <creatorName>test creator 0</creatorName><givenName>Elizabeth 0</givenName><familyName>Miller</familyName>
-                    <nameIdentifier schemeURI="http://orcid.org/0" nameIdentifierScheme="ORCID0">0000-0001-5000-0000</nameIdentifier>
-                    <nameIdentifier schemeURI="http://orcid.org/1" nameIdentifierScheme="ORCID1">0000-0001-5000-0001</nameIdentifier>
-                    <nameIdentifier schemeURI="http://orcid.org/2" nameIdentifierScheme="ORCID2">0000-0001-5000-0002</nameIdentifier>
-                    <affiliation>DataCite1</affiliation><affiliation>DataCite2</affiliation>
-               </creator>
-               <creator>
-                <creatorName>test creator 1</creatorName><givenName>Elizabeth 1</givenName><familyName>Miller</familyName>
-                <nameIdentifier schemeURI="http://orcid.org/3" nameIdentifierScheme="ORCID3">0000-0001-5000-0003</nameIdentifier>
-                <nameIdentifier schemeURI="http://orcid.org/4" nameIdentifierScheme="ORCID4">0000-0001-5000-0004</nameIdentifier>
-                <nameIdentifier schemeURI="http://orcid.org/5" nameIdentifierScheme="ORCID5">0000-0001-5000-0005</nameIdentifier>
-                <affiliation>DataCite3</affiliation><affiliation>DataCite4</affiliation>
-               </creator>
-            </creators>
-            <titles><title xml:lang="en-us">test title</title></titles>
-            <publisher>test publisher</publisher>
-            <publicationYear>1990</publicationYear>
-            <subjects>
-               <subject xml:lang="ar-afb" schemeURI="testURI" subjectScheme="testScheme">test subject 0</subject>
-               <subject xml:lang="en" subjectScheme="testScheme2" schemeURI="testURI2">test subject 1</subject>
-            </subjects>
-            <resourceType resourceTypeGeneral="Dataset">Dataset</resourceType>
-            <descriptions>
-               <description xml:lang="es-419" descriptionType="Abstract">testDescr</description>
-               <description xml:lang="zh-Hans" descriptionType="Other">testDescr2</description>
-               <description xml:lang="ast" descriptionType="SeriesInformation">testDescr3</description>
-            </descriptions>
-        </resource>
-        """),
-    ]
-
-
-expected_form_collections = [
-    impl.datacite_xml.FormColl(
-        nonRepeating={'identifier-identifierType': 'ARK', 'publisher': 'test', 'publicationYear': '1990'},
-        publisher={'publisher': 'test'},
-        resourceType={'resourceType-resourceTypeGeneral': 'Dataset', 'resourceType': 'Dataset'},
-        creators={
-		    'creators-creator-0-creatorName': 'test creator',
-            'creators-creator-0-givenName': 'Elizabeth',
-            'creators-creator-0-familyName': 'Miller',
-            'creators-creator-0-nameIdentifier_0-schemeURI': 'http://orcid.org/',
-            'creators-creator-0-nameIdentifier_0-nameIdentifierScheme': 'ORCID',
-            'creators-creator-0-nameIdentifier_0-nameIdentifier': '0000-0001-5000-0001',
-            'creators-creator-0-nameIdentifier_1-schemeURI': 'http://orcid.org/2',
-            'creators-creator-0-nameIdentifier_1-nameIdentifierScheme': 'ORCID2',
-            'creators-creator-0-nameIdentifier_1-nameIdentifier': '0000-0001-5000-0002',
-            'creators-creator-0-affiliation': 'DataCite1 ; DataCite2'},
-        titles={'titles-title-0-{http://www.w3.org/XML/1998/namespace}lang': 'en-us', 'titles-title-0-title': 'test title 1'},
-        descrs={
-            'descriptions-description-0-{http://www.w3.org/XML/1998/namespace}lang': 'es-419',
-            'descriptions-description-0-descriptionType': 'Abstract',
-            'descriptions-description-0-description': 'testDescr',
-            'descriptions-description-1-{http://www.w3.org/XML/1998/namespace}lang': 'zh-Hans',
-            'descriptions-description-1-descriptionType': 'Other',
-            'descriptions-description-1-description': 'testDescr2',
-            'descriptions-description-2-{http://www.w3.org/XML/1998/namespace}lang': 'ast',
-            'descriptions-description-2-descriptionType': 'SeriesInformation',
-            'descriptions-description-2-description': 'testDescr3'},
-        subjects={
-            'subjects-subject-0-{http://www.w3.org/XML/1998/namespace}lang': 'ar-afb',
-            'subjects-subject-0-schemeURI': 'testURI',
-            'subjects-subject-0-subjectScheme': 'testScheme',
-            'subjects-subject-0-subject': 'TESTTESTTESTTEST',
-            'subjects-subject-1-{http://www.w3.org/XML/1998/namespace}lang': 'en',
-            'subjects-subject-1-subjectScheme': 'testScheme2',
-            'subjects-subject-1-schemeURI': 'testURI2',
-            'subjects-subject-1-subject': 'test2'},
-        contribs={
-            'contributors-contributor-0-contributorType': 'ProjectLeader',
-            'contributors-contributor-0-contributorName': 'Starr, Joan',
-            'contributors-contributor-0-nameIdentifier_0-schemeURI': 'http://orcid.org/',
-            'contributors-contributor-0-nameIdentifier_0-nameIdentifierScheme': 'ORCID',
-            'contributors-contributor-0-nameIdentifier_0-nameIdentifier': '0000-0002-7285-027X',
-            'contributors-contributor-0-nameIdentifier_1-schemeURI': 'http://orcid.org/',
-            'contributors-contributor-0-nameIdentifier_1-nameIdentifierScheme': 'ORCID',
-            'contributors-contributor-0-nameIdentifier_1-nameIdentifier': '0000-0002-7285-1000',
-            'contributors-contributor-0-nameIdentifier_2-schemeURI': 'http://orcid.org/',
-            'contributors-contributor-0-nameIdentifier_2-nameIdentifierScheme': 'ORCID',
-            'contributors-contributor-0-nameIdentifier_2-nameIdentifier': '0000-0002-7285-2222',
-            'contributors-contributor-0-nameIdentifier_3-schemeURI': 'http://orcid.org/',
-            'contributors-contributor-0-nameIdentifier_3-nameIdentifierScheme': 'ORCID',
-            'contributors-contributor-0-nameIdentifier_3-nameIdentifier': '0000-0002-7285-3333',
-            'contributors-contributor-0-nameIdentifier_4-schemeURI': 'http://orcid.org/',
-            'contributors-contributor-0-nameIdentifier_4-nameIdentifierScheme': 'ORCID',
-            'contributors-contributor-0-nameIdentifier_4-nameIdentifier': '0000-0002-7285-4444',
-            'contributors-contributor-0-nameIdentifier_5-schemeURI': 'http://orcid.org/',
-            'contributors-contributor-0-nameIdentifier_5-nameIdentifierScheme': 'ORCID',
-            'contributors-contributor-0-nameIdentifier_5-nameIdentifier': '0000-0002-7285-5555',
-            'contributors-contributor-0-affiliation': 'California Digital Library ; National SPAM Committee ; NASCAR',
-            'contributors-contributor-1-contributorType': 'ProjectLeader',
-            'contributors-contributor-1-contributorName': 'Rawls, Lou',
-            'contributors-contributor-1-nameIdentifier_0-schemeURI': 'http://orcid.org/',
-            'contributors-contributor-1-nameIdentifier_0-nameIdentifierScheme': 'ORCID',
-            'contributors-contributor-1-nameIdentifier_0-nameIdentifier': '0000-0002-7285-027X',
-            'contributors-contributor-1-affiliation': 'Chicago'},
-        dates=None, altids=None, relids=None, sizes=None, formats=None, rights=None, geoLocations=None, fundingReferences=None, relatedItems=None
-            ),
-    impl.datacite_xml.FormColl(
-        nonRepeating={'identifier-identifierType': 'ARK', 'publisher': 'test publisher', 'publicationYear': '1990'},
-        publisher={'publisher': 'test publisher'},
-        resourceType={'resourceType-resourceTypeGeneral': 'Dataset', 'resourceType': 'Dataset'},
-        creators={
-            'creators-creator-0-creatorName': 'test creator 0',
-            'creators-creator-0-givenName': 'Elizabeth 0',
-            'creators-creator-0-familyName': 'Miller',
-            'creators-creator-0-nameIdentifier_0-schemeURI': 'http://orcid.org/0',
-            'creators-creator-0-nameIdentifier_0-nameIdentifierScheme': 'ORCID0',
-            'creators-creator-0-nameIdentifier_0-nameIdentifier': '0000-0001-5000-0000',
-            'creators-creator-0-nameIdentifier_1-schemeURI': 'http://orcid.org/1',
-            'creators-creator-0-nameIdentifier_1-nameIdentifierScheme': 'ORCID1',
-            'creators-creator-0-nameIdentifier_1-nameIdentifier': '0000-0001-5000-0001',
-            'creators-creator-0-nameIdentifier_2-nameIdentifierScheme': 'ORCID2',
-            'creators-creator-0-nameIdentifier_2-nameIdentifier': '0000-0001-5000-0002',
-            'creators-creator-0-nameIdentifier_2-schemeURI': 'http://orcid.org/2',
-            'creators-creator-0-affiliation': 'DataCite1 ; DataCite2',
-            'creators-creator-1-creatorName': 'test creator 1',
-            'creators-creator-1-givenName': 'Elizabeth 1',
-            'creators-creator-1-familyName': 'Miller',
-            'creators-creator-1-nameIdentifier_0-schemeURI': 'http://orcid.org/3',
-            'creators-creator-1-nameIdentifier_0-nameIdentifierScheme': 'ORCID3',
-            'creators-creator-1-nameIdentifier_0-nameIdentifier': '0000-0001-5000-0003',
-            'creators-creator-1-nameIdentifier_1-schemeURI': 'http://orcid.org/4',
-            'creators-creator-1-nameIdentifier_1-nameIdentifierScheme': 'ORCID4',
-            'creators-creator-1-nameIdentifier_1-nameIdentifier': '0000-0001-5000-0004',
-            'creators-creator-1-nameIdentifier_2-schemeURI': 'http://orcid.org/5',
-            'creators-creator-1-nameIdentifier_2-nameIdentifierScheme': 'ORCID5',
-            'creators-creator-1-nameIdentifier_2-nameIdentifier': '0000-0001-5000-0005',
-            'creators-creator-1-affiliation': 'DataCite3 ; DataCite4'},
-        titles={'titles-title-0-{http://www.w3.org/XML/1998/namespace}lang': 'en-us', 'titles-title-0-title': 'test title'},
-        descrs={
-            'descriptions-description-0-{http://www.w3.org/XML/1998/namespace}lang': 'es-419',
-            'descriptions-description-0-descriptionType': 'Abstract',
-            'descriptions-description-0-description': 'testDescr',
-            'descriptions-description-1-{http://www.w3.org/XML/1998/namespace}lang': 'zh-Hans',
-            'descriptions-description-1-descriptionType': 'Other',
-            'descriptions-description-1-description': 'testDescr2',
-            'descriptions-description-2-{http://www.w3.org/XML/1998/namespace}lang': 'ast',
-            'descriptions-description-2-descriptionType': 'SeriesInformation',
-            'descriptions-description-2-description': 'testDescr3'},
-        subjects={
-            'subjects-subject-0-{http://www.w3.org/XML/1998/namespace}lang': 'ar-afb',
-            'subjects-subject-0-schemeURI': 'testURI',
-            'subjects-subject-0-subjectScheme': 'testScheme',
-            'subjects-subject-0-subject': 'test subject 0',
-            'subjects-subject-1-{http://www.w3.org/XML/1998/namespace}lang': 'en',
-            'subjects-subject-1-subjectScheme': 'testScheme2',
-            'subjects-subject-1-schemeURI': 'testURI2',
-            'subjects-subject-1-subject': 'test subject 1'},
-        contribs=None,
-        dates=None,
-        altids=None,
-        relids=None,
-        sizes=None,
-        formats=None,
-        rights=None,
-        geoLocations=None,
-        fundingReferences=None,
-        relatedItems=None),
-]
-
-def test_dataciteXmlToFormElements():
-    for i, xml in enumerate(temp_mockxml()):
-        form_coll = impl.datacite_xml.dataciteXmlToFormElements(xml)
-        expected_form_coll = expected_form_collections[i]
-        assert form_coll == expected_form_coll
-
-
-form_elements = {
-    'creators-creator-0-affiliation': 'Example Affiliation for creator',
-    'creators-creator-0-affiliation-affiliationIdentifier': 'https://ror.org/04wxnsj81',
-    'creators-creator-0-affiliation-affiliationIdentifierScheme': 'ROR',
-    'creators-creator-0-affiliation-schemeURI': 'https://ror.org',
-    'creators-creator-0-creatorName': 'Creator Name',
-    'creators-creator-0-familyName': 'CreatorFamilyName',
-    'creators-creator-0-givenName': 'CreatorGivenName',
-    'creators-creator-0-nameIdentifier_0-nameIdentifier': 'https://orcid.org/0000-0001-5727-2427',
-    'creators-creator-0-nameIdentifier_0-nameIdentifierScheme': 'ORCID',
-    'creators-creator-0-nameIdentifier_0-schemeURI': 'https://orcid.org',
-    'creators-creator-0-nameIdentifier_1-nameIdentifier': 'https://ror.org/04wxnsj81',
-    'creators-creator-0-nameIdentifier_1-nameIdentifierScheme': 'ROR',
-    'creators-creator-0-nameIdentifier_1-schemeURI': 'https://ror.org',
-    'creators-creator-1-creatorName': 'Creator Name 2',
-    'creators-creator-1-nameIdentifier_0-nameIdentifier': 'https://orcid.org/0000-0001-5727-2222',
-    'creators-creator-1-nameIdentifier_0-nameIdentifierScheme': 'ORCID',
-    'creators-creator-1-nameIdentifier_0-schemeURI': 'https://orcid.org',
-    'titles-title-0-title': 'test title, main',
-    'titles-title-0-titleType': '',
-    'titles-title-0-{http://www.w3.org/XML/1998/namespace}lang': 'en',
-    'titles-title-1-title': 'test title, subtitle',
-    'titles-title-1-titleType': 'Subtitle',
-    'titles-title-1-{http://www.w3.org/XML/1998/namespace}lang': 'en',
-    'publisher': 'test publisher',
-    'publicationYear': '1999',
-    'resourceType': 'Dataset',
-    'resourceType-resourceTypeGeneral': 'Dataset',
-    'subjects-subject-0-schemeURI': 'http://www.oecd.org/science/inno',
-    'subjects-subject-0-subject': 'FOS: Computer and information sciences',
-    'subjects-subject-0-subjectScheme': 'Fields of Science and Technology (FOS)',
-    'subjects-subject-0-valueURI': 'http://www.oecd.org/science/inno/38235147.pd',
-    'subjects-subject-0-{http://www.w3.org/XML/1998/namespace}lang': 'en',
-    'subjects-subject-1-subject': 'Example Subject',
-    'contributors-contributor-0-affiliation': 'ExampleAffiliation',
-    'contributors-contributor-0-affiliation-affiliationIdentifier': 'https://ror.org/04wxnsj81',
-    'contributors-contributor-0-affiliation-affiliationIdentifierScheme': 'ROR',
-    'contributors-contributor-0-affiliation-schemeURI': 'https://ror.org',
-    'contributors-contributor-0-contributorName': 'Contributor Name',
-    'contributors-contributor-0-contributorType': 'ContactPerson',
-    'contributors-contributor-0-familyName': 'ContributorFamilyName',
-    'contributors-contributor-0-givenName': 'ContributorGivenName',
-    'contributors-contributor-0-nameIdentifier_0-nameIdentifier': 'https://orcid.org/0000-0001-5727-1234',
-    'contributors-contributor-0-nameIdentifier_0-nameIdentifierScheme': 'ORCID',
-    'contributors-contributor-0-nameIdentifier_0-schemeURI': 'https://orcid.org',
-    'contributors-contributor-0-nameIdentifier_1-nameIdentifier': 'https://orcid.org/0000-0001-5727-2427',
-    'contributors-contributor-0-nameIdentifier_1-nameIdentifierScheme': 'ORCID',
-    'contributors-contributor-0-nameIdentifier_1-schemeURI': 'https://orcid.org',
-    'contributors-contributor-1-contributorName': 'Contributor Name 2',
-    'contributors-contributor-1-contributorType': 'DataCollector',
-    'dates-date-0-date': '2025-01-02',
-    'dates-date-0-dateType': 'Created',
-    'dates-date-0-dateInformation': 'ExampleDateInformation',
-    'dates-date-1-date': '2025-05-10',
-    'dates-date-1-dateType': 'Accepted',
-    'language': 'en',
-    'alternateIdentifiers-alternateIdentifier-0-alternateIdentifier': '12345',
-    'alternateIdentifiers-alternateIdentifier-0-alternateIdentifierType': 'Local accession number',
-    'alternateIdentifiers-alternateIdentifier-1-alternateIdentifier': 'https://example.com/567',
-    'alternateIdentifiers-alternateIdentifier-1-alternateIdentifierType': 'URL',
-    'sizes-size-0-size': '',
-    'formats-format-0-format': 'application/xml',
-    'formats-format-1-format': 'text/plain',
-    'version': '1',
-    'rightsList-rights-0-rights': 'Creative Commons Attribution 4.0 International',
-    'rightsList-rights-0-rightsURI': 'https://creativecommons.org/licenses/by/4.0/',
-    'rightsList-rights-1-rights': 'rights 2',
-    'descriptions-description-0-description': 'Example Abstract',
-    'descriptions-description-0-descriptionType': 'Abstract',
-    'descriptions-description-0-{http://www.w3.org/XML/1998/namespace}lang': 'en',
-    'descriptions-description-1-description': 'Description 2',
-    'descriptions-description-1-descriptionType': 'Other',
-    'descriptions-description-1-{http://www.w3.org/XML/1998/namespace}lang': 'en',
-    'geoLocations-geoLocation-0-geoLocationPlace': 'Example Geo Location Place',
-    'geoLocations-geoLocation-0-geoLocationPoint-pointLongitude': '10',
-    'geoLocations-geoLocation-0-geoLocationPoint-pointLatitude': '20',
-    'geoLocations-geoLocation-0-geoLocationBox-westBoundLongitude': '8',
-    'geoLocations-geoLocation-0-geoLocationBox-eastBoundLongitude': '12',
-    'geoLocations-geoLocation-0-geoLocationBox-southBoundLatitude': '18',
-    'geoLocations-geoLocation-0-geoLocationBox-northBoundLatitude': '22',
-    'fundingReferences-fundingReference-0-awardNumber': '12345',
-    'fundingReferences-fundingReference-0-awardTitle': 'Example AwardTitle',
-    'fundingReferences-fundingReference-0-awardNumber-awardURI': 'https://example.com/example-award-uri',
-    'fundingReferences-fundingReference-0-funderIdentifier': 'https://doi.org/10.13039/501100000780',
-    'fundingReferences-fundingReference-0-funderIdentifier-funderIdentifierType': 'Crossref Funder ID',
-    'fundingReferences-fundingReference-0-funderName': 'Example Funder',
-    'fundingReferences-fundingReference-1-funderName': 'Example Funder 2',
-    'relatedIdentifiers-relatedIdentifier-0-relatedIdentifier': 'https://example.com/',
-    'relatedIdentifiers-relatedIdentifier-0-relatedIdentifierType': 'URL',
-    'relatedIdentifiers-relatedIdentifier-0-relatedMetadataScheme': 'DDI-L',
-    'relatedIdentifiers-relatedIdentifier-0-relationType': 'HasMetadata',
-    'relatedIdentifiers-relatedIdentifier-0-schemeType': 'XSD',
-    'relatedIdentifiers-relatedIdentifier-0-schemeURI': 'http://www.ddialliance.org/Specification/DDI-Lifecycle/3.1/XMLSchema/instance.xsd',
-    'relatedIdentifiers-relatedIdentifier-1-relatedIdentifier': '10.21384/bar',
-    'relatedIdentifiers-relatedIdentifier-1-relatedIdentifierType': 'DOI',
-    'relatedIdentifiers-relatedIdentifier-1-relationType': 'IsCitedBy',
-    'relatedItems-relatedItem-0-relatedItemType': 'Book',
-    'relatedItems-relatedItem-0-relationType': 'Cites',
-    'relatedItems-relatedItem-0-relatedItemIdentifier-relatedItemIdentifierType': 'ARK',
-    'relatedItems-relatedItem-0-relatedItemIdentifier': 'ark:/99999/fk12345678',
-    'relatedItems-relatedItem-0-creators-creator-0-creatorName': 'related item creator name',
-    'relatedItems-relatedItem-0-creators-creator-0-creatorName-nameType': 'Personal',
-    'relatedItems-relatedItem-0-creators-creator-0-familyName': 'family name, related item creator',
-    'relatedItems-relatedItem-0-creators-creator-0-givenName': 'given name, related item creator',
-    'relatedItems-relatedItem-0-titles-title-0-title': 'related item title',
-    'relatedItems-relatedItem-0-titles-title-0-titleType': 'AlternativeTitle',
-    'relatedItems-relatedItem-0-publicationYear': '2022',
-    'relatedItems-relatedItem-0-volume': '1',
-    'relatedItems-relatedItem-0-issue': '2',
-    'relatedItems-relatedItem-0-number': '12',
-    'relatedItems-relatedItem-0-number-numberType': 'Chapter',
-    'relatedItems-relatedItem-0-firstPage': '1',
-    'relatedItems-relatedItem-0-lastPage': '20',
-    'relatedItems-relatedItem-0-publisher': 'related item publisher',
-    'relatedItems-relatedItem-0-edition': 'related item edition',
-    'relatedItems-relatedItem-0-contributors-contributor-0-contributorType': 'DataManager',
-    'relatedItems-relatedItem-0-contributors-contributor-0-contributorName': 'related item contributor name',
-    'relatedItems-relatedItem-0-contributors-contributor-0-contributorName-nameType': 'Personal',
-    'relatedItems-relatedItem-0-contributors-contributor-0-familyName': 'family name, related item contrib',
-    'relatedItems-relatedItem-0-contributors-contributor-0-givenName': 'given name, related item contrib',
-    'relatedItems-relatedItem-1-relatedItemType': 'Collection',
-    'relatedItems-relatedItem-1-relationType': 'Collects',
-    'relatedItems-relatedItem-1-relatedItemIdentifier-relatedItemIdentifierType': 'URL',
-    'relatedItems-relatedItem-1-relatedItemIdentifier': 'https://sample.com',
-    'relatedItems-relatedItem-1-creators-creator-0-creatorName': 'Related item creator name 2',
-    'relatedItems-relatedItem-1-titles-title-0-title': 'related item title 2',
-    'relatedItems-relatedItem-1-titles-title-0-titleType': 'TranslatedTitle',
-    }
-
-form_xml = """
+# DataCite record with elements that can be created using the Advanced Create ID form.
+# The record includes:
+#  - Required data fields
+#  - Optional data fields
+#  - Two instnaces for each repeatable data fields
+mockxml_datacite = """
 <resource xmlns="http://datacite.org/schema/kernel-4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
         xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4/metadata.xsd">
     <identifier identifierType="ARK">ark:/99999/fk12345</identifier>
@@ -803,6 +453,10 @@ form_xml = """
         <relatedIdentifier relatedIdentifierType="URL" relationType="HasMetadata" relatedMetadataScheme="DDI-L" schemeURI="http://www.ddialliance.org/Specification/DDI-Lifecycle/3.1/XMLSchema/instance.xsd" schemeType="XSD">https://example.com/</relatedIdentifier>
         <relatedIdentifier relatedIdentifierType="DOI" relationType="IsCitedBy">10.21384/bar</relatedIdentifier>
     </relatedIdentifiers>
+    <sizes>
+        <size>1 MB</size>
+        <size>90 pages</size>
+    </sizes>
     <formats>
         <format>application/xml</format>
         <format>text/plain</format>
@@ -886,6 +540,202 @@ form_xml = """
 </resource>"""
 
 
+# DataCite record in form elements format
+identifier = {
+    'identifier-identifierType': 'ARK', 
+    'identifier': 'ark:/99999/fk12345',
+}
+creators = {
+    'creators-creator-0-affiliation': 'Example Affiliation for creator',
+    'creators-creator-0-affiliation-affiliationIdentifier': 'https://ror.org/04wxnsj81',
+    'creators-creator-0-affiliation-affiliationIdentifierScheme': 'ROR',
+    'creators-creator-0-affiliation-schemeURI': 'https://ror.org',
+    'creators-creator-0-creatorName': 'Creator Name',
+    'creators-creator-0-familyName': 'CreatorFamilyName',
+    'creators-creator-0-givenName': 'CreatorGivenName',
+    'creators-creator-0-nameIdentifier_0-nameIdentifier': 'https://orcid.org/0000-0001-5727-2427',
+    'creators-creator-0-nameIdentifier_0-nameIdentifierScheme': 'ORCID',
+    'creators-creator-0-nameIdentifier_0-schemeURI': 'https://orcid.org',
+    'creators-creator-0-nameIdentifier_1-nameIdentifier': 'https://ror.org/04wxnsj81',
+    'creators-creator-0-nameIdentifier_1-nameIdentifierScheme': 'ROR',
+    'creators-creator-0-nameIdentifier_1-schemeURI': 'https://ror.org',
+    'creators-creator-1-creatorName': 'Creator Name 2',
+    'creators-creator-1-nameIdentifier_0-nameIdentifier': 'https://orcid.org/0000-0001-5727-2222',
+    'creators-creator-1-nameIdentifier_0-nameIdentifierScheme': 'ORCID',
+    'creators-creator-1-nameIdentifier_0-schemeURI': 'https://orcid.org',
+}
+titles = {
+    'titles-title-0-title': 'test title, main',
+    'titles-title-0-{http://www.w3.org/XML/1998/namespace}lang': 'en',
+    'titles-title-1-title': 'test title, subtitle',
+    'titles-title-1-titleType': 'Subtitle',
+    'titles-title-1-{http://www.w3.org/XML/1998/namespace}lang': 'en',
+}
+publisher = {
+    'publisher': 'test publisher',
+}
+publicationYear = {
+    'publicationYear': '1999',
+}
+resourceType = {
+    'resourceType': 'Dataset',
+    'resourceType-resourceTypeGeneral': 'Dataset',
+}
+subjects = {
+    'subjects-subject-0-schemeURI': 'http://www.oecd.org/science/inno',
+    'subjects-subject-0-subject': 'FOS: Computer and information sciences',
+    'subjects-subject-0-subjectScheme': 'Fields of Science and Technology (FOS)',
+    'subjects-subject-0-valueURI': 'http://www.oecd.org/science/inno/38235147.pd',
+    'subjects-subject-0-{http://www.w3.org/XML/1998/namespace}lang': 'en',
+    'subjects-subject-1-subject': 'Example Subject',
+}
+contributors = {
+    'contributors-contributor-0-affiliation': 'ExampleAffiliation',
+    'contributors-contributor-0-affiliation-affiliationIdentifier': 'https://ror.org/04wxnsj81',
+    'contributors-contributor-0-affiliation-affiliationIdentifierScheme': 'ROR',
+    'contributors-contributor-0-affiliation-schemeURI': 'https://ror.org',
+    'contributors-contributor-0-contributorName': 'Contributor Name',
+    'contributors-contributor-0-contributorType': 'ContactPerson',
+    'contributors-contributor-0-familyName': 'ContributorFamilyName',
+    'contributors-contributor-0-givenName': 'ContributorGivenName',
+    'contributors-contributor-0-nameIdentifier_0-nameIdentifier': 'https://orcid.org/0000-0001-5727-1234',
+    'contributors-contributor-0-nameIdentifier_0-nameIdentifierScheme': 'ORCID',
+    'contributors-contributor-0-nameIdentifier_0-schemeURI': 'https://orcid.org',
+    'contributors-contributor-0-nameIdentifier_1-nameIdentifier': 'https://orcid.org/0000-0001-5727-2427',
+    'contributors-contributor-0-nameIdentifier_1-nameIdentifierScheme': 'ORCID',
+    'contributors-contributor-0-nameIdentifier_1-schemeURI': 'https://orcid.org',
+    'contributors-contributor-1-contributorName': 'Contributor Name 2',
+    'contributors-contributor-1-contributorType': 'DataCollector',
+}
+dates = {
+    'dates-date-0-date': '2025-01-02',
+    'dates-date-0-dateType': 'Created',
+    'dates-date-0-dateInformation': 'ExampleDateInformation',
+    'dates-date-1-date': '2025-05-10',
+    'dates-date-1-dateType': 'Accepted',
+}
+language = {
+    'language': 'en',
+    }
+alternateIdentifiers = {
+    'alternateIdentifiers-alternateIdentifier-0-alternateIdentifier': '12345',
+    'alternateIdentifiers-alternateIdentifier-0-alternateIdentifierType': 'Local accession number',
+    'alternateIdentifiers-alternateIdentifier-1-alternateIdentifier': 'https://example.com/567',
+    'alternateIdentifiers-alternateIdentifier-1-alternateIdentifierType': 'URL',
+}
+relatedIdentifiers = {
+    'relatedIdentifiers-relatedIdentifier-0-relatedIdentifier': 'https://example.com/',
+    'relatedIdentifiers-relatedIdentifier-0-relatedIdentifierType': 'URL',
+    'relatedIdentifiers-relatedIdentifier-0-relatedMetadataScheme': 'DDI-L',
+    'relatedIdentifiers-relatedIdentifier-0-relationType': 'HasMetadata',
+    'relatedIdentifiers-relatedIdentifier-0-schemeType': 'XSD',
+    'relatedIdentifiers-relatedIdentifier-0-schemeURI': 'http://www.ddialliance.org/Specification/DDI-Lifecycle/3.1/XMLSchema/instance.xsd',
+    'relatedIdentifiers-relatedIdentifier-1-relatedIdentifier': '10.21384/bar',
+    'relatedIdentifiers-relatedIdentifier-1-relatedIdentifierType': 'DOI',
+    'relatedIdentifiers-relatedIdentifier-1-relationType': 'IsCitedBy',
+}
+sizes = {
+    'sizes-size-0-size': '1 MB',
+    'sizes-size-1-size': '90 pages',
+}
+formats = {
+    'formats-format-0-format': 'application/xml',
+    'formats-format-1-format': 'text/plain',
+}
+version = {
+    'version': '1',
+}
+rights = {
+    'rightsList-rights-0-rights': 'Creative Commons Attribution 4.0 International',
+    'rightsList-rights-0-rightsURI': 'https://creativecommons.org/licenses/by/4.0/',
+    'rightsList-rights-1-rights': 'rights 2',
+}
+descriptions = {
+    'descriptions-description-0-description': 'Example Abstract',
+    'descriptions-description-0-descriptionType': 'Abstract',
+    'descriptions-description-0-{http://www.w3.org/XML/1998/namespace}lang': 'en',
+    'descriptions-description-1-description': 'Description 2',
+    'descriptions-description-1-descriptionType': 'Other',
+    'descriptions-description-1-{http://www.w3.org/XML/1998/namespace}lang': 'en',
+}
+geoLocations = {
+    'geoLocations-geoLocation-0-geoLocationPlace': 'Example Geo Location Place',
+    'geoLocations-geoLocation-0-geoLocationPoint-pointLongitude': '10',
+    'geoLocations-geoLocation-0-geoLocationPoint-pointLatitude': '20',
+    'geoLocations-geoLocation-0-geoLocationBox-westBoundLongitude': '8',
+    'geoLocations-geoLocation-0-geoLocationBox-eastBoundLongitude': '12',
+    'geoLocations-geoLocation-0-geoLocationBox-southBoundLatitude': '18',
+    'geoLocations-geoLocation-0-geoLocationBox-northBoundLatitude': '22',
+}
+fundingReferences = {
+    'fundingReferences-fundingReference-0-awardNumber': '12345',
+    'fundingReferences-fundingReference-0-awardTitle': 'Example AwardTitle',
+    'fundingReferences-fundingReference-0-awardNumber-awardURI': 'https://example.com/example-award-uri',
+    'fundingReferences-fundingReference-0-funderIdentifier': 'https://doi.org/10.13039/501100000780',
+    'fundingReferences-fundingReference-0-funderIdentifier-funderIdentifierType': 'Crossref Funder ID',
+    'fundingReferences-fundingReference-0-funderName': 'Example Funder',
+    'fundingReferences-fundingReference-1-funderName': 'Example Funder 2',
+}
+relatedItems = {
+    'relatedItems-relatedItem-0-relatedItemType': 'Book',
+    'relatedItems-relatedItem-0-relationType': 'Cites',
+    'relatedItems-relatedItem-0-relatedItemIdentifier-relatedItemIdentifierType': 'ARK',
+    'relatedItems-relatedItem-0-relatedItemIdentifier': 'ark:/99999/fk12345678',
+    'relatedItems-relatedItem-0-creators-creator-0-creatorName': 'related item creator name',
+    'relatedItems-relatedItem-0-creators-creator-0-creatorName-nameType': 'Personal',
+    'relatedItems-relatedItem-0-creators-creator-0-familyName': 'family name, related item creator',
+    'relatedItems-relatedItem-0-creators-creator-0-givenName': 'given name, related item creator',
+    'relatedItems-relatedItem-0-titles-title-0-title': 'related item title',
+    'relatedItems-relatedItem-0-titles-title-0-titleType': 'AlternativeTitle',
+    'relatedItems-relatedItem-0-publicationYear': '2022',
+    'relatedItems-relatedItem-0-volume': '1',
+    'relatedItems-relatedItem-0-issue': '2',
+    'relatedItems-relatedItem-0-number': '12',
+    'relatedItems-relatedItem-0-number-numberType': 'Chapter',
+    'relatedItems-relatedItem-0-firstPage': '1',
+    'relatedItems-relatedItem-0-lastPage': '20',
+    'relatedItems-relatedItem-0-publisher': 'related item publisher',
+    'relatedItems-relatedItem-0-edition': 'related item edition',
+    'relatedItems-relatedItem-0-contributors-contributor-0-contributorType': 'DataManager',
+    'relatedItems-relatedItem-0-contributors-contributor-0-contributorName': 'related item contributor name',
+    'relatedItems-relatedItem-0-contributors-contributor-0-contributorName-nameType': 'Personal',
+    'relatedItems-relatedItem-0-contributors-contributor-0-familyName': 'family name, related item contrib',
+    'relatedItems-relatedItem-0-contributors-contributor-0-givenName': 'given name, related item contrib',
+    'relatedItems-relatedItem-1-relatedItemType': 'Collection',
+    'relatedItems-relatedItem-1-relationType': 'Collects',
+    'relatedItems-relatedItem-1-relatedItemIdentifier-relatedItemIdentifierType': 'URL',
+    'relatedItems-relatedItem-1-relatedItemIdentifier': 'https://sample.com',
+    'relatedItems-relatedItem-1-creators-creator-0-creatorName': 'Related item creator name 2',
+    'relatedItems-relatedItem-1-titles-title-0-title': 'related item title 2',
+    'relatedItems-relatedItem-1-titles-title-0-titleType': 'TranslatedTitle',
+}
+
+form_elements = creators | creators | titles | publisher | publicationYear | resourceType \
+    | language | descriptions | subjects | contributors | dates \
+    | alternateIdentifiers | relatedIdentifiers | sizes | formats \
+    | version | rights | geoLocations | fundingReferences |relatedItems
+
+form_collections = impl.datacite_xml.FormColl(
+        nonRepeating=identifier | publisher | publicationYear | language | version,
+        publisher=publisher,
+        resourceType=resourceType,
+        creators=creators,
+        titles=titles,
+        descrs=descriptions,
+        subjects=subjects,
+        contribs=contributors,
+        dates=dates, 
+        altids=alternateIdentifiers, 
+        relids=relatedIdentifiers, 
+        sizes=sizes, 
+        formats=formats, 
+        rights=rights, 
+        geoLocations=geoLocations, 
+        fundingReferences=fundingReferences, 
+        relatedItems=relatedItems
+        )
+
+
 def normalize(xml_string):
     """Parse XML, remove blank text nodes, return canonical string."""
     parser = etree.XMLParser(remove_blank_text=True)
@@ -894,7 +744,9 @@ def normalize(xml_string):
 
 def test_formElementsToDataciteXml():
     returned_xml = impl.datacite_xml.formElementsToDataciteXml(form_elements, identifier='ark:/99999/fk12345')
-    assert normalize(returned_xml) == normalize(form_xml)
+    assert normalize(returned_xml) == normalize(mockxml_datacite)
 
-
+def test_dataciteXmlToFormElements():
+    returned_form_coll = impl.datacite_xml.dataciteXmlToFormElements(mockxml_datacite)
+    assert returned_form_coll == form_collections
 
