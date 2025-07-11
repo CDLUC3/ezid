@@ -715,9 +715,40 @@ form_elements = {
     'relatedIdentifiers-relatedIdentifier-1-relatedIdentifier': '10.21384/bar',
     'relatedIdentifiers-relatedIdentifier-1-relatedIdentifierType': 'DOI',
     'relatedIdentifiers-relatedIdentifier-1-relationType': 'IsCitedBy',
+    'relatedItems-relatedItem-0-relatedItemType': 'Book',
+    'relatedItems-relatedItem-0-relationType': 'Cites',
+    'relatedItems-relatedItem-0-relatedItemIdentifier-relatedItemIdentifierType': 'ARK',
+    'relatedItems-relatedItem-0-relatedItemIdentifier': 'ark:/99999/fk12345678',
+    'relatedItems-relatedItem-0-creators-creator-0-creatorName': 'related item creator name',
+    'relatedItems-relatedItem-0-creators-creator-0-creatorName-nameType': 'Personal',
+    'relatedItems-relatedItem-0-creators-creator-0-familyName': 'family name, related item creator',
+    'relatedItems-relatedItem-0-creators-creator-0-givenName': 'given name, related item creator',
+    'relatedItems-relatedItem-0-titles-title-0-title': 'related item title',
+    'relatedItems-relatedItem-0-titles-title-0-titleType': 'AlternativeTitle',
+    'relatedItems-relatedItem-0-publicationYear': '2022',
+    'relatedItems-relatedItem-0-volume': '1',
+    'relatedItems-relatedItem-0-issue': '2',
+    'relatedItems-relatedItem-0-number': '12',
+    'relatedItems-relatedItem-0-number-numberType': 'Chapter',
+    'relatedItems-relatedItem-0-firstPage': '1',
+    'relatedItems-relatedItem-0-lastPage': '20',
+    'relatedItems-relatedItem-0-publisher': 'related item publisher',
+    'relatedItems-relatedItem-0-edition': 'related item edition',
+    'relatedItems-relatedItem-0-contributors-contributor-0-contributorType': 'DataManager',
+    'relatedItems-relatedItem-0-contributors-contributor-0-contributorName': 'related item contributor name',
+    'relatedItems-relatedItem-0-contributors-contributor-0-contributorName-nameType': 'Personal',
+    'relatedItems-relatedItem-0-contributors-contributor-0-familyName': 'family name, related item contrib',
+    'relatedItems-relatedItem-0-contributors-contributor-0-givenName': 'given name, related item contrib',
+    'relatedItems-relatedItem-1-relatedItemType': 'Collection',
+    'relatedItems-relatedItem-1-relationType': 'Collects',
+    'relatedItems-relatedItem-1-relatedItemIdentifier-relatedItemIdentifierType': 'URL',
+    'relatedItems-relatedItem-1-relatedItemIdentifier': 'https://sample.com',
+    'relatedItems-relatedItem-1-creators-creator-0-creatorName': 'Related item creator name 2',
+    'relatedItems-relatedItem-1-titles-title-0-title': 'related item title 2',
+    'relatedItems-relatedItem-1-titles-title-0-titleType': 'TranslatedTitle',
     }
 
-expected_xml = """
+form_xml = """
 <resource xmlns="http://datacite.org/schema/kernel-4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
         xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4/metadata.xsd">
     <identifier identifierType="ARK">ark:/99999/fk12345</identifier>
@@ -811,6 +842,47 @@ expected_xml = """
             <funderName>Example Funder 2</funderName>
         </fundingReference>
     </fundingReferences>
+    <relatedItems>
+        <relatedItem relatedItemType="Book" relationType="Cites">
+            <relatedItemIdentifier relatedItemIdentifierType="ARK">ark:/99999/fk12345678</relatedItemIdentifier>
+            <creators>
+                <creator>
+                    <creatorName nameType="Personal">related item creator name</creatorName>
+                    <givenName>given name, related item creator</givenName>
+                    <familyName>family name, related item creator</familyName>
+                </creator>
+            </creators>
+            <titles>
+                <title titleType="AlternativeTitle">related item title</title>
+            </titles>
+            <publicationYear>2022</publicationYear>
+            <volume>1</volume>
+            <issue>2</issue>
+            <number numberType="Chapter">12</number>
+            <firstPage>1</firstPage>
+            <lastPage>20</lastPage>
+            <publisher>related item publisher</publisher>
+            <edition>related item edition</edition>
+            <contributors>
+                <contributor contributorType="DataManager">
+                    <contributorName nameType="Personal">related item contributor name</contributorName>
+                    <givenName>given name, related item contrib</givenName>
+                    <familyName>family name, related item contrib</familyName>
+                </contributor>
+            </contributors>
+        </relatedItem>
+        <relatedItem relatedItemType="Collection" relationType="Collects">
+            <relatedItemIdentifier relatedItemIdentifierType="URL">https://sample.com</relatedItemIdentifier>
+            <creators>
+                <creator>
+                    <creatorName>Related item creator name 2</creatorName>
+                </creator>
+            </creators>
+            <titles>
+                <title titleType="TranslatedTitle">related item title 2</title>
+            </titles>
+        </relatedItem>
+    </relatedItems>
 </resource>"""
 
 
@@ -822,5 +894,7 @@ def normalize(xml_string):
 
 def test_formElementsToDataciteXml():
     returned_xml = impl.datacite_xml.formElementsToDataciteXml(form_elements, identifier='ark:/99999/fk12345')
-    assert normalize(returned_xml) == normalize(expected_xml)
+    assert normalize(returned_xml) == normalize(form_xml)
+
+
 
