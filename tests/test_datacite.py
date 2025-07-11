@@ -620,7 +620,7 @@ def test_dataciteXmlToFormElements():
 
 
 form_elements = {
-    'creators-creator-0-affiliation': 'ExampleAffiliation for creator',
+    'creators-creator-0-affiliation': 'Example Affiliation for creator',
     'creators-creator-0-affiliation-affiliationIdentifier': 'https://ror.org/04wxnsj81',
     'creators-creator-0-affiliation-affiliationIdentifierScheme': 'ROR',
     'creators-creator-0-affiliation-schemeURI': 'https://ror.org',
@@ -633,18 +633,26 @@ form_elements = {
     'creators-creator-0-nameIdentifier_1-nameIdentifier': 'https://ror.org/04wxnsj81',
     'creators-creator-0-nameIdentifier_1-nameIdentifierScheme': 'ROR',
     'creators-creator-0-nameIdentifier_1-schemeURI': 'https://ror.org',
-    'titles-title-0-title': 'test',
+    'creators-creator-1-creatorName': 'Creator Name 2',
+    'creators-creator-1-nameIdentifier_0-nameIdentifier': 'https://orcid.org/0000-0001-5727-2222',
+    'creators-creator-1-nameIdentifier_0-nameIdentifierScheme': 'ORCID',
+    'creators-creator-1-nameIdentifier_0-schemeURI': 'https://orcid.org',
+    'titles-title-0-title': 'test title, main',
     'titles-title-0-titleType': '',
-    'titles-title-0-{http://www.w3.org/XML/1998/namespace}lang': '',
-    'publisher': 'test',
+    'titles-title-0-{http://www.w3.org/XML/1998/namespace}lang': 'en',
+    'titles-title-1-title': 'test title, subtitle',
+    'titles-title-1-titleType': 'Subtitle',
+    'titles-title-1-{http://www.w3.org/XML/1998/namespace}lang': 'en',
+    'publisher': 'test publisher',
     'publicationYear': '1999',
     'resourceType': 'Dataset',
     'resourceType-resourceTypeGeneral': 'Dataset',
-    'subjects-subject-0-schemeURI': '',
-    'subjects-subject-0-subject': '',
-    'subjects-subject-0-subjectScheme': '',
-    'subjects-subject-0-valueURI': '',
-    'subjects-subject-0-{http://www.w3.org/XML/1998/namespace}lang': '',
+    'subjects-subject-0-schemeURI': 'http://www.oecd.org/science/inno',
+    'subjects-subject-0-subject': 'FOS: Computer and information sciences',
+    'subjects-subject-0-subjectScheme': 'Fields of Science and Technology (FOS)',
+    'subjects-subject-0-valueURI': 'http://www.oecd.org/science/inno/38235147.pd',
+    'subjects-subject-0-{http://www.w3.org/XML/1998/namespace}lang': 'en',
+    'subjects-subject-1-subject': 'Example Subject',
     'contributors-contributor-0-affiliation': 'ExampleAffiliation',
     'contributors-contributor-0-affiliation-affiliationIdentifier': 'https://ror.org/04wxnsj81',
     'contributors-contributor-0-affiliation-affiliationIdentifierScheme': 'ROR',
@@ -659,35 +667,54 @@ form_elements = {
     'contributors-contributor-0-nameIdentifier_1-nameIdentifier': 'https://orcid.org/0000-0001-5727-2427',
     'contributors-contributor-0-nameIdentifier_1-nameIdentifierScheme': 'ORCID',
     'contributors-contributor-0-nameIdentifier_1-schemeURI': 'https://orcid.org',
-    'dates-date-0-date': '2024-01-01',
-    'dates-date-0-dateType': 'Other',
+    'contributors-contributor-1-contributorName': 'Contributor Name 2',
+    'contributors-contributor-1-contributorType': 'DataCollector',
+    'dates-date-0-date': '2025-01-02',
+    'dates-date-0-dateType': 'Created',
     'dates-date-0-dateInformation': 'ExampleDateInformation',
+    'dates-date-1-date': '2025-05-10',
+    'dates-date-1-dateType': 'Accepted',
     'language': 'en',
     'alternateIdentifiers-alternateIdentifier-0-alternateIdentifier': '12345',
     'alternateIdentifiers-alternateIdentifier-0-alternateIdentifierType': 'Local accession number',
+    'alternateIdentifiers-alternateIdentifier-1-alternateIdentifier': 'https://example.com/567',
+    'alternateIdentifiers-alternateIdentifier-1-alternateIdentifierType': 'URL',
     'sizes-size-0-size': '',
     'formats-format-0-format': 'application/xml',
+    'formats-format-1-format': 'text/plain',
     'version': '1',
-    'rightsList-rights-0-rights': '',
-    'rightsList-rights-0-rightsURI': '',
+    'rightsList-rights-0-rights': 'Creative Commons Attribution 4.0 International',
+    'rightsList-rights-0-rightsURI': 'https://creativecommons.org/licenses/by/4.0/',
+    'rightsList-rights-1-rights': 'rights 2',
     'descriptions-description-0-description': 'Example Abstract',
     'descriptions-description-0-descriptionType': 'Abstract',
     'descriptions-description-0-{http://www.w3.org/XML/1998/namespace}lang': 'en',
-    'geoLocations-geoLocation-0-geoLocationBox': '',
-    'geoLocations-geoLocation-0-geoLocationPlace': '',
-    'geoLocations-geoLocation-0-geoLocationPoint': '',
+    'descriptions-description-1-description': 'Description 2',
+    'descriptions-description-1-descriptionType': 'Other',
+    'descriptions-description-1-{http://www.w3.org/XML/1998/namespace}lang': 'en',
+    'geoLocations-geoLocation-0-geoLocationPlace': 'Example Geo Location Place',
+    'geoLocations-geoLocation-0-geoLocationPoint-pointLongitude': '10',
+    'geoLocations-geoLocation-0-geoLocationPoint-pointLatitude': '20',
+    'geoLocations-geoLocation-0-geoLocationBox-westBoundLongitude': '8',
+    'geoLocations-geoLocation-0-geoLocationBox-eastBoundLongitude': '12',
+    'geoLocations-geoLocation-0-geoLocationBox-southBoundLatitude': '18',
+    'geoLocations-geoLocation-0-geoLocationBox-northBoundLatitude': '22',
     'fundingReferences-fundingReference-0-awardNumber': '12345',
     'fundingReferences-fundingReference-0-awardTitle': 'Example AwardTitle',
     'fundingReferences-fundingReference-0-awardNumber-awardURI': 'https://example.com/example-award-uri',
     'fundingReferences-fundingReference-0-funderIdentifier': 'https://doi.org/10.13039/501100000780',
     'fundingReferences-fundingReference-0-funderIdentifier-funderIdentifierType': 'Crossref Funder ID',
     'fundingReferences-fundingReference-0-funderName': 'Example Funder',
-    'relatedIdentifiers-relatedIdentifier-0-relatedIdentifier': '',
-    'relatedIdentifiers-relatedIdentifier-0-relatedIdentifierType': '',
-    'relatedIdentifiers-relatedIdentifier-0-relatedMetadataScheme': '',
-    'relatedIdentifiers-relatedIdentifier-0-relationType': '',
-    'relatedIdentifiers-relatedIdentifier-0-schemeType': '',
-    'relatedIdentifiers-relatedIdentifier-0-schemeURI': '',
+    'fundingReferences-fundingReference-1-funderName': 'Example Funder 2',
+    'relatedIdentifiers-relatedIdentifier-0-relatedIdentifier': 'https://example.com/',
+    'relatedIdentifiers-relatedIdentifier-0-relatedIdentifierType': 'URL',
+    'relatedIdentifiers-relatedIdentifier-0-relatedMetadataScheme': 'DDI-L',
+    'relatedIdentifiers-relatedIdentifier-0-relationType': 'HasMetadata',
+    'relatedIdentifiers-relatedIdentifier-0-schemeType': 'XSD',
+    'relatedIdentifiers-relatedIdentifier-0-schemeURI': 'http://www.ddialliance.org/Specification/DDI-Lifecycle/3.1/XMLSchema/instance.xsd',
+    'relatedIdentifiers-relatedIdentifier-1-relatedIdentifier': '10.21384/bar',
+    'relatedIdentifiers-relatedIdentifier-1-relatedIdentifierType': 'DOI',
+    'relatedIdentifiers-relatedIdentifier-1-relationType': 'IsCitedBy',
     }
 
 expected_xml = """
@@ -701,13 +728,24 @@ expected_xml = """
             <familyName>CreatorFamilyName</familyName>
             <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org">https://orcid.org/0000-0001-5727-2427</nameIdentifier>
             <nameIdentifier nameIdentifierScheme="ROR" schemeURI="https://ror.org">https://ror.org/04wxnsj81</nameIdentifier>
-            <affiliation affiliationIdentifier="https://ror.org/04wxnsj81" affiliationIdentifierScheme="ROR" schemeURI="https://ror.org">ExampleAffiliation for creator</affiliation>
+            <affiliation affiliationIdentifier="https://ror.org/04wxnsj81" affiliationIdentifierScheme="ROR" schemeURI="https://ror.org">Example Affiliation for creator</affiliation>
+        </creator>
+        <creator>
+            <creatorName>Creator Name 2</creatorName>
+            <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org">https://orcid.org/0000-0001-5727-2222</nameIdentifier>
         </creator>
     </creators>
-    <titles><title>test</title></titles>
-    <publisher>test</publisher>
+    <titles>
+        <title xml:lang="en">test title, main</title>
+        <title titleType="Subtitle" xml:lang="en">test title, subtitle</title>
+    </titles>
+    <publisher>test publisher</publisher>
     <publicationYear>1999</publicationYear>
     <resourceType resourceTypeGeneral="Dataset">Dataset</resourceType>
+    <subjects>
+        <subject subjectScheme="Fields of Science and Technology (FOS)" schemeURI="http://www.oecd.org/science/inno" valueURI="http://www.oecd.org/science/inno/38235147.pd" xml:lang="en">FOS: Computer and information sciences</subject>
+        <subject>Example Subject</subject>
+    </subjects>
     <contributors>
         <contributor contributorType="ContactPerson">
             <contributorName>Contributor Name</contributorName>
@@ -717,27 +755,60 @@ expected_xml = """
             <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org">https://orcid.org/0000-0001-5727-2427</nameIdentifier>
             <affiliation affiliationIdentifier="https://ror.org/04wxnsj81" affiliationIdentifierScheme="ROR" schemeURI="https://ror.org">ExampleAffiliation</affiliation>
         </contributor>
+        <contributor contributorType="DataCollector">
+            <contributorName>Contributor Name 2</contributorName>
+        </contributor>
     </contributors>
     <dates>
-        <date dateType="Other" dateInformation="ExampleDateInformation">2024-01-01</date>
+        <date dateType="Created" dateInformation="ExampleDateInformation">2025-01-02</date>
+        <date dateType="Accepted">2025-05-10</date>
     </dates>
     <language>en</language>
     <alternateIdentifiers>
         <alternateIdentifier alternateIdentifierType="Local accession number">12345</alternateIdentifier>
+        <alternateIdentifier alternateIdentifierType="URL">https://example.com/567</alternateIdentifier>
     </alternateIdentifiers>
+    <relatedIdentifiers>
+        <relatedIdentifier relatedIdentifierType="URL" relationType="HasMetadata" relatedMetadataScheme="DDI-L" schemeURI="http://www.ddialliance.org/Specification/DDI-Lifecycle/3.1/XMLSchema/instance.xsd" schemeType="XSD">https://example.com/</relatedIdentifier>
+        <relatedIdentifier relatedIdentifierType="DOI" relationType="IsCitedBy">10.21384/bar</relatedIdentifier>
+    </relatedIdentifiers>
     <formats>
         <format>application/xml</format>
+        <format>text/plain</format>
     </formats>
     <version>1</version>
+    <rightsList>
+        <rights rightsURI="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International</rights>
+        <rights>rights 2</rights>
+        </rightsList>
     <descriptions>
-        <description xml:lang="en" descriptionType="Abstract">Example Abstract</description>
+        <description descriptionType="Abstract" xml:lang="en">Example Abstract</description>
+        <description descriptionType="Other" xml:lang="en">Description 2</description>
     </descriptions>
+    <geoLocations>
+        <geoLocation>
+            <geoLocationPlace>Example Geo Location Place</geoLocationPlace>
+            <geoLocationPoint>
+                <pointLongitude>10</pointLongitude>
+                <pointLatitude>20</pointLatitude>
+            </geoLocationPoint>
+            <geoLocationBox>
+                <westBoundLongitude>8</westBoundLongitude>
+                <eastBoundLongitude>12</eastBoundLongitude>
+                <southBoundLatitude>18</southBoundLatitude>
+                <northBoundLatitude>22</northBoundLatitude>
+            </geoLocationBox>
+        </geoLocation>
+    </geoLocations>
     <fundingReferences>
         <fundingReference>
             <funderName>Example Funder</funderName>
             <funderIdentifier funderIdentifierType="Crossref Funder ID">https://doi.org/10.13039/501100000780</funderIdentifier>
             <awardNumber awardURI="https://example.com/example-award-uri">12345</awardNumber>
             <awardTitle>Example AwardTitle</awardTitle>
+        </fundingReference>
+        <fundingReference>
+            <funderName>Example Funder 2</funderName>
         </fundingReference>
     </fundingReferences>
 </resource>"""
