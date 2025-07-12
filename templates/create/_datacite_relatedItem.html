@@ -27,14 +27,6 @@
   {% include "create/_datacite_inlineselect.html" with field=form|get_field:"relatedItemIdentifier-relatedItemIdentifierType" %}
   {% include "create/_datacite_inlinetext.html" with field=form.relatedItemIdentifier %}
 
-  <details id="accordion__section-1_relateditem" class="accordion__section create__accordion-section" {{accordions_open}}>
-    <summary class="accordion__title create__accordion-title">{% trans "Creator" %}</summary>
-      {% include "create/_datacite_inlinetext.html" with field=form|get_field:"creators-creator-0-creatorName" %}
-      {% include "create/_datacite_inlineselect.html" with field=form|get_field:"creators-creator-0-creatorName-nameType" %}
-      {% include "create/_datacite_inlinetext.html" with field=form|get_field:"creators-creator-0-familyName" %}
-      {% include "create/_datacite_inlinetext.html" with field=form|get_field:"creators-creator-0-givenName" %}
-  </details>
-
   {% include "create/_datacite_inlinetext.html" with field=form|get_field:"titles-title-0-title" %}
 
   <fieldset class="fieldset-inline create__form-element-group" role="group" aria-labelledby="relateditem-title-type">
@@ -62,6 +54,14 @@
   {% include "create/_datacite_inlinetext.html" with field=form.lastPage %}
   {% include "create/_datacite_inlinetext.html" with field=form.publisher %}
   {% include "create/_datacite_inlinetext.html" with field=form.edition %}
+
+  <details id="accordion__section-1_relateditem" class="accordion__section create__accordion-section" {{accordions_open}}>
+    <summary class="accordion__title create__accordion-title">{% trans "Creator" %}</summary>
+      {% include "create/_datacite_inlinetext.html" with field=form|get_field:"creators-creator-0-creatorName" %}
+      {% include "create/_datacite_inlineselect.html" with field=form|get_field:"creators-creator-0-creatorName-nameType" %}
+      {% include "create/_datacite_inlinetext.html" with field=form|get_field:"creators-creator-0-familyName" %}
+      {% include "create/_datacite_inlinetext.html" with field=form|get_field:"creators-creator-0-givenName" %}
+  </details>
 
   <details id="accordion__section-2_relateditem" class="accordion__section create__accordion-section" {{accordions_open}}>
     <summary class="accordion__title create__accordion-title">{% trans "Contributor" %}</summary>

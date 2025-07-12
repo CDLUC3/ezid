@@ -562,17 +562,28 @@ def _relatedItem_contributor_validate_error(related_item, err):
 # Element attributes must be named as elementName-attributeName
 # i.e. <awardNumber awardURI="http://cordis.europa.eu/">284382</awardNumber>
 #  should be declared as indiv. form fields named 'awardNumber' and 'awardNumber-awardURI'
-# See datacite_xml.formElementsToDataciteXml
+# See datacite_xml.formElementsToDataciteXml() and datacite_xml.dataciteXmlToFormElements()
+# on how to convert DataCite XML to and from form elements.
+# See tests/test_datacite.py for sample XML, form elements and field name conventions.
 #
 # Fields with hyphens cannot be called directly from the template, and so have
 #   been relegated to their own form object (defined in __init__)
+# Note:
+#   A helper function `get_field` was created for accessing field names with hyphens in the template.
+#   The funciton is defined in `ui_tags/templatetags/layout_extras.py`.
+#   To access field name without hyphen:
+#     field=form.number 
+#   To access field name with hyphen:
+#     field=form|get_field:"number-numberType"
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 
 class NonRepeatingForm(django.forms.Form):
     """Form object for single field elements in DataCite Advanced (XML)
-    profile."""
+    profile.
+    Note: the non-repeating Publisher field is implemented in its own PublisherForm.
+    """
 
     target = django.forms.CharField(
         required=False, label=_("Location (URL)"), validators=[_validate_url]
@@ -1112,9 +1123,6 @@ class FundingRefForm(django.forms.Form):
 class RelatedItemForm(django.forms.Form):
     """Form object for Related Items in DataCite Advanced (XML)
     profile.
-    See 'temp_mockFormElements()' in datacite_xml.py for field name conventions.
-    Note: pay attention on how hyphenhyphen "-" and underscore "_" are used to
-    handle element, sub-element, repeated element and attribute.
     """
 
     def __init__(self, *args, **kwargs):
