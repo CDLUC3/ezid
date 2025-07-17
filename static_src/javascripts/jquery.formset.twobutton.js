@@ -60,16 +60,6 @@
                 // http://stackoverflow.com/questions/6364289/clear-form-fields-with-jquery
                 if (elem.is('input:checkbox') || elem.is('input:radio')) {
                     elem.attr('checked', false);
-                } else if (elem.is('select')) {
-                    // Prefer to select the blank value if it exists
-                    elem.val('');
-                    
-                    // Fallback: force first option
-                    if (!elem.val()) {
-                        elem.prop('selectedIndex', 0);
-                    }
-                    // Also remove any leftover selected attribute
-                    elem.find('option').removeAttr('selected');
                 } else {
                     elem.val('');
                 }
