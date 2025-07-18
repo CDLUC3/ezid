@@ -148,8 +148,6 @@
                     // Just erase values (don't remove form completely)
                     lastRow.find(childElementSelector).not(options.keepFieldValues).each(function() {
                         var elem = $(this);
-                        // If this is a checkbox or radiobutton, uncheck it.
-                        // http://stackoverflow.com/questions/6364289/clear-form-fields-with-jquery
                         if (elem.is('details')) {
                             elem.removeAttr('open');
                         } else {
