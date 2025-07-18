@@ -52,14 +52,12 @@
                 return row.find(childElementSelector).length > 0;
             },
 
-            clearField = function() {
-                var elem = $(this);
+            clearField = function(elem) {
+                elem = $(elem);
                 // console.log('Clearing field:', elem.attr('name') || elem.attr('id'));
 
-                // If this is a checkbox or radiobutton, uncheck it.
-                // http://stackoverflow.com/questions/6364289/clear-form-fields-with-jquery
                 if (elem.is('input:checkbox') || elem.is('input:radio')) {
-                    elem.attr('checked', false);
+                    elem.prop('checked', false);
                 } else {
                     elem.val('');
                 }
@@ -111,14 +109,7 @@
                 template = $('.' + options.formCssClass + ':last').clone(true).removeAttr('id');
                 // Clear all cloned fields, except those the user wants to keep:
                 template.find(childElementSelector).not(options.keepFieldValues).each(function() {
-                    var elem = $(this);
-                    // If this is a checkbox or radiobutton, uncheck it.
-                    // http://stackoverflow.com/questions/6364289/clear-form-fields-with-jquery
-                    if (elem.is('input:checkbox') || elem.is('input:radio')) {
-                        elem.attr('checked', false);
-                    } else {
-                        elem.val('');
-                    }
+                    clearField(this);
                 });
             }
             // FIXME: Perhaps using $.data would be a better idea?
@@ -137,7 +128,9 @@
                 updateElementIndex($(this), options.prefix, formCount);
                 clearInvalidReqd($(this));
             });
-            row.find(':input').each(clearField);
+            row.find(':input').each(function() {
+                clearField(this);
+            });
             // Generate any links to help content from newly created elements
             $.getScript("/static/javascripts/help_box_.js");
             totalForms.val(formCount + 1);
@@ -157,12 +150,10 @@
                         var elem = $(this);
                         // If this is a checkbox or radiobutton, uncheck it.
                         // http://stackoverflow.com/questions/6364289/clear-form-fields-with-jquery
-                        if (elem.is('input:checkbox') || elem.is('input:radio')) {
-                            elem.attr('checked', false);
-                        } else if (elem.is('details')) {
+                        if (elem.is('details')) {
                             elem.removeAttr('open');
                         } else {
-                            elem.val('');
+                            clearField(elem);
                         }
                     });
                 } else {
