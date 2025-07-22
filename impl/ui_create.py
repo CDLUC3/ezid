@@ -276,9 +276,6 @@ def validate_adv_form_datacite_xml(request, d):
         d['accordions_open'] = 'open'
         d['id_gen_result'] = 'edit_page'
     else:
-        # Testing:
-        # temp_formElements = datacite_xml.temp_mockFormElements()
-        # d['generated_xml'] = datacite_xml.temp_mock()
         d['generated_xml'] = impl.datacite_xml.formElementsToDataciteXml(
             P.dict(),
             # temp_formElements,

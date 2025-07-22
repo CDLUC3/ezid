@@ -31,6 +31,7 @@ _repeatableElementContainers = [
     "descriptions",
     "geoLocations",
     "fundingReferences",
+    "relatedItems"
 ]
 
 _numberedElementContainers = {
@@ -148,6 +149,11 @@ def dataciteXmlToFormElements(document):
     fc = _separateByFormType(d)
     return fc
 
+""" Representation of django forms and formsets used for DataCite XML """
+FormColl = collections.namedtuple(
+    'FormColl',
+    'nonRepeating publisher resourceType creators titles descrs subjects contribs dates altids relids sizes formats rights geoLocations fundingReferences relatedItems',
+)
 
 def _separateByFormType(d):
     """Organize form elements into a manageable collection Turn empty dicts
@@ -168,12 +174,6 @@ def _separateByFormType(d):
         dr = {k: v for (k, v) in list(d.items()) if k.startswith(s)}
         return dr if dr else None
 
-    """ Representation of django forms and formsets used for DataCite XML """
-    FormColl = collections.namedtuple(
-        'FormColl',
-        'nonRepeating publisher resourceType creators titles descrs subjects contribs dates altids relids sizes formats rights geoLocations fundingReferences',
-    )
-
     return FormColl(
         nonRepeating=_nonRepeating if _nonRepeating else None,
         publisher=dict_generate(d, 'publisher'),
@@ -191,17 +191,8 @@ def _separateByFormType(d):
         rights=dict_generate(d, 'rightsList'),
         geoLocations=dict_generate(d, 'geoLocations'),
         fundingReferences=dict_generate(d, 'fundingReferences'),
+        relatedItems=dict_generate(d, 'relatedItems')
     )
-
-# commnented out for now, as it was created for testing in the edit function in ui_manage.py.
-# consider moving it to tests/test_xxx.py if needed in the future. JJiang 2025-06-10
-# def temp_mockxml():
-#     # An item whose Creator has two nameIDs and two affiliations
-#     # return unicode('<resource xmlns="http://datacite.org/schema/kernel-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd"><identifier identifierType="ARK"/><creators><creator><creatorName>test</creatorName><givenName>Elizabeth</givenName><familyName>Miller</familyName><nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0001-5000-0001</nameIdentifier><nameIdentifier schemeURI="http://orcid.org/2" nameIdentifierScheme="ORCID2">0000-0001-5000-0002</nameIdentifier><affiliation>DataCite1</affiliation><affiliation>DataCite2</affiliation></creator></creators><titles><title xml:lang="en-us">test</title></titles><publisher>test</publisher><publicationYear>1990</publicationYear><subjects><subject xml:lang="ar-afb" schemeURI="testURI" subjectScheme="testScheme">TESTTESTTESTTEST</subject><subject xml:lang="en" subjectScheme="testScheme2" schemeURI="testURI2">test2</subject></subjects><contributors><contributor contributorType="ProjectLeader"><contributorName>Starr, Joan</contributorName><nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0002-7285-027X</nameIdentifier><nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0002-7285-1000</nameIdentifier><nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0002-7285-2222</nameIdentifier><nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0002-7285-3333</nameIdentifier><nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0002-7285-4444</nameIdentifier><nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0002-7285-5555</nameIdentifier><affiliation>California Digital Library</affiliation><affiliation>National SPAM Committee</affiliation><affiliation>NASCAR</affiliation></contributor><contributor contributorType="ProjectLeader"><contributorName>Rawls, Lou</contributorName><nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0002-7285-027X</nameIdentifier><affiliation>Chicago</affiliation></contributor></contributors><resourceType resourceTypeGeneral="Dataset">Dataset</resourceType><descriptions><description xml:lang="es-419" descriptionType="Abstract">testDescr</description><description xml:lang="zh-Hans" descriptionType="Other">testDescr2</description><description xml:lang="ast" descriptionType="SeriesInformation">testDescr3</description></descriptions></resource>')
-#     # An item with 2 Creators, both with three nameIDs
-#     return str(
-#         '<resource xmlns="http://datacite.org/schema/kernel-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd"><identifier identifierType="ARK"/><creators><creator><creatorName>test</creatorName><givenName>Elizabeth</givenName><familyName>Miller</familyName><nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0001-5000-0001</nameIdentifier><nameIdentifier schemeURI="http://orcid.org/2" nameIdentifierScheme="ORCID2">0000-0001-5000-0002</nameIdentifier><nameIdentifier schemeURI="http://orcid.org/3" nameIdentifierScheme="ORCID3">0000-0001-5000-0003</nameIdentifier><affiliation>DataCite1</affiliation><affiliation>DataCite2</affiliation></creator><creator><creatorName>test</creatorName><givenName>Elizabeth</givenName><familyName>Miller</familyName><nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0001-5000-0001</nameIdentifier><nameIdentifier schemeURI="http://orcid.org/2" nameIdentifierScheme="ORCID2">0000-0001-5000-0002</nameIdentifier><nameIdentifier schemeURI="http://orcid.org/3" nameIdentifierScheme="ORCID3">0000-0001-5000-0003</nameIdentifier><nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0001-5000-0001</nameIdentifier><nameIdentifier schemeURI="http://orcid.org/2" nameIdentifierScheme="ORCID2">0000-0001-5000-0002</nameIdentifier><nameIdentifier schemeURI="http://orcid.org/3" nameIdentifierScheme="ORCID3">0000-0001-5000-0003</nameIdentifier><affiliation>DataCite1</affiliation><affiliation>DataCite2</affiliation></creator></creators><titles><title xml:lang="en-us">test</title></titles><publisher>test</publisher><publicationYear>1990</publicationYear><subjects><subject xml:lang="ar-afb" schemeURI="testURI" subjectScheme="testScheme">TESTTESTTESTTEST</subject><subject xml:lang="en" subjectScheme="testScheme2" schemeURI="testURI2">test2</subject></subjects><resourceType resourceTypeGeneral="Dataset">Dataset</resourceType><descriptions><description xml:lang="es-419" descriptionType="Abstract">testDescr</description><description xml:lang="zh-Hans" descriptionType="Other">testDescr2</description><description xml:lang="ast" descriptionType="SeriesInformation">testDescr3</description></descriptions></resource>'
-#     )
 
 
 def _id_type(str):
@@ -215,7 +206,11 @@ def _id_type(str):
 # The following exhaustive list of DataCite XML elements must form a
 # partial topological order, that is, if two elements have the same
 # parent, they must appear in the list in the same order that they
-# must appear in an XML document.
+# must appear in an XML document defined in datacite/metadata.xsd.
+# Embedded elements such as the titles, creators and contributors in 
+# the relatedItems may have a different topological order than what 
+# they appear at the element level. Define the order in a sub-elements 
+# list when needed.
 
 _elementList = [
     "identifier",
@@ -259,21 +254,55 @@ _elementList = [
     "geoLocationBox",
     "geoLocationPolygon",
     "polygonPoint",
-    "fundingReferences",
-    "fundingReference",
-    "funderName",
-    "funderIdentifier",
-    "awardNumber",
-    "awardTitle",
     "pointLongitude",
     "pointLatitude",
     "westBoundLongitude",
     "eastBoundLongitude",
     "southBoundLatitude",
     "northBoundLatitude",
+    "fundingReferences",
+    "fundingReference",
+    "funderName",
+    "funderIdentifier",
+    "awardNumber",
+    "awardTitle",
+    "relatedItems",
+    "relatedItem",
+    "relatedItemIdentifier",
+    "volume",
+    "issue",
+    "number",
+    "firstPage",
+    "lastPage",
+    "edition",
 ]
 
+_elementList_relatedItem = [
+    "relatedItemIdentifier",
+    "creators",
+    "creator",
+    "creatorName",
+    "titles",
+    "title",
+    "publicationYear",
+    "volume",
+    "issue",
+    "number",
+    "firstPage",
+    "lastPage",
+    "publisher",
+    "edition",
+    "contributors",
+    "contributor",
+    "givenName",
+    "familyName",
+]
+
+# elements with topological order in sequence number, such as:
+# {'identifier': 0, 'creators': 1, 'creator': 2, 'creatorName': 3, etc.
 _elements = dict((e, i) for i, e in enumerate(_elementList))
+
+_elements_relatedItem = dict((e, i) for i, e in enumerate(_elementList_relatedItem))
 
 
 def formElementsToDataciteXml(d, shoulder=None, identifier=None):
@@ -339,21 +368,25 @@ def formElementsToDataciteXml(d, shoulder=None, identifier=None):
                 node.attrib[k] = value
             key = remainder
 
-    def sortValue(node):
+    def sortValue(node, ordered_elements):
         v = tagName(node.tag)
         m = re.match(".*_(\\d+)$", v)
         if m:
-            return _elements[v.split("_", 1)[0]], int(m.group(1))
+            return ordered_elements[v.split("_", 1)[0]], int(m.group(1))
         else:
-            return _elements[v], 0
+            return ordered_elements[v], 0
 
     def sortChildren(node):
         if (
             tagName(node.tag) not in _repeatableElementContainers
             and tagName(node.tag) != "geoLocationPolygon"
         ):
+            if tagName(node.tag) == "relatedItem":
+                ordered_elements = _elements_relatedItem
+            else:
+                ordered_elements = _elements
             children = node.getchildren()
-            children.sort(key=lambda c: sortValue(c))
+            children.sort(key=lambda c: sortValue(c, ordered_elements))
             for i, c in enumerate(children):
                 node.insert(i, c)
         for c in node.iterchildren():
@@ -381,75 +414,3 @@ def _addIdentifierInfo(d, shoulder=None, identifier=None):
         d['identifier'] = identifier  # Only for already created IDs
     return d
 
-
-def temp_mockFormElements():
-    return {
-        'alternateIdentifiers-alternateIdentifier-0-alternateIdentifier': '',
-        'alternateIdentifiers-alternateIdentifier-0-alternateIdentifierType': '',
-        'contributors-contributor-0-affiliation': '',
-        'contributors-contributor-0-affiliationIdentifier': '',
-        'contributors-contributor-0-affiliationIdentifierScheme': '',
-        'contributors-contributor-0-schemeURI': '',
-        'contributors-contributor-0-contributorName': '',
-        'contributors-contributor-0-contributorType': '',
-        'contributors-contributor-0-familyName': '',
-        'contributors-contributor-0-givenName': '',
-        'contributors-contributor-0-nameIdentifier_0-nameIdentifier': '',
-        'contributors-contributor-0-nameIdentifier_0-nameIdentifierScheme': '',
-        'contributors-contributor-0-nameIdentifier_0-schemeURI': '',
-        'contributors-contributor-0-nameIdentifier_1-nameIdentifier': '',
-        'contributors-contributor-0-nameIdentifier_1-nameIdentifierScheme': '',
-        'contributors-contributor-0-nameIdentifier_1-schemeURI': '',
-        'creators-creator-0-affiliation': '',
-        'creators-creator-0-affiliationIdentifier': '',
-        'creators-creator-0-affiliationIdentifierScheme': '',
-        'creators-creator-0-schemeURI': '',
-        'creators-creator-0-creatorName': 'test',
-        'creators-creator-0-familyName': '',
-        'creators-creator-0-givenName': '',
-        'creators-creator-0-nameIdentifier_0-nameIdentifier': '',
-        'creators-creator-0-nameIdentifier_0-nameIdentifierScheme': '',
-        'creators-creator-0-nameIdentifier_0-schemeURI': '',
-        'creators-creator-0-nameIdentifier_1-nameIdentifier': '',
-        'creators-creator-0-nameIdentifier_1-nameIdentifierScheme': '',
-        'creators-creator-0-nameIdentifier_1-schemeURI': '',
-        'dates-date-0-date': '',
-        'dates-date-0-dateType': '',
-        'dates-date-0-dateInformation': '',
-        'descriptions-description-0-description': '',
-        'descriptions-description-0-descriptionType': '',
-        'descriptions-description-0-{http://www.w3.org/XML/1998/namespace}lang': '',
-        'formats-format-0-format': '',
-        'fundingReferences-fundingReference-0-awardNumber': '',
-        'fundingReferences-fundingReference-0-awardTitle': '',
-        'fundingReferences-fundingReference-0-awardNumber-awardURI': '',
-        'fundingReferences-fundingReference-0-funderIdentifier': 'test',
-        'fundingReferences-fundingReference-0-funderIdentifier-funderIdentifierType': 'ISNI',
-        'fundingReferences-fundingReference-0-funderName': 'test',
-        'geoLocations-geoLocation-0-geoLocationBox': '',
-        'geoLocations-geoLocation-0-geoLocationPlace': '',
-        'geoLocations-geoLocation-0-geoLocationPoint': '',
-        'language': '',
-        'publicationYear': '1999',
-        'publisher': 'test',
-        'relatedIdentifiers-relatedIdentifier-0-relatedIdentifier': '',
-        'relatedIdentifiers-relatedIdentifier-0-relatedIdentifierType': '',
-        'relatedIdentifiers-relatedIdentifier-0-relatedMetadataScheme': '',
-        'relatedIdentifiers-relatedIdentifier-0-relationType': '',
-        'relatedIdentifiers-relatedIdentifier-0-schemeType': '',
-        'relatedIdentifiers-relatedIdentifier-0-schemeURI': '',
-        'resourceType': 'Dataset',
-        'resourceType-resourceTypeGeneral': 'Dataset',
-        'rightsList-rights-0-rights': '',
-        'rightsList-rights-0-rightsURI': '',
-        'sizes-size-0-size': '',
-        'subjects-subject-0-schemeURI': '',
-        'subjects-subject-0-subject': '',
-        'subjects-subject-0-subjectScheme': '',
-        'subjects-subject-0-valueURI': '',
-        'subjects-subject-0-{http://www.w3.org/XML/1998/namespace}lang': '',
-        'titles-title-0-title': 'test',
-        'titles-title-0-titleType': '',
-        'titles-title-0-{http://www.w3.org/XML/1998/namespace}lang': '',
-        'version': '',
-    }

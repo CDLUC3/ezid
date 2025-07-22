@@ -208,9 +208,6 @@ def edit(request, identifier):
             d['current_profile'] = impl.metadata.getProfile('dc')
         if d['current_profile'].name == 'datacite' and 'datacite' in id_metadata:
             d = _assignManualTemplate(d)
-            # Testing
-            # xml = datacite_xml.temp_mockxml()
-            # form_coll = datacite_xml.dataciteXmlToFormElements(xml)
             form_coll = impl.datacite_xml.dataciteXmlToFormElements(
                 d['identifier']['datacite']
             )

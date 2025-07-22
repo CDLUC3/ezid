@@ -3,8 +3,10 @@
 
 """Test impl.datacite
 """
+from lxml import etree
 
 import impl.datacite
+import impl.datacite_xml
 
 test_records_one_creator = [
     # An item with 1 Creator, one title without lang code
@@ -390,5 +392,364 @@ def  test_rm_xml_namespace_2():
         assert brief_record['datacite.publicationyear'] == '1990'
         assert brief_record['datacite.resourcetype'] == 'Dataset'
 
-    
-    
+
+# DataCite record with elements that can be created using the Advanced Create ID form.
+# The record includes:
+#  - Required data fields
+#  - Optional data fields
+#  - Two instnaces for each repeatable data fields
+mockxml_datacite = """
+<resource xmlns="http://datacite.org/schema/kernel-4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4/metadata.xsd">
+    <identifier identifierType="ARK">ark:/99999/fk12345</identifier>
+    <creators>
+        <creator>
+            <creatorName>Creator Name</creatorName>
+            <givenName>CreatorGivenName</givenName>
+            <familyName>CreatorFamilyName</familyName>
+            <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org">https://orcid.org/0000-0001-5727-2427</nameIdentifier>
+            <nameIdentifier nameIdentifierScheme="ROR" schemeURI="https://ror.org">https://ror.org/04wxnsj81</nameIdentifier>
+            <affiliation affiliationIdentifier="https://ror.org/04wxnsj81" affiliationIdentifierScheme="ROR" schemeURI="https://ror.org">Example Affiliation for creator</affiliation>
+        </creator>
+        <creator>
+            <creatorName>Creator Name 2</creatorName>
+            <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org">https://orcid.org/0000-0001-5727-2222</nameIdentifier>
+        </creator>
+    </creators>
+    <titles>
+        <title xml:lang="en">test title, main</title>
+        <title titleType="Subtitle" xml:lang="en">test title, subtitle</title>
+    </titles>
+    <publisher publisherIdentifier="https://ror.org/04z8jg394" publisherIdentifierScheme="ROR" schemeURI="https://ror.org/">test publisher</publisher>
+    <publicationYear>1999</publicationYear>
+    <resourceType resourceTypeGeneral="Dataset">Dataset</resourceType>
+    <subjects>
+        <subject subjectScheme="Fields of Science and Technology (FOS)" schemeURI="http://www.oecd.org/science/inno" valueURI="http://www.oecd.org/science/inno/38235147.pd" xml:lang="en">FOS: Computer and information sciences</subject>
+        <subject>Example Subject</subject>
+    </subjects>
+    <contributors>
+        <contributor contributorType="ContactPerson">
+            <contributorName>Contributor Name</contributorName>
+            <givenName>ContributorGivenName</givenName>
+            <familyName>ContributorFamilyName</familyName>
+            <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org">https://orcid.org/0000-0001-5727-1234</nameIdentifier>
+            <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org">https://orcid.org/0000-0001-5727-2427</nameIdentifier>
+            <affiliation affiliationIdentifier="https://ror.org/04wxnsj81" affiliationIdentifierScheme="ROR" schemeURI="https://ror.org">ExampleAffiliation</affiliation>
+        </contributor>
+        <contributor contributorType="DataCollector">
+            <contributorName>Contributor Name 2</contributorName>
+        </contributor>
+    </contributors>
+    <dates>
+        <date dateType="Created" dateInformation="ExampleDateInformation">2025-01-02</date>
+        <date dateType="Accepted">2025-05-10</date>
+    </dates>
+    <language>en</language>
+    <alternateIdentifiers>
+        <alternateIdentifier alternateIdentifierType="Local accession number">12345</alternateIdentifier>
+        <alternateIdentifier alternateIdentifierType="URL">https://example.com/567</alternateIdentifier>
+    </alternateIdentifiers>
+    <relatedIdentifiers>
+        <relatedIdentifier relatedIdentifierType="URL" relationType="HasMetadata" relatedMetadataScheme="DDI-L" schemeURI="http://www.ddialliance.org/Specification/DDI-Lifecycle/3.1/XMLSchema/instance.xsd" schemeType="XSD">https://example.com/</relatedIdentifier>
+        <relatedIdentifier relatedIdentifierType="DOI" relationType="IsCitedBy">10.21384/bar</relatedIdentifier>
+    </relatedIdentifiers>
+    <sizes>
+        <size>1 MB</size>
+        <size>90 pages</size>
+    </sizes>
+    <formats>
+        <format>application/xml</format>
+        <format>text/plain</format>
+    </formats>
+    <version>1</version>
+    <rightsList>
+        <rights rightsURI="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International</rights>
+        <rights>rights 2</rights>
+        </rightsList>
+    <descriptions>
+        <description descriptionType="Abstract" xml:lang="en">Example Abstract</description>
+        <description descriptionType="Other" xml:lang="en">Description 2</description>
+    </descriptions>
+    <geoLocations>
+        <geoLocation>
+            <geoLocationPlace>Example Geo Location Place</geoLocationPlace>
+            <geoLocationPoint>
+                <pointLongitude>10</pointLongitude>
+                <pointLatitude>20</pointLatitude>
+            </geoLocationPoint>
+            <geoLocationBox>
+                <westBoundLongitude>8</westBoundLongitude>
+                <eastBoundLongitude>12</eastBoundLongitude>
+                <southBoundLatitude>18</southBoundLatitude>
+                <northBoundLatitude>22</northBoundLatitude>
+            </geoLocationBox>
+        </geoLocation>
+    </geoLocations>
+    <fundingReferences>
+        <fundingReference>
+            <funderName>Example Funder</funderName>
+            <funderIdentifier funderIdentifierType="Crossref Funder ID">https://doi.org/10.13039/501100000780</funderIdentifier>
+            <awardNumber awardURI="https://example.com/example-award-uri">12345</awardNumber>
+            <awardTitle>Example AwardTitle</awardTitle>
+        </fundingReference>
+        <fundingReference>
+            <funderName>Example Funder 2</funderName>
+        </fundingReference>
+    </fundingReferences>
+    <relatedItems>
+        <relatedItem relatedItemType="Book" relationType="Cites">
+            <relatedItemIdentifier relatedItemIdentifierType="ARK">ark:/99999/fk12345678</relatedItemIdentifier>
+            <creators>
+                <creator>
+                    <creatorName nameType="Personal">related item creator name</creatorName>
+                    <givenName>given name, related item creator</givenName>
+                    <familyName>family name, related item creator</familyName>
+                </creator>
+            </creators>
+            <titles>
+                <title titleType="AlternativeTitle">related item title</title>
+            </titles>
+            <publicationYear>2022</publicationYear>
+            <volume>1</volume>
+            <issue>2</issue>
+            <number numberType="Chapter">12</number>
+            <firstPage>1</firstPage>
+            <lastPage>20</lastPage>
+            <publisher>related item publisher</publisher>
+            <edition>related item edition</edition>
+            <contributors>
+                <contributor contributorType="DataManager">
+                    <contributorName nameType="Personal">related item contributor name</contributorName>
+                    <givenName>given name, related item contrib</givenName>
+                    <familyName>family name, related item contrib</familyName>
+                </contributor>
+            </contributors>
+        </relatedItem>
+        <relatedItem relatedItemType="Collection" relationType="Collects">
+            <relatedItemIdentifier relatedItemIdentifierType="URL">https://sample.com</relatedItemIdentifier>
+            <creators>
+                <creator>
+                    <creatorName>Related item creator name 2</creatorName>
+                </creator>
+            </creators>
+            <titles>
+                <title titleType="TranslatedTitle">related item title 2</title>
+            </titles>
+        </relatedItem>
+    </relatedItems>
+</resource>"""
+
+
+# DataCite record in form elements format
+identifier = {
+    'identifier-identifierType': 'ARK', 
+    'identifier': 'ark:/99999/fk12345',
+}
+creators = {
+    'creators-creator-0-affiliation': 'Example Affiliation for creator',
+    'creators-creator-0-affiliation-affiliationIdentifier': 'https://ror.org/04wxnsj81',
+    'creators-creator-0-affiliation-affiliationIdentifierScheme': 'ROR',
+    'creators-creator-0-affiliation-schemeURI': 'https://ror.org',
+    'creators-creator-0-creatorName': 'Creator Name',
+    'creators-creator-0-familyName': 'CreatorFamilyName',
+    'creators-creator-0-givenName': 'CreatorGivenName',
+    'creators-creator-0-nameIdentifier_0-nameIdentifier': 'https://orcid.org/0000-0001-5727-2427',
+    'creators-creator-0-nameIdentifier_0-nameIdentifierScheme': 'ORCID',
+    'creators-creator-0-nameIdentifier_0-schemeURI': 'https://orcid.org',
+    'creators-creator-0-nameIdentifier_1-nameIdentifier': 'https://ror.org/04wxnsj81',
+    'creators-creator-0-nameIdentifier_1-nameIdentifierScheme': 'ROR',
+    'creators-creator-0-nameIdentifier_1-schemeURI': 'https://ror.org',
+    'creators-creator-1-creatorName': 'Creator Name 2',
+    'creators-creator-1-nameIdentifier_0-nameIdentifier': 'https://orcid.org/0000-0001-5727-2222',
+    'creators-creator-1-nameIdentifier_0-nameIdentifierScheme': 'ORCID',
+    'creators-creator-1-nameIdentifier_0-schemeURI': 'https://orcid.org',
+}
+titles = {
+    'titles-title-0-title': 'test title, main',
+    'titles-title-0-{http://www.w3.org/XML/1998/namespace}lang': 'en',
+    'titles-title-1-title': 'test title, subtitle',
+    'titles-title-1-titleType': 'Subtitle',
+    'titles-title-1-{http://www.w3.org/XML/1998/namespace}lang': 'en',
+}
+publisher = {
+    'publisher': 'test publisher',
+    'publisher-publisherIdentifier': "https://ror.org/04z8jg394",
+    'publisher-publisherIdentifierScheme': 'ROR',
+    'publisher-schemeURI': "https://ror.org/",
+}
+publicationYear = {
+    'publicationYear': '1999',
+}
+resourceType = {
+    'resourceType': 'Dataset',
+    'resourceType-resourceTypeGeneral': 'Dataset',
+}
+subjects = {
+    'subjects-subject-0-schemeURI': 'http://www.oecd.org/science/inno',
+    'subjects-subject-0-subject': 'FOS: Computer and information sciences',
+    'subjects-subject-0-subjectScheme': 'Fields of Science and Technology (FOS)',
+    'subjects-subject-0-valueURI': 'http://www.oecd.org/science/inno/38235147.pd',
+    'subjects-subject-0-{http://www.w3.org/XML/1998/namespace}lang': 'en',
+    'subjects-subject-1-subject': 'Example Subject',
+}
+contributors = {
+    'contributors-contributor-0-affiliation': 'ExampleAffiliation',
+    'contributors-contributor-0-affiliation-affiliationIdentifier': 'https://ror.org/04wxnsj81',
+    'contributors-contributor-0-affiliation-affiliationIdentifierScheme': 'ROR',
+    'contributors-contributor-0-affiliation-schemeURI': 'https://ror.org',
+    'contributors-contributor-0-contributorName': 'Contributor Name',
+    'contributors-contributor-0-contributorType': 'ContactPerson',
+    'contributors-contributor-0-familyName': 'ContributorFamilyName',
+    'contributors-contributor-0-givenName': 'ContributorGivenName',
+    'contributors-contributor-0-nameIdentifier_0-nameIdentifier': 'https://orcid.org/0000-0001-5727-1234',
+    'contributors-contributor-0-nameIdentifier_0-nameIdentifierScheme': 'ORCID',
+    'contributors-contributor-0-nameIdentifier_0-schemeURI': 'https://orcid.org',
+    'contributors-contributor-0-nameIdentifier_1-nameIdentifier': 'https://orcid.org/0000-0001-5727-2427',
+    'contributors-contributor-0-nameIdentifier_1-nameIdentifierScheme': 'ORCID',
+    'contributors-contributor-0-nameIdentifier_1-schemeURI': 'https://orcid.org',
+    'contributors-contributor-1-contributorName': 'Contributor Name 2',
+    'contributors-contributor-1-contributorType': 'DataCollector',
+}
+dates = {
+    'dates-date-0-date': '2025-01-02',
+    'dates-date-0-dateType': 'Created',
+    'dates-date-0-dateInformation': 'ExampleDateInformation',
+    'dates-date-1-date': '2025-05-10',
+    'dates-date-1-dateType': 'Accepted',
+}
+language = {
+    'language': 'en',
+    }
+alternateIdentifiers = {
+    'alternateIdentifiers-alternateIdentifier-0-alternateIdentifier': '12345',
+    'alternateIdentifiers-alternateIdentifier-0-alternateIdentifierType': 'Local accession number',
+    'alternateIdentifiers-alternateIdentifier-1-alternateIdentifier': 'https://example.com/567',
+    'alternateIdentifiers-alternateIdentifier-1-alternateIdentifierType': 'URL',
+}
+relatedIdentifiers = {
+    'relatedIdentifiers-relatedIdentifier-0-relatedIdentifier': 'https://example.com/',
+    'relatedIdentifiers-relatedIdentifier-0-relatedIdentifierType': 'URL',
+    'relatedIdentifiers-relatedIdentifier-0-relatedMetadataScheme': 'DDI-L',
+    'relatedIdentifiers-relatedIdentifier-0-relationType': 'HasMetadata',
+    'relatedIdentifiers-relatedIdentifier-0-schemeType': 'XSD',
+    'relatedIdentifiers-relatedIdentifier-0-schemeURI': 'http://www.ddialliance.org/Specification/DDI-Lifecycle/3.1/XMLSchema/instance.xsd',
+    'relatedIdentifiers-relatedIdentifier-1-relatedIdentifier': '10.21384/bar',
+    'relatedIdentifiers-relatedIdentifier-1-relatedIdentifierType': 'DOI',
+    'relatedIdentifiers-relatedIdentifier-1-relationType': 'IsCitedBy',
+}
+sizes = {
+    'sizes-size-0-size': '1 MB',
+    'sizes-size-1-size': '90 pages',
+}
+formats = {
+    'formats-format-0-format': 'application/xml',
+    'formats-format-1-format': 'text/plain',
+}
+version = {
+    'version': '1',
+}
+rights = {
+    'rightsList-rights-0-rights': 'Creative Commons Attribution 4.0 International',
+    'rightsList-rights-0-rightsURI': 'https://creativecommons.org/licenses/by/4.0/',
+    'rightsList-rights-1-rights': 'rights 2',
+}
+descriptions = {
+    'descriptions-description-0-description': 'Example Abstract',
+    'descriptions-description-0-descriptionType': 'Abstract',
+    'descriptions-description-0-{http://www.w3.org/XML/1998/namespace}lang': 'en',
+    'descriptions-description-1-description': 'Description 2',
+    'descriptions-description-1-descriptionType': 'Other',
+    'descriptions-description-1-{http://www.w3.org/XML/1998/namespace}lang': 'en',
+}
+geoLocations = {
+    'geoLocations-geoLocation-0-geoLocationPlace': 'Example Geo Location Place',
+    'geoLocations-geoLocation-0-geoLocationPoint-pointLongitude': '10',
+    'geoLocations-geoLocation-0-geoLocationPoint-pointLatitude': '20',
+    'geoLocations-geoLocation-0-geoLocationBox-westBoundLongitude': '8',
+    'geoLocations-geoLocation-0-geoLocationBox-eastBoundLongitude': '12',
+    'geoLocations-geoLocation-0-geoLocationBox-southBoundLatitude': '18',
+    'geoLocations-geoLocation-0-geoLocationBox-northBoundLatitude': '22',
+}
+fundingReferences = {
+    'fundingReferences-fundingReference-0-awardNumber': '12345',
+    'fundingReferences-fundingReference-0-awardTitle': 'Example AwardTitle',
+    'fundingReferences-fundingReference-0-awardNumber-awardURI': 'https://example.com/example-award-uri',
+    'fundingReferences-fundingReference-0-funderIdentifier': 'https://doi.org/10.13039/501100000780',
+    'fundingReferences-fundingReference-0-funderIdentifier-funderIdentifierType': 'Crossref Funder ID',
+    'fundingReferences-fundingReference-0-funderName': 'Example Funder',
+    'fundingReferences-fundingReference-1-funderName': 'Example Funder 2',
+}
+relatedItems = {
+    'relatedItems-relatedItem-0-relatedItemType': 'Book',
+    'relatedItems-relatedItem-0-relationType': 'Cites',
+    'relatedItems-relatedItem-0-relatedItemIdentifier-relatedItemIdentifierType': 'ARK',
+    'relatedItems-relatedItem-0-relatedItemIdentifier': 'ark:/99999/fk12345678',
+    'relatedItems-relatedItem-0-creators-creator-0-creatorName': 'related item creator name',
+    'relatedItems-relatedItem-0-creators-creator-0-creatorName-nameType': 'Personal',
+    'relatedItems-relatedItem-0-creators-creator-0-familyName': 'family name, related item creator',
+    'relatedItems-relatedItem-0-creators-creator-0-givenName': 'given name, related item creator',
+    'relatedItems-relatedItem-0-titles-title-0-title': 'related item title',
+    'relatedItems-relatedItem-0-titles-title-0-titleType': 'AlternativeTitle',
+    'relatedItems-relatedItem-0-publicationYear': '2022',
+    'relatedItems-relatedItem-0-volume': '1',
+    'relatedItems-relatedItem-0-issue': '2',
+    'relatedItems-relatedItem-0-number': '12',
+    'relatedItems-relatedItem-0-number-numberType': 'Chapter',
+    'relatedItems-relatedItem-0-firstPage': '1',
+    'relatedItems-relatedItem-0-lastPage': '20',
+    'relatedItems-relatedItem-0-publisher': 'related item publisher',
+    'relatedItems-relatedItem-0-edition': 'related item edition',
+    'relatedItems-relatedItem-0-contributors-contributor-0-contributorType': 'DataManager',
+    'relatedItems-relatedItem-0-contributors-contributor-0-contributorName': 'related item contributor name',
+    'relatedItems-relatedItem-0-contributors-contributor-0-contributorName-nameType': 'Personal',
+    'relatedItems-relatedItem-0-contributors-contributor-0-familyName': 'family name, related item contrib',
+    'relatedItems-relatedItem-0-contributors-contributor-0-givenName': 'given name, related item contrib',
+    'relatedItems-relatedItem-1-relatedItemType': 'Collection',
+    'relatedItems-relatedItem-1-relationType': 'Collects',
+    'relatedItems-relatedItem-1-relatedItemIdentifier-relatedItemIdentifierType': 'URL',
+    'relatedItems-relatedItem-1-relatedItemIdentifier': 'https://sample.com',
+    'relatedItems-relatedItem-1-creators-creator-0-creatorName': 'Related item creator name 2',
+    'relatedItems-relatedItem-1-titles-title-0-title': 'related item title 2',
+    'relatedItems-relatedItem-1-titles-title-0-titleType': 'TranslatedTitle',
+}
+
+form_elements = creators | creators | titles | publisher | publicationYear | resourceType \
+    | language | descriptions | subjects | contributors | dates \
+    | alternateIdentifiers | relatedIdentifiers | sizes | formats \
+    | version | rights | geoLocations | fundingReferences |relatedItems
+
+form_collections = impl.datacite_xml.FormColl(
+        nonRepeating=identifier | publisher | publicationYear | language | version,
+        publisher=publisher,
+        resourceType=resourceType,
+        creators=creators,
+        titles=titles,
+        descrs=descriptions,
+        subjects=subjects,
+        contribs=contributors,
+        dates=dates, 
+        altids=alternateIdentifiers, 
+        relids=relatedIdentifiers, 
+        sizes=sizes, 
+        formats=formats, 
+        rights=rights, 
+        geoLocations=geoLocations, 
+        fundingReferences=fundingReferences, 
+        relatedItems=relatedItems
+        )
+
+
+def normalize(xml_string):
+    """Parse XML, remove blank text nodes, return canonical string."""
+    parser = etree.XMLParser(remove_blank_text=True)
+    root = etree.fromstring(xml_string.encode(), parser)
+    return etree.tostring(root, method="c14n")
+
+def test_formElementsToDataciteXml():
+    returned_xml = impl.datacite_xml.formElementsToDataciteXml(form_elements, identifier='ark:/99999/fk12345')
+    assert normalize(returned_xml) == normalize(mockxml_datacite)
+
+def test_dataciteXmlToFormElements():
+    returned_form_coll = impl.datacite_xml.dataciteXmlToFormElements(mockxml_datacite)
+    assert returned_form_coll == form_collections
+

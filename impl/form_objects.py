@@ -74,6 +74,113 @@ RESOURCE_TYPES = (
     ('Workflow', _('Workflow')),
     ('Other', _('Other')),
 )
+
+RELATED_ID_TYPES = (
+    ("", _("Select the type of related identifier")),
+    ("ARK", "ARK"),
+    ("arXiv", "arXiv"),
+    ("bibcode", "bibcode"),
+    ("CSTR", "CSTR"),
+    ("DOI", "DOI"),
+    ("EAN13", "EAN13"),
+    ("EISSN", "EISSN"),
+    ("Handle", "Handle"),
+    ("IGSN", "IGSN"),
+    ("ISBN", "ISBN"),
+    ("ISSN", "ISSN"),
+    ("ISTC", "ISTC"),
+    ("LISSN", "LISSN"),
+    ("LSID", "LSID"),
+    ("PMID", "PMID"),
+    ("PURL", "PURL"),
+    ("RRID", "RRID"),
+    ("UPC", "UPC"),
+    ("URL", "URL"),
+    ("URN", "URN"),
+    ("w3id", "w3id"),
+)
+
+RELATION_TYPES = (
+    (
+        "",
+        _(
+            "Select relationship of A:resource being registered and B:related resource"
+        ),
+    ),
+    ("Cites", _("Cites")),
+    ("Collects", _("Collects")),
+    ("Compiles", _("Compiles")),
+    ("Continues", _("Continues")),
+    ("Documents", _("Documents")),
+    ("Describes", _("Describes")),
+    ("HasMetadata", _("Has Metadata")),
+    ("HasPart", _("Has Part")),
+    ("HasTranslation", _("Has Translation")),
+    ("HasVersion", _("Has Version")),
+    ("IsCitedBy", _("Is Cited By")),
+    ("IsCollectedBy", _("Is Collected By")),
+    ("IsCompiledBy", _("Is Compiled By")),
+    ("IsContinuedBy", _("Is Continued By")),
+    ("IsDocumentedBy", _("Is Documented By")),
+    ("IsDerivedFrom", _("Is Derived From")),
+    ("IsDescribedBy", _("Is Described By")),
+    ("IsIdenticalTo", _("Is Identical To")),
+    ("IsMetadataFor", _("Is Metadata For")),
+    ("IsNewVersionOf", _("Is New Version Of")),
+    ("IsObsoletedBy", _("Is Obsoleted By")),
+    ("IsOriginalFormOf", _("Is Original Form Of")),
+    ("IsPartOf", _("Is Part Of")),
+    ("IsPreviousVersionOf", _("Is Previous Version Of")),
+    ("IsPublishedIn", _("Is Published In")),
+    ("IsReferencedBy", _("Is Referenced By")),
+    ("IsRequiredBy", _("Is Required By")),
+    ("IsReviewedBy", _("Is Reviewed By")),
+    ("IsSourceOf", _("Is Source Of")),
+    ("IsSupplementedBy", _("Is Supplemented By")),
+    ("IsSupplementTo", _("Is Supplement To")),
+    ("IsTranslationOf", _("Is Translation Of")),
+    ("IsVariantFormOf", _("Is Variant Form Of")),
+    ("IsVersionOf", _("Is Version Of")),
+    ("Obsoletes", _("Obsoletes")),
+    ("References", _("References")),
+    ("Requires", _("Requires")),
+    ("Reviews", _("Reviews")),
+)
+
+TITLE_TYPES = (
+    ("", _("Main title")),
+    ("AlternativeTitle", _("Alternative title")),
+    ("Subtitle", _("Subtitle")),
+    ("TranslatedTitle", _("Translated title")),
+    ("Other", _("Other")),
+)
+
+CONTRIB_TYPES = (
+    ("", _("Select a type of contributor")),
+    ("ContactPerson", _("Contact Person")),
+    ("DataCollector", _("Data Collector")),
+    ("DataCurator", _("Data Curator")),
+    ("DataManager", _("Data Manager")),
+    ("Distributor", _("Distributor")),
+    ("Editor", _("Editor")),
+    ("HostingInstitution", _("Hosting Institution")),
+    ("Producer", _("Producer")),
+    ("ProjectLeader", _("Project Leader")),
+    ("ProjectManager", _("Project Manager")),
+    ("ProjectMember", _("Project Member")),
+    ("RegistrationAgency", _("Registration Agency")),
+    ("RegistrationAuthority", _("Registration Authority")),
+    ("RelatedPerson", _("Related Person")),
+    ("Researcher", _("Researcher")),
+    ("ResearchGroup", _("Research Group")),
+    ("RightsHolder", _("Rights Holder")),
+    ("Sponsor", _("Sponsor")),
+    ("Supervisor", _("Supervisor")),
+    ("Translator", _("Translator")),
+    ("WorkPackageLeader", _("Work Package Leader")),
+    ("Other", _("Other")),
+)
+
 REGEX_4DIGITYEAR = r'^(\d{4}|\(:unac\)|\(:unal\)|\(:unap\)|\(:unas\)|\(:unav\)|\
    \(:unkn\)|\(:none\)|\(:null\)|\(:tba\)|\(:etal\)|\(:at\))$'
 REGEX_GEOPOINT = r'-?(\d+(\.\d*)?|\.\d+)$'
@@ -101,6 +208,7 @@ PREFIX_FORMAT_SET = 'formats-format'
 PREFIX_RIGHTS_SET = 'rightsList-rights'
 PREFIX_GEOLOC_SET = 'geoLocations-geoLocation'
 PREFIX_FUNDINGREF_SET = 'fundingReferences-fundingReference'
+PREFIX_RELATEDITEM_SET = 'relatedItems-relatedItem'
 # Translators: "e.g. " is abbreviation for "example". Please include one space at end.
 ABBR_EX = _("e.g. ")
 
@@ -401,6 +509,50 @@ def _validate_geolat(n):
     if not m or float(n) < -90 or float(n) > 90:
         raise django.core.exceptions.ValidationError(ERR_GEOPOINT_LAT)
 
+def _validateRelatedItem(related_item):
+    err={}
+    if any(related_item.values()):
+        _relatedItem_validate_error(related_item, 'relatedItemType', err)
+        _relatedItem_validate_error(related_item, 'relationType', err)
+        _relatedItem_validate_error(related_item, 'titles-title-0-title', err, field_name_in_err_msg='Title')
+        _relatedItem_creator_validate_error(related_item, err)
+        _relatedItem_contributor_validate_error(related_item, err)
+
+    return err
+
+def _relatedItem_validate_error(related_item, field_name, err, field_name_in_err_msg=None):
+    if field_name_in_err_msg is None:
+        field_name_in_err_msg = field_name
+    if related_item.get(field_name) is None or related_item.get(field_name) == '':
+        err[field_name] = f"{field_name_in_err_msg} is required if you fill in info for relatedItem."
+
+def _relatedItem_creator_validate_error(related_item, err):
+    sub_fields_list = [
+        'creators-creator-0-creatorName',
+        'creators-creator-0-creatorName-nameType',
+        'creators-creator-0-familyName',
+        'creators-creator-0-givenName',
+    ]
+    sub_fields = dict((field, related_item.get(field)) for field in sub_fields_list)
+
+    if any(sub_fields.values()):
+        _relatedItem_validate_error(related_item, 'creators-creator-0-creatorName', err, field_name_in_err_msg='Creator Name')
+
+def _relatedItem_contributor_validate_error(related_item, err):
+    sub_fields_list = [
+        'contributors-contributor-0-contributorType',
+        'contributors-contributor-0-contributorName',
+        'contributors-contributor-0-contributorName-nameType',
+        'contributors-contributor-0-familyName',
+        'contributors-contributor-0-givenName',
+    ]
+    sub_fields = dict((field, related_item.get(field)) for field in sub_fields_list)
+
+    if any(sub_fields.values()):
+        _relatedItem_validate_error(related_item, 'contributors-contributor-0-contributorType', err, field_name_in_err_msg='Contributor Type')
+        _relatedItem_validate_error(related_item, 'contributors-contributor-0-contributorName', err, field_name_in_err_msg='Contributor Name')
+
+
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 ################# Advanced Datacite ID Form/Elements #################
@@ -410,17 +562,28 @@ def _validate_geolat(n):
 # Element attributes must be named as elementName-attributeName
 # i.e. <awardNumber awardURI="http://cordis.europa.eu/">284382</awardNumber>
 #  should be declared as indiv. form fields named 'awardNumber' and 'awardNumber-awardURI'
-# See datacite_xml.formElementsToDataciteXml
+# See datacite_xml.formElementsToDataciteXml() and datacite_xml.dataciteXmlToFormElements()
+# on how to convert DataCite XML to and from form elements.
+# See tests/test_datacite.py for sample XML, form elements and field name conventions.
 #
 # Fields with hyphens cannot be called directly from the template, and so have
 #   been relegated to their own form object (defined in __init__)
+# Note:
+#   A helper function `get_field` was created for accessing field names with hyphens in the template.
+#   The funciton is defined in `ui_tags/templatetags/layout_extras.py`.
+#   To access field name without hyphen:
+#     field=form.number 
+#   To access field name with hyphen:
+#     field=form|get_field:"number-numberType"
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 
 class NonRepeatingForm(django.forms.Form):
     """Form object for single field elements in DataCite Advanced (XML)
-    profile."""
+    profile.
+    Note: the non-repeating Publisher field is implemented in its own PublisherForm.
+    """
 
     target = django.forms.CharField(
         required=False, label=_("Location (URL)"), validators=[_validate_url]
@@ -589,13 +752,6 @@ class TitleForm(django.forms.Form):
         self.fields["title"] = django.forms.CharField(
             label=_("Title"), error_messages={'required': ERR_TITLE}
         )
-        TITLE_TYPES = (
-            ("", _("Main title")),
-            ("AlternativeTitle", _("Alternative title")),
-            ("Subtitle", _("Subtitle")),
-            ("TranslatedTitle", _("Translated title")),
-            ("Other", _("Other")),
-        )
         self.fields["titleType"] = django.forms.ChoiceField(
             required=False,
             label=_("Type"),
@@ -711,31 +867,7 @@ class ContribForm(django.forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(ContribForm, self).__init__(*args, **kwargs)
-        CONTRIB_TYPES = (
-            ("", _("Select a type of contributor")),
-            ("ContactPerson", _("Contact Person")),
-            ("DataCollector", _("Data Collector")),
-            ("DataCurator", _("Data Curator")),
-            ("DataManager", _("Data Manager")),
-            ("Distributor", _("Distributor")),
-            ("Editor", _("Editor")),
-            ("HostingInstitution", _("Hosting Institution")),
-            ("Producer", _("Producer")),
-            ("ProjectLeader", _("Project Leader")),
-            ("ProjectManager", _("Project Manager")),
-            ("ProjectMember", _("Project Member")),
-            ("RegistrationAgency", _("Registration Agency")),
-            ("RegistrationAuthority", _("Registration Authority")),
-            ("RelatedPerson", _("Related Person")),
-            ("Researcher", _("Researcher")),
-            ("ResearchGroup", _("Research Group")),
-            ("RightsHolder", _("Rights Holder")),
-            ("Sponsor", _("Sponsor")),
-            ("Supervisor", _("Supervisor")),
-            ("Translator", _("Translator")),
-            ("WorkPackageLeader", _("Work Package Leader")),
-            ("Other", _("Other")),
-        )
+        
         self.fields["contributorType"] = django.forms.ChoiceField(
             required=False, label=_("Contributor Type"), choices=CONTRIB_TYPES
         )
@@ -837,77 +969,9 @@ class RelIdForm(django.forms.Form):
     With specific validation rules."""
 
     relatedIdentifier = django.forms.CharField(required=False, label=_("Identifier"))
-    ID_TYPES = (
-        ("", _("Select the type of related identifier")),
-        ("ARK", "ARK"),
-        ("arXiv", "arXiv"),
-        ("bibcode", "bibcode"),
-        ("CSTR", "CSTR"),
-        ("DOI", "DOI"),
-        ("EAN13", "EAN13"),
-        ("EISSN", "EISSN"),
-        ("Handle", "Handle"),
-        ("IGSN", "IGSN"),
-        ("ISBN", "ISBN"),
-        ("ISSN", "ISSN"),
-        ("ISTC", "ISTC"),
-        ("LISSN", "LISSN"),
-        ("LSID", "LSID"),
-        ("PMID", "PMID"),
-        ("PURL", "PURL"),
-        ("RRID", "RRID"),
-        ("UPC", "UPC"),
-        ("URL", "URL"),
-        ("URN", "URN"),
-    )
+    
     relatedIdentifierType = django.forms.ChoiceField(
-        required=False, label=_("Identifier Type"), choices=ID_TYPES
-    )
-    RELATION_TYPES = (
-        (
-            "",
-            _(
-                "Select relationship of A:resource being registered and B:related resource"
-            ),
-        ),
-        ("Cites", _("Cites")),
-        ("Collects", _("Collects")),
-        ("Compiles", _("Compiles")),
-        ("Continues", _("Continues")),
-        ("Documents", _("Documents")),
-        ("Describes", _("Describes")),
-        ("HasMetadata", _("Has Metadata")),
-        ("HasPart", _("Has Part")),
-        ("HasTranslation", _("Has Translation")),
-        ("HasVersion", _("Has Version")),
-        ("IsCitedBy", _("Is Cited By")),
-        ("IsCollectedBy", _("Is Collected By")),
-        ("IsCompiledBy", _("Is Compiled By")),
-        ("IsContinuedBy", _("Is Continued By")),
-        ("IsDocumentedBy", _("Is Documented By")),
-        ("IsDerivedFrom", _("Is Derived From")),
-        ("IsDescribedBy", _("Is Described By")),
-        ("IsIdenticalTo", _("Is Identical To")),
-        ("IsMetadataFor", _("Is Metadata For")),
-        ("IsNewVersionOf", _("Is New Version Of")),
-        ("IsObsoletedBy", _("Is Obsoleted By")),
-        ("IsOriginalFormOf", _("Is Original Form Of")),
-        ("IsPartOf", _("Is Part Of")),
-        ("IsPreviousVersionOf", _("Is Previous Version Of")),
-        ("IsPublishedIn", _("Is Published In")),
-        ("IsReferencedBy", _("Is Referenced By")),
-        ("IsRequiredBy", _("Is Required By")),
-        ("IsReviewedBy", _("Is Reviewed By")),
-        ("IsSourceOf", _("Is Source Of")),
-        ("IsSupplementedBy", _("Is Supplemented By")),
-        ("IsSupplementTo", _("Is Supplement To")),
-        ("IsTranslationOf", _("Is Translation Of")),
-        ("IsVariantFormOf", _("Is Variant Form Of")),
-        ("IsVersionOf", _("Is Version Of")),
-        ("Obsoletes", _("Obsoletes")),
-        ("References", _("References")),
-        ("Requires", _("Requires")),
-        ("Reviews", _("Reviews")),
+        required=False, label=_("Identifier Type"), choices=RELATED_ID_TYPES
     )
     relationType = django.forms.ChoiceField(
         required=False, label=_("Relation Type"), choices=RELATION_TYPES
@@ -1035,7 +1099,7 @@ class FundingRefForm(django.forms.Form):
         self.fields["funderIdentifier"] = django.forms.CharField(
             required=False, label=_("Funder Identifier")
         )
-        ID_TYPES = (
+        FUND_ID_TYPES = (
             ("", _("Select the type of funder identifier")),
             ("ISNI", "ISNI"),
             ("GRID", "GRID"),
@@ -1044,7 +1108,7 @@ class FundingRefForm(django.forms.Form):
             ("Other", "Other"),
         )
         self.fields["funderIdentifier-funderIdentifierType"] = django.forms.ChoiceField(
-            required=False, label=_("Identifier Type"), choices=ID_TYPES
+            required=False, label=_("Identifier Type"), choices=FUND_ID_TYPES
         )
         self.fields["awardNumber"] = django.forms.CharField(
             required=False, label=_("Award Number")
@@ -1056,11 +1120,117 @@ class FundingRefForm(django.forms.Form):
             required=False, label=_("Award Title")
         )
 
+class RelatedItemForm(django.forms.Form):
+    """Form object for Related Items in DataCite Advanced (XML)
+    profile.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(RelatedItemForm, self).__init__(*args, **kwargs)
+
+        self.fields["relatedItemType"] = django.forms.ChoiceField(
+            required=False, label=_("Related Item Type"), choices=RESOURCE_TYPES
+        )
+        self.fields["relationType"] = django.forms.ChoiceField(
+            required=False, label=_("Relation Type"), choices=RELATION_TYPES
+        )
+        self.fields["relatedItemIdentifier"] = django.forms.CharField(
+            required=False, label=_("Item Identifier")
+        )
+        self.fields["relatedItemIdentifier-relatedItemIdentifierType"] = django.forms.ChoiceField(
+            required=False, label=_("Identifier Type"), choices=RELATED_ID_TYPES
+        )
+        self.fields["creators-creator-0-creatorName"] = django.forms.CharField(
+            required=False, label=_("Creator Name")
+        )
+        NAME_TYPES = (
+            ("", _("Select the name type")),
+            ("Organizational", "Organizational"),
+            ("Personal", "Personal"),
+        )
+        self.fields["creators-creator-0-creatorName-nameType"] = django.forms.ChoiceField(
+            required=False, label=_("Name Type"), choices=NAME_TYPES
+        )
+        self.fields["creators-creator-0-familyName"] = django.forms.CharField(
+            required=False, label=_("Family Name")
+        )
+        self.fields["creators-creator-0-givenName"] = django.forms.CharField(
+            required=False, label=_("Given Name")
+        )
+        self.fields["titles-title-0-title"] = django.forms.CharField(
+            required=False, label=_("Title")
+        )
+        self.fields["titles-title-0-titleType"] = django.forms.ChoiceField(
+            required=False,
+            label=_("Title Type"),
+            widget=django.forms.RadioSelect(
+                attrs={'class': 'fcontrol__radio-button-stacked'}
+            ),
+            choices=TITLE_TYPES,
+        )
+        self.fields["publicationYear"] = django.forms.CharField(
+            required=False, label=_("publication Year")
+        )
+        self.fields["volume"] = django.forms.CharField(
+            required=False, label=_("Volume")
+        )
+        self.fields["issue"] = django.forms.CharField(
+            required=False, label=_("Issue")
+        )
+        self.fields["number"] = django.forms.CharField(
+            required=False, label=_("Number")
+        )
+        NUMBER_TYPES = (
+            ("", _("Select the number type")),
+            ("Article", "Article"),
+            ("Chapter", "Chapter"),
+            ("Report", _("Report")),
+            ("Other", "Other"),
+        )
+        self.fields["number-numberType"] = django.forms.ChoiceField(
+            required=False, label=_("Number Type"), choices=NUMBER_TYPES
+        )
+        self.fields["firstPage"] = django.forms.CharField(
+            required=False, label=_("First Page")
+        )
+        self.fields["lastPage"] = django.forms.CharField(
+            required=False, label=_("Last Page")
+        )
+        self.fields["publisher"] = django.forms.CharField(
+            required=False, label=_("Publisher")
+        )
+        self.fields["edition"] = django.forms.CharField(
+            required=False, label=_("Edition")
+        )
+        self.fields["contributors-contributor-0-contributorType"] = django.forms.ChoiceField(
+            required=False, label=_("Contributor Type"), choices=CONTRIB_TYPES
+        )
+        self.fields["contributors-contributor-0-contributorName"] = django.forms.CharField(
+            required=False, label=_("Contributor Name")
+        )
+        self.fields["contributors-contributor-0-contributorName-nameType"] = django.forms.ChoiceField(
+            required=False, label=_("Name Type"), choices=NAME_TYPES
+        )
+        self.fields["contributors-contributor-0-familyName"] = django.forms.CharField(
+            required=False, label=_("Family Name")
+        )
+        self.fields["contributors-contributor-0-givenName"] = django.forms.CharField(
+            required=False, label=_("Given Name")
+        )
+
+    def clean(self):
+        cleaned_data = super(RelatedItemForm, self).clean()
+        
+        errors = _validateRelatedItem(cleaned_data)
+        if errors:
+            raise django.core.exceptions.ValidationError(errors)
+
+        return cleaned_data
 
 # noinspection PyUnusedLocal
 def getIdForm_datacite_xml(form_coll=None, request=None):
     """For Advanced Datacite elements On GET, displays 'form_coll' (named
-    tuple) data translated from XML doc On POST (when editing an ID or creating
+    tuple) data translated from XML doc. On POST (when editing an ID or creating
     a new ID), uses request.POST.
 
     Returns all elements combined into one dict of Django forms and
@@ -1091,7 +1261,7 @@ def getIdForm_datacite_xml(form_coll=None, request=None):
         altid_set
     ) = (
         relid_set
-    ) = size_set = format_set = rights_set = geoloc_set = fundingref_set = None
+    ) = size_set = format_set = rights_set = geoloc_set = fundingref_set = relateditem_set = None
     CreatorSet = django.forms.formset_factory(
         CreatorForm, formset=NameIdMultBaseFormSet
     )
@@ -1109,6 +1279,7 @@ def getIdForm_datacite_xml(form_coll=None, request=None):
     RightsSet = django.forms.formset_factory(RightsForm)
     GeoLocSet = django.forms.formset_factory(GeoLocForm)
     FundingRefSet = django.forms.formset_factory(FundingRefForm)
+    RelatedItemSet = django.forms.formset_factory(RelatedItemForm)
     if not form_coll:
         # On Create:GET
         if not request:  # Get an empty form
@@ -1154,6 +1325,7 @@ def getIdForm_datacite_xml(form_coll=None, request=None):
         rights_set = RightsSet(post, prefix=PREFIX_RIGHTS_SET, auto_id='%s')
         geoloc_set = GeoLocSet(post, prefix=PREFIX_GEOLOC_SET, auto_id='%s')
         fundingref_set = FundingRefSet(post, prefix=PREFIX_FUNDINGREF_SET, auto_id='%s')
+        relateditem_set = RelatedItemSet(post, prefix=PREFIX_RELATEDITEM_SET, auto_id='%s')
     # On Edit:GET (Convert DataCite XML dict to form)
     else:
         # Note: Remainder form only needed upon ID creation
@@ -1285,6 +1457,16 @@ def getIdForm_datacite_xml(form_coll=None, request=None):
             prefix=PREFIX_FUNDINGREF_SET,
             auto_id='%s',
         )
+        relateditem_set = RelatedItemSet(
+            _inclMgmtData(
+                form_coll.relatedItems
+                if hasattr(form_coll, 'relatedItems')
+                else None,
+                PREFIX_RELATEDITEM_SET,
+            ),
+            prefix=PREFIX_RELATEDITEM_SET,
+            auto_id='%s',
+        )
     return {
         'remainder_form': remainder_form,
         'nonrepeating_form': nonrepeating_form,
@@ -1303,6 +1485,7 @@ def getIdForm_datacite_xml(form_coll=None, request=None):
         'rights_set': rights_set,
         'geoloc_set': geoloc_set,
         'fundingref_set': fundingref_set,
+        'relateditem_set': relateditem_set,
     }
 
 

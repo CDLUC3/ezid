@@ -363,3 +363,7 @@ def unique_id_types(prefixes):
         for x in list(kinds.items())
     ]
     return sorted(i, key=operator.itemgetter(0))
+
+@register.filter(name='get_field')
+def get_field(form, name):
+    return form[name]
