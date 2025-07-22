@@ -420,7 +420,7 @@ mockxml_datacite = """
         <title xml:lang="en">test title, main</title>
         <title titleType="Subtitle" xml:lang="en">test title, subtitle</title>
     </titles>
-    <publisher>test publisher</publisher>
+    <publisher publisherIdentifier="https://ror.org/04z8jg394" publisherIdentifierScheme="ROR" schemeURI="https://ror.org/">test publisher</publisher>
     <publicationYear>1999</publicationYear>
     <resourceType resourceTypeGeneral="Dataset">Dataset</resourceType>
     <subjects>
@@ -573,6 +573,9 @@ titles = {
 }
 publisher = {
     'publisher': 'test publisher',
+    'publisher-publisherIdentifier': "https://ror.org/04z8jg394",
+    'publisher-publisherIdentifierScheme': 'ROR',
+    'publisher-schemeURI': "https://ror.org/",
 }
 publicationYear = {
     'publicationYear': '1999',
