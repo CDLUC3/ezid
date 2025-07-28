@@ -1,0 +1,78 @@
+{% load i18n %}
+{% load layout_extras %}
+
+<script type="text/javascript">
+  $(function() {
+    $('#relateditem_set .form-container').formset({
+      auto_id: '',
+      prefix: '{{ form.relateditem_set.prefix }}',
+      deleteCssId: 'button__minus-relateditem',
+      addCssId: 'button__plus-relateditem'
+    });
+  })
+</script>
+
+<div id="relateditem_set" class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="relateditem_form_set">
+  <div class="fieldset-controls__container">
+    <div id="relateditem_form_set" class="fieldset-controls__legend create__nested-legend">{% trans "Related Item" %}</div>
+  {% include "create/_datacite_buttons.html" with element="relateditem" %}
+  </div>
+{% for form in form.relateditem_set %}
+  <div class="form-container">
+  {{ form.non_field_errors }}
+
+  {% include "create/_datacite_inlineselect.html" with field=form.relatedItemType %}
+  {% include "create/_datacite_inlineselect.html" with field=form.relationType %}
+
+  {% include "create/_datacite_inlineselect.html" with field=form|get_field:"relatedItemIdentifier-relatedItemIdentifierType" %}
+  {% include "create/_datacite_inlinetext.html" with field=form.relatedItemIdentifier %}
+
+  {% include "create/_datacite_inlinetext.html" with field=form|get_field:"titles-title-0-title" %}
+
+  <fieldset class="fieldset-inline create__form-element-group" role="group" aria-labelledby="relateditem-title-type">
+    <span id="relateditem-title-type" class="fieldset-inline__legend create__inline-nested-legend">
+      {% with field=form|get_field:"titles-title-0-titleType" %}
+        {{ field.label_tag }}
+      {% endwith %}
+    </span>
+    <div>
+      {% for radio in form|get_field:"titles-title-0-titleType" %}
+        <label for="{{ radio.id_for_label }}" class="fcontrol__radio-label-inline">
+          {{ radio.tag }}
+          <span>{{ radio.choice_label }}</span>
+        </label>
+      {% endfor %}
+    </div>
+  </fieldset>
+  
+  {% include "create/_datacite_inlinetext.html" with field=form.publicationYear %}
+  {% include "create/_datacite_inlinetext.html" with field=form.volume %}
+  {% include "create/_datacite_inlinetext.html" with field=form.issue %}
+  {% include "create/_datacite_inlinetext.html" with field=form.number %}
+  {% include "create/_datacite_inlineselect.html" with field=form|get_field:"number-numberType" %}
+  {% include "create/_datacite_inlinetext.html" with field=form.firstPage %}
+  {% include "create/_datacite_inlinetext.html" with field=form.lastPage %}
+  {% include "create/_datacite_inlinetext.html" with field=form.publisher %}
+  {% include "create/_datacite_inlinetext.html" with field=form.edition %}
+
+  <details id="accordion__section-1_relateditem" class="accordion__section create__accordion-section" {{accordions_open}}>
+    <summary class="accordion__title create__accordion-title">{% trans "Creator" %}</summary>
+      {% include "create/_datacite_inlinetext.html" with field=form|get_field:"creators-creator-0-creatorName" %}
+      {% include "create/_datacite_inlineselect.html" with field=form|get_field:"creators-creator-0-creatorName-nameType" %}
+      {% include "create/_datacite_inlinetext.html" with field=form|get_field:"creators-creator-0-familyName" %}
+      {% include "create/_datacite_inlinetext.html" with field=form|get_field:"creators-creator-0-givenName" %}
+  </details>
+
+  <details id="accordion__section-2_relateditem" class="accordion__section create__accordion-section" {{accordions_open}}>
+    <summary class="accordion__title create__accordion-title">{% trans "Contributor" %}</summary>
+      {% include "create/_datacite_inlineselect.html" with field=form|get_field:"contributors-contributor-0-contributorType" %}
+      {% include "create/_datacite_inlinetext.html" with field=form|get_field:"contributors-contributor-0-contributorName" %}
+      {% include "create/_datacite_inlineselect.html" with field=form|get_field:"contributors-contributor-0-contributorName-nameType" %}
+      {% include "create/_datacite_inlinetext.html" with field=form|get_field:"contributors-contributor-0-familyName" %}
+      {% include "create/_datacite_inlinetext.html" with field=form|get_field:"contributors-contributor-0-givenName" %}
+  </details>
+
+  </div>
+{% endfor %}
+</div>
+{{ form.relateditem_set.management_form }}
