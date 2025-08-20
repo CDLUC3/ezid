@@ -1353,14 +1353,11 @@ Selector pattern using above mixin:
     background-image: url("../images/contactOn.svg"); }
 
 .header__loginout {
-  display: none; }
-  @media (min-width: 768px) {
-    .header__loginout {
-      display: block;
-      position: relative;
-      -ms-flex-item-align: end;
-          align-self: flex-end;
-      margin: 0 0 12px; } }
+  display: block;
+  position: relative;
+  -ms-flex-item-align: end;
+      align-self: flex-end;
+  margin: 0 0 12px; }
 
 .home-banner {
   height: 64vw;
