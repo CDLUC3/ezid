@@ -147,7 +147,6 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.style.left = leftPos + 'px';
     modal.style.right = 'auto';
     modal.style.margin = '0';
-    // modal.setAttribute('aria-expanded', 'true');
     modal.style.display = 'block';
 
     // modal.classList.add('open');
