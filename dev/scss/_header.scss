@@ -283,15 +283,10 @@
 }
 
 .header__loginout {
-	display: none;
-
-	@include bp(screen2) {
-		display: block;
-		position: relative; // to .login-modal
-		align-self: flex-end; // align login button to bottom of other nav items
-		margin: 0 0 12px; // align button bottom with nav text
-	}
-
+    display: block;
+    position: relative; // to .login-modal
+    align-self: flex-end; // align login button to bottom of other nav items
+    margin: 0 0 12px; // align button bottom with nav text
 }
 
 .header__loginout-link {
