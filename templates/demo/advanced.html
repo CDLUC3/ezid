@@ -8,17 +8,35 @@
 {% block heading %}{% content_heading _("Create an Advanced Demo Identifier") %}{% endblock %}
 {% block content %}
 {% learn_breadcrumb _('EZID Demo') %}
-<div class="tab create__tab">
-  <!-- This radio button is hidden by CSS -->
-  <input class="tab__input" id="tab-1" type="radio" name="name" aria-checked="false"/>
-  <label class="tab__label" id="tab-1-label" for="tab-1" tabindex="0">{% trans "Simple" %}</label>
-  <input class="tab__input" id="tab-2" type="radio" name="name" checked="checked" aria-checked="true"/>
-  <label class="tab__label" for="tab-2" tabindex="0">{% trans "Advanced" %}</label>
-  <div class="tab__content">
+<div class="tabsnew create__tab">
+  <div class="tabnew__header">
+    <!-- This radio button is hidden by CSS -->
+    <input class="tabnew__input" id="tab-1" type="radio" name="name" aria-checked="false"/>
+    <label class="tabnew__label" id="tab-1-label" for="tab-1" tabindex="0">{% trans "Simple" %}</label>
+    <input class="tabnew__input" id="tab-2" type="radio" name="name" checked="checked" aria-checked="true"/>
+    <label class="tabnew__label" for="tab-2" tabindex="0">{% trans "Advanced" %}</label>
+  </div>
+  <div class="tabnew__content">
     <form id="create_form" action="{% url "ui_demo.advanced" %}" method="post" class="form-horizontal" role="form">
     <input name="action" id="action" type="hidden" value="create"/>
-    <div class="row">
-      <div class="col-md-4 col-md-push-8 create__sidebox">
+    <div class="bs-create__row">
+
+      <!-- main content (top part of form) -->
+      <div class="bs-create__main">
+        {% include "includes/simple_id_type.html" with calling_page="demo" %}
+        {% include "includes/advanced_remainder.html" %}
+        {% include "includes/advanced_publish_id.html" %}
+      </div>
+    </div>
+
+    <!-- rest of the form -->
+    <div class="bs-fieldset-stacked" role="group" aria-labelledby="create__fieldset7">
+      {% include "includes/advanced_describe.html" %}
+      {% include "includes/create_button.html" with calling_page="demo" id_type="advanced" %} 
+    </div>
+
+      <!-- sidebar -->
+      <div class="bs-create__sidebox">
         <div class="sidebox">
           <h2 class="sidebox__heading">{% trans "Quick Start Guides for Demo IDs" %}</h2>
           <ul class="sidebox__list">
@@ -31,20 +49,6 @@
           </ul>
         </div>
       </div>
-      <div class="col-md-8 col-md-pull-4">
-        {% include "includes/simple_id_type.html" with calling_page="demo" %}
-        {% include "includes/advanced_remainder.html" %}
-        {% include "includes/advanced_publish_id.html" %}
-      </div>
-    </div>
-
-    <div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset7">
-
-      {% include "includes/advanced_describe.html" %} 
-     
-      {% include "includes/create_button.html" with calling_page="demo" id_type="advanced" %} 
-
-    </div>
     </form>
   </div>
 </div>
