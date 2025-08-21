@@ -11,6 +11,7 @@ $(document).ready(function() {
 
   $("input[name=shoulder]").change(function(e) {
     var new_scheme = e.target.value.split(':')[0];
+    const target_id = e.target.id;
     if(orig_val.split(':')[0] != new_scheme){
     // changing scheme
       if(new_scheme == 'doi'){
@@ -18,8 +19,7 @@ $(document).ready(function() {
       }else{
         $('#current_profile').attr('value', 'erc');
       }
-      $('#create_form').attr('method', 'get');
-      $('#create_form').submit();
+      do_get(target_id);  // submit form with new profile, and the target id is the element the user was on for returning
     }
     orig_val = e.target.value;
   });
@@ -43,5 +43,20 @@ $(document).ready(function() {
   $('#tab-2:not(:checked)').on('change', function() {
     actTab2();
   });
+
+  // ***** Submit form when profile or shoulder changes ******* //
+  // If triggered by profile, then, after submission, scroll page down to specified anchor
+  function do_get(includeAnchor){
+      var frm = $('#create_form');
+      frm.attr('action', location.pathname + '?publish=' +
+        $("[name='publish']").val() + '&remainder=' + $("#remainder").val());
+      if (includeAnchor) {
+        var input = $("<input>", { type: "hidden", name: "anchor", value: includeAnchor});
+        frm.append($(input));
+      }
+      frm.unbind('submit');
+      frm.attr('method', 'get');
+      frm.submit();
+  }
 
 });
