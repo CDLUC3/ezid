@@ -121,6 +121,8 @@ def simple_form(request, d):
             d['current_profile'], d['form_placeholder'], None
         )
         d['id_gen_result'] = 'edit_page'
+        if 'anchor' in REQUEST:
+            d['anchor'] = REQUEST['anchor']
     else:
         if "current_profile" not in REQUEST or "shoulder" not in REQUEST:
             d['id_gen_result'] = 'bad_request'
