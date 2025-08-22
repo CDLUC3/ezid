@@ -13,7 +13,7 @@ $(document).ready(function() {
     document.getElementById('tab-1').checked = false;
     document.getElementById('tab-2').checked = true;
     var action = location.pathname.split("/")[1];  // Handle create or demo pages
-    window.location.href = "/" + action + "/simple";
+    window.location.href = "/" + action + "/simple#tab-1-label";
   }
   // Act on keyboard enter or spacebar
   $("#tab-1-label").keyup(function(e){

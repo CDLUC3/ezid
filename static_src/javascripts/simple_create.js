@@ -29,7 +29,7 @@ $(document).ready(function() {
     document.getElementById('tab-2').checked = false;
     document.getElementById('tab-1').checked = true;
     action = location.pathname.split("/")[1];  // Handle create or demo pages
-    window.location.href = "/" + action + "/advanced";
+    window.location.href = "/" + action + "/advanced#tab-2-label";
   }
   // Act on keyboard enter or spacebar
   $("#tab-2-label").keyup(function(e){
