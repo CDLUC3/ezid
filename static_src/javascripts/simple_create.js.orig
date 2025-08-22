@@ -29,7 +29,11 @@ $(document).ready(function() {
     document.getElementById('tab-2').checked = false;
     document.getElementById('tab-1').checked = true;
     action = location.pathname.split("/")[1];  // Handle create or demo pages
+<<<<<<< HEAD
+    window.location.href = "/" + action + "/advanced#tab-2";
+=======
     window.location.href = "/" + action + "/advanced#tab-2-label";
+>>>>>>> 919-bug-unexpected-change-of-context-in-profile-dropdown
   }
   // Act on keyboard enter or spacebar
   $("#tab-2-label").keyup(function(e){
