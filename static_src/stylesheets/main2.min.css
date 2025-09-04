@@ -317,6 +317,11 @@ Selector pattern using above mixin:
     .fieldset-controls__buttons-small {
       margin-bottom: 4px; } }
 
+.legend-inline {
+  display: inline;
+  font-size: inherit;
+  color: inherit; }
+
 .fcontrol__text-field-stacked:focus, .fcontrol__text-field-inline:focus, .fcontrol__text-field-inline-squish:focus, .fcontrol__textarea-stacked:focus, .fcontrol__textarea-inline:focus, .fcontrol__textarea-inline-wide:focus, .fcontrol__textarea-inline-noborder:focus, .fcontrol__select:focus, .fcontrol__select--fullwidth:focus {
   -webkit-transition: border-color 0.15s ease-in-out 0s, -webkit-box-shadow 0.15s ease-in-out 0s;
   transition: border-color 0.15s ease-in-out 0s, -webkit-box-shadow 0.15s ease-in-out 0s;

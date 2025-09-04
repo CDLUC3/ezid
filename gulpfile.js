@@ -181,7 +181,7 @@ function scsslint_legacy(cb) {
 
 function jslint(cb) {
   return src(['dev/js/**/*.js', '!dev/js/vendor/*.js'])
-  .pipe(jshint())
+  .pipe(jshint({ esversion: 6 }))
   .pipe(jshint.reporter('default'))
   cb();
 }

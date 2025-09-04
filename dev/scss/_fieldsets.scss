@@ -210,3 +210,15 @@ $subfieldset-label-spacing: 0.3em;
 		margin-bottom: 4px;
 	}
 }
+
+%span-styles {
+  display: inline;
+  font-size: inherit;
+  color: inherit;
+  // Add any other span-specific styles here
+}
+
+// Apply these styles to legend-inline
+.legend-inline {
+  @extend %span-styles;
+}
