@@ -13,7 +13,7 @@ $(document).ready(function() {
     document.getElementById('tab-1').checked = false;
     document.getElementById('tab-2').checked = true;
     var action = location.pathname.split("/")[1];  // Handle create or demo pages
-    window.location.href = "/" + action + "/simple";
+    window.location.href = "/" + action + "/simple#tab-1-label";
   }
   // Act on keyboard enter or spacebar
   $("#tab-1-label").keyup(function(e){
@@ -40,6 +40,7 @@ $(document).ready(function() {
   // submit form when shoulder changes
   $("input[name=shoulder]").change(function(e) {
       var new_scheme = e.target.value.split(':')[0];
+      const target_id = e.target.id;
       if(orig_scheme.split(':')[0] != new_scheme){
         // changing scheme
           if(new_scheme == 'doi'){
@@ -47,7 +48,7 @@ $(document).ready(function() {
           }else{
               $('#current_profile').val('erc');
           }
-          do_get();
+          do_get(target_id);  // submit form with new profile, and the target id is the element the user was on for returning
       }
       orig_scheme = e.target.value;
   });
@@ -75,8 +76,7 @@ $(document).ready(function() {
 
   // submit form when profile changes
   $("#current_profile").bind("change", function(event){
-      var includeAnchor = true;
-      do_get(includeAnchor);
+      do_get('current_profile');
   });
 
   // When user submits:
@@ -100,15 +100,14 @@ $(document).ready(function() {
   });
 
 
-// ***** Submit form when profile or shoulder changes ******* //
-
+  // ***** Submit form when profile or shoulder changes ******* //
   // If triggered by profile, then, after submission, scroll page down to specified anchor
   function do_get(includeAnchor){
       var frm = $('#create_form');
       frm.attr('action', location.pathname + '?publish=' +
         $("[name='publish']").val() + '&remainder=' + $("#remainder").val());
       if (includeAnchor) {
-        var input = $("<input>", { type: "hidden", name: "anchor", value: "current_profile" });
+        var input = $("<input>", { type: "hidden", name: "anchor", value: includeAnchor});
         frm.append($(input));
       }
       frm.unbind('submit');
