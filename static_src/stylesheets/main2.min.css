@@ -916,6 +916,8 @@ Selector pattern using above mixin:
   overflow: visible; }
 
 .pre-block code {
+  background: #f9f8f7;
+  color: black;
   white-space: pre-wrap; }
 
 .diagram__img-wrapper {
@@ -923,13 +925,13 @@ Selector pattern using above mixin:
   float: right; }
 
 .diagram__img {
-  width: 384px;
-  height: 151px;
+  width: 100%;
+  max-width: 450px;
+  height: auto;
   border: 1px solid black; }
   @media (min-width: 768px) {
     .diagram__img {
-      width: 487px;
-      height: 189px; } }
+      width: 487px; } }
 
 .accordion__section, .learn-button__section {
   display: block;
@@ -984,9 +986,8 @@ Selector pattern using above mixin:
   max-width: 1000px;
   margin: 0 auto 10px;
   padding: 10px;
-  background: -webkit-gradient(linear, left top, left bottom, from(#8a1930), to(#741629));
-  background: linear-gradient(to bottom, #8a1930, #741629);
-  color: white; }
+  background: #f0f0f0;
+  color: black; }
   @media (min-width: 480px) {
     .customize-table {
       -webkit-box-orient: horizontal;
@@ -1001,7 +1002,8 @@ Selector pattern using above mixin:
   margin: 0 0 10px;
   font-size: 1.4em;
   font-weight: bold;
-  vertical-align: baseline; }
+  vertical-align: baseline;
+  color: black; }
   @media (min-width: 480px) {
     .customize-table__heading {
       margin: 0; } }
@@ -1795,7 +1797,7 @@ Selector pattern using above mixin:
   margin: 0 10px 0 0;
   padding: 0.5em 10px;
   border: 1px solid #beb6af;
-  background: white;
+  background: #f9f8f7;
   color: #005f70;
   font-size: 1.2em;
   font-weight: normal;

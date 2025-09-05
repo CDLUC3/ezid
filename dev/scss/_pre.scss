@@ -24,6 +24,8 @@
 	@extend %pre__base;
 
 	code {
+        background: $design-light-gray-bg-color;
+        color: $design-black-color;
 		white-space: pre-wrap;
 	}
 }

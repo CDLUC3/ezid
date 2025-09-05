@@ -6,13 +6,13 @@
 }
 
 .diagram__img {
-	width: 384px;
-	height: 151px;
+    width: 100%;
+    max-width: 450px;
+    height: auto;
 	border: 1px solid $design-black-color;
 
 	@include bp(screen2) {
 		width: 487px;
-		height: 189px;
 	}
 
 }
