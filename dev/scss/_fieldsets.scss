@@ -104,6 +104,12 @@ $subfieldset-label-spacing: 0.3em;
 
 %fieldset__legend-numbered {
 	@extend %fieldset-inline__legend;
+    display: inline-flex;
+    width: auto;
+    max-width: max-content;
+    // margin: 0;
+    padding: 0;
+    vertical-align: middle;
 
 	&::before {
 		display: flex;

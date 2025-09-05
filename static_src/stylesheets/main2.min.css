@@ -207,27 +207,41 @@ Selector pattern using above mixin:
     .subfieldset-inline__legend {
       margin: 0 1em 0 0; } }
 
-.fieldset-stacked__legend-number-1::before,
-.fieldset-inline__legend-number-1::before, .fieldset-stacked__legend-number-2::before,
-.fieldset-inline__legend-number-2::before, .fieldset-stacked__legend-number-3::before,
-.fieldset-inline__legend-number-3::before, .fieldset-stacked__legend-number-4::before,
-.fieldset-inline__legend-number-4::before {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  width: 1.8em;
-  height: 1.8em;
-  margin: 0 0.8em 0 0;
-  background: #7c182c;
-  color: white;
-  font-size: 0.8em;
-  font-weight: normal; }
+.fieldset-stacked__legend-number-1,
+.fieldset-inline__legend-number-1, .fieldset-stacked__legend-number-2,
+.fieldset-inline__legend-number-2, .fieldset-stacked__legend-number-3,
+.fieldset-inline__legend-number-3, .fieldset-stacked__legend-number-4,
+.fieldset-inline__legend-number-4 {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  width: auto;
+  max-width: -webkit-max-content;
+  max-width: -moz-max-content;
+  max-width: max-content;
+  padding: 0;
+  vertical-align: middle; }
+  .fieldset-stacked__legend-number-1::before,
+  .fieldset-inline__legend-number-1::before, .fieldset-stacked__legend-number-2::before,
+  .fieldset-inline__legend-number-2::before, .fieldset-stacked__legend-number-3::before,
+  .fieldset-inline__legend-number-3::before, .fieldset-stacked__legend-number-4::before,
+  .fieldset-inline__legend-number-4::before {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    width: 1.8em;
+    height: 1.8em;
+    margin: 0 0.8em 0 0;
+    background: #7c182c;
+    color: white;
+    font-size: 0.8em;
+    font-weight: normal; }
 
 .fieldset-stacked__legend-number-1::before,
 .fieldset-inline__legend-number-1::before {

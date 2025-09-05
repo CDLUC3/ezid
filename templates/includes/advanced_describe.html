@@ -4,7 +4,9 @@
 
 <input name="original_profile" id="original_profile"  type="hidden" value="{{current_profile.name}}"/>
 <div class="fieldset-stacked__embedded-select">
-  <span id="create__fieldset7" aria-label="{% trans "Step 4 - Describe the identified object using a chosen profile" %}" class="fieldset-inline__legend-number-4"><h2 class="fieldset__heading-2">{% trans "Describe the identified object using the" %}</h2></span>
+  <legend id="create__fieldset7" aria-label="{% trans "Step 4 - Describe the identified object using a chosen profile" %}" class="fieldset-inline__legend-number-4">
+    <h2 class="fieldset__heading-2">{% trans "Describe the identified object using the" %}</h2>
+  </legend>
   {% comment %}
     class 'ays-ignore' is used by 'are-you-sure.js' which prevents users from accidentally leaving
     a form they are working on. In this case, we will allow users to choose between shoulder types.

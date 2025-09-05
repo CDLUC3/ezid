@@ -4,7 +4,7 @@
 <div class="fieldset-stacked" role="group" aria-labelledby="fieldset-publish">
   <div id="fieldset-publish" aria-label="{% trans "Step 3 - Publishing options" %}" class="fieldset-stacked__legend-number-3"><h2 class="fieldset__heading-2">{% trans "Decide" %}</h2></div>
   <fieldset class="fieldset-inline create__form-element-group" role="group" aria-labelledby="create__publish">
-      <span id="create__publish" class="fieldset-inline__legend create__inline-nested-legend">{% trans "Make this identifier" %}</span>
+      <legend id="create__publish" class="fieldset-inline__legend create__inline-nested-legend">{% trans "Make this identifier" %}</legend>
       <label for="publish_true" class="fcontrol__radio-label-inline">
         <input id="publish_true" class="fcontrol__radio-button-stacked" type="radio" value="True" name="publish"
         {% if request.POST.publish != 'False' or request.GET.publish != 'False' %}
@@ -21,8 +21,8 @@
       </label>
       {% help_icon "decide_public" _("on making an identifier public or reserved") %}
   </fieldset>
-  <fieldset1 id="harv_index" class="fieldset-inline create__form-element-group" role="group" aria-labelledby="fieldset-harvesting">
-    <span id="fieldset-harvesting" class="fieldset-inline__legend create__inline-nested-legend">{% trans "Allow harvesting/indexing?" %}</span>
+  <fieldset id="harv_index" class="fieldset-inline create__form-element-group" role="group" aria-labelledby="fieldset-harvesting">
+    <legend id="fieldset-harvesting" class="fieldset-inline__legend create__inline-nested-legend">{% trans "Allow harvesting/indexing?" %}</legend>
     <label for="export_yes" class="fcontrol__radio-label-inline">
       <input id="export_yes" class="fcontrol__radio-button-stacked" type="radio" value="yes" name="export"
       {% if request.POST.export != 'no' %}
@@ -38,5 +38,5 @@
       > <span>{% trans "No" %}</span>
     </label>
     {% help_icon "decide_export" _("on harvesting/indexing") %}
-  </fieldset1>
+  </fieldset>
 </div>
