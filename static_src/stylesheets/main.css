@@ -2182,15 +2182,20 @@ tbody.collapse.in {
 
 .ext-link {
   margin-right: 24px;
-  white-space: nowrap; }
+  white-space: normal;
+  word-break: break-all;
+}
+
 
 .ext-link:after {
-  position: absolute;
-  top: -0.1em;
-  right: -20px;
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 4px;
   content: url("/static/images/ext-link.svg");
   width: 15px;
-  height: 15px; }
+  height: 15px;
+  position: static;
+}
 
 .ppt-link {
   margin-right: 24px; }

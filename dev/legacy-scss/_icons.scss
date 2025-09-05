@@ -17,13 +17,17 @@
 
 .ext-link {
   @extend %link__primary;
-  margin-right: 24px;
-  white-space:nowrap;
+  margin-right: 0;
+  padding-right: 24px;
+  position: relative;
+  white-space: normal !important;
+  word-break: break-all; // Allows long links to wrap
 }
+
 .ext-link:after {
   position: absolute;
   top: -0.1em;
-  right: -20px;
+  right: 0; // Align icon to the right edge of the link
   content: url('/static/images/ext-link.svg');
   width: 15px;
   height: 15px;
