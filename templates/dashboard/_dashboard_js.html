@@ -22,6 +22,13 @@ $(document).ready(function() {
       $("#p_{{name}}").submit();
     }
   });
+
+  // ensure "Go" button triggers same logic as Enter key
+  $("#page-directselect-{{name}}").siblings("button[type='submit']").click(function(e){
+    e.preventDefault();
+    $("#p_{{name}}").submit();
+  });
+
   // page selection buttons change value in input field and submit on click
   $("#p_{{name}} button").click(function(e){
     var p = $(e.currentTarget).data('page');

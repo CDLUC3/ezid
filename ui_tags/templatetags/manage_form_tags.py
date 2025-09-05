@@ -274,6 +274,11 @@ def pager_display(request, current_page, total_pages, page_size, select_position
             + ' '
         )
     p_out += (
+        "<label for='page-directselect-"
+        + select_position
+        + "' class='pagination__label'>"
+        + _("Page")
+        + "</label> "
         "<input id='page-directselect-"
         + select_position
         + "' type='number' class='pagination__input' min='1' "
@@ -282,6 +287,7 @@ def pager_display(request, current_page, total_pages, page_size, select_position
         + "' name='p' value='"
         + str(current_page)
         + "'/> "
+        + "<button type='submit'>Go</button>"
         + _("of")
         + " "
         + s_total
