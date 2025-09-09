@@ -1679,7 +1679,7 @@ Selector pattern using above mixin:
   display: flex;
   max-width: 1000px;
   height: 32px;
-  margin: 0 auto 30px; }
+  margin: 0 auto 20px; }
 
 .showhide__summary::before, .showhide2__summary::before, .showhide__summary::after, .showhide2__summary::after {
   position: absolute;
@@ -1733,6 +1733,45 @@ Selector pattern using above mixin:
 
 .hide {
   display: none; }
+
+.showhide2__toggle {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: #005f70;
+  text-align: left;
+  cursor: pointer; }
+
+.showhide2__toggle:focus-visible {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px; }
+
+/* Caret indicator before the text */
+.showhide2__toggle::before {
+  content: "";
+  display: inline-block;
+  margin-right: 0.5em;
+  /* space between caret and label */
+  border-top: 0.3em solid transparent;
+  border-bottom: 0.3em solid transparent;
+  border-left: 0.3em solid;
+  /* caret shape pointing right */
+  -webkit-transition: -webkit-transform 0.2s;
+  transition: -webkit-transform 0.2s;
+  transition: transform 0.2s;
+  transition: transform 0.2s, -webkit-transform 0.2s; }
+
+.showhide2__toggle:not(.collapsed)::before {
+  -webkit-transform: rotate(90deg);
+          transform: rotate(90deg); }
 
 .sidebox {
   padding: 15px 15px 0;
