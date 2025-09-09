@@ -126,11 +126,12 @@ def help_icon(
     )
     return django.utils.html.format_html(
         '<a href="#" title="ID type information" class="button__icon-link" id="{}" role="button" data-toggle="popover" '
-        'data-placement="{}" data-trigger="click" tabindex="0">'
-        '<img src="/static/images/iconHelp.svg" alt="{}"  class="{}" title="{}" />'
+        'data-placement="{}" data-trigger="click" tabindex="0" aria-describedby="{}_content" aria-label="Help (visual popup only)">'
+        '<img src="/static/images/iconHelp.svg" alt="{}" class="{}" title="{}" />'
         '</a>',
         id_of_help,
         placement,
+        id_of_help,
         title,
         css_class,
         title

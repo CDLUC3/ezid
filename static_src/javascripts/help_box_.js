@@ -22,7 +22,7 @@
 
 $(document).ready(function() {
   // Hide all help content until elements are called upon (brought in via ezid-info-pages / popup_help.html)
-  $('.help_window').hide();
+  // $('.help_window').hide();
 
   const popoverTriggerList = document.querySelectorAll('[data-toggle="popover"]');
   const popoverList = [...popoverTriggerList].map((popoverTriggerEl) => {
@@ -70,6 +70,22 @@ $(document).ready(function() {
       }
     });
   });
+
+  // After initializing popovers, be sure that the aria-describedby attribute is set correctly and not borked
+  popoverTriggerList.forEach((popoverTriggerEl) => {
+    popoverTriggerEl.addEventListener('shown.bs.popover', function () {
+      // Ensure aria-describedby always points to the correct content
+      this.setAttribute('aria-describedby', this.id + '_content');
+    });
+  });
+
+  // Ensure aria-describedby is restored after popover is hidden, because bootstrap destroys it
+  popoverTriggerList.forEach((popoverTriggerEl) => {
+    popoverTriggerEl.addEventListener('hidden.bs.popover', function () {
+      this.setAttribute('aria-describedby', this.id + '_content');
+    });
+  });
+
 
   // Record a Google Analytics event when user clicks "Tooltip" Bootstrap Popover
   $('.help_window').on('show.bs.popover', function () {
