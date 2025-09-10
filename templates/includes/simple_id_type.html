@@ -1,9 +1,10 @@
 {% load layout_extras %}
 {% load i18n %}
 
-<div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset1">
-  <fieldset>
-    <legend id="create__fieldset1" aria-label="{% trans "Step 1 - Choose an identifier type" %}" class="fieldset-stacked__legend-number-1">
+<div class="fieldset-stacked">
+  <fieldset aria-labelledby="create__step1 create__fieldset1">
+    <legend id="create__fieldset1"  class="fieldset-stacked__legend-number-1">
+      <span id="create__step1" class="sr-only">Step 1 of 4</span>
       <h2 class="fieldset__heading-2">{% trans "Choose an identifier type" %}</h2>
       {% if calling_page == 'demo' %}
         {% help_icon "choose_id_demo" _("on choosing the type of identifier") %}
