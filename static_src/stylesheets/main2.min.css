@@ -1631,6 +1631,11 @@ Selector pattern using above mixin:
 .pagination__first {
   background-image: url("../images/icon_double-arrow-first.svg"); }
 
+.pagination__last {
+  background-image: url("../images/icon_double-arrow-first.svg");
+  -webkit-transform: rotate(180deg);
+          transform: rotate(180deg); }
+
 .pagination__prev,
 .pagination__next {
   border: none;
@@ -1646,9 +1651,6 @@ Selector pattern using above mixin:
   padding: 0 0.2em;
   border: 1px solid #beb6af;
   border-radius: 3px; }
-
-.pagination__last {
-  background-image: url("../images/icon_double-arrow-last.svg"); }
 
 .pagination__select-group {
   margin: 0 10px 10px 0; }
