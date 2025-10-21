@@ -133,6 +133,11 @@ Selector pattern using above mixin:
 .fieldset-controls {
   margin: 0 0 1em; }
 
+.fieldset-stacked-no-border {
+  border: none;
+  padding: 0;
+  display: block; }
+
 .fieldset-inline {
   border: none;
   padding: 0; }
@@ -154,7 +159,8 @@ Selector pattern using above mixin:
 .fieldset-inline__legend-number-1, .fieldset-stacked__legend-number-2,
 .fieldset-inline__legend-number-2, .fieldset-stacked__legend-number-3,
 .fieldset-inline__legend-number-3, .fieldset-stacked__legend-number-4,
-.fieldset-inline__legend-number-4 {
+.fieldset-inline__legend-number-4, .fieldset-stacked__legend-number-5,
+.fieldset-inline__legend-number-5 {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -171,7 +177,8 @@ Selector pattern using above mixin:
     .fieldset-inline__legend-number-1, .fieldset-stacked__legend-number-2,
     .fieldset-inline__legend-number-2, .fieldset-stacked__legend-number-3,
     .fieldset-inline__legend-number-3, .fieldset-stacked__legend-number-4,
-    .fieldset-inline__legend-number-4 {
+    .fieldset-inline__legend-number-4, .fieldset-stacked__legend-number-5,
+    .fieldset-inline__legend-number-5 {
       font-size: 1.4em; } }
 
 .subfieldset__legend, .subfieldset-inline__legend, .subfieldset-inline__container .fcontrol__text-label-inline,
@@ -191,14 +198,16 @@ Selector pattern using above mixin:
 .fieldset-inline__legend-number-1, .fieldset-stacked__legend-number-2,
 .fieldset-inline__legend-number-2, .fieldset-stacked__legend-number-3,
 .fieldset-inline__legend-number-3, .fieldset-stacked__legend-number-4,
-.fieldset-inline__legend-number-4 {
+.fieldset-inline__legend-number-4, .fieldset-stacked__legend-number-5,
+.fieldset-inline__legend-number-5 {
   margin: 0 0 0.5em; }
   @media (min-width: 480px) {
     .fieldset-inline__legend, .fieldset-stacked__legend-number-1,
     .fieldset-inline__legend-number-1, .fieldset-stacked__legend-number-2,
     .fieldset-inline__legend-number-2, .fieldset-stacked__legend-number-3,
     .fieldset-inline__legend-number-3, .fieldset-stacked__legend-number-4,
-    .fieldset-inline__legend-number-4 {
+    .fieldset-inline__legend-number-4, .fieldset-stacked__legend-number-5,
+    .fieldset-inline__legend-number-5 {
       margin: 0 1em 0 0; } }
 
 .subfieldset-inline__legend {
@@ -211,7 +220,8 @@ Selector pattern using above mixin:
 .fieldset-inline__legend-number-1, .fieldset-stacked__legend-number-2,
 .fieldset-inline__legend-number-2, .fieldset-stacked__legend-number-3,
 .fieldset-inline__legend-number-3, .fieldset-stacked__legend-number-4,
-.fieldset-inline__legend-number-4 {
+.fieldset-inline__legend-number-4, .fieldset-stacked__legend-number-5,
+.fieldset-inline__legend-number-5 {
   display: -webkit-inline-box;
   display: -ms-inline-flexbox;
   display: inline-flex;
@@ -225,7 +235,8 @@ Selector pattern using above mixin:
   .fieldset-inline__legend-number-1::before, .fieldset-stacked__legend-number-2::before,
   .fieldset-inline__legend-number-2::before, .fieldset-stacked__legend-number-3::before,
   .fieldset-inline__legend-number-3::before, .fieldset-stacked__legend-number-4::before,
-  .fieldset-inline__legend-number-4::before {
+  .fieldset-inline__legend-number-4::before, .fieldset-stacked__legend-number-5::before,
+  .fieldset-inline__legend-number-5::before {
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -258,6 +269,10 @@ Selector pattern using above mixin:
 .fieldset-stacked__legend-number-4::before,
 .fieldset-inline__legend-number-4::before {
   content: "4"; }
+
+.fieldset-stacked__legend-number-5::before,
+.fieldset-inline__legend-number-5::before {
+  content: "5"; }
 
 [class^='fieldset-stacked__legend-number'] {
   margin: 0 0 1em; }

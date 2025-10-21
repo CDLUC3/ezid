@@ -24,6 +24,12 @@ $subfieldset-label-spacing: 0.3em;
 	@extend %fieldset;
 }
 
+.fieldset-stacked-no-border {
+    border: none;
+    padding: 0;
+    display: block;
+}
+
 .fieldset-inline {
 
 	border: none;
@@ -127,7 +133,7 @@ $subfieldset-label-spacing: 0.3em;
 }
 
 
-@for $i from 1 through 4 { // add numbers to the classes
+@for $i from 1 through 5 { // add numbers to the classes
   .fieldset-stacked__legend-number-#{$i},
 	.fieldset-inline__legend-number-#{$i} {
 		@extend %fieldset__legend-numbered;
