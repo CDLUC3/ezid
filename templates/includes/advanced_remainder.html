@@ -1,8 +1,8 @@
 {% load layout_extras %}
 {% load i18n %}
 
-<div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset4">
-  <legend id="create__fieldset4" aria-label="{% trans "Step 2 - Optional: Enter a custom remainder (suffix)" %}"class="fieldset-stacked__legend-number-2">
+<fieldset class="fieldset-stacked-no-border" role="group" aria-labelledby="create__fieldset4">
+  <legend id="create__fieldset4" class="fieldset-stacked__legend-number-2">
     <h2 class="fieldset__heading-2">{% trans "Optional: Enter a custom remainder (suffix)" %}</h2>
     {% help_icon "custom_remainder" _("on creating a custom remainder for the identifier") %}
   </legend>
@@ -20,7 +20,7 @@
     <div class="fcontrol__text-label-inline">{% trans "Identifier Preview:" %}</div>
     <div id="preview_div_value" class="fcontrol__text-field-inline"></div>
   </div>
-</div>
+</fieldset>
 
 <script type="text/javascript">
 {%if remainder %}

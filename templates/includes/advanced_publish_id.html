@@ -1,8 +1,11 @@
 {% load layout_extras %}
 {% load i18n %}
 
-<div class="fieldset-stacked" role="group" aria-labelledby="fieldset-publish">
-  <div id="fieldset-publish" aria-label="{% trans "Step 3 - Publishing options" %}" class="fieldset-stacked__legend-number-3"><h2 class="fieldset__heading-2">{% trans "Decide" %}</h2></div>
+<fieldset class="fieldset-stacked-no-border" role="group" aria-labelledby="fieldset-publish">
+  <legend id="fieldset-publish" aria-label='{% trans "Publishing options" %}' class="fieldset-stacked__legend-number-3">
+    <h2 class="fieldset__heading-2">{% trans "Decide" %}</h2>
+  </legend>
+  <div class="legend-clear"></div>
   <fieldset class="fieldset-inline create__form-element-group" role="group" aria-labelledby="create__publish">
       <legend id="create__publish" class="fieldset-inline__legend create__inline-nested-legend">{% trans "Make this identifier" %}</legend>
       <label for="publish_true" class="fcontrol__radio-label-inline">
@@ -39,4 +42,4 @@
     </label>
     {% help_icon "decide_export" _("on harvesting/indexing") %}
   </fieldset>
-</div>
+</fieldset>

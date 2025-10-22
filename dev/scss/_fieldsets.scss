@@ -25,9 +25,18 @@ $subfieldset-label-spacing: 0.3em;
 }
 
 .fieldset-stacked-no-border {
+    @extend %fieldset;
     border: none;
     padding: 0;
     display: block;
+}
+
+.fieldset-clear {
+    @extend %fieldset;
+    border: none;
+    padding: 0;
+    display: block;
+    clear: both;
 }
 
 .fieldset-inline {
@@ -233,4 +242,9 @@ $subfieldset-label-spacing: 0.3em;
 // Apply these styles to legend-inline
 .legend-inline {
   @extend %span-styles;
+}
+
+.legend-clear {
+  display: block;
+  clear: both;
 }

@@ -5,8 +5,8 @@
   <input type="hidden" name="shoulder" id="form-shoulder" value="{{ shoulder }}"/>
   {% csrf_token %}
 
-  <div class="fieldset-stacked fieldset__top-border home__fieldset" role="group" aria-labelledby="fieldset__2">
-    <legend id="fieldset__2" aria-label="{% trans "Step 2 - Describe the identified object" %}" class="fieldset-stacked__legend-number-2">
+  <fieldset class="fieldset-stacked-no-border fieldset__top-border home__fieldset" role="group" aria-labelledby="fieldset__2">
+    <legend id="fieldset__2" aria-label="{% trans "Describe the identified object" %}" class="fieldset-stacked__legend-number-2">
       {% trans "Describe the identified object" %}
     </legend>
 
@@ -33,5 +33,5 @@
         <button class="home__button-primary">{% trans "Create" %}</button>
       </div>
     </div>
-  </div>
+  </fieldset>
 </form>
