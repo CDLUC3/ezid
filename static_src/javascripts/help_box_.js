@@ -22,7 +22,6 @@
 
 $(document).ready(function() {
   // Hide all help content until elements are called upon (brought in via ezid-info-pages / popup_help.html)
-  // $('.help_window').hide();
 
   const popoverTriggerList = document.querySelectorAll('[data-toggle="popover"]');
   const popoverList = [...popoverTriggerList].map((popoverTriggerEl) => {
