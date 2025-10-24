@@ -274,14 +274,10 @@ def pager_display(request, current_page, total_pages, page_size, select_position
             + ' '
         )
     p_out += (
-        "<input id='page-directselect-"
-        + select_position
-        + "' type='number' class='pagination__input' min='1' "
-        + "max='"
-        + s_total
-        + "' name='p' value='"
+        _("Page")
+        + " "
         + str(current_page)
-        + "'/> "
+        + " "
         + _("of")
         + " "
         + s_total
@@ -303,13 +299,30 @@ def pager_display(request, current_page, total_pages, page_size, select_position
             page_link(
                 request,
                 total_pages,
-                empty,
+                "",
                 page_size,
                 'pagination__last',
                 _("Last page of results"),
             )
             + ' '
         )
+    p_out += (
+        "<br/>"
+        + "<label for='page-directselect-"
+        + select_position
+        + "' class='pagination__label'>"
+        + _("Skip to page")
+        + "</label> "
+        "<input id='page-directselect-"
+        + select_position
+        + "' type='number' class='pagination__input' min='1' "
+        + "max='"
+        + s_total
+        + "' name='p' value='"
+        + str(current_page)
+        + "'/> "
+        + "<button type='submit'>Go</button>"
+    )
     return p_out
 
 

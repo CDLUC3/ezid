@@ -20,10 +20,11 @@
   margin-right: 24px;
   white-space:nowrap;
 }
+
 .ext-link:after {
   position: absolute;
   top: -0.1em;
-  right: -20px;
+  right: 0; // Align icon to the right edge of the link
   content: url('/static/images/ext-link.svg');
   width: 15px;
   height: 15px;

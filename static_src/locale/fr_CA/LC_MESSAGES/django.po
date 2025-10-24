@@ -1875,15 +1875,17 @@ msgid "The EZID API, Version 2"
 msgstr ""
 
 #: templates/includes/advanced_describe.html:7
-msgid "Step 4 - Describe the identified object using a chosen profile"
+msgid "Choose the metadata profile"
 msgstr ""
 
-#: templates/includes/advanced_describe.html:7
-msgid "Describe the identified object using the"
+msgid "Enter descriptive metadata"
+msgstr ""
+
+msgid "Enter descriptive metadata"
 msgstr ""
 
 #: templates/includes/advanced_describe.html:14
-msgid "Profile"
+msgid "Choose the metadata profile"
 msgstr ""
 
 #: templates/includes/advanced_describe.html:24 templates/manage/edit.html:45
@@ -1895,7 +1897,7 @@ msgid "on which profile to use for describing the identifier"
 msgstr ""
 
 #: templates/includes/advanced_publish_id.html:5
-msgid "Step 3 - Publishing options"
+msgid "Publishing options"
 msgstr ""
 
 #: templates/includes/advanced_publish_id.html:5
@@ -1919,10 +1921,6 @@ msgstr ""
 #: templates/includes/advanced_publish_id.html:40
 #: templates/manage/edit.html:164
 msgid "on harvesting/indexing"
-msgstr ""
-
-#: templates/includes/advanced_remainder.html:5
-msgid "Step 2 - Optional: Enter a custom remainder (suffix)"
 msgstr ""
 
 #: templates/includes/advanced_remainder.html:5
@@ -1976,15 +1974,11 @@ msgid "Copy Link"
 msgstr ""
 
 #: templates/includes/simple_describe.html:5 templates/index.html:73
-msgid "Step 2 - Describe the identified object"
-msgstr ""
-
-#: templates/includes/simple_describe.html:5 templates/index.html:73
 msgid "Describe the identified object"
 msgstr ""
 
 #: templates/includes/simple_id_type.html:5 templates/index.html:60
-msgid "Step 1 - Choose an identifier type"
+msgid "Choose an identifier type"
 msgstr ""
 
 #: templates/includes/simple_id_type.html:5 templates/index.html:60

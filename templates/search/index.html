@@ -21,18 +21,27 @@
   <button class="search__simple-button search__action" type="submit">{% trans "Search" %}</button>
 </div>
 {% include "includes/search_help.html" %}
-
 <div class="showhide2">
-  <a id="showhide2__title-heading" class="showhide2__title-heading {{ collapse_advanced_search }}" data-bs-toggle="collapse" href="#showhide2__accordion-body">
-    <div class="showhide2__summary">{% trans "Advanced Search" %}</div>
-  </a>
-  {% help_icon "search_advanced" _("on using advanced fields") "button__icon-help" %}
+  <h2 class="showhide2__title-heading" id="showhide2__title-heading">
+    <button
+      class="showhide2__toggle collapsed"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#showhide2__accordion-body"
+      aria-expanded="false"
+      aria-controls="showhide2__accordion-body"
+    >
+      {% trans "Advanced Search" %}
+    </button>
+  </h2>
 </div>
+
 {% if collapse_advanced_search == 'collapsed' %}
 <div id="showhide2__accordion-body" class="showhide2__accordion-body collapse" aria-expanded="false">
 {% else %}
 <div id="showhide2__accordion-body" class="showhide2__accordion-body collapse in" aria-expanded="true"/>
 {% endif %}
+  <div class="row"><p>No wildcards are enabled in advanced search (such as asterisks, question marks)</p></div>
   <div class="row">
     <div class="col-md-6 search__form-element-container">
       <div class="fcontrol__group-stacked{% if form.identifier.errors %}--invalid{% endif %}">

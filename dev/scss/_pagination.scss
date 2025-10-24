@@ -31,6 +31,12 @@ $pagination-element-height: 20px;
 	background-image: url('../images/icon_double-arrow-first.svg');
 }
 
+.pagination__last {
+	@extend %pagination__first-last-buttons;
+	background-image: url('../images/icon_double-arrow-first.svg');
+    transform: rotate(180deg);
+}
+
 .pagination__prev,
 .pagination__next {
 	border: none;
@@ -48,11 +54,6 @@ $pagination-element-height: 20px;
 	padding: 0 0.2em;
 	border: 1px solid $design-light-gray-border-color;
 	border-radius: $form-element-border-radius;
-}
-
-.pagination__last {
-	@extend %pagination__first-last-buttons;
-	background-image: url('../images/icon_double-arrow-last.svg');
 }
 
 .pagination__select-group {

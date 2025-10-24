@@ -54,8 +54,10 @@
 
       <div class="home__identifier-form">
 
-        <fieldset class="fieldset-inline" role="group" aria-labelledby="fieldset__1">
-          <span id="fieldset__1" aria-label="{% trans "Step 1 - Choose an identifier type" %}" class="fieldset-inline__legend-number-1">{% trans "Choose an identifier type" %}</span>
+        <fieldset class="fieldset-inline">
+          <legend id="fieldset__1" class="fieldset-inline__legend-number-1" class="fieldset-inline__legend-number-1">
+            {% trans "Choose an identifier type" %}
+          </legend>
 
       {% for p in prefixes %}
           <label for="{{p.prefix}}" class="fcontrol__radio-label-inline home__radio-labels">

@@ -21,7 +21,7 @@
 	display: flex;
 	max-width: 1000px;
 	height: 32px;
-	margin: 0 auto 30px;
+	margin: 0 auto 20px;
 }
 
 %showhide-icon-base {
@@ -108,4 +108,38 @@
 // Used by "Read more" toggle used for help text under search box on search and manage pages
 .hide {
 	display: none;
+}
+
+// for items that use buttons and destroyed the style
+.showhide2__toggle {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: $design-primary-color;
+  text-align: left;
+  cursor: pointer;
+}
+
+.showhide2__toggle:focus-visible {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+}
+
+/* Caret indicator before the text */
+.showhide2__toggle::before {
+  content: "";
+  display: inline-block;
+  margin-right: 0.5em;   /* space between caret and label */
+  border-top: 0.3em solid transparent;
+  border-bottom: 0.3em solid transparent;
+  border-left: 0.3em solid;  /* caret shape pointing right */
+  transition: transform 0.2s;
+}
+
+.showhide2__toggle:not(.collapsed)::before {
+  transform: rotate(90deg);
 }

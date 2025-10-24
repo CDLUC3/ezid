@@ -51,6 +51,13 @@
       setTimeout(function() { loadingIndicator(); }, 4000);
     }
   });
+
+  // ensure "Go" button triggers same logic as Enter key
+  $("#page-directselect-{{ select_position }}").siblings("button[type='submit']").click(function(e){
+    e.preventDefault();
+    $("#p_{{ select_position }}").submit();
+  });
+
   // page selection buttons change value in input field and submit on click
   $("#p-{{ select_position }} button").click(function(e){
     var p = $(e.currentTarget).data('page');

@@ -1,8 +1,11 @@
 {% load layout_extras %}
 {% load i18n %}
 
-<div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset2">
-  <span id="create__fieldset2" aria-label="{% trans "Step 2 - Describe the identified object" %}" class="fieldset-stacked__legend-number-2"><h2 class="fieldset__heading-2">{% trans "Describe the identified object" %}</h2></span>
+<fieldset class="fieldset-stacked-no-border">
+  <legend id="create__fieldset2" class="fieldset-inline__legend-number-2">
+    <h2 class="fieldset__heading-2">{% trans "Describe the identified object" %}</h2>
+  </legend>
+  <div style="clear:both;">&nbsp;</div>
   <input type="hidden" name="current_profile" id="current_profile" value="{{current_profile.name}}" />
 {{ form.non_field_errors }}
 {% for field in form %}
@@ -12,4 +15,4 @@
     {% include "includes/_inlineselect.html" with field=field form_name="create__" reqd=field.field.required %}
   {% endif %}
 {% endfor %}
-</div>
+</fieldset>

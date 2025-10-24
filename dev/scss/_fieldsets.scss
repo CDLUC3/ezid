@@ -24,6 +24,21 @@ $subfieldset-label-spacing: 0.3em;
 	@extend %fieldset;
 }
 
+.fieldset-stacked-no-border {
+    @extend %fieldset;
+    border: none;
+    padding: 0;
+    display: block;
+}
+
+.fieldset-clear {
+    @extend %fieldset;
+    border: none;
+    padding: 0;
+    display: block;
+    clear: both;
+}
+
 .fieldset-inline {
 
 	border: none;
@@ -104,6 +119,11 @@ $subfieldset-label-spacing: 0.3em;
 
 %fieldset__legend-numbered {
 	@extend %fieldset-inline__legend;
+    display: inline-flex;
+    width: auto;
+    max-width: max-content;
+    padding: 0;
+    vertical-align: middle;
 
 	&::before {
 		display: flex;
@@ -121,7 +141,7 @@ $subfieldset-label-spacing: 0.3em;
 }
 
 
-@for $i from 1 through 4 { // add numbers to the classes
+@for $i from 1 through 5 { // add numbers to the classes
   .fieldset-stacked__legend-number-#{$i},
 	.fieldset-inline__legend-number-#{$i} {
 		@extend %fieldset__legend-numbered;
@@ -209,4 +229,21 @@ $subfieldset-label-spacing: 0.3em;
 	@include bp(screen2) {
 		margin-bottom: 4px;
 	}
+}
+
+%span-styles {
+  display: inline;
+  font-size: inherit;
+  color: inherit;
+  // Add any other span-specific styles here
+}
+
+// Apply these styles to legend-inline
+.legend-inline {
+  @extend %span-styles;
+}
+
+.legend-clear {
+  display: block;
+  clear: both;
 }
