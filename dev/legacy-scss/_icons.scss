@@ -17,11 +17,8 @@
 
 .ext-link {
   @extend %link__primary;
-  margin-right: 0;
-  padding-right: 24px;
-  position: relative;
-  white-space: normal !important;
-  word-break: break-all; // Allows long links to wrap
+  margin-right: 24px;
+  white-space:nowrap;
 }
 
 .ext-link:after {
