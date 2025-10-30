@@ -31,7 +31,7 @@ EZID_VERSION = 'TEST_INSTANCE'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': 'localhost',
+        'HOST': '127.0.0.1',
         'NAME': 'ezid_test_db',
         'USER': 'ezid_test_user',
         'PASSWORD': 'ezid_test_pw',
