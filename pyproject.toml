@@ -38,8 +38,8 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.11"
-django = "4.2.25"
-aiomysql = "^0.2.0"
+django = "4.2.26"
+aiomysql = "^0.3.0"
 boto3 = "^1.37.19"
 mysql = "^0.0.3"
 myloginpath = "^0.0.4"

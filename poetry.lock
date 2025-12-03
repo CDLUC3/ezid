@@ -2,13 +2,13 @@
 
 [[package]]
 name = "aiomysql"
-version = "0.2.0"
+version = "0.3.2"
 description = "MySQL driver for asyncio."
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.9"
 files = [
-    {file = "aiomysql-0.2.0-py3-none-any.whl", hash = "sha256:b7c26da0daf23a5ec5e0b133c03d20657276e4eae9b73e040b72787f6f6ade0a"},
-    {file = "aiomysql-0.2.0.tar.gz", hash = "sha256:558b9c26d580d08b8c5fd1be23c5231ce3aeff2dadad989540fee740253deb67"},
+    {file = "aiomysql-0.3.2-py3-none-any.whl", hash = "sha256:c82c5ba04137d7afd5c693a258bea8ead2aad77101668044143a991e04632eb2"},
+    {file = "aiomysql-0.3.2.tar.gz", hash = "sha256:72d15ef5cfc34c03468eb41e1b90adb9fd9347b0b589114bd23ead569a02ac1a"},
 ]
 
 [package.dependencies]
@@ -34,17 +34,17 @@ tests = ["mypy (>=1.14.0)", "pytest", "pytest-asyncio"]
 
 [[package]]
 name = "boto3"
-version = "1.40.58"
+version = "1.40.74"
 description = "The AWS SDK for Python"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "boto3-1.40.58-py3-none-any.whl", hash = "sha256:951515c1ea0ae9e99e56c3b6f408a2f59e1b57fab4d96dab737e73956f729177"},
-    {file = "boto3-1.40.58.tar.gz", hash = "sha256:5a99c0bd2e282af4afde1af10d8838b397120722b6b685f0c0fa6b8cac351304"},
+    {file = "boto3-1.40.74-py3-none-any.whl", hash = "sha256:41fc8844b37ae27b24bcabf8369769df246cc12c09453988d0696ad06d6aa9ef"},
+    {file = "boto3-1.40.74.tar.gz", hash = "sha256:484e46bf394b03a7c31b34f90945ebe1390cb1e2ac61980d128a9079beac87d4"},
 ]
 
 [package.dependencies]
-botocore = ">=1.40.58,<1.41.0"
+botocore = ">=1.40.74,<1.41.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.14.0,<0.15.0"
 
@@ -53,13 +53,13 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.40.58"
+version = "1.40.74"
 description = "Low-level, data-driven core of boto 3."
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "botocore-1.40.58-py3-none-any.whl", hash = "sha256:2571ca3aec8150e1b5a597794da6fd06284de72f29d3ea806804b798755f2e5a"},
-    {file = "botocore-1.40.58.tar.gz", hash = "sha256:cf2de7f5538f23c8067408a984ed32221e8b196ce98e66945a479d06b2663c33"},
+    {file = "botocore-1.40.74-py3-none-any.whl", hash = "sha256:f39f5763e35e75f0bd91212b7b36120b1536203e8003cd952ef527db79702b15"},
+    {file = "botocore-1.40.74.tar.gz", hash = "sha256:57de0b9ffeada06015b3c7e5186c77d0692b210d9e5efa294f3214df97e2f8ee"},
 ]
 
 [package.dependencies]
@@ -68,17 +68,17 @@ python-dateutil = ">=2.1,<3.0.0"
 urllib3 = {version = ">=1.25.4,<2.2.0 || >2.2.0,<3", markers = "python_version >= \"3.10\""}
 
 [package.extras]
-crt = ["awscrt (==0.27.6)"]
+crt = ["awscrt (==0.28.4)"]
 
 [[package]]
 name = "certifi"
-version = "2025.10.5"
+version = "2025.11.12"
 description = "Python package for providing Mozilla's CA Bundle."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "certifi-2025.10.5-py3-none-any.whl", hash = "sha256:0f212c2744a9bb6de0c56639a6f68afe01ecd92d91f14ae897c4fe7bbeeef0de"},
-    {file = "certifi-2025.10.5.tar.gz", hash = "sha256:47c09d31ccf2acf0be3f701ea53595ee7e0b8fa08801c6624be771df09ae7b43"},
+    {file = "certifi-2025.11.12-py3-none-any.whl", hash = "sha256:97de8790030bbd5c2d96b7ec782fc2f7820ef8dba6db909ccf95449f2d062d4b"},
+    {file = "certifi-2025.11.12.tar.gz", hash = "sha256:d8ab5478f2ecd78af242878415affce761ca6bc54a22a27e026d7c25357c3316"},
 ]
 
 [[package]]
@@ -396,13 +396,13 @@ test-randomorder = ["pytest-randomly"]
 
 [[package]]
 name = "django"
-version = "4.2.25"
+version = "4.2.26"
 description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "django-4.2.25-py3-none-any.whl", hash = "sha256:9584cf26b174b35620e53c2558b09d7eb180a655a3470474f513ff9acb494f8c"},
-    {file = "django-4.2.25.tar.gz", hash = "sha256:2391ab3d78191caaae2c963c19fd70b99e9751008da22a0adcc667c5a4f8d311"},
+    {file = "django-4.2.26-py3-none-any.whl", hash = "sha256:c96e64fc3c359d051a6306871bd26243db1bd02317472a62ffdbe6c3cae14280"},
+    {file = "django-4.2.26.tar.gz", hash = "sha256:9398e487bcb55e3f142cb56d19fbd9a83e15bb03a97edc31f408361ee76d9d7a"},
 ]
 
 [package.dependencies]
@@ -1069,4 +1069,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "ab8d141cec464f593eaeca33e228398e1712ace8f5ecce9c30cee901ac88bc88"
+content-hash = "4d396282d9b6a68dbfb5c5f991f8cd302776b1f16c331f4d0941b6dfc7b1878a"
