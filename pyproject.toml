@@ -61,6 +61,7 @@ configparser = "^7.2.0"
 ecs-logging = "^2.2.0"
 opensearch-dsl = "^2.1.0"
 mysqlclient = "^2.2.7"
+urllib3 = "2.6.0"
 
 
 [tool.poetry.scripts]
