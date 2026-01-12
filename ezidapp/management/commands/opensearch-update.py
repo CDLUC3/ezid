@@ -58,9 +58,6 @@ class Command(BaseCommand):
         else:
             start_after_id = 0
         
-        # set a relatively large number to avoid going to the end
-        stop_id = start_after_id + 2*DB_PAGE_SIZE
-
         # Also adding additional filtering for additional criteria with a Q object that may be neutral or contain
         # time-based criteria to limit number or results.
 
@@ -71,6 +68,8 @@ class Command(BaseCommand):
             additional_filter = Q(updateTime__gte=updated_since.timestamp())
 
         while True:
+            # set a relatively large number to avoid going to the end
+            stop_id = start_after_id + 2*DB_PAGE_SIZE
             iden_arr = (SearchIdentifier.objects.filter(id__gt=start_after_id)
                         .filter(id__lte=stop_id)
                         .filter(additional_filter).order_by('id')[:DB_PAGE_SIZE])
