@@ -68,10 +68,7 @@ class Command(BaseCommand):
             additional_filter = Q(updateTime__gte=updated_since.timestamp())
 
         while True:
-            # set a relatively large number to avoid going to the end
-            stop_id = start_after_id + 2*DB_PAGE_SIZE
             iden_arr = (SearchIdentifier.objects.filter(id__gt=start_after_id)
-                        .filter(id__lte=stop_id)
                         .filter(additional_filter).order_by('id')[:DB_PAGE_SIZE])
 
             # break when we run out of items
