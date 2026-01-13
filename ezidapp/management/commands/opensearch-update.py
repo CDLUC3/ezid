@@ -17,7 +17,7 @@ from urllib3.exceptions import InsecureRequestWarning
 urllib3.disable_warnings(InsecureRequestWarning)
 # end suppression of urllib3 InsecureRequestWarning
 
-SPLIT_SIZE = 5
+SPLIT_SIZE = 10
 DB_PAGE_SIZE = 100
 
 # run: python manage.py opensearch-update
@@ -57,7 +57,7 @@ class Command(BaseCommand):
             start_after_id = options['starting_id']
         else:
             start_after_id = 0
-
+        
         # Also adding additional filtering for additional criteria with a Q object that may be neutral or contain
         # time-based criteria to limit number or results.
 
@@ -116,6 +116,7 @@ class Command(BaseCommand):
     def _do_bulk_update(string_parts: list) -> bool:
         json_string = "\n".join(string_parts) + "\n"  # must have a trailing newline
 
+        OpenSearchDoc.CLIENT.ping()            # OpenSearch keepalive
         response = OpenSearchDoc.CLIENT.bulk(body=json_string)
 
         # Check the response
