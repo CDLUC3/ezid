@@ -50,7 +50,10 @@ class OpenSearchDoc:
         use_ssl=True,
         verify_certs=True,
         ssl_assert_hostname=False,
-        ssl_show_warn=False
+        ssl_show_warn=False,
+        timeout=30,
+        max_retries=3,
+        retry_on_timeout=True
     )
 
     def __init__(self, identifier: Identifier):
