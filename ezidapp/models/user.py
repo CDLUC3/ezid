@@ -157,18 +157,6 @@ class User(django.db.models.Model):
 
         logger.debug('Auth successful')
 
-        # Upgrade older LDAP password hashes.
-        if self.password.split("$")[0] == "ldap_sha1":
-            import ezidapp.admin
-
-            try:
-                with django.db.transaction.atomic():
-                    self.setPassword(password)
-                    self.save()
-                    ezidapp.admin.scheduleUserChangePostCommitActions(self)
-            except Exception:
-                pass
-
         return True
 
     # See below.

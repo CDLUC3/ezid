@@ -554,7 +554,6 @@ MIDDLEWARE = (
 
 PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
-    'impl.userauth.LdapSha1PasswordHasher',
 ]
 
 TEMPLATES = [
