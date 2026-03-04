@@ -62,5 +62,5 @@ def _releaseIdentifierLock(identifier, user):
     _lock.acquire()
     _lockedIdentifiers.remove(identifier)
     _decrementCount(_activeUsers, user)
-    _lock.notifyAll()
+    _lock.notify_all()
     _lock.release()
