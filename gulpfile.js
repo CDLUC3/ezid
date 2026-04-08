@@ -6,7 +6,7 @@
 // ##### Gulp Tasks #####
 
 var { src, dest, watch, series, parallel } = require('gulp');
-var sass = require('gulp-sass')(require('node-sass'));
+var sass = require('gulp-sass')(require('sass'));
 var autoprefixer = require('gulp-autoprefixer');
 var browserSync = require('browser-sync');
 var server = browserSync.create();
@@ -39,11 +39,24 @@ exports.modernizr = runmodernizr;
 
 // Process scss to css, add sourcemaps, inline font & image files into css:
 
-sass.compiler = require('node-sass');
+sass.compiler = require('sass');
+
+// Temporary deprecation-noise reduction while legacy SCSS is still being modernized.
+var dartSassOptions = {
+  quietDeps: true,
+  silenceDeprecations: [
+    'legacy-js-api',
+    'import',
+    'global-builtin',
+    'color-functions',
+    'slash-div',
+    'if-function'
+  ]
+};
 
 function scss(cb) {
   return src('dev/scss/*.scss', { sourcemaps: true })
-  .pipe(sass().on('error', sass.logError))
+  .pipe(sass(dartSassOptions).on('error', sass.logError))
   .pipe(autoprefixer('last 2 versions'))
   .pipe(postcss([assets({
     loadPaths: ['fonts/', 'images/']
@@ -55,7 +68,7 @@ function scss(cb) {
 
 function scss_legacy(cb) {
   return src('dev/legacy-scss/*.scss', { sourcemaps: true })
-  .pipe(sass().on('error', sass.logError))
+  .pipe(sass(dartSassOptions).on('error', sass.logError))
   .pipe(autoprefixer('last 2 versions'))
   .pipe(dest('dev/legacy-scss/css', { sourcemaps: 'sourcemaps' }))
   .pipe(browserSync.stream());
