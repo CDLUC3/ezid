@@ -7,14 +7,13 @@
 
 var { src, dest, watch, series, parallel } = require('gulp');
 var sass = require('gulp-sass')(require('sass'));
-var autoprefixer = require('gulp-autoprefixer');
+var autoprefixer = require('autoprefixer');
 var browserSync = require('browser-sync');
 var server = browserSync.create();
 var useref = require('gulp-useref');
 var uglify = require('gulp-uglify');
 var gulpIf = require('gulp-if');
 var cleanCSS = require('gulp-clean-css');
-var imagemin = require('gulp-imagemin');
 var cache = require('gulp-cache');
 var del = require('del');
 var modernizr = require('gulp-modernizr');
@@ -57,8 +56,9 @@ var dartSassOptions = {
 function scss(cb) {
   return src('dev/scss/*.scss', { sourcemaps: true })
   .pipe(sass(dartSassOptions).on('error', sass.logError))
-  .pipe(autoprefixer('last 2 versions'))
-  .pipe(postcss([assets({
+  .pipe(postcss([autoprefixer({
+    overrideBrowserslist: ['last 2 versions']
+  }), assets({
     loadPaths: ['fonts/', 'images/']
   })]))
   .pipe(dest('dev/css', { sourcemaps: 'sourcemaps' }))
@@ -69,7 +69,9 @@ function scss(cb) {
 function scss_legacy(cb) {
   return src('dev/legacy-scss/*.scss', { sourcemaps: true })
   .pipe(sass(dartSassOptions).on('error', sass.logError))
-  .pipe(autoprefixer('last 2 versions'))
+  .pipe(postcss([autoprefixer({
+    overrideBrowserslist: ['last 2 versions']
+  })]))
   .pipe(dest('dev/legacy-scss/css', { sourcemaps: 'sourcemaps' }))
   .pipe(browserSync.stream());
   cb();
@@ -129,12 +131,17 @@ function minifyCss(cb) {
 // Compress images and copy from dev/images/ into dev/ui_library/images/:
 
 function copyimages(cb) {
-  return src('dev/images/**/*.+(png|jpg|jpeg|gif|svg)')
-  .pipe(cache(imagemin({
-      interlaced: true
-    })))
-  .pipe(dest('ui_library/images'))
-  cb();
+  // gulp-imagemin is ESM; load it lazily so this CommonJS gulpfile can initialize.
+  import('gulp-imagemin')
+    .then((mod) => {
+      var imagemin = mod.default || mod;
+      src('dev/images/**/*.+(png|jpg|jpeg|gif|svg)')
+        .pipe(cache(imagemin({ interlaced: true })))
+        .pipe(dest('ui_library/images'))
+        .on('end', cb)
+        .on('error', cb);
+    })
+    .catch(cb);
 }
 
 // Copy the minified css to the place it actually needs to go in order to function
