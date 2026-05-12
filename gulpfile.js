@@ -16,7 +16,7 @@ var useref = require('gulp-useref');
 var uglify = require('gulp-uglify');
 var gulpIf = require('gulp-if');
 var cleanCSS = require('gulp-clean-css');
-var del = require('del');
+var deleteAsync = require('del').deleteAsync;
 var modernizr = require('gulp-modernizr');
 var stylelint = require('stylelint');
 var jshint = require('gulp-jshint');
@@ -186,6 +186,12 @@ function copyimages() {
             cb(null, file);
           })
           .catch(function (error) {
+            if (error && /unsupported image format/i.test(error.message || '')) {
+              console.warn('Skipping optimization for unsupported image format: ' + file.relative);
+              cb(null, file);
+              return;
+            }
+
             cb(error);
           });
 
@@ -219,7 +225,7 @@ function fonts() {
 // Delete ui_library directory at start of build process:
 
 function clean() {
-  return del('ui_library');
+  return deleteAsync(['ui_library']);
 }
 
 // Lint Sass:
