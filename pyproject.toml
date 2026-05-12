@@ -38,7 +38,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.11"
-django = "5.2.13"
+django = "5.2.14"
 aiomysql = "^0.3.0"
 boto3 = "^1.37.19"
 mysql = "^0.0.3"
@@ -61,7 +61,7 @@ configparser = "^7.2.0"
 ecs-logging = "^2.3.0"
 opensearch-dsl = "^2.1.0"
 mysqlclient = "^2.2.8"
-urllib3 = "^2.6.3"
+urllib3 = "^2.7.0"
 
 
 [tool.poetry.scripts]
