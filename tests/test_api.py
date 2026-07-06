@@ -57,6 +57,7 @@ class TestAPI:
         ns, arg_tup = minters
         result_dict = self._mint(ez_admin, ns, meta_type, test_docs)
         result_list.append(result_dict)
+        log.info("Request.node.name: {}".format(request.node.name))
         tests.util.sample.assert_match(
             result_list, 'mint-{}'.format(request.node.name)
         )  # re.sub("[^\\d\\w]+", "-",request.node.name)))
