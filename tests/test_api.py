@@ -2,11 +2,9 @@
 #  http://creativecommons.org/licenses/BSD
 
 import logging
-from urllib import request
 
 import freezegun
 
-import impl.datacite
 import impl.util
 import tests.util.anvl
 import tests.util.metadata_generator
