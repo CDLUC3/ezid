@@ -58,12 +58,21 @@ class TestAPI:
         ns, arg_tup = minters
         result_dict = self._mint(ez_admin, ns, meta_type, test_docs)
         result_list.append(result_dict)
-        log.info("Request.node.name: {}".format(request.node.name))
-        log.info("Request.node.callspec.id: {}".format(request.node.callspec.id))
-        log.info("Request.node.callspec.params: {}".format(request.node.callspec.params))
-        log.info("Request.node.nodeid: {}".format(request.node.nodeid))
+        
+        func_name = request.node.originalname
+        namespace_str = str(request.node.callspec.params["namespace"][0])
+        # doi:10.9935/X5 => doi-10-9935-X5
+        # ark:/99933/x1 => ark-99933-x1
+        prefix = namespace_str.translate(str.maketrans(":/.", "---")).replace("--", "-")
+        request_node_name = f"{func_name}[{meta_type}-{prefix}]"
+
+        # request.node.name is the test function name with parameters, e.g. test_1000[meta_type-prefix],
+        # which is used as the filename for the sample file.
+        # however, the order of the parameters in request.node.name is not consistent with pytest version
+        # so we construct a more stable name for the sample file using the original function name and the parameters. 
+
         tests.util.sample.assert_match(
-            result_list, 'mint-{}'.format(request.node.name)
+            result_list, 'mint-{}'.format(request_node_name)
         )  # re.sub("[^\\d\\w]+", "-",request.node.name)))
         
         # mint another ID
@@ -71,7 +80,7 @@ class TestAPI:
         result_dict = self._mint(ez_admin, ns, meta_type, test_docs)
         result_list.append(result_dict)
         tests.util.sample.assert_match(
-            result_list, 'mint-{}_2'.format(request.node.name)
+            result_list, 'mint-{}_2'.format(request_node_name)
         ) 
 
     def test_1010(self, ez_admin, minters, test_docs, meta_type):
