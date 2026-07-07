@@ -2,6 +2,7 @@
 #  http://creativecommons.org/licenses/BSD
 
 import logging
+from urllib import request
 
 import freezegun
 
@@ -58,6 +59,9 @@ class TestAPI:
         result_dict = self._mint(ez_admin, ns, meta_type, test_docs)
         result_list.append(result_dict)
         log.info("Request.node.name: {}".format(request.node.name))
+        log.info("Request.node.callspec.id: {}".format(request.node.callspec.id))
+        log.info("Request.node.callspec.params: {}".format(request.node.callspec.params))
+        log.info("Request.node.nodeid: {}".format(request.node.nodeid))
         tests.util.sample.assert_match(
             result_list, 'mint-{}'.format(request.node.name)
         )  # re.sub("[^\\d\\w]+", "-",request.node.name)))
