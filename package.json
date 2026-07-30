@@ -34,7 +34,7 @@
     "postcss-assets": "^6.0.0",
     "run-sequence": "^2.2.1",
     "sass": "^1.99.0",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.0",
     "stylelint": "^17.11.0",
     "stylelint-config-property-sort-order-smacss": "^11.2.0",
     "stylelint-config-recommended-scss": "^17.0.1",
