@@ -1,24 +1,21 @@
 [build-system]
-requires = ["poetry-core>=1.0.0,<2.0.0"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 skip_string_normalization = true
 line_length = 100
 
-[tool.poetry]
+[project]
 name = "ezid"
 version = "v3"
 description = "EZID - identifiers made easy. Create and manage long-term globally unique IDs for data and other sources"
-#license = "CC-BY-3.0-US"
-#license = "MIT License"
-repository = "https://github.com/cdluc3/ezid"
 readme = "README.md"
-authors = ["Regents of the University of California"]
-maintainers =[
-    "Jing Jiang <jing.jiang@ucop.edu>",
-    "datadave <605409+datadavev@users.noreply.github.com>",
-    "Scott Fisher <sfisher@ucop.edu>",
+authors = [{ name = "Regents of the University of California" }]
+maintainers = [
+    { name = "Jing Jiang", email = "jing.jiang@ucop.edu" },
+    { name = "datadave", email = "605409+datadavev@users.noreply.github.com" },
+    { name = "Scott Fisher", email = "sfisher@ucop.edu" },
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -29,42 +26,43 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 keywords = ["persistent identifier", "id"]
+requires-python = ">=3.11,<4.0"
+urls = { Repository = "https://github.com/cdluc3/ezid" }
+dependencies = [
+    "django==5.2.16",
+    "aiomysql>=0.3.0,<0.4.0",
+    "boto3>=1.37.19,<2.0.0",
+    "mysql>=0.0.3,<0.1.0",
+    "myloginpath>=0.0.4,<0.1.0",
+    "jinja2>=3.1.6,<4.0.0",
+    "pygments>=2.20.0,<3.0.0",
+    "fasteners>=0.20,<0.21",
+    "feedparser>=6.0.11,<7.0.0",
+    "filelock>=3.24.3,<4.0.0",
+    "freezegun>=1.5.1,<2.0.0",
+    "hjson>=3.1.0,<4.0.0",
+    "lxml>=6.1.0,<7.0.0",
+    "python-dateutil>=2.9.0.post0,<3.0.0",
+    "requests>=2.33.1,<3.0.0",
+    "toml>=0.10.2,<0.11.0",
+    "simplegist>=1.0.1,<2.0.0",
+    "xmltodict>=1.0.4,<2.0.0",
+    "pymysql>=1.1.1,<2.0.0",
+    "configparser>=7.2.0,<8.0.0",
+    "ecs-logging>=2.3.0,<3.0.0",
+    "opensearch-dsl>=2.1.0,<3.0.0",
+    "mysqlclient>=2.2.8,<3.0.0",
+    "urllib3>=2.7.0,<3.0.0",
+]
+
+[tool.poetry]
 packages = [
     { include = "ezidapp" },
     { include = "settings" },
     { include = "impl" },
 ]
 
-
-[tool.poetry.dependencies]
-python = "^3.11"
-django = "5.2.14"
-aiomysql = "^0.3.0"
-boto3 = "^1.37.19"
-mysql = "^0.0.3"
-myloginpath = "^0.0.4"
-jinja2 = "^3.1.6"
-pygments = "^2.20.0"
-fasteners = "^0.20"
-feedparser = "^6.0.11"
-filelock = "^3.24.3"
-freezegun = "^1.5.1"
-hjson = "^3.1.0"
-lxml = "^6.1.0"
-python-dateutil = "^2.9.0.post0"
-requests = "^2.33.1"
-toml = "^0.10.2"
-simplegist = "^1.0.1"
-xmltodict = "^1.0.4"
-pymysql = "^1.1.1"
-configparser = "^7.2.0"
-ecs-logging = "^2.3.0"
-opensearch-dsl = "^2.1.0"
-mysqlclient = "^2.2.8"
-urllib3 = "^2.7.0"
-
-
-[tool.poetry.scripts]
+[project.scripts]
 ez-batch-register = 'tools.batch_register:main'
 ez-client = 'tools.client:main'
 ez-dashboard = 'tools.dashboard:main'
