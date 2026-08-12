@@ -20,11 +20,11 @@ maintainers = [
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: End Users/Desktop",
-    "License :: OSI Approved :: BSD License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.11",
 ]
+license = "BSD-3-Clause"
 keywords = ["persistent identifier", "id"]
 requires-python = ">=3.11,<4.0"
 urls = { Repository = "https://github.com/cdluc3/ezid" }
