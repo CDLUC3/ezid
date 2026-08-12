@@ -1,6 +1,8 @@
-Python Dependency Management for EZID
+Install and Test EZID
 =====================================
 
+Python Dependency Management for EZID
+-------------------------------------
 Thu May 30 05:18:33 PM PDT 2024
 
 Our previous installation method using `setup.py install` is no longer
@@ -55,8 +57,6 @@ We enumerate development tools in a `dev` group section:
 pytest-django = "^4.8.0"
 pytest-mock = "^3.14.0"
 ```
-
-
 
 Installing EZID
 ---------------
@@ -208,14 +208,76 @@ automatically update minimum semantic versions in `pyproject.toml`.  To keep
     celery = "^5.4.0"
     sqlalchemy = "^2.0.30"
    ``` 
-Note:
-* Run the `poetry update` command if you modified the `pyproject.toml` file manually.
+
+1. Run the `poetry update` command if you modified the `pyproject.toml` file manually.
+
+1. Run `poetry check --lock` to validate `pyproject.toml` and ensure that `poetry.lock` is consistent and in sync with pyproject.toml.
   
-3. Review changes with `git diff poetry.lock`
+1. Review changes with `git diff poetry.lock`
    
-4. Commit your updates and cut a new release candidate tag.  Open a pull request so 
+1. Commit your updates and cut a new release candidate tag.  Open a pull request so 
    proper integration testing can be scheduled.
 
    In most cases you will see changes in the `pyproject.toml` and `poetry.lock` files.
 
+Testing EZID
+------------
+To perform EZID Unit test, you need to:
+* prepare Python environment
+* setup the `DJANGO_SETTINGS_MODULE` environment variable
+* create the test database
+* run `pytest` to perform the tests
 
+Refer [Unit & CI tests](https://github.com/CDLUC3/ezid-docs-internal/blob/main/docs/unit_integration_tests.md) for detailed instructions on how to run EZID unit tests.
+
+## Prepare Python environment
+1. Run `pip install .` to source file `pyproject.toml` and install all dependencies listed there.
+2. Run `pip install -r requirements-dev.txt` to install required packages for testing.
+3. Create a `logs` folder above the EZID project root directory
+
+Directory setup in `settings/tests.py`
+```
+SITE_ROOT = PROJECT_ROOT = pathlib.Path(__file__).parent.parent.resolve()
+...
+
+# Dirs above PROJECT_ROOT
+HOME_DIR = (PROJECT_ROOT / '..').resolve()  # /apps/ezid
+MINTERS_PATH = HOME_DIR / 'var' / 'minters'  # /apps/ezid/var/minters
+LOG_DIR = HOME_DIR / 'logs'  # /apps/ezid/logs
+```
+
+## Setup the `DJANGO_SETTINGS_MODULE` environment variable
+
+There are a few ways to setup the `DJANGO_SETTINGS_MODULE` variable:
+
+1. Use the `export` command. This tells Django to find configurations from file “ezid/settings/tests.py”.
+```
+$ export DJANGO_SETTINGS_MODULE=settings.tests
+```
+
+1. Use the command line option `--ds=SETTINGS`:
+```
+$ pytest  --ds=settings.tests
+```
+
+## Setup the test database
+
+A script `prepare_test_db.sh` was created to automate the test database setup process. The script is in the home directory of the ezid project. The script does not require any parameters. Provide the root user password for your local mysql database when prompted.
+
+```
+./prepare_test_db.sh
+Enter password:
+``` 
+
+## Run Pytest
+Test scripts and data files are organized in the `ezid/tests` directory. Test scripts are named in the `test_scriptname.py` format.
+
+Run Pytest in the ezid project root directory:
+```
+pytest --ds=settings.tests tests/
+```
+
+To run a specific test script:
+```
+pytest --ds=settings.tests tests/test_api.py
+```
