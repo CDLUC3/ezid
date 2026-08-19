@@ -25,6 +25,7 @@
 - name: install poetry
   ansible.builtin.pip:
     name: poetry
+    state: latest
 
 - name: run pip install
   ansible.builtin.command:
