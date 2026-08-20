@@ -27,12 +27,12 @@
   </div>
 <script type="text/javascript">
   // submit form when owner filter changes
-  $("#owner_selected").bind("change", function(event){
+  $("#owner_selected").on("change", function(event){
       var frm = $('#usage_form');
       frm.attr('action', location.pathname);
-      frm.unbind('submit');
+      frm.off('submit');
       frm.attr('method', 'get');
-      frm.submit();
+      frm[0].submit();
       setTimeout(function() { loadingIndicator(); }, 4000);
   });
 </script>
@@ -75,7 +75,7 @@
 $(document).ready(function() {
   var li = $('#loading_issues').hide(),
       lc = $('#loading_crossref').hide();
-  $('#page-directselect-issues').change(function() {
+  $('#page-directselect-issues').on('change', function() {
     //Make a namespace for distinguishing ajax calls from issues table vs crossref table
     $(document).off(".crossRefCall");
     $(document).on("ajaxStart.issuesCall", function () {
@@ -84,7 +84,7 @@ $(document).ready(function() {
         li.hide();
     });
   });
-  $('#page-directselect-crossref').change(function() {
+  $('#page-directselect-crossref').on('change', function() {
     $(document).off(".issuesCall");
     $(document).on("ajaxStart.crossRefCall", function () {
         lc.show();

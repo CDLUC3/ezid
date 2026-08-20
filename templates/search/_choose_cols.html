@@ -35,7 +35,7 @@
 $(document).ready(function() {
 	
 	// reset button checks and unchecks these
-	$('#restore_defaults').click(function(e) {
+  $('#restore_defaults').on('click', function(e) {
 		e.preventDefault();
 		$('{{jquery_checked}}').prop('checked', true);
 		$('{{jquery_unchecked}}').prop('checked', false);

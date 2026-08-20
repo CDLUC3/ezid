@@ -35,34 +35,34 @@
 <script type="text/javascript">
   // ******* PAGE SIZE *******
   // submit on change
-  $("#page-size-{{ select_position }}").bind("change", function(event){
-    $("#ps-{{ select_position }}").submit();
+  $("#page-size-{{ select_position }}").on("change", function(event){
+    $("#ps-{{ select_position }}")[0].submit();
     setTimeout(function() { loadingIndicator(); }, 4000);
   });
 
   // *******   PAGE   *******
   // page selection input field: submit on enter key
-  $("#page-directselect-{{ select_position }}").keyup(function(e){ 
+  $("#page-directselect-{{ select_position }}").on('keyup', function(e){
     // submit value in input on enter key
     var code = e.which;
     if(code==13)e.preventDefault();
     if(code==32||code==13||code==188||code==186){
-      $("#p-{{ select_position }}").submit();
+      $("#p-{{ select_position }}")[0].submit();
       setTimeout(function() { loadingIndicator(); }, 4000);
     }
   });
 
   // ensure "Go" button triggers same logic as Enter key
-  $("#page-directselect-{{ select_position }}").siblings("button[type='submit']").click(function(e){
+  $("#page-directselect-{{ select_position }}").siblings("button[type='submit']").on('click', function(e){
     e.preventDefault();
-    $("#p_{{ select_position }}").submit();
+    $("#p_{{ select_position }}")[0].submit();
   });
 
   // page selection buttons change value in input field and submit on click
-  $("#p-{{ select_position }} button").click(function(e){
+  $("#p-{{ select_position }} button").on('click', function(e){
     var p = $(e.currentTarget).data('page');
     $('#page-directselect-{{ select_position }}').val(p);
-    $("#p-{{ select_position }}").submit();
+    $("#p-{{ select_position }}")[0].submit();
     setTimeout(function() { loadingIndicator(); }, 4000);
   });
 </script>

@@ -6,7 +6,7 @@
 /* Include file to attach javascript action to ID creation and edit forms
    Prepends 'http://' to target URL if it doesn't have one.   */
 
-$( "#create_form,#edit_form" ).submit(function( event ) {
+$( "#create_form,#edit_form" ).on('submit', function( event ) {
   var url = $('#target').val().trim();
   var slashes = '//';
 

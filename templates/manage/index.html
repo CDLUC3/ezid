@@ -8,8 +8,8 @@
 {% block heading %}{% content_heading _("Manage Your IDs") %}{% endblock %}
 {% block javascript %}
 $(document).ready(function(){
-  $("#manage__keywords").focus();
-  $("#reset_search").click(function(e){
+  $("#manage__keywords").trigger('focus');
+  $("#reset_search").on('click', function(e){
     $("#manage-form").find('input[type="text"], input[type="password"], input[type="file"], input[type="search"], select, textarea').val('');
     $("#manage-form").find('input[type="radio"], input[type="checkbox"]').removeAttr('checked').removeAttr('selected');
   });
