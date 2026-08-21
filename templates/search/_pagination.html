@@ -55,7 +55,7 @@
   // ensure "Go" button triggers same logic as Enter key
   $("#page-directselect-{{ select_position }}").siblings("button[type='submit']").on('click', function(e){
     e.preventDefault();
-    $("#p_{{ select_position }}")[0].submit();
+    $("#p-{{ select_position }}")[0].submit();
   });
 
   // page selection buttons change value in input field and submit on click
