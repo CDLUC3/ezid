@@ -59,7 +59,8 @@
   });
 
   // page selection buttons change value in input field and submit on click
-  $("#p-{{ select_position }} button").on('click', function(e){
+  // (scoped to data-page buttons so the Go submit button isn't affected)
+  $("#p-{{ select_position }} button[data-page]").on('click', function(e){
     var p = $(e.currentTarget).data('page');
     $('#page-directselect-{{ select_position }}').val(p);
     $("#p-{{ select_position }}")[0].submit();

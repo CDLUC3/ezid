@@ -30,7 +30,8 @@ $(document).ready(function() {
   });
 
   // page selection buttons change value in input field and submit on click
-  $("#p_{{name}} button").on('click', function(e){
+  // (scoped to data-page buttons so the Go submit button isn't affected)
+  $("#p_{{name}} button[data-page]").on('click', function(e){
     var p = $(e.currentTarget).data('page');
     $('#page-directselect-{{name}}').val(p).trigger('change');
     $("#p_{{name}}")[0].submit();
