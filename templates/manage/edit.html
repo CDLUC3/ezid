@@ -184,7 +184,7 @@
     function profileSimpleToAdvanced(e){
         e.preventDefault();
         $("input[type=hidden][name=simpleToAdvanced]").val('True');
-        $('#edit_form')[0].submit();
+        $('#edit_form').submit();
     }
     function setHidden(){
     	if ($('#_status_unavailable').is(':checked')) {
