@@ -19,14 +19,14 @@ $(document).ready(function() {
     var code = e.which;
     if(code==13)e.preventDefault();
     if(code==32||code==13||code==188||code==186){
-      $("#p_{{name}}")[0].submit();
+      $("#p_{{name}}").trigger('submit');
     }
   });
 
   // ensure "Go" button triggers same logic as Enter key
   $("#page-directselect-{{name}}").siblings("button[type='submit']").on('click', function(e){
     e.preventDefault();
-    $("#p_{{name}}")[0].submit();
+    $("#p_{{name}}").trigger('submit');
   });
 
   // page selection buttons change value in input field and submit on click
@@ -34,7 +34,7 @@ $(document).ready(function() {
   $("#p_{{name}} button[data-page]").on('click', function(e){
     var p = $(e.currentTarget).data('page');
     $('#page-directselect-{{name}}').val(p).trigger('change');
-    $("#p_{{name}}")[0].submit();
+    $("#p_{{name}}").trigger('submit');
   });
 });
 </script>
