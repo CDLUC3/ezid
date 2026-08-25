@@ -16,7 +16,7 @@ $(document).ready(function() {
     window.location.href = "/" + action + "/simple#tab-1-label";
   }
   // Act on keyboard enter or spacebar
-  $("#tab-1-label").keyup(function(e){
+  $("#tab-1-label").on('keyup', function(e){
     var code = e.which;
     if(code==13)e.preventDefault();
     if(code==32||code==13||code==188||code==186){
@@ -38,7 +38,7 @@ $(document).ready(function() {
   var orig_scheme = $('input[name=shoulder]:checked', '#create_form').val();
 
   // submit form when shoulder changes
-  $("input[name=shoulder]").change(function(e) {
+  $("input[name=shoulder]").on('change', function(e) {
       var new_scheme = e.target.value.split(':')[0];
       const target_id = e.target.id;
       if(orig_scheme.split(':')[0] != new_scheme){
@@ -57,7 +57,7 @@ $(document).ready(function() {
 // ***** Publish/Reserved Selection ***** //
 
   // When publish button is selected, hide or reveal harvesting selector
-  $("[name='publish']").bind("change", function(){
+  $("[name='publish']").on("change", function(){
       setHarvestingHidden();
   });
   setHarvestingHidden();
@@ -75,18 +75,18 @@ $(document).ready(function() {
 // ***** Profile Selection ***** //
 
   // submit form when profile changes
-  $("#current_profile").bind("change", function(event){
+  $("#current_profile").on("change", function(event){
       do_get('current_profile');
   });
 
   // When user submits:
   // If ID is submitted as reserved (publish=="False")
   // populate any empty required form fields with '(:tba)'
-  $('#create__button').click(function() {
+  $('#create__button').on('click', function() {
       if ($("input:radio[name=publish]:checked").val() == "False") {
           $('.create__form-element-group').find('input').each(function() {
               reqd_label = $(this).parents('.create__form-element-group').find('.fcontrol__label-required');
-              if ((reqd_label.length > 0) && ($.trim( $(this).val() ) == '')) {
+              if ((reqd_label.length > 0) && (( $(this).val() || '' ).trim() == '')) {
                   if ((reqd_label.attr('for') == 'dc.date') ||
                     (reqd_label.attr('for') == 'publicationYear')) {
                       $(this).val('0000');
@@ -96,7 +96,7 @@ $(document).ready(function() {
               }
           });
       }
-      $('#create_form').submit();
+      $('#create_form').trigger('submit');
   });
 
 
@@ -110,9 +110,9 @@ $(document).ready(function() {
         var input = $("<input>", { type: "hidden", name: "anchor", value: includeAnchor});
         frm.append($(input));
       }
-      frm.unbind('submit');
+      frm.off('submit');
       frm.attr('method', 'get');
-      frm.submit();
+      frm[0].submit();
   }
 
 });

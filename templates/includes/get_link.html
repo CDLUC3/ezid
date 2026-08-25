@@ -4,7 +4,7 @@
 
 <script type="text/javascript">
   // Copy URL
-  $('#copy_link').click(function(){
+  $('#copy_link').on('click', function(){
     $('#url_to_copy').fadeOut(100, function() {
       $('#copy_message').fadeIn(400).delay(600);
       $('#id_as_url__box').css('background-color', '#F9EDBE');

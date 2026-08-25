@@ -178,8 +178,8 @@
   
   <script type="text/javascript">
         // submit form when profile changed
-          $("#current_profile").bind("change", function(event){
-            $("#edit_form").submit();
+          $("#current_profile").on("change", function(event){
+            $("#edit_form")[0].submit();
           });
     function profileSimpleToAdvanced(e){
         e.preventDefault();
@@ -201,8 +201,8 @@
 				$("#indexing_row").show();
 			}
     }
-		$("[name='_status']").bind("change", function(){
-			setHidden();
+      $("[name='_status']").on("change", function(){
+          setHidden();
     });
     setHidden();
   </script>

@@ -12,7 +12,7 @@ $(document).ready(function () {
   $('#js-header__nav').attr('aria-expanded', 'false');
 
   // Toggle classes and attributes:
-  $('#js-header__nav-button').click(function () {
+  $('#js-header__nav-button').on('click', function () {
 
     $('#js-header__nav').toggleClass('header__nav header__nav--selected', 300, 'easeInOutCubic');
 
@@ -32,7 +32,7 @@ $(document).ready(function () {
 
   $('#accordion__section-' + urlhash).attr('open', '');
 
-  $('.accordion__title').click(function () {
+  $('.accordion__title').on('click', function () {
 
     // If an accordion title is clicked, close all the other sections if they are open and set their aria-expanded attributes to false:
     if ($(this).parent().siblings().attr('open', '')) {

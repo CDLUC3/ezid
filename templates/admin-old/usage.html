@@ -97,8 +97,8 @@
   </div>
   
   <script type="text/javascript">
-  	$("#choice").bind("change", function(event){
-      $("#usage_form").submit();
+    $("#choice").on("change", function(event){
+      $("#usage_form")[0].submit();
     });
   </script>
 {% endblock %}
