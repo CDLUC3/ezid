@@ -8,8 +8,8 @@
 {% block heading %}{% content_heading _("Manage Your IDs") %}{% endblock %}
 {% block javascript %}
 $(document).ready(function(){
-  $("#manage__keywords").focus();
-  $("#reset_search").click(function(e){
+  $("#manage__keywords").trigger('focus');
+  $("#reset_search").on('click', function(e){
     $("#manage-form").find('input[type="text"], input[type="password"], input[type="file"], input[type="search"], select, textarea').val('');
     $("#manage-form").find('input[type="radio"], input[type="checkbox"]').removeAttr('checked').removeAttr('selected');
   });
@@ -48,7 +48,7 @@ $(document).ready(function(){
 {% if collapse_advanced_search == 'collapsed' %}
 <div id="showhide2__accordion-body" class="showhide2__accordion-body collapse" aria-expanded="false">
 {% else %}
-<div id="showhide2__accordion-body" class="showhide2__accordion-body collapse in" aria-expanded="true"/>
+<div id="showhide2__accordion-body" class="showhide2__accordion-body collapse show" aria-expanded="true">
 {% endif %}
   <div class="row"><p>No wildcards are enabled in advanced search (such as asterisks, question marks)</p></div>
   <div class="row">

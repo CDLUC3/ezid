@@ -8,7 +8,7 @@
 .carousel-inner.vertical {
   height: 100%;
 
-  > .item {
+  > .carousel-item {
     -o-transition: 1.3s ease-in-out top;
     -webkit-transition: 1.3s ease-in-out top;
     transition: 1.3s ease-in-out top;
@@ -57,7 +57,7 @@
 @media all and (transform-3d),
 (-webkit-transform-3d) {
 
-  .carousel-inner.vertical > .item {
+  .carousel-inner.vertical > .carousel-item {
     -o-transition: -o-transform 1.3s ease-in-out;
     -webkit-transition: -webkit-transform 1.3s ease-in-out;
     transition: transform 1.3s ease-in-out;
@@ -67,23 +67,23 @@
     perspective: 1000;
   }
 
-  .carousel-inner.vertical > .item.next,
-  .carousel-inner.vertical > .item.active.right {
+  .carousel-inner.vertical > .carousel-item.next,
+  .carousel-inner.vertical > .carousel-item.active.right {
     top: 0;
     -webkit-transform: translate3d(0, 100%, 0);
     transform: translate3d(0, 100%, 0);
   }
 
-  .carousel-inner.vertical > .item.prev,
-  .carousel-inner.vertical > .item.active.left {
+  .carousel-inner.vertical > .carousel-item.prev,
+  .carousel-inner.vertical > .carousel-item.active.left {
     top: 0;
     -webkit-transform: translate3d(0, -100%, 0);
     transform: translate3d(0, -100%, 0);
   }
 
-  .carousel-inner.vertical > .item.next.left,
-  .carousel-inner.vertical > .item.prev.right,
-  .carousel-inner.vertical > .item.active {
+  .carousel-inner.vertical > .carousel-item.next.left,
+  .carousel-inner.vertical > .carousel-item.prev.right,
+  .carousel-inner.vertical > .carousel-item.active {
     top: 0;
     -webkit-transform: translate3d(0, 0, 0);
     transform: translate3d(0, 0, 0);

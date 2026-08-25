@@ -39,7 +39,7 @@
 {% if collapse_advanced_search == 'collapsed' %}
 <div id="showhide2__accordion-body" class="showhide2__accordion-body collapse" aria-expanded="false">
 {% else %}
-<div id="showhide2__accordion-body" class="showhide2__accordion-body collapse in" aria-expanded="true"/>
+<div id="showhide2__accordion-body" class="showhide2__accordion-body collapse show" aria-expanded="true">
 {% endif %}
   <div class="row"><p>No wildcards are enabled in advanced search (such as asterisks, question marks)</p></div>
   <div class="row">
@@ -139,6 +139,6 @@
 <script type="text/javascript" src="/static/javascripts/help_box_.js"></script>
 <script type="text/javascript">
   // focus on page load
-  $("#search__simple-label").focus();
+  $("#search__simple-label").trigger('focus');
 </script>
 {% endblock %}

@@ -43,12 +43,12 @@
 <script type="text/javascript">
 $(document).ready(function(){
   // submit form when owner filter changes
-  $("#owner_selected").bind("change", function(event){
+  $("#owner_selected").on("change", function(event){
       var frm = $('#owner_filter_form');
       frm.attr('action', location.pathname);
-      frm.unbind('submit');
+      frm.off('submit');
       frm.attr('method', 'get');
-      frm.submit();
+      frm[0].submit();
       setTimeout(function() { loadingIndicator(); }, 4000);
   });
   // Record a Google Analytics event when user clicks "Download All"

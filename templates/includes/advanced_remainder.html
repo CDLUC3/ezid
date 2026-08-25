@@ -27,9 +27,9 @@
   // Coming from the request, before it's being instantiated by the form object
   $('#remainder').val('{{ remainder }}');
 {% endif %}
-  $('#remainder').focus(function() {
+  $('#remainder').on('focus', function() {
     $(this).select();
-	}).mouseup(function() {
+	}).on('mouseup', function() {
 		// this is to hack around Safari problems in which the ordering
 		// of events means that any selection made by a click gets immediately
 		// de-selected (thus the timer)
@@ -71,7 +71,7 @@
   }
   
   // to force recalculation of preview when shoulder radio changed
-  $('#create_form input:radio[name=shoulder]').change(function(){
+  $('#create_form input:radio[name=shoulder]').on('change', function(){
     remainderValue = (new Date()).valueOf(); // triggers as changed from old value
   });
   checkRemainderChanged();

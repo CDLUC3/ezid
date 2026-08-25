@@ -14,26 +14,27 @@ $(document).ready(function() {
 
   // *******   PAGE   *******
   // page selection input field: submit on enter key
-  $("#page-directselect-{{name}}").keyup(function(e){ 
+  $("#page-directselect-{{name}}").on('keyup', function(e){
     // submit value in input on enter key
     var code = e.which;
     if(code==13)e.preventDefault();
     if(code==32||code==13||code==188||code==186){
-      $("#p_{{name}}").submit();
+      $("#p_{{name}}").trigger('submit');
     }
   });
 
   // ensure "Go" button triggers same logic as Enter key
-  $("#page-directselect-{{name}}").siblings("button[type='submit']").click(function(e){
+  $("#page-directselect-{{name}}").siblings("button[type='submit']").on('click', function(e){
     e.preventDefault();
-    $("#p_{{name}}").submit();
+    $("#p_{{name}}").trigger('submit');
   });
 
   // page selection buttons change value in input field and submit on click
-  $("#p_{{name}} button").click(function(e){
+  // (scoped to data-page buttons so the Go submit button isn't affected)
+  $("#p_{{name}} button[data-page]").on('click', function(e){
     var p = $(e.currentTarget).data('page');
-    $('#page-directselect-{{name}}').val(p).change();
-    $("#p_{{name}}").submit();
+    $('#page-directselect-{{name}}').val(p).trigger('change');
+    $("#p_{{name}}").trigger('submit');
   });
 });
 </script>

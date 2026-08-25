@@ -51,7 +51,7 @@ $(document).ready(function() {
   };
 
   // User able to dismiss/close help window by hitting escape key
-  $(document).keyup(function (e) {
+  $(document).on('keyup', function (e) {
     if (e.which === 27) {
       $('[data-toggle="popover"]').each(function () {
         $(this).popover('hide');

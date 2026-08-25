@@ -80,7 +80,7 @@
       $(document).ready(function () {
         toggleIdFields();
         //Whenever ID type changes
-        $(".id_type_button").change(function () {
+        $(".id_type_button").on('change', function () {
           toggleIdFields();
         });
       });
