@@ -7,7 +7,7 @@
 {% block javascript %}
 // Open accordion anchors from Learn Menu (single URL) without reloading page
 $(document).ready(function(){
-  $(".header__nav-subitem").click(function() {
+  $(".header__nav-subitem").on('click', function() {
     window.location.href = $(this).attr("href");
     window.location.reload(false);
   });

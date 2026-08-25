@@ -9,7 +9,7 @@ $(document).ready(function() {
   /* Determine value of 'current_profile' based on shoulder that is selected  */
   var orig_val = $('input[name=shoulder]:checked', '#create_form').val();
 
-  $("input[name=shoulder]").change(function(e) {
+  $("input[name=shoulder]").on('change', function(e) {
     var new_scheme = e.target.value.split(':')[0];
     const target_id = e.target.id;
     if(orig_val.split(':')[0] != new_scheme){
@@ -32,7 +32,7 @@ $(document).ready(function() {
     window.location.href = "/" + action + "/advanced#tab-2-label";
   }
   // Act on keyboard enter or spacebar
-  $("#tab-2-label").keyup(function(e){
+  $("#tab-2-label").on('keyup', function(e){
     var code = e.which;
     if(code==13)e.preventDefault();
     if(code==32||code==13||code==188||code==186){
@@ -54,9 +54,9 @@ $(document).ready(function() {
         var input = $("<input>", { type: "hidden", name: "anchor", value: includeAnchor});
         frm.append($(input));
       }
-      frm.unbind('submit');
+      frm.off('submit');
       frm.attr('method', 'get');
-      frm.submit();
+      frm[0].submit();
   }
 
 });

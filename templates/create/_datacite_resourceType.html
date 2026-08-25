@@ -25,7 +25,7 @@ The resourceType form consists of two fields
 <script type="text/javascript">
   $(document).ready(function() {
     //* set the resourceType to the same as resourceTypeGeneral
-    $(':submit').click(function(e)
+    $(':submit').on('click', function(e)
     {
       var gen = $('#resourceType-resourceTypeGeneral').val();
       var res_type = $('#resourceType').val();                 

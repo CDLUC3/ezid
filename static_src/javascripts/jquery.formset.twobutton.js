@@ -118,7 +118,7 @@
             if (!showAddButton()) addButton.hide();
         }
 
-        addButton.click(function() {
+        addButton.on('click', function() {
             var formCount = parseInt(totalForms.val()),
                 row = options.formTemplate.clone(true).removeClass('formset-custom-template'),
                 lastRow = getLastRow();
@@ -141,7 +141,7 @@
             return false;
         });
 
-        delButton.click(function() {
+        delButton.on('click', function() {
             if (confirm("Please confirm you want to remove last item.")) {
                 var lastRow = getLastRow();
                 if (totalForms.val() == 1) {

@@ -45,7 +45,7 @@ $(document).ready(function() {
   $("select").val({{ proxy_users_picked_list|safe }});
 
   // On modal close: Populate textarea with selected proxy usernames.
-  $("#submit_close").click(function(e){
+  $("#submit_close").on('click', function(e){
     var assigned = [],
         s = $('select option:selected'),
         comma = new RegExp(","),

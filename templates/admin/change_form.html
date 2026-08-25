@@ -67,16 +67,16 @@
     <script type="text/javascript">
         (function($) {
             $(document).ready(function() {
-                $('.add-another').click(function(e) {
+                $('.add-another').on('click', function(e) {
                     e.preventDefault();
                     showAddAnotherPopup(this);
                 });
-                $('.related-lookup').click(function(e) {
+                $('.related-lookup').on('click', function(e) {
                     e.preventDefault();
                     showRelatedObjectLookupPopup(this);
                 });
             {% if adminform and add %}
-                $('form#{{ opts.model_name }}_form :input:visible:enabled:first').focus()
+                $('form#{{ opts.model_name }}_form :input:visible:enabled:first').trigger('focus')
             {% endif %}
             });
         })(django.jQuery);

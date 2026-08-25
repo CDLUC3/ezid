@@ -65,16 +65,16 @@
 </div>
 <script type="text/javascript">
   // submit form when owner filter changes
-  $("#month_from").bind("change", function(event){
+  $("#month_from").on("change", function(event){
       do_submit($('#month_from_form'));
   });
-  $("#month_to").bind("change", function(event){
+  $("#month_to").on("change", function(event){
       do_submit($('#month_to_form'));
   });
   function do_submit(frm){
     frm.attr('action', location.pathname);
-    frm.unbind('submit');
+    frm.off('submit');
     frm.attr('method', 'get');
-    frm.submit();
+    frm[0].submit();
   }  
 </script>
