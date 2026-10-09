@@ -1,23 +1,52 @@
 // ##### Home Page Banner Component ##### //
 
 .home-banner {
-	height: 64vw;
+	position: relative;
+	min-height: 64vw;
+	height: auto;
 	margin: 0 -10px;
+	padding-bottom: 2rem;
 	background-color: $design-primary-color;
 	background-repeat: no-repeat;
 	background-position: bottom center;
-	background-size: 100%;
-	// background-image exsists as a style inline with the HTML
+	background-size: cover;
+	// background-image exists as a style inline with the HTML
 
 	@include bp(screen1) {
-		height: 300px;
-		background-position: top;
-		background-size: cover;
+		min-height: 300px;
+		background-position: top center;
+		padding-bottom: 2.5rem;
+	}
+
+	&::before {
+		content: "";
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		pointer-events: none;
+		// Darkening overlay gradient: balanced to meet WCAG AA/AAA while keeping the hero image visible and vibrant
+		background: linear-gradient(
+			135deg,
+			rgba(0, 42, 54, 0.65) 0%,
+			rgba(0, 42, 54, 0.58) 60%,
+			rgba(0, 42, 54, 0.38) 100%
+		);
 	}
 
 }
 
+.home-banner__lead-container {
+	position: relative;
+	z-index: 1;
+	max-width: 1000px;
+	margin: 0 auto;
+}
+
 .home-banner__lead {
+	position: relative;
+	z-index: 1;
 	width: 71vw;
 	margin: 0 auto;
 	padding: 3vw 0 0;
@@ -26,6 +55,7 @@
 
 	@include bp(screen1) {
 		width: 430px;
+		max-width: calc(100% - 20px);
 		margin: 0;
 		padding: 80px 0 0 10px;
 		text-align: left;
@@ -42,6 +72,7 @@
 	color: $design-white-color;
 	font-size: 5vw;
 	font-weight: bold;
+	text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 
 	@include bp(screen1) {
 		font-size: 2em;
@@ -54,6 +85,7 @@
 	height: auto; // use padding below to center button text
 	margin: 2vw 0 0;
 	padding: 1.5vw 5vw 1.5vw 2vw; // make room for background arrow icon
+	border: 1.5px solid $design-white-color;
 	background: url('../images/icon_double-arrow.svg') no-repeat, linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
 	background-position: right 10px center; // apply modernizr fallback here
 	background-size: 0.8em;
@@ -65,9 +97,16 @@
 		font-size: 0.9em;
 	}
 
-	&:hover,
-	&:focus {
+	&:hover {
 		text-decoration: underline;
 	}
 
+	&:focus,
+	&:focus-visible {
+		text-decoration: underline;
+		outline: 2px solid $design-white-color;
+		outline-offset: 2px;
+	}
+
 }
+

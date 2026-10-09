@@ -1683,22 +1683,44 @@ Selector pattern using above mixin:
 }
 
 .home-banner {
-  height: 64vw;
+  position: relative;
+  min-height: 64vw;
+  height: auto;
   margin: 0 -10px;
+  padding-bottom: 2rem;
   background-color: rgb(0, 95, 112);
   background-repeat: no-repeat;
   background-position: bottom center;
-  background-size: 100%;
+  background-size: cover;
 }
 @media (min-width: 480px) {
   .home-banner {
-    height: 300px;
-    background-position: top;
-    background-size: cover;
+    min-height: 300px;
+    background-position: top center;
+    padding-bottom: 2.5rem;
   }
+}
+.home-banner::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(0, 42, 54, 0.65) 0%, rgba(0, 42, 54, 0.58) 60%, rgba(0, 42, 54, 0.38) 100%);
+}
+
+.home-banner__lead-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
 .home-banner__lead {
+  position: relative;
+  z-index: 1;
   width: 71vw;
   margin: 0 auto;
   padding: 3vw 0 0;
@@ -1709,6 +1731,7 @@ Selector pattern using above mixin:
 @media (min-width: 480px) {
   .home-banner__lead {
     width: 430px;
+    max-width: calc(100% - 20px);
     margin: 0;
     padding: 80px 0 0 10px;
     text-align: left;
@@ -1725,6 +1748,7 @@ Selector pattern using above mixin:
   color: rgb(255, 255, 255);
   font-size: 5vw;
   font-weight: bold;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 @media (min-width: 480px) {
   .home-banner__lead-text {
@@ -1736,6 +1760,7 @@ Selector pattern using above mixin:
   height: auto;
   margin: 2vw 0 0;
   padding: 1.5vw 5vw 1.5vw 2vw;
+  border: 1.5px solid rgb(255, 255, 255);
   background: url("../images/icon_double-arrow.svg") no-repeat, -webkit-gradient(linear, left top, left bottom, from(rgb(138, 25, 48)), to(rgb(116, 22, 41)));
   background: url("../images/icon_double-arrow.svg") no-repeat, linear-gradient(to bottom, rgb(138, 25, 48), rgb(116, 22, 41));
   background-position: right 10px center;
@@ -1749,8 +1774,13 @@ Selector pattern using above mixin:
     font-size: 0.9em;
   }
 }
-.home-banner__lead-button:hover, .home-banner__lead-button:focus {
+.home-banner__lead-button:hover {
   text-decoration: underline;
+}
+.home-banner__lead-button:focus, .home-banner__lead-button:focus-visible {
+  text-decoration: underline;
+  outline: 2px solid rgb(255, 255, 255);
+  outline-offset: 2px;
 }
 
 .login-menu__container {
