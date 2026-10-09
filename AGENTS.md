@@ -16,7 +16,6 @@ EZID loads two stylesheets in `templates/layouts/base.html`:
 - **Never edit compiled files directly:** Do not manually edit `ui_library/css/main2.min.css` or `static_src/stylesheets/main2.min.css`.
 - **Compile command:** Run `npx gulp build` from the repo root after changing SCSS or JS. This compiles assets to `ui_library/` and automatically copies `main2.min.css` and `main2.min.js` into `static_src/`.
 - **Legacy styles:** `static_src/stylesheets/main.css` is uncompiled. Only edit directly if a style exists exclusively there; prefer migrating styles to `dev/scss/`.
-- **External content warning:** "About" and documentation pages originate from a separate `info-pages` repository—do not edit local static copies of those pages.
 
 ## JavaScript
 - Source files reside in `dev/js/` (bundled and minified into `main2.min.js` via `npx gulp build`).
@@ -32,6 +31,13 @@ EZID loads two stylesheets in `templates/layouts/base.html`:
   - ARIA attributes: Use `aria-expanded`, `aria-controls`, `aria-live`, and `aria-hidden` accurately for toggles, alerts, and dynamic content.
   - Color contrast: Maintain WCAG 2.1 AA ratios (4.5:1 for normal text, 3:1 for large text and UI components).
 
+## Informational Pages (`ezid-info-pages`)
+Informational pages ("About", FAQs, documentation) originate from a separate repository: [ezid-info-pages](https://github.com/CDLUC3/ezid-info-pages).
+- **Source of truth in local dev:** Checked out at `templates/info/` (a separate git clone ignored by EZID's `.gitignore`).
+- **Where to make edits:** Edit files directly in `templates/info/`.
+- **Separate Git repository & PRs:** Commits and PRs for these pages must be made in the `ezid-info-pages` repository (`git -C templates/info ...`), not the main EZID repository. Deploys incorporate updates from `ezid-info-pages`.
+- **Do NOT edit duplicate copies:** Never edit files in `static_src/info/` or `static/info/`. Multiple copies exist (partially through historical commits and `collectstatic`), but editing them will not persist to the deployed site and will cause confusion.
+
 ## Common Commands
 ```bash
 # Node & UI Build
@@ -39,6 +45,10 @@ nvm use
 npm install
 npx gulp build               # Compile SCSS/JS and copy to static_src/
 npx gulp                     # Launch local UI preview server (localhost:3000)
+
+# Info Pages (ezid-info-pages repo)
+git -C templates/info status # Check status of info pages repo
+git -C templates/info diff   # View diff in info pages repo
 
 # Django & Tests
 pytest --ds=settings.tests tests/           # Run test suite
