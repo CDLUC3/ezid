@@ -1,63 +1,66 @@
 {% load layout_extras %}
 {% load menus %}
+{% load i18n %}
 
-<div class="header__admin-text">
-&nbsp;
-{% if authenticatedUser %}
-Welcome {{ authenticatedUser.username }}!
-{% endif %}
-</div>
-
-<header role="banner" class="header">
-  <div class="header__logos">
-    <a class="header__main-logo-link" href="/">
-      <picture>
-        <source srcset="/static/images/logo_small-screen.svg" type="image/svg+xml" media="(max-width: 767px)" />
-        <img srcset="/static/images/logo.svg" src="data:image/gif;base64,R0lGODlhAQABAAAAADs=" class="header__main-logo-image" alt="University of California, Easy ID, identifiers made easy">
-      </picture>
-    </a>
-    {% host_based_include "includes/localized/_/logo.html" %}
+<header role="banner">
+  <div class="header__admin-text">
+  &nbsp;
+  {% if authenticatedUser %}
+  Welcome {{ authenticatedUser.username }}!
+  {% endif %}
   </div>
 
-  <button type="button" id="js-header__nav-button" class="header__nav-button" aria-controls="js-header__nav">
-    <img src="/static/images/mobile-menu.svg" alt="Show or hide navigation" class="header__nav-button-icon">
-  </button>
-
-  <nav role="navigation" id="js-header__nav" class="header__nav--selected">
-    <a class="header__nav-item-search" href="/search">Search</a>
-    <details id="header__nav-details-learn" aria-expanded="false" aria-label="Learn about EZID">
-      <summary class="header__nav-item-learn" role="button">Learn</summary>
-      <div class="header__subnav-panel">
-        <a class="header__nav-subitem" href="{% url "ui_home.learn" %}#01">What Is EZID?</a>
-        <a class="header__nav-subitem" href="{% url "ui_home.learn" %}#02">Current Users</a>
-        <a class="header__nav-subitem" href="{% url "ui_home.learn" %}#04">Documentation</a>
-        <a class="header__nav-subitem" href="{% url "ui_home.learn" %}#05">Accessibility</a>
-        <a class="header__nav-subitem" href="/learn/doi_services_faq">FAQ</a>
-        <a class="header__nav-subitem" href="/doc/apidoc.html">API Guide</a>
-        <a class="header__nav-subitem" href="{% url "ui_demo.index" %}">EZID Demo</a>
-      </div>
-    </details>
-    <a class="header__nav-item-contact" href="{% url "ui.contact" %}">Contact</a>
-    <div class="header__loginout">
-      {% if authenticatedUser %}
-        <form action="/logout" role="form">
-          <button class="header__loginout-link" aria-label="Logout">Logout</button>
-        </form>
-      {% else %}
-      <button id="js-header__loginout-button" class="header__loginout-link" aria-label="Login" aria-haspopup="dialog"
-          aria-controls="js-login-modal">
-        Login
-      </button>
-      {% endif %}
+  <div class="header">
+    <div class="header__logos">
+      <a class="header__main-logo-link" href="/">
+        <picture>
+          <source srcset="/static/images/logo_small-screen.svg" type="image/svg+xml" media="(max-width: 767px)" />
+          <img srcset="/static/images/logo.svg" src="data:image/gif;base64,R0lGODlhAQABAAAAADs=" class="header__main-logo-image" alt="University of California, Easy ID, identifiers made easy">
+        </picture>
+      </a>
+      {% host_based_include "includes/localized/_/logo.html" %}
     </div>
-  </nav>
+
+    <button type="button" id="js-header__nav-button" class="header__nav-button" aria-controls="js-header__nav">
+      <img src="/static/images/mobile-menu.svg" alt="Show or hide navigation" class="header__nav-button-icon">
+    </button>
+
+    <nav role="navigation" id="js-header__nav" class="header__nav--selected" aria-label="{% trans "Main" %}">
+      <a class="header__nav-item-search" href="/search">Search</a>
+      <details id="header__nav-details-learn" aria-expanded="false" aria-label="Learn about EZID">
+        <summary class="header__nav-item-learn" role="button">Learn</summary>
+        <div class="header__subnav-panel">
+          <a class="header__nav-subitem" href="{% url "ui_home.learn" %}#01">What Is EZID?</a>
+          <a class="header__nav-subitem" href="{% url "ui_home.learn" %}#02">Current Users</a>
+          <a class="header__nav-subitem" href="{% url "ui_home.learn" %}#04">Documentation</a>
+          <a class="header__nav-subitem" href="{% url "ui_home.learn" %}#05">Accessibility</a>
+          <a class="header__nav-subitem" href="/learn/doi_services_faq">FAQ</a>
+          <a class="header__nav-subitem" href="/doc/apidoc.html">API Guide</a>
+          <a class="header__nav-subitem" href="{% url "ui_demo.index" %}">EZID Demo</a>
+        </div>
+      </details>
+      <a class="header__nav-item-contact" href="{% url "ui.contact" %}">Contact</a>
+      <div class="header__loginout">
+        {% if authenticatedUser %}
+          <form action="/logout" role="form">
+            <button class="header__loginout-link" aria-label="Logout">Logout</button>
+          </form>
+        {% else %}
+        <button id="js-header__loginout-button" class="header__loginout-link" aria-label="Login" aria-haspopup="dialog"
+            aria-controls="js-login-modal">
+          Login
+        </button>
+        {% endif %}
+      </div>
+    </nav>
+  </div>
 </header>
 {% if authenticatedUser %}
-<div class="login-menu__container">
+<nav class="login-menu__container" aria-label="{% trans "User" %}">
   <div class="login-menu">
   {% menu_user menu_item session %}
   </div>
-</div>
+</nav>
 <p class="vertical-buffer-20"></p>
 {% endif %}
 {% include "includes/login-modal.html" %}

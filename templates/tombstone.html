@@ -42,7 +42,7 @@
 <div class="container api">
   <div id="tombstone">
   <br/>
-  <div class="header__logos">
+  <header role="banner" class="header__logos">
 
     <a class="header__main-logo-link" href="/">
       <picture>
@@ -52,28 +52,30 @@
       </picture>
     </a>
     {% host_based_include "includes/localized/_/logo.html" %}
-  </div>
+  </header>
 
-  <p class="general__note">{{ identifier }}</p>
-  <p id="title" class="general__note">{{ reason }}</p>
+  <main id="main-content">
+    <p class="general__note">{{ identifier }}</p>
+    <p id="title" class="general__note">{{ reason }}</p>
 
-  {% if htmlMode %}
-  {{ metadata|safe }}
-  {% else %}
-  <table border="1" id="metadata" class="leftheaders docutils">
-    <tbody valign="top">
-    {% for m in metadata %}
-    <tr>
-    <td>{{ m.label }}</td>
-    <td>{{ m.value|linebreaksbr }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-  </table>
-  {% endif %}
+    {% if htmlMode %}
+    {{ metadata|safe }}
+    {% else %}
+    <table border="1" id="metadata" class="leftheaders docutils">
+      <tbody valign="top">
+      {% for m in metadata %}
+      <tr>
+      <td>{{ m.label }}</td>
+      <td>{{ m.value|linebreaksbr }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    </table>
+    {% endif %}
 
-  <p><a href="{{ identifierLink }}">{% trans "Descriptive information" %}</a> 
-  {% trans "provided by" %} <a href="/">EZID</a>.</p>
+    <p><a href="{{ identifierLink }}">{% trans "Descriptive information" %}</a> 
+    {% trans "provided by" %} <a href="/">EZID</a>.</p>
+  </main>
   </div>
 </div>
 </body>

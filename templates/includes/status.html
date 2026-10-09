@@ -1,6 +1,7 @@
+{% load i18n %}
 {% if alertMessage is not None  and alertMessage != "" %}
   {% if not session or not "hide_alert" in session or not session.hide_alert %}
-  <div id="ustatus" class="alert alert-warning" role="alert">
+  <div id="ustatus" class="alert alert-warning" role="region" aria-label="{% trans "System alert" %}" aria-live="polite">
     <div class="alert-text">
       <a href="#" class="close not-text" data-bs-dismiss="alert">&times;</a>
       {{ alertMessage|safe }}
