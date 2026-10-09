@@ -10,7 +10,9 @@
 	background-repeat: no-repeat;
 	background-position: bottom center;
 	background-size: cover;
-	// background-image exists as a style inline with the HTML
+	// Hero background images are decorative (WCAG SC 1.1.1 / Technique C9), convey no unique information,
+	// and are intentionally loaded via CSS background-image so assistive technologies ignore them.
+	// background-image exists as a style inline with the HTML or set dynamically via JS.
 
 	@include bp(screen1) {
 		min-height: 300px;
