@@ -3,8 +3,9 @@
 {% load i18n %}
 
 {% block title %}{%trans "Dashboard" %}{% endblock %}
-{% comment %}Heading hidden, only readable by screen readers{% endcomment %}
-{% block heading %}{% content_heading heading_user_display %}{% endblock %}
+{% block heading %}
+  <h1 class="visually-hidden">{{ heading_user_display|default:_("EZID Dashboard") }}</h1>
+{% endblock %}
 {% block content %}
 <div class="container vertical-buffer-xs">
 {% if display_adminlink %}
@@ -92,8 +93,6 @@ $(document).ready(function() {
         lc.hide();
     });
   });
-  // Hide header always
-  $('.heading__primary-container').hide();
 });
 </script>
 {% endblock %}

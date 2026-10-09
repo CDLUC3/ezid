@@ -18,9 +18,11 @@
     return img;
   }
 {% endblock %}
+{% block heading %}
+  <h1 class="visually-hidden">EZID: {% trans "Identifiers made easy" %}</h1>
+{% endblock %}
 {% block content %}
 {% csrf_token %}
-    <h1 style="display: none;">EZID: {% trans "Identifiers made easy" %}</h1>
     <!-- Home Banner (Decorative background image conveys no unique information and is kept hidden from assistive technology per WCAG SC 1.1.1) -->
     <div class="home-banner">
       <div class="home-banner__lead-container">
@@ -41,7 +43,7 @@
       i.e.: <a class="don't_translate_classes" href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a>
       {% endcomment %}
       {% blocktrans trimmed %}
-          <b>NOTE:</b> This is just a demo.
+          <strong class="home__identifier-lead-note-label">NOTE:</strong> This is just a demo.
       {% endblocktrans %}
           &nbsp;&nbsp;
       {% if not authenticatedUser %}

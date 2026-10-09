@@ -10,10 +10,19 @@
     @extend %link__primary;
   }
 
-  h1 {
+  h1,
+  h2 {
     @extend %heading__1;
     border-bottom: 1px dotted $design-black-color;
     color: $design-primary-color;
+  }
+
+  h3 {
+    color: $design-primary-color;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-top: 18px;
+    margin-bottom: 8px;
   }
 
   blockquote {

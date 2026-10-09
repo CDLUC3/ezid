@@ -27,7 +27,7 @@ only) to ask questions or report problems:</p>
 <blockquote>
 <a class="reference external" href="mailto:ezid-l&#64;listserv.ucop.edu">ezid-l&#64;listserv.ucop.edu</a></blockquote>
 <div class="section" id="contents">
-<h1>Contents</h1>
+<h2>Contents</h2>
 <ul class="simple">
 <li><a class="reference internal" href="#framework">Framework</a></li>
 <li><a class="reference internal" href="#api-vs-ui">API vs. UI</a></li>
@@ -72,7 +72,7 @@ only) to ask questions or report problems:</p>
 </ul>
 </div>
 <div class="section" id="framework">
-<h1>Framework</h1>
+<h2>Framework</h2>
 <p>The EZID API is available from the base URL</p>
 <blockquote>
 <a class="reference external" href="https://ezid.cdlib.org">https://ezid.cdlib.org</a></blockquote>
@@ -144,7 +144,7 @@ identifiers:</p>
 </table>
 </div>
 <div class="section" id="api-vs-ui">
-<h1>API vs. UI</h1>
+<h2>API vs. UI</h2>
 <p>The EZID UI and API share some URLs (the base URL is the same for
 both) but their behavior is different.  For example, in the API a GET
 operation on an EZID URL returns client-parseable metadata (see
@@ -168,7 +168,7 @@ c.connect();
 </pre>
 </div>
 <div class="section" id="authentication">
-<h1>Authentication</h1>
+<h2>Authentication</h2>
 <p>Most requests require authentication.  The EZID API supports two
 methods of authentication:</p>
 <ol class="arabic">
@@ -263,7 +263,7 @@ EZID returns a 403 HTTP status code and the status line &quot;error:
 forbidden&quot;.</p>
 </div>
 <div class="section" id="request-response-bodies">
-<h1>Request &amp; response bodies</h1>
+<h2>Request &amp; response bodies</h2>
 <p>Request and response bodies are used to transmit identifier metadata.
 The HTTP content type for all bodies is &quot;text/plain&quot; using UTF-8
 charset encoding.  In request bodies, if no charset encoding is
@@ -383,7 +383,7 @@ error: bad request - no such identifier
 </pre>
 </div>
 <div class="section" id="error-reporting">
-<h1>Error reporting</h1>
+<h2>Error reporting</h2>
 <p>An error is indicated by both an HTTP status code and an error status
 line of the form &quot;error: <span class="hl1">reason</span>&quot;.  For example:</p>
 <pre class="literal-block">
@@ -413,7 +413,7 @@ if (c.getResponseCode() &lt; 400) {
 </pre>
 </div>
 <div class="section" id="operation-get-identifier-metadata">
-<h1>Operation: get identifier metadata</h1>
+<h2>Operation: get identifier metadata</h2>
 <p>Metadata can be retrieved for any existing identifier; no
 authentication is required.  Simply issue a GET request to the
 identifier's EZID URL.  Here is a sample interaction:</p>
@@ -447,7 +447,7 @@ from citation metadata standards; see <a class="reference internal" href="#metad
 <a class="reference internal" href="#suffix-passthrough-prefix-matching">Suffix passthrough / prefix matching</a> below.</p>
 </div>
 <div class="section" id="operation-create-identifier">
-<h1>Operation: create identifier</h1>
+<h2>Operation: create identifier</h2>
 <p>An identifier can be &quot;created&quot; by sending a PUT request to the
 identifier's EZID URL.  Here, identifier creation means establishing a
 record of the identifier in EZID (to be successful, no such record can
@@ -500,7 +500,7 @@ identifier:</p>
 </pre>
 </div>
 <div class="section" id="operation-mint-identifier">
-<h1>Operation: mint identifier</h1>
+<h2>Operation: mint identifier</h2>
 <p>Minting an identifier is the same as creating an identifier, but
 instead of supplying a complete identifier, the client specifies only
 a namespace (or &quot;shoulder&quot;) that forms the identifier's prefix, and
@@ -533,7 +533,7 @@ performed.  Additionally, EZID replaces all occurrences of the string
 &quot;${identifier}&quot; in the target URL with the newly-minted identifier.</p>
 </div>
 <div class="section" id="operation-update-identifier">
-<h1>Operation: update identifier</h1>
+<h2>Operation: update identifier</h2>
 <p>An identifier's metadata can be updated by sending a POST request to
 the identifier's EZID URL.  Authentication is required; only the
 identifier's owner and certain other users may update the identifier
@@ -563,7 +563,7 @@ the identifier in question.</p>
 <p>To delete a metadata element, set its value to the empty string.</p>
 </div>
 <div class="section" id="operation-create-or-update-identifier">
-<h1>Operation: create or update identifier</h1>
+<h2>Operation: create or update identifier</h2>
 <p>An identifier can be created or updated in one interaction; the
 specific operation performed will depend on whether the identifier
 already exists or not.  To do so, issue a create operation as
@@ -583,7 +583,7 @@ previously.  Here's a sample request:</p>
 </pre>
 </div>
 <div class="section" id="operation-delete-identifier">
-<h1>Operation: delete identifier</h1>
+<h2>Operation: delete identifier</h2>
 <p>An identifier that has only been reserved can be deleted by sending a
 DELETE request to the identifier's EZID URL.  We emphasize that only
 <em>reserved</em> identifiers may be deleted; see <a class="reference internal" href="#identifier-status">Identifier status</a> below.
@@ -605,7 +605,7 @@ above), the remainder of the status line echoes the canonical form of
 the identifier just deleted.</p>
 </div>
 <div class="section" id="suffix-passthrough-prefix-matching">
-<h1>Suffix passthrough / prefix matching</h1>
+<h2>Suffix passthrough / prefix matching</h2>
 <p>The <a class="reference external" href="https://n2t.net/">N2T</a> <span class="ext-icon"></span> resolver—the principal resolver for
 ARK identifiers—supports &quot;suffix passthrough,&quot; a capability
 that allows an identifier to be resolved even if it has not been
@@ -640,7 +640,7 @@ interaction that continues the previous example:</p>
 </pre>
 </div>
 <div class="section" id="ownership-model">
-<h1>Ownership model</h1>
+<h2>Ownership model</h2>
 <p>EZID maintains ownership information about identifiers and uses that
 information to enforce access control.</p>
 <p>The ownership model employed by EZID is hierarchical: each identifier
@@ -691,7 +691,7 @@ administrator.</p>
 administrator may also be a proxy, and may also have proxies.</p>
 </div>
 <div class="section" id="identifier-status">
-<h1>Identifier status</h1>
+<h2>Identifier status</h2>
 <p>Each identifier in EZID has a status.  The status is recorded as the
 value of the &quot;_status&quot; reserved metadata element (see <a class="reference internal" href="#internal-metadata">Internal
 metadata</a> below) and may be one of:</p>
@@ -731,7 +731,7 @@ external services.</li>
 </ul>
 </div>
 <div class="section" id="internal-metadata">
-<h1>Internal metadata</h1>
+<h2>Internal metadata</h2>
 <p>Metadata element names beginning with an underscore (&quot;_&quot;, U+005F) are
 reserved for use by EZID.  The reserved elements below are returned by
 the EZID API, and have the following meanings.  A check mark in the
@@ -836,7 +836,7 @@ registered</td>
 </blockquote>
 </div>
 <div class="section" id="metadata-profiles">
-<h1>Metadata profiles</h1>
+<h2>Metadata profiles</h2>
 <p>EZID allows &quot;citation metadata&quot; to be stored with an identifier, i.e.,
 metadata that describes the object referenced by the identifier or
 that otherwise gives the meaning of the identifier.  In certain cases
@@ -1128,7 +1128,7 @@ registration</a> below for more information on usage of this profile and
 element.</p>
 </div>
 <div class="section" id="metadata-requirements-mapping">
-<h1>Metadata requirements &amp; mapping</h1>
+<h2>Metadata requirements &amp; mapping</h2>
 <p>DOI identifiers must satisfy specific metadata requirements.  A
 DataCite DOI created by EZID must have title, creator, publisher, and
 publication year metadata any time its status is not reserved (see
@@ -1212,7 +1212,7 @@ who: (:unkn) anonymous donor
 </pre>
 </div>
 <div class="section" id="crossref-registration">
-<h1>Crossref registration</h1>
+<h2>Crossref registration</h2>
 <p>A DOI identifier may be registered with either the <a class="reference external" href="http://www.crossref.org/">Crossref</a> <span class="ext-icon"></span> or the <a class="reference external" href="http://www.datacite.org/">DataCite</a> <span class="ext-icon"></span> registration agency.
 The choice of registration agency is not selectable, but is entirely
 determined by the identifier's shoulder.  This section discusses
@@ -1319,7 +1319,7 @@ crossref: &lt;?xml version=&quot;1.0&quot;?&gt;%0A&lt;book...
 </pre>
 </div>
 <div class="section" id="testing-the-api">
-<h1>Testing the API</h1>
+<h2>Testing the API</h2>
 <p>EZID provides three namespaces (or &quot;shoulders&quot;) for testing purposes:
 ark:/99999/fk4 for ARK identifiers, doi:10.5072/FK2 for DataCite DOI
 identifiers, and doi:10.15697/ for Crossref DOI identifiers.
@@ -1343,7 +1343,7 @@ evidence of this orthogonality, it is possible to create reserved test
 identifiers.</p>
 </div>
 <div class="section" id="server-status">
-<h1>Server status</h1>
+<h2>Server status</h2>
 <p>The status of the EZID server can be probed by issuing a GET request
 to the URL https://ezid.cdlib.org/status.  If the server is up the
 response will resemble the following:</p>
@@ -1359,7 +1359,7 @@ response will resemble the following:</p>
 </pre>
 </div>
 <div class="section" id="python-command-line-tool">
-<h1>Python command line tool</h1>
+<h2>Python command line tool</h2>
 <p><a class="reference external" href="https://github.com/CDLUC3/ezid-client-tools/blob/master/ezid.py">ezid.py</a> <span class="ext-icon"></span> is a command line tool, written in Python,
 that is capable of exercising all API functions.  It serves as an
 example of how to use the API from Python, but it's also useful in its
@@ -1419,7 +1419,7 @@ can be minted by invoking:</p>
 </pre>
 </div>
 <div class="section" id="php-examples">
-<h1>PHP examples</h1>
+<h2>PHP examples</h2>
 <p>PHP is agnostic with respect to character sets and character set
 encoding; it operates on bytes only.  The following examples assume
 that input data is already UTF-8 encoded and hence can be passed
@@ -1500,7 +1500,7 @@ curl_close($ch);
 </pre>
 </div>
 <div class="section" id="perl-examples">
-<h1>Perl examples</h1>
+<h2>Perl examples</h2>
 <p>The following Perl examples use the <a class="reference external" href="http://search.cpan.org/dist/libwww-perl/">libwww-perl (LWP)</a>
 <span class="ext-icon"></span> library.</p>
 <p>To get identifier metadata, parse and decode it, and store it in a
@@ -1586,7 +1586,7 @@ print $r-&gt;code, $r-&gt;decoded_content unless $r-&gt;is_success;
 </pre>
 </div>
 <div class="section" id="java-example">
-<h1>Java example</h1>
+<h2>Java example</h2>
 <p>A number of Java code snippets have been presented above.  In the
 example below we combine them all into a runnable, end-to-end program
 that mints a test identifier and then retrieves and prints the
@@ -1741,7 +1741,7 @@ class harness {
 </pre>
 </div>
 <div class="section" id="curl-examples">
-<h1>curl examples</h1>
+<h2>curl examples</h2>
 <p>The EZID API can be exercised using the <a class="reference external" href="http://curl.haxx.se/">curl</a> <span class="ext-icon"></span> command
 line tool.  The following examples assume metadata is UTF-8 encoded
 throughout.</p>
@@ -1792,7 +1792,7 @@ curl -u <span class="hl2">username</span>:<span class="hl2">password</span> -X P
 </pre>
 </div>
 <div class="section" id="batch-processing">
-<h1>Batch processing</h1>
+<h2>Batch processing</h2>
 <p>The API does not directly support batch processing, but EZID does
 provide two client tools, linked from this documentation, that can
 simplify the work of scripting a batch job.  First and most generally,
@@ -1841,7 +1841,7 @@ _status = public
 </pre>
 </div>
 <div class="section" id="batch-download">
-<h1>Batch download</h1>
+<h2>Batch download</h2>
 <p>The metadata for all identifiers matching a set of constraints can be
 downloaded in one batch operation.  Authentication is required, and
 the scope of the identifiers that can be downloaded in this way is
@@ -1863,7 +1863,7 @@ satisfy several other quality criteria are returned.</p>
 <li><a class="reference internal" href="#parameters">Parameters</a></li>
 <li><a class="reference internal" href="#using-curl-to-request-a-download">Using curl to request a download</a></li>
 </ul>
-<p id="overview"><strong>Overview</strong></p>
+<h3 id="overview">Overview</h3>
 <p>The batch download process is asynchronous.  A download is requested
 by issuing a POST request to</p>
 <blockquote>
@@ -1896,7 +1896,7 @@ if the download is not yet ready.  As part of the request, clients can
 also specify an email address to which a notification will be sent
 when the download becomes available.  Downloads are retained for one
 week.</p>
-<p id="download-formats"><strong>Download formats</strong></p>
+<h3 id="download-formats">Download formats</h3>
 <p>Identifier metadata is returned in one of three formats; which format
 is determined by the &quot;format&quot; parameter.  In all cases, the text
 encoding is UTF-8 and the metadata is compressed with either <a class="reference external" href="http://www.gzip.org/">gzip</a>
@@ -2039,7 +2039,7 @@ would be:</p>
 </pre>
 </li>
 </ol>
-<p id="parameters"><strong>Parameters</strong></p>
+<h3 id="parameters">Parameters</h3>
 <p>Unless otherwise noted, parameters are optional and <em>not</em> repeatable.</p>
 <ul>
 <li><p class="first">format={anvl|csv|xml} <em>(required)</em></p>
@@ -2124,7 +2124,7 @@ directly owned by the requestor are returned.</p>
 and &quot;createdBefore&quot; parameters above.</p>
 </li>
 </ul>
-<p id="using-curl-to-request-a-download"><strong>Using curl to request a download</strong></p>
+<h3 id="using-curl-to-request-a-download">Using curl to request a download</h3>
 <p>A batch download can easily be requested using the
 <a class="reference external" href="http://curl.haxx.se/">curl</a> <span class="ext-icon"></span> command line tool.  Use curl's &quot;-d&quot; option to
 specify parameters, and use the &quot;-u&quot; option to supply credentials.
@@ -2146,7 +2146,7 @@ waiting......
 </pre>
 </div>
 <div class="section" id="oai-pmh-harvesting">
-<h1>OAI-PMH harvesting</h1>
+<h2>OAI-PMH harvesting</h2>
 <p>EZID supports harvesting of identifiers and citation metadata via <a class="reference external" href="http://www.openarchives.org/OAI/openarchivesprotocol.html">The
 Open Archives Initiative Protocol for Metadata Harvesting (OAI-PMH)</a>
 <span class="ext-icon"></span>, version 2.0.  The base URL for OAI-PMH access is</p>
