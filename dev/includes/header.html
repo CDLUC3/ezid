@@ -20,19 +20,21 @@
       <img src="images/mobile-menu.svg" alt="Show or hide navigation" class="header__nav-button-icon">
     </button>
 
-    <nav role="navigation" id="js-header__nav" class="header__nav--selected" aria-label="Main">
+    <nav id="js-header__nav" class="header__nav--selected" aria-label="Main">
       <a class="header__nav-item-search" href="">Search</a>
       <details aria-expanded="false">
         <summary class="header__nav-item-learn" role="button">Learn</summary>
-        <div class="header__subnav-panel">
-          <a class="header__nav-subitem" href="/learn#01">What Is EZID?</a>
-          <a class="header__nav-subitem" href="/learn#02">Current Users</a>
-          <a class="header__nav-subitem" href="/learn#04">Documentation</a>
-          <a class="header__nav-subitem" href="/learn#05">Accessibility</a>
-          <a class="header__nav-subitem" href="/learn/doi_services_faq">FAQ</a>
-          <a class="header__nav-subitem" href="/doc/apidoc.html">API Guide</a>
-          <a class="header__nav-subitem" href="/demo">EZID Demo</a>
-        </div>
+        <nav class="header__subnav-panel" aria-label="Learn">
+          <ul class="header__subnav-list">
+            <li><a class="header__nav-subitem" href="/learn#01">What Is EZID?</a></li>
+            <li><a class="header__nav-subitem" href="/learn#02">Current Users</a></li>
+            <li><a class="header__nav-subitem" href="/learn#04">Documentation</a></li>
+            <li><a class="header__nav-subitem" href="/learn#05">Accessibility</a></li>
+            <li><a class="header__nav-subitem" href="/learn/doi_services_faq">FAQ</a></li>
+            <li><a class="header__nav-subitem" href="/doc/apidoc.html">API Guide</a></li>
+            <li><a class="header__nav-subitem" href="/demo">EZID Demo</a></li>
+          </ul>
+        </nav>
       </details>
       <a class="header__nav-item-contact" href="">Contact</a>
       <div class="header__loginout">

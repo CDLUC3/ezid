@@ -25,6 +25,24 @@ def test_public_pages_landmarks():
         assert '<footer class="footer">' in html, f"Missing footer landmark on {path}"
         assert 'aria-label="Main"' in html, f"Missing Main nav label on {path}"
 
+        # Audit row 19: no native nav repeats role="navigation"
+        assert '<nav role="navigation"' not in html, f"Native nav has redundant role on {path}"
+        assert '<nav id="js-header__nav"' in html, f"Missing header nav on {path}"
+
+        # Audit rows 9 and 38: Learn submenu is a named nav region with links grouped in a list
+        assert '<nav class="header__subnav-panel" aria-label="Learn">' in html, f"Learn submenu missing nav landmark on {path}"
+        assert '<ul class="header__subnav-list">' in html, f"Learn submenu links should be in a list on {path}"
+
+        # Audit rows 10 and 16: Footer navigation links grouped in a list within a named nav landmark
+        assert '<nav aria-label="Footer">' in html, f"Footer missing nav landmark on {path}"
+        assert '<ul class="footer__copyright-links">' in html, f"Footer links should be in a list on {path}"
+
+        # Audit row 22: RSS link appears after other footer links in DOM and keyboard focus order
+        rss_pos = html.find('class="footer__icon-link"')
+        footer_links_pos = html.find('class="footer__copyright-links"')
+        assert rss_pos != -1 and footer_links_pos != -1, f"Missing RSS or footer links on {path}"
+        assert rss_pos > footer_links_pos, f"RSS link should appear after other footer links on {path}"
+
 
 @pytest.mark.django_db
 def test_authenticated_user_navigation_landmark():
@@ -55,8 +73,8 @@ def test_authenticated_user_navigation_landmark():
     header_end = html.find('</header>')
     assert header_start < admin_pos < header_end, "Welcome admin text should be inside header banner landmark"
 
-    # User navigation landmark is exposed
-    assert '<nav class="login-menu__container" aria-label="User">' in html
+    # Audit row 37: Logged-in account menu is a named navigation region
+    assert '<nav class="login-menu__container" aria-label="Account menu">' in html
     assert html.count('<main') == 1
 
 

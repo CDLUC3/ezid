@@ -129,6 +129,18 @@
 	line-height: 1.5;
 }
 
+.footer__copyright-links {
+	display: flex;
+	flex-wrap: wrap;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+
+	li {
+		display: inline-block;
+	}
+}
+
 .footer__copyright-link {
 	@extend %link__over-beige;
 	margin: 0 0.5em 0 0;

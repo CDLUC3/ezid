@@ -1397,6 +1397,20 @@ Selector pattern using above mixin:
   line-height: 1.5;
 }
 
+.footer__copyright-links {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.footer__copyright-links li {
+  display: inline-block;
+}
+
 .footer__copyright-link {
   margin: 0 0.5em 0 0;
   font-size: 0.7em;
@@ -1612,6 +1626,12 @@ Selector pattern using above mixin:
   }
 }
 
+.header__subnav-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
 .header__nav-subitem {
   display: block;
   position: relative;
@@ -1637,16 +1657,16 @@ Selector pattern using above mixin:
   .header__nav-subitem::before {
     display: none;
   }
-  .header__nav-subitem:nth-of-type(6) {
+  .header__nav-subitem:nth-of-type(6), li:nth-of-type(6) > .header__nav-subitem {
     border-bottom: 1px dotted rgb(0, 0, 0);
   }
-  .header__nav-subitem:nth-of-type(8) {
+  .header__nav-subitem:nth-of-type(8), li:nth-of-type(8) > .header__nav-subitem {
     background: -webkit-gradient(linear, left top, left bottom, from(rgb(138, 25, 48)), to(rgb(116, 22, 41)));
     background: linear-gradient(to bottom, rgb(138, 25, 48), rgb(116, 22, 41));
     color: rgb(255, 255, 255);
     font-weight: bold;
   }
-  .header__nav-subitem:hover:nth-of-type(8), .header__nav-subitem:focus:nth-of-type(8) {
+  .header__nav-subitem:hover:nth-of-type(8), .header__nav-subitem:focus:nth-of-type(8), li:nth-of-type(8) > .header__nav-subitem:hover, li:nth-of-type(8) > .header__nav-subitem:focus {
     background: -webkit-gradient(linear, left top, left bottom, from(rgb(138, 25, 48)), to(rgb(116, 22, 41)));
     background: linear-gradient(to bottom, rgb(138, 25, 48), rgb(116, 22, 41));
     text-decoration: underline;

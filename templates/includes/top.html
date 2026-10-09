@@ -25,19 +25,21 @@
       <img src="/static/images/mobile-menu.svg" alt="Show or hide navigation" class="header__nav-button-icon">
     </button>
 
-    <nav role="navigation" id="js-header__nav" class="header__nav--selected" aria-label="{% trans "Main" %}">
+    <nav id="js-header__nav" class="header__nav--selected" aria-label="{% trans "Main" %}">
       <a class="header__nav-item-search" href="/search">Search</a>
       <details id="header__nav-details-learn" aria-expanded="false" aria-label="Learn about EZID">
         <summary class="header__nav-item-learn" role="button">Learn</summary>
-        <div class="header__subnav-panel">
-          <a class="header__nav-subitem" href="{% url "ui_home.learn" %}#01">What Is EZID?</a>
-          <a class="header__nav-subitem" href="{% url "ui_home.learn" %}#02">Current Users</a>
-          <a class="header__nav-subitem" href="{% url "ui_home.learn" %}#04">Documentation</a>
-          <a class="header__nav-subitem" href="{% url "ui_home.learn" %}#05">Accessibility</a>
-          <a class="header__nav-subitem" href="/learn/doi_services_faq">FAQ</a>
-          <a class="header__nav-subitem" href="/doc/apidoc.html">API Guide</a>
-          <a class="header__nav-subitem" href="{% url "ui_demo.index" %}">EZID Demo</a>
-        </div>
+        <nav class="header__subnav-panel" aria-label="{% trans "Learn" %}">
+          <ul class="header__subnav-list">
+            <li><a class="header__nav-subitem" href="{% url "ui_home.learn" %}#01">What Is EZID?</a></li>
+            <li><a class="header__nav-subitem" href="{% url "ui_home.learn" %}#02">Current Users</a></li>
+            <li><a class="header__nav-subitem" href="{% url "ui_home.learn" %}#04">Documentation</a></li>
+            <li><a class="header__nav-subitem" href="{% url "ui_home.learn" %}#05">Accessibility</a></li>
+            <li><a class="header__nav-subitem" href="/learn/doi_services_faq">FAQ</a></li>
+            <li><a class="header__nav-subitem" href="/doc/apidoc.html">API Guide</a></li>
+            <li><a class="header__nav-subitem" href="{% url "ui_demo.index" %}">EZID Demo</a></li>
+          </ul>
+        </nav>
       </details>
       <a class="header__nav-item-contact" href="{% url "ui.contact" %}">Contact</a>
       <div class="header__loginout">
@@ -56,7 +58,7 @@
   </div>
 </header>
 {% if authenticatedUser %}
-<nav class="login-menu__container" aria-label="{% trans "User" %}">
+<nav class="login-menu__container" aria-label="{% trans "Account menu" %}">
   <div class="login-menu">
   {% menu_user menu_item session %}
   </div>
