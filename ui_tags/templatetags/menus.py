@@ -64,8 +64,11 @@ def menu_user_item(tup, _session, is_current):
 def learn_breadcrumb(view_title, parent_dir_title=None, parent_dir_link=None):
     home = _("Home")
     learn = _("Learn")
+    breadcrumb_label = _("Breadcrumb")
     codeblock = (
-        '<div class="general__form"><ul class="breadcrumb">'
+        '<div class="general__form"><nav aria-label="'
+        + str(breadcrumb_label)
+        + '"><ul class="breadcrumb">'
         + '<li><a href="/">'
         + str(home)
         + '</a></li>'
@@ -84,7 +87,7 @@ def learn_breadcrumb(view_title, parent_dir_title=None, parent_dir_link=None):
             + str(parent_dir_title_tr)
             + '</a></li>'
         )
-    codeblock += '<li class="active">' + str(view_title) + '</li></ul></div>'
+    codeblock += '<li class="active" aria-current="page">' + str(view_title) + '</li></ul></nav></div>'
     return codeblock
 
 

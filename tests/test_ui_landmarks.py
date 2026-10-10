@@ -124,3 +124,41 @@ def test_id_details_page_landmarks_and_sections():
     assert '<h2 id="about-object-heading"' in html
     assert '<section aria-labelledby="about-status-heading">' in html
     assert '<h2 id="about-status-heading"' in html
+
+
+@pytest.mark.django_db
+def test_breadcrumb_navigation_landmarks():
+    client = Client()
+    # Audit rows 59, 60, 71, 72, 76, 77, 92, 93, 98, 99:
+    # Breadcrumbs on FAQ, Open Source, API Guide, ID Basics, and Suffix Passthrough
+    doc_pages = [
+        '/learn/doi_services_faq',
+        '/learn/open_source',
+        '/doc/apidoc.html',
+        '/learn/id_basics',
+        '/learn/suffix_passthrough',
+    ]
+    for path in doc_pages:
+        response = client.get(path)
+        assert response.status_code == 200, f"Failed GET for {path}"
+        html = response.content.decode('utf-8')
+
+        # Navigation landmark named "Breadcrumb"
+        assert '<nav aria-label="Breadcrumb">' in html, f"Missing Breadcrumb nav landmark on {path}"
+
+        # Valid list markup within the breadcrumb navigation landmark
+        breadcrumb_nav_pos = html.find('<nav aria-label="Breadcrumb">')
+        breadcrumb_nav_end = html.find('</nav>', breadcrumb_nav_pos)
+        breadcrumb_snippet = html[breadcrumb_nav_pos:breadcrumb_nav_end]
+        assert '<ul class="breadcrumb">' in breadcrumb_snippet, f"Breadcrumb items must be in a list on {path}"
+
+        # Final breadcrumb item identifies current page
+        assert 'aria-current="page"' in breadcrumb_snippet, f"Missing aria-current='page' on {path}"
+        assert '<li class="active" aria-current="page">' in breadcrumb_snippet, (
+            f"Final active breadcrumb item must have aria-current='page' on {path}"
+        )
+
+        # No duplicate navigation labels on the page
+        import re
+        nav_labels = re.findall(r'<nav[^>]*aria-label="([^"]+)"', html)
+        assert len(nav_labels) == len(set(nav_labels)), f"Duplicate nav aria-labels found on {path}: {nav_labels}"
