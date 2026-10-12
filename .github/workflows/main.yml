@@ -14,6 +14,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
+      - name: Checkout info pages
+        uses: actions/checkout@v5
+        with:
+          repository: CDLUC3/ezid-info-pages
+          path: templates/info
+
+
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
