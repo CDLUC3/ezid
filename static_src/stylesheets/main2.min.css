@@ -3337,6 +3337,8 @@ summary::-webkit-details-marker {
 }
 
 input[type=number] {
+  -webkit-appearance: textfield;
+          appearance: textfield;
   -moz-appearance: textfield;
 }
 input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button {

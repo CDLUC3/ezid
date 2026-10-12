@@ -52,7 +52,7 @@
 
 @import 'create';
 @import 'dashboard';
-@import 'general';  // used for all non-primary pages (e.g. contact)
+@import 'general'; // used for all non-primary pages (e.g. contact)
 @import 'home';
 @import 'loading';
 @import 'manage';
@@ -89,18 +89,19 @@ input[type='search'] {
 }
 
 summary {
-	cursor: pointer;
+  cursor: pointer;
 
-	// Remove native arrow icon from Chrome & Safari
-	&::-webkit-details-marker {
-	  display: none;
-	}
+  // Remove native arrow icon from Chrome & Safari
+  &::-webkit-details-marker {
+    display: none;
+  }
 
 }
 
 // Remove spinner arrows from Chrome & Safari
 // scss-lint:disable QualifyingElement
 input[type='number'] {
+  appearance: textfield;
   -moz-appearance: textfield;
 
   &::-webkit-inner-spin-button,
