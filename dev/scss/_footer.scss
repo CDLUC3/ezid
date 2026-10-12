@@ -5,12 +5,12 @@
 	background-color: $design-secondary-lightest;
 
 	@include bp(screen2) {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 120px;
-    background: linear-gradient(to right, $design-secondary-lightest 67%, $design-secondary-footer-newsfeed 32%); // split the bg into two colors each for the lang/logo and news regions
-  }
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 120px;
+		background: linear-gradient(to right, $design-secondary-lightest 67%, $design-secondary-footer-newsfeed 32%); // split the bg into two colors each for the lang/logo and news regions
+	}
 
 }
 
@@ -20,9 +20,9 @@
 	padding: 0 20px 0 0;
 
 	@include bp(screen2) {
-    order: 1;
-    border-right: 1px solid $design-black-color;
-  }
+		order: 1;
+		border-right: 1px solid $design-black-color;
+	}
 
 }
 
@@ -38,12 +38,12 @@
 	background-color: $design-secondary-footer-newsfeed;
 
 	@include bp(screen2) {
-    display: flex;
-    flex-flow: column nowrap;
-    align-self: stretch;
-    order: 4;
-    width: 250px;
-  }
+		display: flex;
+		flex-flow: column nowrap;
+		align-self: stretch;
+		order: 4;
+		width: 250px;
+	}
 
 }
 
@@ -77,15 +77,11 @@
 	background-color: $design-secondary-footer-icon-bg;
 
 	@include bp(screen2) {
-    flex-flow: column nowrap;
-    order: 3;
-    padding: 10px 20px;
-  }
+		flex-flow: column nowrap;
+		order: 3;
+		padding: 10px 20px;
+	}
 
-}
-
-.footer__icon-link {
-	// empty
 }
 
 .footer__icon {
@@ -97,8 +93,8 @@
 	display: none;
 
 	@include bp(screen2) {
-    display: block;
-  }
+		display: block;
+	}
 
 }
 
@@ -112,9 +108,9 @@
 	padding: $layout-box-padding;
 
 	@include bp(screen2) {
-    order: 2;
-    padding: $layout-box-padding $layout-box-padding $layout-box-padding 20px;
-  }
+		order: 2;
+		padding: $layout-box-padding $layout-box-padding $layout-box-padding 20px;
+	}
 
 }
 
@@ -147,4 +143,3 @@
 	font-size: 0.7em;
 	line-height: 1.5;
 }
-

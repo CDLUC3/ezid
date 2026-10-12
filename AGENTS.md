@@ -51,6 +51,9 @@ git -C templates/info status # Check status of info pages repo
 git -C templates/info diff   # View diff in info pages repo
 
 # Django & Tests
+pip install -e .                            # Install EZID in editable mode
+pip install -r requirements-dev.txt         # Install test dependencies
+./prepare_test_db.sh                        # Create/migrate test database (requires local MySQL on 127.0.0.1:3306)
 pytest --ds=settings.tests tests/           # Run test suite
 pytest --ds=settings.tests tests/<file>.py  # Run single test file
 python manage.py runserver                  # Run Django dev server
