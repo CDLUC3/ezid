@@ -9,8 +9,8 @@
   {% rewrite_hidden_except REQUEST 'ps,p' %}
   <input name="p" type="hidden" value="1"/>
   <div class="pagination__select-group">
-    <label for="page-size-{{ select_position }}" class="pagination__select-label">{% trans "Show" %}</label>
-    <select aria-label="{% trans "Show number of entries" %}" name="ps" id="page-size-{{ select_position }}" class="pagination__select">
+    <label for="page-size-{{ select_position }}" class="pagination__select-label">{% trans "Results per page" %}</label>
+    <select aria-label="{% trans "Results per page" %}" name="ps" id="page-size-{{ select_position }}" class="pagination__select">
     {% for size in page_sizes %}
       <option value="{{ size }}"
         {% if size == ps %}
@@ -19,7 +19,6 @@
       >{{ size }}</option>
     {% endfor %}
     </select>
-    <span class="search-results__select-appended-text">{% trans "entries" %}</span>
   </div>
   </form>
   <form method="get" action="{% url primary_page %}" id="p-{{ select_position }}">

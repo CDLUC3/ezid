@@ -151,6 +151,8 @@ Selector pattern using above mixin:
 .fieldset-hidden,
 .fieldset-controls {
   margin: 0 0 1em;
+  border: 0;
+  padding: 0;
 }
 
 .fieldset-stacked-no-border {
@@ -199,6 +201,7 @@ Selector pattern using above mixin:
       -ms-flex-align: center;
           align-items: center;
   margin: 0 0.5em 0 0;
+  padding: 0;
   color: rgb(0, 95, 112);
   font-size: 1.2em;
   font-weight: bold;

@@ -248,3 +248,126 @@ def test_dashboard_forms_redundant_roles():
     assert 'role="form"' not in html
     assert "role='form'" not in html
 
+
+@pytest.mark.django_db
+def test_search_and_results_accessible_fieldsets_and_page_sizes():
+    client = Client()
+    response = client.get('/search')
+    assert response.status_code == 200
+    html = response.content.decode('utf-8')
+
+    # Audit row 26: Search .fieldset-stacked inputs should be grouped in a fieldset
+    assert '<fieldset class="fieldset-stacked">' in html
+    assert '<legend class="fieldset-stacked__legend search__publication-fieldset">' in html
+    assert 'Object Publication Year' in html
+    assert '<div class="fieldset-stacked" role="group"' not in html
+
+    rf = RequestFactory()
+    request = rf.get('/search/results?keywords=test')
+    middleware = SessionMiddleware(lambda req: None)
+    middleware.process_request(request)
+    request.session.save()
+    setattr(request, '_messages', FallbackStorage(request))
+
+    d = {
+        'menu_item': 'ui_search.null',
+        'heading_title': 'Search Results',
+        'search_query': 'test',
+        'REQUEST': request.GET,
+        'results': [{'c_identifier': 'ark:/99999/fk4test', 'c_title': 'Test Title'}],
+        'total_results': 25,
+        'total_pages': 3,
+        'page_sizes': [10, 20, 50, 100],
+        'ps': 10,
+        'p': 1,
+        'order_by': 'c_title',
+        'sort': 'asc',
+        'fields_selected': ['c_title', 'c_identifier'],
+        'field_order': ['c_title', 'c_identifier'],
+        'fields_mapped': impl.ui_search.FIELDS_MAPPED,
+        'field_display_types': impl.ui_search.FIELD_DISPLAY_TYPES,
+        'testPrefixes': {},
+        'filtered': True,
+    }
+    response = impl.ui_common.render(request, 'search/results', d)
+    assert response.status_code == 200
+    results_html = response.content.decode('utf-8')
+
+    # Audit rows 34 and 35: Results #ps-top and #ps-bottom selects have single "Results per page" label
+    assert '<label for="page-size-top" class="pagination__select-label">Results per page</label>' in results_html
+    assert '<label for="page-size-bottom" class="pagination__select-label">Results per page</label>' in results_html
+    assert 'aria-label="Results per page"' in results_html
+    assert 'class="search-results__select-appended-text"' not in results_html
+    assert 'Show number of entries' not in results_html
+
+
+def test_manage_accessible_fieldsets_and_page_sizes():
+    import impl.form_objects
+
+    rf = RequestFactory()
+    request = rf.get('/manage')
+    middleware = SessionMiddleware(lambda req: None)
+    middleware.process_request(request)
+    request.session.save()
+    setattr(request, '_messages', FallbackStorage(request))
+
+    class MockUser:
+        username = 'testadmin'
+
+    d = {
+        'menu_item': 'ui_manage.null',
+        'authenticatedUser': MockUser(),
+        'form': impl.form_objects.ManageSearchIdForm({}),
+        'collapse_advanced_search': 'expanded',
+        'total_results_str': '25',
+        'total_results': 25,
+        'total_pages': 3,
+        'page_sizes': [10, 20, 50, 100],
+        'ps': 10,
+        'p': 1,
+        'order_by': 'c_update_time',
+        'sort': 'asc',
+        'fields_selected': ['c_title', 'c_identifier'],
+        'field_order': ['c_title', 'c_identifier'],
+        'fields_mapped': impl.ui_search.FIELDS_MAPPED,
+        'field_display_types': impl.ui_search.FIELD_DISPLAY_TYPES,
+        'results': [{'c_identifier': 'ark:/99999/fk4test', 'c_title': 'Test Title'}],
+        'testPrefixes': {},
+        'REQUEST': request.GET,
+        'filtered': True,
+        'owner_selected': '',
+    }
+    response = impl.ui_common.render(request, 'manage/index', d)
+    assert response.status_code == 200
+    html = response.content.decode('utf-8')
+
+    # Audit rows 114 and 115: Manage #ps-top and #ps-bottom selects have single "Results per page" label
+    assert '<label for="page-size-top" class="pagination__select-label">Results per page</label>' in html
+    assert '<label for="page-size-bottom" class="pagination__select-label">Results per page</label>' in html
+    assert 'aria-label="Results per page"' in html
+    assert 'class="search-results__select-appended-text"' not in html
+    assert 'Show number of entries' not in html
+
+    # Audit rows 117 and 118: Two Manage radio-button groups are contained in fieldsets
+    # Harvesting radio group
+    harvesting_pos = html.find('manage__form-element-container--harvesting')
+    assert harvesting_pos != -1
+    harvesting_snippet = html[harvesting_pos : harvesting_pos + 1000]
+    assert '<fieldset class="fieldset-stacked">' in harvesting_snippet
+    assert '<legend class="fieldset-stacked__legend manage__fieldset-legend">' in harvesting_snippet
+    assert '</fieldset>' in harvesting_snippet
+
+    # Has Metadata radio group
+    metadata_pos = html.find('Has Metadata?')
+    assert metadata_pos != -1
+    metadata_snippet = html[metadata_pos - 150 : metadata_pos + 800]
+    assert '<fieldset class="fieldset-stacked">' in metadata_snippet
+    assert '<legend class="fieldset-stacked__legend manage__fieldset-legend">' in metadata_snippet
+    assert '</fieldset>' in metadata_snippet
+
+    # Control groups in Manage use valid fieldset and legend markup
+    assert html.count('<fieldset class="fieldset-stacked') >= 5
+    assert '<div class="fieldset-stacked" role="group"' not in html
+    assert '<div class="fieldset-stacked manage_fieldset" role="group"' not in html
+    assert '<div class="fieldset-stacked manage__fieldset" role="group"' not in html
+
