@@ -371,3 +371,56 @@ def test_manage_accessible_fieldsets_and_page_sizes():
     assert '<div class="fieldset-stacked manage_fieldset" role="group"' not in html
     assert '<div class="fieldset-stacked manage__fieldset" role="group"' not in html
 
+
+@pytest.mark.django_db
+def test_accessible_links_home_learn_open_source_and_api_guide():
+    client = Client()
+
+    # Audit row 18: Links in the EZID Home "Learn" section are valid links discoverable by assistive technology
+    resp_home = client.get('/')
+    assert resp_home.status_code == 200
+    home_html = resp_home.content.decode('utf-8')
+    assert 'class="home-banner__lead-button"' in home_html
+    assert 'href="/learn/"' in home_html or 'href="/learn"' in home_html
+    assert 'Learn more about EZID' in home_html
+    # Submenu Learn links have valid destinations
+    for href in ['/learn/#01', '/learn/#02', '/learn/#04', '/learn/#05', '/learn/doi_services_faq', '/doc/apidoc.html', '/demo']:
+        assert f'href="{href}"' in home_html
+
+    # Audit rows 61 and 62: Two links in Learn accordion section 01 match underlined text-link style (link__primary)
+    resp_learn = client.get('/learn/')
+    assert resp_learn.status_code == 200
+    learn_html = resp_learn.content.decode('utf-8')
+    assert '<a class="link__primary" href="https://dmptool.org" target="_blank">DMP Tool</a>' in learn_html
+    assert '<a class="link__primary" href="https://www.go-fair.org/fair-principles/" target="_blank">' in learn_html
+
+    # Audit row 73: Open Source page consolidates wording around one clear contact link
+    resp_os = client.get('/learn/open_source')
+    assert resp_os.status_code == 200
+    os_html = resp_os.content.decode('utf-8')
+    assert 'If you are the author of a resource listed here and you wish us to remove it, or if you are the author of software that you wish to be listed' in os_html
+    assert 'please <a class="link__primary" href="/contact">contact us</a>.' in os_html
+    # Only one contact us link in the intro section
+    intro_start = os_html.find('<strong>IMPORTANT:</strong>')
+    assert intro_start != -1
+    intro_end = os_html.find('<ul>', intro_start)
+    assert intro_end != -1
+    intro_snippet = os_html[intro_start:intro_end]
+    assert intro_snippet.count('href="/contact"') == 1
+
+    # Audit row 85: The API Guide link under #metadata-requirements-mapping resolves to intended destination
+    resp_api = client.get('/doc/apidoc.html')
+    assert resp_api.status_code == 200
+    api_html = resp_api.content.decode('utf-8')
+    assert 'https://wiki.ucop.edu/display/Curation/ERC' not in api_html
+    mapping_idx = api_html.find('id="metadata-requirements-mapping"')
+    assert mapping_idx != -1
+    next_section_idx = api_html.find('id="crossref-registration"', mapping_idx)
+    assert next_section_idx != -1
+    mapping_snippet = api_html[mapping_idx:next_section_idx]
+    assert 'href="https://www.dublincore.org/groups/kernel/spec/"' in mapping_snippet
+    assert 'Kernel Metadata' in mapping_snippet
+    assert 'href="https://arks.org/specs/"' in api_html
+    assert '{{' not in api_html
+    assert '}}' not in api_html
+

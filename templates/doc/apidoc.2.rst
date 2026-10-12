@@ -26,7 +26,7 @@
 .. _DataCite: http://www.datacite.org/
 .. _DataCite Metadata Scheme: http://schema.datacite.org/
 .. _Dublin Core Metadata Element Set: http://dublincore.org/documents/dces/
-.. _ERC: https://wiki.ucop.edu/display/Curation/ERC
+.. _ERC: https://arks.org/specs/
 .. _ezid3.py: https://github.com/CDLUC3/ezid-client-tools/blob/master/ezid3.py
 .. _gzip: http://www.gzip.org/
 .. _libwww-perl: http://search.cpan.org/dist/libwww-perl/
