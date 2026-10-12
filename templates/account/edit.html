@@ -8,7 +8,7 @@
 
 <p class="general__note">{% trans "To edit your account information, proxy users, or account password, make changes in the fields below, then click Save." %}</p>
 
-<form autocomplete="off" id="edit_form" action="{% url "ui_account.edit" %}" method="post" class="general__form" role="form">
+<form autocomplete="off" id="edit_form" action="{% url "ui_account.edit" %}" method="post" class="general__form">
 {% comment "nonfield_errors" %}form.non_field_errors not used here, and will be displayed in django.contrib.messages.error{% endcomment %}
   <h2 class="heading_2_caps vertical-buffer-xs">{% trans "Account Information" %}</h2>
  

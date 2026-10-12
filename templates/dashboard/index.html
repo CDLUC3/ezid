@@ -9,13 +9,13 @@
 {% block content %}
 <div class="container vertical-buffer-xs">
 {% if display_adminlink %}
-  <form action="/admin" role="form">
+  <form action="/admin">
     <button class="button__primary">{% trans "Administration" %}&nbsp;<span title="External Link" class="ext-icon"></span></button>
   </form>
   <hr/>
 {% endif %}
   <div role="group" aria-labelledby="fieldset__owner-filter">
-  <form id="usage_form" action="{% url "ui_admin.dashboard" %}" role="form">
+  <form id="usage_form" action="{% url "ui_admin.dashboard" %}">
     <div class="fieldset-stacked__inline-select dashboard__report-heading">
       <span id="fieldset__owner-filter" class="heading__icon-2">{% trans "View Report for" %}</span>
       <label for="owner_selected" class="fcontrol__text-label-hidden">{% trans "Specific User or Group" %}</label>

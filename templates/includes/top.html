@@ -44,7 +44,7 @@
       <a class="header__nav-item-contact" href="{% url "ui.contact" %}">Contact</a>
       <div class="header__loginout">
         {% if authenticatedUser %}
-          <form action="/logout" role="form">
+          <form action="/logout">
             <button class="header__loginout-link" aria-label="Logout">Logout</button>
           </form>
         {% else %}

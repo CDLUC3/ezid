@@ -4,7 +4,7 @@
   <h2 class="heading-sub__icon-4">{% trans "Total Identifiers Created By Month" %}</h2>
   <div class="dashboard__month-range">
     <div class="fcontrol__select-group-inline">
-      <form id="month_from_form" action="/dashboard" role="form">
+      <form id="month_from_form" action="/dashboard">
       <input name="owner_selected" type="hidden" value="{{ owner_selected|default_if_none:'' }}"/>
       <input name="month_to" type="hidden" value="{{month_to}}"/>
       <label for="month_from" class="fcontrol__select-label-hidden">{% trans "Month From" %}</label>
@@ -19,7 +19,7 @@
       </select>
       </form>
       &nbsp;&nbsp;to&nbsp;&nbsp;
-      <form id="month_to_form" action="/dashboard" role="form">
+      <form id="month_to_form" action="/dashboard">
       <input name="owner_selected" type="hidden" value="{{ owner_selected|default_if_none:'' }}"/>
       <input name="month_from" type="hidden" value="{{month_from}}"/>
       <label for="month_to" class="fcontrol__select-label-hidden">{% trans "Month To" %}</label>

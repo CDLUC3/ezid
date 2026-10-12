@@ -2,7 +2,7 @@
 {% load i18n %}
 
 <div class="pagination">
-  <form method="get" action="{% url primary_page %}" id="ps-{{ select_position }}" role="form">
+  <form method="get" action="{% url primary_page %}" id="ps-{{ select_position }}">
   {% if filtered %}
   <input name="filtered" type="hidden" value="t"/>
   {% endif %}
@@ -22,7 +22,7 @@
     <span class="search-results__select-appended-text">{% trans "entries" %}</span>
   </div>
   </form>
-  <form method="get" action="{% url primary_page %}" id="p-{{ select_position }}" role="form">
+  <form method="get" action="{% url primary_page %}" id="p-{{ select_position }}">
   {% if filtered %}
   <input name="filtered" type="hidden" value="t"/>
   {% endif %}

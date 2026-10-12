@@ -5,6 +5,7 @@ from django.test import Client, RequestFactory
 
 import impl.metadata
 import impl.ui_common
+import impl.ui_search
 
 
 @pytest.mark.django_db
@@ -28,6 +29,10 @@ def test_public_pages_landmarks():
         # Audit row 19: no native nav repeats role="navigation"
         assert '<nav role="navigation"' not in html, f"Native nav has redundant role on {path}"
         assert '<nav id="js-header__nav"' in html, f"Missing header nav on {path}"
+
+        # Audit rows 11, 23, 53: native form elements do not repeat role="form"
+        assert '<form' in html, f"Missing form on {path}"
+        assert 'role="form"' not in html and "role='form'" not in html, f"Native form has redundant role on {path}"
 
         # Audit rows 9 and 38: Learn submenu is a named nav region with links grouped in a list
         assert '<nav class="header__subnav-panel" aria-label="Learn">' in html, f"Learn submenu missing nav landmark on {path}"
@@ -162,3 +167,84 @@ def test_breadcrumb_navigation_landmarks():
         import re
         nav_labels = re.findall(r'<nav[^>]*aria-label="([^"]+)"', html)
         assert len(nav_labels) == len(set(nav_labels)), f"Duplicate nav aria-labels found on {path}: {nav_labels}"
+
+
+def test_search_results_forms_redundant_roles():
+    rf = RequestFactory()
+    request = rf.get('/search/results?keywords=test')
+    middleware = SessionMiddleware(lambda req: None)
+    middleware.process_request(request)
+    request.session.save()
+    setattr(request, '_messages', FallbackStorage(request))
+
+    d = {
+        'menu_item': 'ui_search.null',
+        'heading_title': 'Search Results',
+        'search_query': 'test',
+        'REQUEST': request.GET,
+        'results': [{'c_identifier': 'ark:/99999/fk4test', 'c_title': 'Test Title'}],
+        'total_results': 25,
+        'total_pages': 3,
+        'page_sizes': [10, 20, 50, 100],
+        'ps': 10,
+        'p': 1,
+        'order_by': 'c_title',
+        'sort': 'asc',
+        'fields_selected': ['c_title', 'c_identifier'],
+        'field_order': ['c_title', 'c_identifier'],
+        'fields_mapped': impl.ui_search.FIELDS_MAPPED,
+        'field_display_types': impl.ui_search.FIELD_DISPLAY_TYPES,
+        'testPrefixes': {},
+        'filtered': True,
+    }
+    response = impl.ui_common.render(request, 'search/results', d)
+    assert response.status_code == 200
+    html = response.content.decode('utf-8')
+
+    # Audit rows 39 through 50: Results forms
+    # Including #return-to-search, #ps-top, #p-top, table-column forms, #ps-bottom, and #p-bottom
+    assert '<form method="get" action="/search" id="return-to-search">' in html
+    assert 'id="ps-top"' in html
+    assert 'id="p-top"' in html
+    assert 'id="ps-bottom"' in html
+    assert 'id="p-bottom"' in html
+    assert 'role="form"' not in html
+    assert "role='form'" not in html
+
+
+def test_dashboard_forms_redundant_roles():
+    rf = RequestFactory()
+    request = rf.get('/dashboard')
+    middleware = SessionMiddleware(lambda req: None)
+    middleware.process_request(request)
+    request.session.save()
+    setattr(request, '_messages', FallbackStorage(request))
+
+    d = {
+        'menu_item': 'ui_admin.dashboard',
+        'heading_user_display': "TestUser's EZID Dashboard",
+        'totals': [],
+        'has_broken_links': False,
+        'results_crossref': [{'c_identifier': 'ark:/99999/fk4test', 'c_crossref_date': '2026-01-01', 'c_crossref_descr': 'test', 'c_crossref_msg': 'test'}],
+        'results_issues': [{'c_identifier': 'ark:/99999/fk4test', 'c_id_issue': 'bad link', 'c_title': 'Test', 'c_update_time': '2026-01-01'}],
+        's_type': 'issues',
+        'total_pages_issues': 2,
+        'total_pages_crossref': 2,
+        'REQUEST': request.GET,
+        'p': 1,
+        'ps': 10,
+        'display_adminlink': True,
+        'months_all': ['2026-01', '2026-02'],
+        'month_from': '2026-01',
+        'month_to': '2026-02',
+    }
+    response = impl.ui_common.render(request, 'dashboard/index', d)
+    assert response.status_code == 200
+    html = response.content.decode('utf-8')
+
+    # Audit row 109: Dashboard #p_issues
+    assert 'id="p_issues"' in html
+    assert 'id="usage_form"' in html
+    assert 'role="form"' not in html
+    assert "role='form'" not in html
+

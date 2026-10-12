@@ -3,7 +3,7 @@
 
 {% if primary_page == "ui_search.results" or primary_page == "ui_manage.index" and authenticatedUser %}
   <div class="customize-table">
-    <form class="customize-table__heading-wrapper" action="{% url primary_page %}" role="form">
+    <form class="customize-table__heading-wrapper" action="{% url primary_page %}">
       <h2 class="customize-table__heading">{{ heading_title }}</h2>
     {% if primary_page == "ui_manage.index" and filtered %}
       <input name="ps" type="hidden" value="{{ ps }}"/>
@@ -25,7 +25,7 @@
 {% if primary_page == "ui_manage.index" and authenticatedUser %}
 <div class="manage__identifiers-submit-controls">
   <div class="fcontrol__select-group-inline manage__identifiers-select">
-    <form id="owner_filter_form" action="{% url primary_page %}" method="get" role="form">
+    <form id="owner_filter_form" action="{% url primary_page %}" method="get">
       {% rewrite_hidden REQUEST %}
       <label for="owner_selected" class="fcontrol__select-label-inline">{% trans "View identifiers owned by" %}:</label>
 
@@ -34,7 +34,7 @@
     </form>
   </div>
   {% if total_results > 0 %}
-  <form action="{% url "ui_manage.download" %}" method="get" role="form">
+  <form action="{% url "ui_manage.download" %}" method="get">
     <input name="owner_selected" type="hidden" value="{{ owner_selected }}"/>
     <button id="download" class="button__primary manage__download-button">{% trans "Download All" %}</button>
   </form>
