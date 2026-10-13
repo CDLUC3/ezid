@@ -1,5 +1,7 @@
 import re
 import pytest
+
+pytestmark = pytest.mark.django_db
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.test import Client, RequestFactory
