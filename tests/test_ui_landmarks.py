@@ -32,6 +32,12 @@ def test_public_pages_landmarks():
         assert '<nav role="navigation"' not in html, f"Native nav has redundant role on {path}"
         assert '<nav id="js-header__nav"' in html, f"Missing header nav on {path}"
 
+        # Mobile menu control has aria-controls and aria-expanded
+        assert (
+            '<button type="button" id="js-header__nav-button" class="header__nav-button" aria-controls="js-header__nav" aria-expanded="false">'
+            in html
+        ), f"Mobile menu button missing accessible attributes on {path}"
+
         # Audit rows 11, 23, 53: native form elements do not repeat role="form"
         assert '<form' in html, f"Missing form on {path}"
         assert 'role="form"' not in html and "role='form'" not in html, f"Native form has redundant role on {path}"
