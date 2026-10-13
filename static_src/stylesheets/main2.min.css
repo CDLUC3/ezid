@@ -141,6 +141,19 @@ Selector pattern using above mixin:
   text-transform: uppercase;
 }
 
+button.close {
+  display: inline-block;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+}
+button.close:focus-visible {
+  outline: 2px solid rgb(0, 95, 112);
+  outline-offset: 2px;
+}
+
 .fieldset__heading-2 {
   margin: 0;
   font-size: inherit;

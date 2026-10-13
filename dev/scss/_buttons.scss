@@ -131,5 +131,18 @@
 	padding: 0 1.3em;
 	background: $design-form-element-bg;
 	text-transform: uppercase;
+}
 
+button.close {
+	display: inline-block;
+	padding: 0;
+	background: transparent;
+	border: 0;
+	color: inherit;
+	cursor: pointer;
+
+	&:focus-visible {
+		outline: 2px solid $design-primary-color;
+		outline-offset: 2px;
+	}
 }

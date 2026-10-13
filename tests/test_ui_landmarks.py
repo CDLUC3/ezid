@@ -436,3 +436,13 @@ def test_accessible_links_home_learn_open_source_and_api_guide():
     assert '{{' not in api_html
     assert '}}' not in api_html
 
+
+def test_status_alert_accessible_close_button():
+    from django.template.loader import render_to_string
+
+    rendered = render_to_string('includes/status.html', {'alertMessage': 'System maintenance scheduled.'})
+    assert '<button type="button" class="close not-text" data-bs-dismiss="alert"' in rendered
+    assert 'aria-label="Close alert"' in rendered
+    assert '<span aria-hidden="true">&times;</span>' in rendered
+    assert '<a href="#" class="close not-text"' not in rendered
+
