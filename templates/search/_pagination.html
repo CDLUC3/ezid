@@ -10,7 +10,7 @@
   <input name="p" type="hidden" value="1"/>
   <div class="pagination__select-group">
     <label for="page-size-{{ select_position }}" class="pagination__select-label">{% trans "Results per page" %}</label>
-    <select aria-label="{% trans "Results per page" %}" name="ps" id="page-size-{{ select_position }}" class="pagination__select">
+    <select name="ps" id="page-size-{{ select_position }}" class="pagination__select">
     {% for size in page_sizes %}
       <option value="{{ size }}"
         {% if size == ps %}

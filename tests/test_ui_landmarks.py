@@ -301,10 +301,12 @@ def test_search_and_results_accessible_fieldsets_and_page_sizes():
     assert response.status_code == 200
     results_html = response.content.decode('utf-8')
 
-    # Audit rows 34 and 35: Results #ps-top and #ps-bottom selects have single "Results per page" label
+    # Audit rows 34 and 35: Results #ps-top and #ps-bottom selects have single "Results per page" label without redundant aria-label
     assert '<label for="page-size-top" class="pagination__select-label">Results per page</label>' in results_html
     assert '<label for="page-size-bottom" class="pagination__select-label">Results per page</label>' in results_html
-    assert 'aria-label="Results per page"' in results_html
+    assert '<select name="ps" id="page-size-top" class="pagination__select">' in results_html
+    assert '<select name="ps" id="page-size-bottom" class="pagination__select">' in results_html
+    assert 'aria-label="Results per page"' not in results_html
     assert 'class="search-results__select-appended-text"' not in results_html
     assert 'Show number of entries' not in results_html
 
@@ -349,10 +351,12 @@ def test_manage_accessible_fieldsets_and_page_sizes():
     assert response.status_code == 200
     html = response.content.decode('utf-8')
 
-    # Audit rows 114 and 115: Manage #ps-top and #ps-bottom selects have single "Results per page" label
+    # Audit rows 114 and 115: Manage #ps-top and #ps-bottom selects have single "Results per page" label without redundant aria-label
     assert '<label for="page-size-top" class="pagination__select-label">Results per page</label>' in html
     assert '<label for="page-size-bottom" class="pagination__select-label">Results per page</label>' in html
-    assert 'aria-label="Results per page"' in html
+    assert '<select name="ps" id="page-size-top" class="pagination__select">' in html
+    assert '<select name="ps" id="page-size-bottom" class="pagination__select">' in html
+    assert 'aria-label="Results per page"' not in html
     assert 'class="search-results__select-appended-text"' not in html
     assert 'Show number of entries' not in html
 
