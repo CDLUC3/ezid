@@ -6,7 +6,7 @@
 {% block heading %}{% content_heading _("Request password reset") %}{% endblock %}
 {% block content %}
 <p><br/></p>
-<form method="post" action="{% url "ui_account.pwreset" %}" class="general__form" role="form">
+<form method="post" action="{% url "ui_account.pwreset" %}" class="general__form">
   {{ form.non_field_errors }}
   {% for field in form %}
   {% include "includes/_inlinetext.html" with field=field form_name="general__" %}

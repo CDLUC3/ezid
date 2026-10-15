@@ -2021,7 +2021,7 @@ msgstr ""
 #. i.e.: <a class="don't_translate_classes" href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a>
 #.
 #: templates/index.html:42
-msgid "<b>NOTE:</b> This is just a demo."
+msgid "<strong class=\"home__identifier-lead-note-label\">NOTE:</strong> This is just a demo."
 msgstr ""
 
 #: templates/info/about_us.html:5 templates/info/about_us.html:7

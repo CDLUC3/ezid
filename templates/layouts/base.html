@@ -91,14 +91,16 @@
       <a href="#main-content" class="skip-link" aria-label="Skip to main content">Skip to main content</a>
 
       {% include "includes/status.html" %}
-      {% include "includes/top.html" %}    
-  <a class="sr-only" name="main-content"></a>
+      {% include "includes/top.html" %}
+
+    <main id="main-content">
       {% block heading %}{% endblock %}
       {% block alert %}
         {% include "includes/messages.html" %}
       {% endblock %}
       {% block content %}
       {% endblock %}
+    </main>
       
       {% include "includes/footer.html" %}
 

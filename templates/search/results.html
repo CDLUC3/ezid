@@ -7,7 +7,7 @@
 {% block title-twitter %}{% trans "Search Results" %}{% endblock %}
 {% block heading %}{% content_heading _("Search Results") %}{% endblock %}
 {% block content %}
-<form method="get" action="{% url "ui_search.index" %}" id="return-to-search" role="form">
+<form method="get" action="{% url "ui_search.index" %}" id="return-to-search">
 <input type='hidden' name='modify_search' value='t'/>
 {% rewrite_hidden_except REQUEST 'p' %}
 <div class="search-results__simple">

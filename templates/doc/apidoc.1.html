@@ -26,7 +26,7 @@ describes Version 1 of the EZID API.</p>
 <p>Failures outside of normal working hours (08:00 to 17:00 Pacific,
 Monday - Friday) will be addressed the next work day.</p>
 <div class="section" id="framework">
-<h1>Framework</h1>
+<h2>Framework</h2>
 <p>The EZID API (and UI) is available from the base URL,</p>
 <blockquote>
 <a class="reference external" href="http://n2t.net/ezid">http://n2t.net/ezid</a></blockquote>
@@ -51,7 +51,7 @@ elements with leading underscores may be returned; this is metadata
 maintained by EZID.</p>
 </div>
 <div class="section" id="requests-and-responses">
-<h1>Requests and Responses</h1>
+<h2>Requests and Responses</h2>
 <p>All requests require HTTP basic authentication except GETs on
 identifiers.</p>
 <p>Responses consist of a status line possibly followed by metadata,
@@ -70,7 +70,7 @@ error: method not allowed
 <p>The HTTP status code matches the status line.</p>
 </div>
 <div class="section" id="registering-a-doi">
-<h1>Registering a DOI</h1>
+<h2>Registering a DOI</h2>
 <p>A DOI is registered with a request of the form</p>
 <blockquote>
 PUT http://n2t.net/ezid/id/{identifier}</blockquote>
@@ -96,7 +96,7 @@ only if the HTTP response returns code 200 and the response body
 begins with &quot;success:&quot;.</p>
 </div>
 <div class="section" id="example-python-client">
-<h1>Example Python Client</h1>
+<h2>Example Python Client</h2>
 <pre class="literal-block">
 import urllib2
 

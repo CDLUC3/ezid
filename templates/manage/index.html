@@ -16,7 +16,7 @@ $(document).ready(function(){
 });
 {% endblock %}
 {% block content %}
-<form method="get" action="{% url "ui_manage.index" %}" id="manage-form" role="form">
+<form method="get" action="{% url "ui_manage.index" %}" id="manage-form">
 <input name="ps" type="hidden" value="{{ ps }}"/> 
 <input name="order_by" type="hidden" value="{{ order_by }}"/>
 <input name="sort" type="hidden" value="{{ sort }}"/>
@@ -86,8 +86,8 @@ $(document).ready(function(){
   </div>
   <div class="row">
     <div class="col-md-6 manage__form-element-container">
-      <div class="fieldset-stacked manage_fieldset" role="group" aria-labelledby="object-publication-year">
-        <div id="object-publication-year" class="fieldset-stacked__legend manage__fieldset-legend">{% trans "Object Publication Year" %}</div>
+      <fieldset class="fieldset-stacked manage__fieldset">
+        <legend class="fieldset-stacked__legend manage__fieldset-legend">{% trans "Object Publication Year" %}</legend>
         <div class="fcontrol__inline-groups">
           <div class="fcontrol__group-inline{% if form.pubyear_from.errors %}--invalid{% endif %}">
             <label for="{{ form.pubyear_from.id_for_label }}" class="fcontrol__text-label-inline manage__text-label-inline">{{ form.pubyear_from.label }}</label>
@@ -112,7 +112,7 @@ $(document).ready(function(){
             </div>
           </div>
         </div>
-      </div>
+      </fieldset>
     </div>
     <div class="col-md-6 manage__form-element-container">
       <div class="fcontrol__select-group-stacked">
@@ -142,8 +142,8 @@ $(document).ready(function(){
   </div>
   <div class="row">
     <div class="col-md-6 manage__form-element-container">
-      <div class="fieldset-stacked manage__fieldset" role="group" aria-labelledby="id-created-date">
-        <div id="id-created-date" class="fieldset-stacked__legend manage__fieldset-legend">{% trans "ID Create Date" %}</div>
+      <fieldset class="fieldset-stacked manage__fieldset">
+        <legend class="fieldset-stacked__legend manage__fieldset-legend">{% trans "ID Create Date" %}</legend>
         <div class="fcontrol__inline-groups">
           <div class="fcontrol__group-inline{% if form.create_time_from.errors %}--invalid{% endif %}">
             <label for="{{ form.create_time_from.id_for_label }}" class="fcontrol__text-label-inline manage__text-label-inline">{{ form.create_time_from.label }}</label>
@@ -168,11 +168,11 @@ $(document).ready(function(){
             </div>
           </div>
         </div>
-      </div>
+      </fieldset>
     </div>
     <div class="col-md-6 manage__form-element-container">
-      <div class="fieldset-stacked manage__fieldset" role="group" aria-labelledby="id-updated-date">
-        <div id="id-updated-date" class="fieldset-stacked__legend manage__fieldset-legend">{% trans "ID Update Date" %}</div>
+      <fieldset class="fieldset-stacked manage__fieldset">
+        <legend class="fieldset-stacked__legend manage__fieldset-legend">{% trans "ID Update Date" %}</legend>
         <div class="fcontrol__inline-groups">
           <div class="fcontrol__group-inline{% if form.update_time_from.errors %}--invalid{% endif %}">
             <label for="{{ form.update_time_from.id_for_label }}" class="fcontrol__text-label-inline manage__text-label-inline">{{ form.create_time_from.label }}</label>
@@ -197,7 +197,7 @@ $(document).ready(function(){
             </div>
           </div>
         </div>
-      </div>
+      </fieldset>
     </div>
   </div>
   <div class="row">
@@ -208,26 +208,26 @@ $(document).ready(function(){
       </div>
     </div>{% comment %}No validation necessary{% endcomment %}
     <div class="col-md-6 manage__form-element-container--harvesting">
-      <div class="fieldset-stacked" role="group" aria-labelledby="Allows-Harvesting-Indexing">
-        <div id="Allows-Harvesting-Indexing" class="fieldset-stacked__legend manage__fieldset-legend">{{ form.harvesting.label }}</div>
+      <fieldset class="fieldset-stacked">
+        <legend class="fieldset-stacked__legend manage__fieldset-legend">{{ form.harvesting.label }}</legend>
       {% for radio in form.harvesting %}
         <label for="{{ radio.id_for_label }}" class="fcontrol__radio-label-inline">
           {{ radio.tag }} <span>{{ radio.choice_label }}</span>
         </label>
       {% endfor %}
-      </div>
+      </fieldset>
     </div>{% comment %}No validation necessary{% endcomment %}
   </div>
   <div class="row">
     <div class="col-md-6">
-      <div class="fieldset-stacked" role="group" aria-labelledby="Has-Metadata">
-        <div id="Has-Metadata" class="fieldset-stacked__legend manage__fieldset-legend">{{ form.hasMetadata.label }}</div>
+      <fieldset class="fieldset-stacked">
+        <legend class="fieldset-stacked__legend manage__fieldset-legend">{{ form.hasMetadata.label }}</legend>
       {% for radio in form.hasMetadata %}
         <label for="{{ radio.id_for_label }}" class="fcontrol__radio-label-inline">
           {{ radio.tag }} <span>{{ radio.choice_label }}</span>
         </label>
       {% endfor %}
-      </div>
+      </fieldset>
     </div>{% comment %}No validation necessary{% endcomment %}
     <div class="col-md-6">
       <button class="button__primary manage__reset-button search__action" type="submit">{% trans "Search Your Identifiers" %}</button>

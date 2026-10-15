@@ -6,7 +6,7 @@
 {% block heading %}{% content_heading _("Login") %}{% endblock %}
 {% block content %}
 <p><br/></p>
-<form method="post" action="/login" class="general__form" role="form">
+<form method="post" action="/login" class="general__form">
   <input type="hidden" name="next" value="{{ next }}"/>
   <div class="fcontrol__group-inline general__form-element-group">
     <label for="username" class="fcontrol__text-label-inline general__form-label">{% trans "Username" %}</label>

@@ -51,21 +51,24 @@ def menu_user(current_func, session):
 def menu_user_item(tup, _session, is_current):
     u = django.urls.reverse(tup[1])
     # TODO: Check if quotes must be escaped
-    acc = f'<a href="{u}" '
     if is_current:
         class_name = 'login-menu__link--selected'
+        current_attr = ' aria-current="page"'
     else:
-        class_name = "login-menu__link"
-    acc += f'class="{class_name}">{tup[0]}</a>'
-    return acc
+        class_name = 'login-menu__link'
+        current_attr = ''
+    return f'<a href="{u}" class="{class_name}"{current_attr}>{tup[0]}</a>'
 
 
 @register.simple_tag
 def learn_breadcrumb(view_title, parent_dir_title=None, parent_dir_link=None):
     home = _("Home")
     learn = _("Learn")
+    breadcrumb_label = _("Breadcrumb")
     codeblock = (
-        '<div class="general__form"><ul class="breadcrumb">'
+        '<div class="general__form"><nav aria-label="'
+        + str(breadcrumb_label)
+        + '"><ul class="breadcrumb">'
         + '<li><a href="/">'
         + str(home)
         + '</a></li>'
@@ -84,7 +87,7 @@ def learn_breadcrumb(view_title, parent_dir_title=None, parent_dir_link=None):
             + str(parent_dir_title_tr)
             + '</a></li>'
         )
-    codeblock += '<li class="active">' + str(view_title) + '</li></ul></div>'
+    codeblock += '<li class="active" aria-current="page">' + str(view_title) + '</li></ul></nav></div>'
     return codeblock
 
 
