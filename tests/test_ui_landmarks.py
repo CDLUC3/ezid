@@ -90,6 +90,13 @@ def test_authenticated_user_navigation_landmark():
     assert '<nav class="login-menu__container" aria-label="Account menu">' in html
     assert html.count('<main') == 1
 
+    # Active link in account menu indicates current page to screen readers
+    assert (
+        '<a href="/account/edit" class="login-menu__link--selected" aria-current="page">ACCOUNT SETTINGS</a>'
+        in html
+    )
+    assert 'class="login-menu__link" aria-current="page"' not in html
+
 
 def test_id_details_page_landmarks_and_sections():
     rf = RequestFactory()

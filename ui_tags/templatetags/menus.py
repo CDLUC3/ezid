@@ -51,13 +51,13 @@ def menu_user(current_func, session):
 def menu_user_item(tup, _session, is_current):
     u = django.urls.reverse(tup[1])
     # TODO: Check if quotes must be escaped
-    acc = f'<a href="{u}" '
     if is_current:
         class_name = 'login-menu__link--selected'
+        current_attr = ' aria-current="page"'
     else:
-        class_name = "login-menu__link"
-    acc += f'class="{class_name}">{tup[0]}</a>'
-    return acc
+        class_name = 'login-menu__link'
+        current_attr = ''
+    return f'<a href="{u}" class="{class_name}"{current_attr}>{tup[0]}</a>'
 
 
 @register.simple_tag
