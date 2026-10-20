@@ -6,7 +6,7 @@
 {% block heading %}{% content_heading _("Reset Password") %}{% endblock %}
 {% block content %}
 <p><br/></p>
-<form method="post" action="{% url "ui_account.pwreset" pwrr %}" class="general__form" role="form">
+<form method="post" action="{% url "ui_account.pwreset" pwrr %}" class="general__form">
   {{ form.non_field_errors }}
   <div class="fcontrol__group-inline general__form-element-group">
     <label for="account_username" class="fcontrol__text-label-inline general__form-label">{% trans "Username" %}</label>

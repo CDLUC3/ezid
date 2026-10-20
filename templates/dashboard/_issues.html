@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% if results_issues|length > 0 or results|length > 0 and s_type == 'issues' %} 
-  <form method="get" id="p_issues" role="form">
+  <form method="get" id="p_issues">
     <div class="pagination__input-group">
   {% if not ajax %}
     {% pager_display REQUEST p total_pages_issues ps "issues" %}

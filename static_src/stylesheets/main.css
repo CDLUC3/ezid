@@ -2379,7 +2379,8 @@ p.italic {
     -webkit-transform: translate3d(0, 0, 0);
     transform: translate3d(0, 0, 0); } }
 
-.api h1 {
+.api h1,
+.api h2 {
   width: 79%;
   margin-top: 18px;
   margin-bottom: 15px;
@@ -2388,7 +2389,8 @@ p.italic {
   letter-spacing: 0.026em;
   line-height: 1.3em; }
 
-.apidoc h1 {
+.apidoc h1,
+.apidoc h2 {
   color: #00778a;
   font-weight: bold;
   font-size: 1.4em;
@@ -2491,9 +2493,17 @@ h2.id-creation {
   color: #00778a;
   font-size: 1.3em; }
 
-.api h1 {
+.api h1,
+.api h2 {
   border-bottom: 1px dotted black;
   color: #00778a; }
+
+.api h3 {
+  color: #00778a;
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-top: 18px;
+  margin-bottom: 8px; }
 
 .api blockquote {
   display: block;

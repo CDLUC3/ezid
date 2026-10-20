@@ -60,24 +60,24 @@ var dartSassOptions = {
 
 function scss() {
   return src('dev/scss/*.scss', { sourcemaps: true })
-  .pipe(sass(dartSassOptions).on('error', sass.logError))
-  .pipe(postcss([autoprefixer({
-    overrideBrowserslist: ['last 2 versions']
-  }), assets({
-    loadPaths: ['fonts/', 'images/']
-  })]))
-  .pipe(dest('dev/css', { sourcemaps: 'sourcemaps' }))
-  .pipe(browserSync.stream());
+    .pipe(sass(dartSassOptions).on('error', sass.logError))
+    .pipe(postcss([autoprefixer({
+      overrideBrowserslist: ['last 2 versions']
+    }), assets({
+      loadPaths: ['fonts/', 'images/']
+    })]))
+    .pipe(dest('dev/css', { sourcemaps: 'sourcemaps' }))
+    .pipe(browserSync.stream());
 }
 
 function scss_legacy() {
   return src('dev/legacy-scss/*.scss', { sourcemaps: true })
-  .pipe(sass(dartSassOptions).on('error', sass.logError))
-  .pipe(postcss([autoprefixer({
-    overrideBrowserslist: ['last 2 versions']
-  })]))
-  .pipe(dest('dev/legacy-scss/css', { sourcemaps: 'sourcemaps' }))
-  .pipe(browserSync.stream());
+    .pipe(sass(dartSassOptions).on('error', sass.logError))
+    .pipe(postcss([autoprefixer({
+      overrideBrowserslist: ['last 2 versions']
+    })]))
+    .pipe(dest('dev/legacy-scss/css', { sourcemaps: 'sourcemaps' }))
+    .pipe(browserSync.stream());
 }
 
 // Watch scss, html, and js and reload browser if any changes:
@@ -114,19 +114,19 @@ function start(cb) {
 
 function assemble() {
   return src(['dev/**/*.html', '!dev/includes/*', 'dev/css/*.css'])
-  .pipe(gulpIf('*.js', uglify()))
-  .pipe(useref())
-  .pipe(lbInclude()) // parse <!--#include file="" --> statements
-  .pipe(dest('ui_library'))
+    .pipe(gulpIf('*.js', uglify()))
+    .pipe(useref())
+    .pipe(lbInclude()) // parse <!--#include file="" --> statements
+    .pipe(dest('ui_library'))
 }
 
 function minifyCss() {
   return src(['dev/css/*.css'])
-  .pipe(cleanCSS({debug: true, level: 2}, (details) => {
-    console.log(`${details.name}: ${details.stats.originalSize}`);
-    console.log(`${details.name}: ${details.stats.minifiedSize}`);
-  }))
-  .pipe(dest('ui_library'))
+    .pipe(cleanCSS({ debug: true, level: 2 }, (details) => {
+      console.log(`${details.name}: ${details.stats.originalSize}`);
+      console.log(`${details.name}: ${details.stats.minifiedSize}`);
+    }))
+    .pipe(dest('ui_library'))
 }
 
 // Compress images and copy from dev/images/ into dev/ui_library/images/:
@@ -170,16 +170,16 @@ function copyimages() {
       if (extension === '.png' || extension === '.jpg' || extension === '.jpeg') {
         sharp(file.contents)
           .rotate()
-          [extension === '.png' ? 'png' : 'jpeg'](extension === '.png'
-            ? {
-              compressionLevel: 9,
-              progressive: true
-            }
-            : {
-              mozjpeg: true,
-              quality: 82,
-              progressive: true
-            })
+        [extension === '.png' ? 'png' : 'jpeg'](extension === '.png'
+          ? {
+            compressionLevel: 9,
+            progressive: true
+          }
+          : {
+            mozjpeg: true,
+            quality: 82,
+            progressive: true
+          })
           .toBuffer()
           .then(function (buffer) {
             file.contents = buffer;
@@ -219,7 +219,7 @@ function copyJS() {
 
 function fonts() {
   return src('dev/fonts/**/*')
-  .pipe(dest('ui_library/fonts'))
+    .pipe(dest('ui_library/fonts'))
 }
 
 // Delete ui_library directory at start of build process:
@@ -232,20 +232,20 @@ function clean() {
 
 function scsslint() {
   return src(['dev/scss/*.scss', '!dev/scss/vendor/*.scss'])
-  .pipe(stylelint({
-    reporters: [
-      {formatter: 'string', console: true}
-    ]
-  }));
+    .pipe(stylelint({
+      reporters: [
+        { formatter: 'string', console: true }
+      ]
+    }));
 }
 
 function scsslint_legacy() {
   return src(['dev/legacy-scss/*.scss', '!dev/legacy-scss/vendor/*.scss'])
-  .pipe(stylelint({
-    reporters: [
-      {formatter: 'string', console: true}
-    ]
-  }));
+    .pipe(stylelint({
+      reporters: [
+        { formatter: 'string', console: true }
+      ]
+    }));
 }
 
 
@@ -254,23 +254,23 @@ function scsslint_legacy() {
 
 function jslint() {
   return src(['dev/js/**/*.js', '!dev/js/vendor/*.js'])
-  .pipe(jshint({ esversion: 6 }))
-  .pipe(jshint.reporter('default'))
+    .pipe(jshint({ esversion: 6 }))
+    .pipe(jshint.reporter('default'))
 }
 
 // Upload ui_library build to GitHub Pages:
 
 function githubpages() {
   return src('./ui_library/**/*')
-  .pipe(ghPages())
+    .pipe(ghPages())
 }
 
 // Run "gulp modernizr" to build a custom modernizr file based off of classes found in CSS:
 
 function runmodernizr() {
   return src('dev/css/main2.css') // where modernizr will look for classes
-  .pipe(modernizr({
-    options: ['setClasses'],
-    dest: 'dev/js/modernizr-custombuild.js'
-  }))
+    .pipe(modernizr({
+      options: ['setClasses'],
+      dest: 'dev/js/modernizr-custombuild.js'
+    }))
 }

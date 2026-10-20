@@ -60,6 +60,8 @@ packages = [
     { include = "ezidapp" },
     { include = "settings" },
     { include = "impl" },
+    { include = "ui_tags" },
+    { include = "tools" },
 ]
 
 [project.scripts]

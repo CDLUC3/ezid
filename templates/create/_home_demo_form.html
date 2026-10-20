@@ -1,6 +1,6 @@
 {% load i18n %}
 {% load layout_extras %}
-<form id="create_form" action="{% url "ui_home.index" %}" method="post" class="form-horizontal" role="form">
+<form id="create_form" action="{% url "ui_home.index" %}" method="post" class="form-horizontal">
   <input type="hidden" name="current_profile" id="current_profile" value="{{current_profile.name}}"/>
   <input type="hidden" name="shoulder" id="form-shoulder" value="{{ shoulder }}"/>
   {% csrf_token %}

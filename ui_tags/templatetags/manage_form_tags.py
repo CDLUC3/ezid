@@ -128,7 +128,7 @@ def column_head(request, field, fields_mapped, order_by, sort, primary_page):
     form_and_hidden = (
         "<form method='get' action='"
         + django.urls.reverse(primary_page)
-        + "' role='form'>"
+        + "'>"
         + rewrite_hidden(c)
     )
     r = "<th>" + django.utils.html.escape(fields_mapped[field][1]) + form_and_hidden
