@@ -94,23 +94,23 @@ Selector pattern using above mixin:
 }
 
 .button__plus {
-  background: url("../images/icon_plus-sign.svg") center/12px no-repeat, -webkit-gradient(linear, left top, left bottom, from(rgb(245.2346613546, 245.3884462151, 245.4653386454)), to(rgb(227.171314741, 227.609561753, 227.828685259)));
-  background: url("../images/icon_plus-sign.svg") center/12px no-repeat, linear-gradient(to bottom, rgb(245.2346613546, 245.3884462151, 245.4653386454), rgb(227.171314741, 227.609561753, 227.828685259));
+  background: url("../images/icon_plus-sign.svg") center/12px no-repeat, -webkit-gradient(linear, left top, left bottom, from(rgb(96.1704554332%, 96.2307632216%, 96.2609171159%)), to(rgb(89.0867900945%, 89.2586516678%, 89.3445824545%)));
+  background: url("../images/icon_plus-sign.svg") center/12px no-repeat, linear-gradient(to bottom, rgb(96.1704554332%, 96.2307632216%, 96.2609171159%), rgb(89.0867900945%, 89.2586516678%, 89.3445824545%));
 }
 
 .button__minus {
-  background: url("../images/icon_minus-sign.svg") center/12px no-repeat, -webkit-gradient(linear, left top, left bottom, from(rgb(245.2346613546, 245.3884462151, 245.4653386454)), to(rgb(227.171314741, 227.609561753, 227.828685259)));
-  background: url("../images/icon_minus-sign.svg") center/12px no-repeat, linear-gradient(to bottom, rgb(245.2346613546, 245.3884462151, 245.4653386454), rgb(227.171314741, 227.609561753, 227.828685259));
+  background: url("../images/icon_minus-sign.svg") center/12px no-repeat, -webkit-gradient(linear, left top, left bottom, from(rgb(96.1704554332%, 96.2307632216%, 96.2609171159%)), to(rgb(89.0867900945%, 89.2586516678%, 89.3445824545%)));
+  background: url("../images/icon_minus-sign.svg") center/12px no-repeat, linear-gradient(to bottom, rgb(96.1704554332%, 96.2307632216%, 96.2609171159%), rgb(89.0867900945%, 89.2586516678%, 89.3445824545%));
 }
 
 .button__plus-small {
-  background: url("../images/icon_plus-sign.svg") center/7px no-repeat, -webkit-gradient(linear, left top, left bottom, from(rgb(245.2346613546, 245.3884462151, 245.4653386454)), to(rgb(227.171314741, 227.609561753, 227.828685259)));
-  background: url("../images/icon_plus-sign.svg") center/7px no-repeat, linear-gradient(to bottom, rgb(245.2346613546, 245.3884462151, 245.4653386454), rgb(227.171314741, 227.609561753, 227.828685259));
+  background: url("../images/icon_plus-sign.svg") center/7px no-repeat, -webkit-gradient(linear, left top, left bottom, from(rgb(96.1704554332%, 96.2307632216%, 96.2609171159%)), to(rgb(89.0867900945%, 89.2586516678%, 89.3445824545%)));
+  background: url("../images/icon_plus-sign.svg") center/7px no-repeat, linear-gradient(to bottom, rgb(96.1704554332%, 96.2307632216%, 96.2609171159%), rgb(89.0867900945%, 89.2586516678%, 89.3445824545%));
 }
 
 .button__minus-small {
-  background: url("../images/icon_minus-sign.svg") center/7px no-repeat, -webkit-gradient(linear, left top, left bottom, from(rgb(245.2346613546, 245.3884462151, 245.4653386454)), to(rgb(227.171314741, 227.609561753, 227.828685259)));
-  background: url("../images/icon_minus-sign.svg") center/7px no-repeat, linear-gradient(to bottom, rgb(245.2346613546, 245.3884462151, 245.4653386454), rgb(227.171314741, 227.609561753, 227.828685259));
+  background: url("../images/icon_minus-sign.svg") center/7px no-repeat, -webkit-gradient(linear, left top, left bottom, from(rgb(96.1704554332%, 96.2307632216%, 96.2609171159%)), to(rgb(89.0867900945%, 89.2586516678%, 89.3445824545%)));
+  background: url("../images/icon_minus-sign.svg") center/7px no-repeat, linear-gradient(to bottom, rgb(96.1704554332%, 96.2307632216%, 96.2609171159%), rgb(89.0867900945%, 89.2586516678%, 89.3445824545%));
 }
 
 .button__icon-help {
@@ -136,8 +136,8 @@ Selector pattern using above mixin:
 .button__cancel {
   height: 32px;
   padding: 0 1.3em;
-  background: -webkit-gradient(linear, left top, left bottom, from(rgb(245.2346613546, 245.3884462151, 245.4653386454)), to(rgb(227.171314741, 227.609561753, 227.828685259)));
-  background: linear-gradient(to bottom, rgb(245.2346613546, 245.3884462151, 245.4653386454), rgb(227.171314741, 227.609561753, 227.828685259));
+  background: -webkit-gradient(linear, left top, left bottom, from(rgb(96.1704554332%, 96.2307632216%, 96.2609171159%)), to(rgb(89.0867900945%, 89.2586516678%, 89.3445824545%)));
+  background: linear-gradient(to bottom, rgb(96.1704554332%, 96.2307632216%, 96.2609171159%), rgb(89.0867900945%, 89.2586516678%, 89.3445824545%));
   text-transform: uppercase;
 }
 
@@ -711,8 +711,8 @@ button.close:focus-visible {
   padding: 0 35px 0 0.5em;
   border: 1px solid rgb(190, 182, 175);
   border-radius: 3px;
-  background: url("../images/icon_down-arrow2.svg") right 10px center/12px no-repeat, -webkit-gradient(linear, left top, left bottom, from(rgb(245.2346613546, 245.3884462151, 245.4653386454)), to(rgb(227.171314741, 227.609561753, 227.828685259)));
-  background: url("../images/icon_down-arrow2.svg") right 10px center/12px no-repeat, linear-gradient(to bottom, rgb(245.2346613546, 245.3884462151, 245.4653386454), rgb(227.171314741, 227.609561753, 227.828685259));
+  background: url("../images/icon_down-arrow2.svg") right 10px center/12px no-repeat, -webkit-gradient(linear, left top, left bottom, from(rgb(96.1704554332%, 96.2307632216%, 96.2609171159%)), to(rgb(89.0867900945%, 89.2586516678%, 89.3445824545%)));
+  background: url("../images/icon_down-arrow2.svg") right 10px center/12px no-repeat, linear-gradient(to bottom, rgb(96.1704554332%, 96.2307632216%, 96.2609171159%), rgb(89.0867900945%, 89.2586516678%, 89.3445824545%));
   -webkit-appearance: none;
      -moz-appearance: none;
           appearance: none;
@@ -810,7 +810,7 @@ button.close:focus-visible {
 .fcontrol__help {
   width: 90%;
   padding: 0.9em 1.2em 0;
-  color: rgb(112.2, 112.2, 112.2);
+  color: rgb(44%, 44%, 44%);
   font-weight: normal;
 }
 
@@ -929,19 +929,19 @@ button.close:focus-visible {
 }
 
 ::-webkit-input-placeholder {
-  color: rgb(112.2, 112.2, 112.2);
+  color: rgb(44%, 44%, 44%);
 }
 
 :-moz-placeholder { /* Firefox 18- */
-  color: rgb(112.2, 112.2, 112.2);
+  color: rgb(44%, 44%, 44%);
 }
 
 ::-moz-placeholder { /* Firefox 19+ */
-  color: rgb(112.2, 112.2, 112.2);
+  color: rgb(44%, 44%, 44%);
 }
 
 :-ms-input-placeholder {
-  color: rgb(112.2, 112.2, 112.2);
+  color: rgb(44%, 44%, 44%);
 }
 
 .heading__primary-container {
@@ -1165,8 +1165,8 @@ button.close:focus-visible {
 
 .accordion__section[open] .accordion__title {
   border-bottom: 1px solid rgb(190, 182, 175);
-  background: url("../images/icon_minus-sign.svg") left 15px center/12px no-repeat, -webkit-gradient(linear, left top, left bottom, from(rgb(245.2346613546, 245.3884462151, 245.4653386454)), to(rgb(227.171314741, 227.609561753, 227.828685259)));
-  background: url("../images/icon_minus-sign.svg") left 15px center/12px no-repeat, linear-gradient(to bottom, rgb(245.2346613546, 245.3884462151, 245.4653386454), rgb(227.171314741, 227.609561753, 227.828685259));
+  background: url("../images/icon_minus-sign.svg") left 15px center/12px no-repeat, -webkit-gradient(linear, left top, left bottom, from(rgb(96.1704554332%, 96.2307632216%, 96.2609171159%)), to(rgb(89.0867900945%, 89.2586516678%, 89.3445824545%)));
+  background: url("../images/icon_minus-sign.svg") left 15px center/12px no-repeat, linear-gradient(to bottom, rgb(96.1704554332%, 96.2307632216%, 96.2609171159%), rgb(89.0867900945%, 89.2586516678%, 89.3445824545%));
 }
 
 .learn-button__title, .accordion__title {
@@ -1177,8 +1177,8 @@ button.close:focus-visible {
 }
 
 .accordion__title {
-  background: url("../images/icon_plus-sign.svg") left 15px center/12px no-repeat, -webkit-gradient(linear, left top, left bottom, from(rgb(245.2346613546, 245.3884462151, 245.4653386454)), to(rgb(227.171314741, 227.609561753, 227.828685259)));
-  background: url("../images/icon_plus-sign.svg") left 15px center/12px no-repeat, linear-gradient(to bottom, rgb(245.2346613546, 245.3884462151, 245.4653386454), rgb(227.171314741, 227.609561753, 227.828685259));
+  background: url("../images/icon_plus-sign.svg") left 15px center/12px no-repeat, -webkit-gradient(linear, left top, left bottom, from(rgb(96.1704554332%, 96.2307632216%, 96.2609171159%)), to(rgb(89.0867900945%, 89.2586516678%, 89.3445824545%)));
+  background: url("../images/icon_plus-sign.svg") left 15px center/12px no-repeat, linear-gradient(to bottom, rgb(96.1704554332%, 96.2307632216%, 96.2609171159%), rgb(89.0867900945%, 89.2586516678%, 89.3445824545%));
 }
 
 .accordion__title-heading {
@@ -1187,8 +1187,8 @@ button.close:focus-visible {
 }
 
 .learn-button__title {
-  background: -webkit-gradient(linear, left top, left bottom, from(rgb(245.2346613546, 245.3884462151, 245.4653386454)), to(rgb(227.171314741, 227.609561753, 227.828685259)));
-  background: linear-gradient(to bottom, rgb(245.2346613546, 245.3884462151, 245.4653386454), rgb(227.171314741, 227.609561753, 227.828685259));
+  background: -webkit-gradient(linear, left top, left bottom, from(rgb(96.1704554332%, 96.2307632216%, 96.2609171159%)), to(rgb(89.0867900945%, 89.2586516678%, 89.3445824545%)));
+  background: linear-gradient(to bottom, rgb(96.1704554332%, 96.2307632216%, 96.2609171159%), rgb(89.0867900945%, 89.2586516678%, 89.3445824545%));
 }
 
 .learn-button__title-heading {
@@ -2082,8 +2082,8 @@ button.close:focus-visible {
   padding: 0 20px 0 0.2em;
   border: 1px solid rgb(190, 182, 175);
   border-radius: 3px;
-  background: url("../images/icon_down-arrow2.svg") right 6px center/10px no-repeat, -webkit-gradient(linear, left top, left bottom, from(rgb(245.2346613546, 245.3884462151, 245.4653386454)), to(rgb(227.171314741, 227.609561753, 227.828685259)));
-  background: url("../images/icon_down-arrow2.svg") right 6px center/10px no-repeat, linear-gradient(to bottom, rgb(245.2346613546, 245.3884462151, 245.4653386454), rgb(227.171314741, 227.609561753, 227.828685259));
+  background: url("../images/icon_down-arrow2.svg") right 6px center/10px no-repeat, -webkit-gradient(linear, left top, left bottom, from(rgb(96.1704554332%, 96.2307632216%, 96.2609171159%)), to(rgb(89.0867900945%, 89.2586516678%, 89.3445824545%)));
+  background: url("../images/icon_down-arrow2.svg") right 6px center/10px no-repeat, linear-gradient(to bottom, rgb(96.1704554332%, 96.2307632216%, 96.2609171159%), rgb(89.0867900945%, 89.2586516678%, 89.3445824545%));
   -webkit-appearance: none;
      -moz-appearance: none;
           appearance: none;
@@ -2131,8 +2131,8 @@ button.close:focus-visible {
 .showhide2__summary::before, .showhide__summary::before {
   border: 1px solid rgb(190, 182, 175);
   border-radius: 3px;
-  background: -webkit-gradient(linear, left top, left bottom, from(rgb(245.2346613546, 245.3884462151, 245.4653386454)), to(rgb(227.171314741, 227.609561753, 227.828685259)));
-  background: linear-gradient(to bottom, rgb(245.2346613546, 245.3884462151, 245.4653386454), rgb(227.171314741, 227.609561753, 227.828685259));
+  background: -webkit-gradient(linear, left top, left bottom, from(rgb(96.1704554332%, 96.2307632216%, 96.2609171159%)), to(rgb(89.0867900945%, 89.2586516678%, 89.3445824545%)));
+  background: linear-gradient(to bottom, rgb(96.1704554332%, 96.2307632216%, 96.2609171159%), rgb(89.0867900945%, 89.2586516678%, 89.3445824545%));
   content: "";
 }
 
