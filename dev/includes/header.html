@@ -21,26 +21,34 @@
     </button>
 
     <nav id="js-header__nav" class="header__nav--selected" aria-label="Main">
-      <a class="header__nav-item-search" href="/search">Search</a>
-      <details aria-expanded="false">
-        <summary class="header__nav-item-learn" role="button">Learn</summary>
-        <nav class="header__subnav-panel" aria-label="Learn">
-          <ul class="header__subnav-list">
-            <li><a class="header__nav-subitem" href="/learn#01">What Is EZID?</a></li>
-            <li><a class="header__nav-subitem" href="/learn#02">Current Users</a></li>
-            <li><a class="header__nav-subitem" href="/learn#04">Documentation</a></li>
-            <li><a class="header__nav-subitem" href="/learn#05">Accessibility</a></li>
-            <li><a class="header__nav-subitem" href="/learn/doi_services_faq">FAQ</a></li>
-            <li><a class="header__nav-subitem" href="/doc/apidoc.html">API Guide</a></li>
-            <li><a class="header__nav-subitem" href="/demo">EZID Demo</a></li>
-          </ul>
-        </nav>
-      </details>
-      <a class="header__nav-item-contact" href="/contact">Contact</a>
-      <div class="header__loginout">
-        <button id="js-header__loginout-button" class="header__loginout-link">Login</button>
-        <!--#include file="login-modal.html" -->
-      </div>
+      <ul class="header__nav-list">
+        <li class="header__nav-item">
+          <a class="header__nav-item-search" href="/search">Search</a>
+        </li>
+        <li class="header__nav-item">
+          <details aria-expanded="false">
+            <summary class="header__nav-item-learn" role="button">Learn</summary>
+            <nav class="header__subnav-panel" aria-label="Learn">
+              <ul class="header__subnav-list">
+                <li><a class="header__nav-subitem" href="/learn#01">What Is EZID?</a></li>
+                <li><a class="header__nav-subitem" href="/learn#02">Current Users</a></li>
+                <li><a class="header__nav-subitem" href="/learn#04">Documentation</a></li>
+                <li><a class="header__nav-subitem" href="/learn#05">Accessibility</a></li>
+                <li><a class="header__nav-subitem" href="/learn/doi_services_faq">FAQ</a></li>
+                <li><a class="header__nav-subitem" href="/doc/apidoc.html">API Guide</a></li>
+                <li><a class="header__nav-subitem" href="/demo">EZID Demo</a></li>
+              </ul>
+            </nav>
+          </details>
+        </li>
+        <li class="header__nav-item">
+          <a class="header__nav-item-contact" href="/contact">Contact</a>
+        </li>
+        <li class="header__nav-item header__loginout">
+          <button id="js-header__loginout-button" class="header__loginout-link">Login</button>
+          <!--#include file="login-modal.html" -->
+        </li>
+      </ul>
     </nav>
 
   </div>

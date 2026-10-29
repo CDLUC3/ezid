@@ -1577,6 +1577,27 @@ button.close:focus-visible {
   }
 }
 
+.header__nav-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 768px) {
+  .header__nav-list {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+    width: 100%;
+  }
+}
+
+.header__nav-item {
+  display: block;
+}
+
 .header__nav-item-contact, .header__nav-item-learn, .header__nav-item-search {
   display: block;
   padding: 15px 0 15px 45px;
@@ -1833,6 +1854,9 @@ button.close:focus-visible {
   -webkit-box-direction: normal;
       -ms-flex-flow: column nowrap;
           flex-flow: column nowrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 @media (min-width: 480px) {
   .login-menu {
@@ -1845,6 +1869,33 @@ button.close:focus-visible {
     max-width: 1235px;
     margin: 0 auto 30px;
     padding: 15px;
+  }
+}
+
+.login-menu__item {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-flex: 1;
+      -ms-flex: 1 0 auto;
+          flex: 1 0 auto;
+}
+@media (min-width: 480px) {
+  .login-menu__item {
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+  }
+  .login-menu__item:not(:first-child) {
+    border-left: 1px solid rgb(0, 0, 0);
+  }
+}
+.login-menu__item:not(:first-child) {
+  border-top: 1px solid rgb(0, 0, 0);
+}
+@media (min-width: 480px) {
+  .login-menu__item:not(:first-child) {
+    border-top: none;
   }
 }
 
@@ -1870,17 +1921,6 @@ button.close:focus-visible {
         -ms-flex-pack: center;
             justify-content: center;
     padding: 5px 0;
-  }
-  .login-menu__link--selected:not(:first-child), .login-menu__link:not(:first-child) {
-    border-left: 1px solid rgb(0, 0, 0);
-  }
-}
-.login-menu__link--selected:not(:first-child), .login-menu__link:not(:first-child) {
-  border-top: 1px solid rgb(0, 0, 0);
-}
-@media (min-width: 480px) {
-  .login-menu__link--selected:not(:first-child), .login-menu__link:not(:first-child) {
-    border-top: none;
   }
 }
 .login-menu__link--selected:hover, .login-menu__link:hover, .login-menu__link--selected:focus, .login-menu__link:focus {
