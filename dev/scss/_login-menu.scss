@@ -7,6 +7,9 @@
 .login-menu {
 	display: flex;
 	flex-flow: column nowrap;
+	margin: 0;
+	padding: 0;
+	list-style: none;
 
 	@include bp(screen1) {
 		flex-flow: row nowrap;
@@ -14,6 +17,30 @@
 		max-width: 1235px;
 		margin: 0 auto 30px;
 		padding: 15px;
+	}
+
+}
+
+.login-menu__item {
+	display: flex;
+	flex: 1 0 auto;
+
+	@include bp(screen1) {
+		justify-content: center;
+
+		&:not(:first-child) {
+			border-left: 1px solid $design-black-color;
+		}
+
+	}
+
+	&:not(:first-child) {
+		border-top: 1px solid $design-black-color;
+
+		@include bp(screen1) {
+			border-top: none;
+		}
+
 	}
 
 }
@@ -33,20 +60,6 @@
 		position: relative;
 		justify-content: center;
 		padding: 5px 0;
-
-		&:not(:first-child) {
-			border-left: 1px solid $design-black-color;
-		}
-
-	}
-
-	&:not(:first-child) {
-		border-top: 1px solid $design-black-color;
-
-		@include bp(screen1) {
-			border-top: none;
-		}
-
 	}
 
 	&:hover,
