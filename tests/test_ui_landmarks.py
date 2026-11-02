@@ -31,6 +31,7 @@ def test_public_pages_landmarks():
         # Audit row 19: no native nav repeats role="navigation"
         assert '<nav role="navigation"' not in html, f"Native nav has redundant role on {path}"
         assert '<nav id="js-header__nav"' in html, f"Missing header nav on {path}"
+        assert '<ul class="header__nav-list">' in html, f"Main navigation links should be in a list on {path}"
 
         # Mobile menu control has aria-controls and aria-expanded
         assert (
@@ -88,6 +89,8 @@ def test_authenticated_user_navigation_landmark():
 
     # Audit row 37: Logged-in account menu is a named navigation region
     assert '<nav class="login-menu__container" aria-label="Account menu">' in html
+    assert '<ul class="login-menu">' in html
+    assert '<li class="login-menu__item">' in html
     assert html.count('<main') == 1
 
     # Active link in account menu indicates current page to screen readers

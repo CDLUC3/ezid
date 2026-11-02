@@ -57,7 +57,7 @@ def menu_user_item(tup, _session, is_current):
     else:
         class_name = 'login-menu__link'
         current_attr = ''
-    return f'<a href="{u}" class="{class_name}"{current_attr}>{tup[0]}</a>'
+    return f'<li class="login-menu__item"><a href="{u}" class="{class_name}"{current_attr}>{tup[0]}</a></li>'
 
 
 @register.simple_tag
