@@ -132,6 +132,23 @@
 
 }
 
+.header__nav-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+
+	@include bp(screen2) {
+		display: flex;
+		justify-content: space-between;
+		width: 100%;
+	}
+
+}
+
+.header__nav-item {
+	display: block;
+}
+
 // ***** Navigation Elements ***** //
 
 %header__nav-items {

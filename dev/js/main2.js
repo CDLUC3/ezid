@@ -72,12 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Toggle aria-expanded when menu is toggled
-  summaryElement.addEventListener('click', () => {
-    const isOpen = detailsElement.hasAttribute('open');
-    detailsElement.setAttribute('aria-expanded', String(!isOpen));
-  });
-
   // Close menu when tabbing out
   detailsElement.addEventListener('keydown', (event) => {
     if (event.key === 'Tab') {
@@ -110,7 +104,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Helper function to close the menu
   function closeMenu() {
     detailsElement.removeAttribute('open');
-    detailsElement.setAttribute('aria-expanded', 'false');
   }
 });
 
