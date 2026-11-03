@@ -149,6 +149,7 @@ RELATION_TYPES = (
     ("References", _("References")),
     ("Requires", _("Requires")),
     ("Reviews", _("Reviews")),
+    ("Other", _("Other")),
 )
 
 TITLE_TYPES = (
