@@ -23,6 +23,8 @@
   {% include "create/_datacite_inlinetext.html" with field=form.relatedIdentifier %}
   {% include "create/_datacite_inlineselect.html" with field=form.relatedIdentifierType %}
   {% include "create/_datacite_inlineselect.html" with field=form.relationType %}
+  {% include "create/_datacite_inlinetext.html" with field=form.relationTypeInformation %}
+
   <details id="accordion__section-1" class="accordion__section create__accordion-section" {{accordions_open}}>
     <summary class="accordion__title create__accordion-title">{% trans "More Fields" %}</summary>
     {% include "create/_datacite_inlinetext.html" with field=form.relatedMetadataScheme %}

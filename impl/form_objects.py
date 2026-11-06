@@ -981,6 +981,9 @@ class RelIdForm(django.forms.Form):
     relationType = django.forms.ChoiceField(
         required=False, label=_("Relation Type"), choices=RELATION_TYPES
     )
+    relationTypeInformation = django.forms.CharField(
+            required=False, label=_("Relation Type Information")
+    )
     relatedMetadataScheme = django.forms.CharField(
         required=False, label=_("Related Metadata Scheme")
     )
@@ -992,12 +995,13 @@ class RelIdForm(django.forms.Form):
         ri = cleaned_data.get("relatedIdentifier")
         ri_type = cleaned_data.get("relatedIdentifierType")
         r_type = cleaned_data.get("relationType")
+        r_type_info = cleaned_data.get("relationTypeInformation")
         rm_s = cleaned_data.get("relatedMetadataScheme")
         s_uri = cleaned_data.get("schemeURI")
         s_type = cleaned_data.get("schemeType")
         err = {}
         """ Use of RelId element requires relatedIdentifier and relatedIdentifierType be populated """
-        if ri or ri_type or r_type or rm_s or s_uri or s_type:
+        if ri or ri_type or r_type or r_type_info or rm_s or s_uri or s_type:
             if not ri_type:
                 err['relatedIdentifierType'] = _(
                     "Related Identifier Type is required if this property is used."
@@ -1138,6 +1142,9 @@ class RelatedItemForm(django.forms.Form):
         )
         self.fields["relationType"] = django.forms.ChoiceField(
             required=False, label=_("Relation Type"), choices=RELATION_TYPES
+        )
+        self.fields["relationTypeInformation"] = django.forms.CharField(
+            required=False, label=_("Relation Type Information")
         )
         self.fields["relatedItemIdentifier"] = django.forms.CharField(
             required=False, label=_("Item Identifier")

@@ -23,6 +23,7 @@
 
   {% include "create/_datacite_inlineselect.html" with field=form.relatedItemType %}
   {% include "create/_datacite_inlineselect.html" with field=form.relationType %}
+  {% include "create/_datacite_inlinetext.html" with field=form.relationTypeInformation %}
 
   {% include "create/_datacite_inlineselect.html" with field=form|get_field:"relatedItemIdentifier-relatedItemIdentifierType" %}
   {% include "create/_datacite_inlinetext.html" with field=form.relatedItemIdentifier %}
