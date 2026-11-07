@@ -51,5 +51,41 @@ def test_regex_geopoint(string, expected):
         assert match.group() == expected
 
 
+@pytest.mark.parametrize("resource_type", ["Poster", "Presentation"])
+def test_datacite_47_resource_types(resource_type):
+    form = form_objects.ResourceTypeForm(
+        {"resourceType-resourceTypeGeneral": resource_type}
+    )
+
+    assert form.is_valid(), form.errors
+
+
+@pytest.mark.parametrize("identifier_type", ["RAiD", "SWHID"])
+def test_datacite_47_related_identifier_types(identifier_type):
+    form = form_objects.RelIdForm(
+        {
+            "relatedIdentifier": "https://example.org/related",
+            "relatedIdentifierType": identifier_type,
+            "relationType": "Cites",
+            "relationTypeInformation": "Additional relationship detail",
+        }
+    )
+
+    assert form.is_valid(), form.errors
+    assert form.cleaned_data["relationTypeInformation"] == (
+        "Additional relationship detail"
+    )
+
+
+def test_related_identifier_relation_type_information_requires_relationship_fields():
+    form = form_objects.RelIdForm(
+        {"relationTypeInformation": "Additional relationship detail"}
+    )
+
+    assert not form.is_valid()
+    assert "relatedIdentifierType" in form.errors
+    assert "relationType" in form.errors
+
+
 
 

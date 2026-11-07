@@ -12,6 +12,7 @@ from impl.form_objects import RelatedItemForm
         { 
             'relatedItemType': 'Book',
             'relationType': 'Cites',
+            'relationTypeInformation': 'Additional relationship detail',
             'titles-title-0-title': 'Test title',
         },
         True,
@@ -233,3 +234,7 @@ def test_relatedItem_form(data, expected_valid, expected_error_keys):
 
     if expected_valid:
         assert form.errors == {}
+        if 'relationTypeInformation' in data:
+            assert form.cleaned_data['relationTypeInformation'] == data[
+                'relationTypeInformation'
+            ]

@@ -450,7 +450,7 @@ mockxml_datacite = """
         <alternateIdentifier alternateIdentifierType="URL">https://example.com/567</alternateIdentifier>
     </alternateIdentifiers>
     <relatedIdentifiers>
-        <relatedIdentifier relatedIdentifierType="URL" relationType="HasMetadata" relatedMetadataScheme="DDI-L" schemeURI="http://www.ddialliance.org/Specification/DDI-Lifecycle/3.1/XMLSchema/instance.xsd" schemeType="XSD">https://example.com/</relatedIdentifier>
+        <relatedIdentifier relatedIdentifierType="URL" relationType="HasMetadata" relationTypeInformation="A metadata relationship" relatedMetadataScheme="DDI-L" schemeURI="http://www.ddialliance.org/Specification/DDI-Lifecycle/3.1/XMLSchema/instance.xsd" schemeType="XSD">https://example.com/</relatedIdentifier>
         <relatedIdentifier relatedIdentifierType="DOI" relationType="IsCitedBy">10.21384/bar</relatedIdentifier>
     </relatedIdentifiers>
     <sizes>
@@ -497,7 +497,7 @@ mockxml_datacite = """
         </fundingReference>
     </fundingReferences>
     <relatedItems>
-        <relatedItem relatedItemType="Book" relationType="Cites">
+        <relatedItem relatedItemType="Book" relationType="Cites" relationTypeInformation="A citation relationship">
             <relatedItemIdentifier relatedItemIdentifierType="ARK">ark:/99999/fk12345678</relatedItemIdentifier>
             <creators>
                 <creator>
@@ -631,6 +631,7 @@ relatedIdentifiers = {
     'relatedIdentifiers-relatedIdentifier-0-relatedIdentifierType': 'URL',
     'relatedIdentifiers-relatedIdentifier-0-relatedMetadataScheme': 'DDI-L',
     'relatedIdentifiers-relatedIdentifier-0-relationType': 'HasMetadata',
+    'relatedIdentifiers-relatedIdentifier-0-relationTypeInformation': 'A metadata relationship',
     'relatedIdentifiers-relatedIdentifier-0-schemeType': 'XSD',
     'relatedIdentifiers-relatedIdentifier-0-schemeURI': 'http://www.ddialliance.org/Specification/DDI-Lifecycle/3.1/XMLSchema/instance.xsd',
     'relatedIdentifiers-relatedIdentifier-1-relatedIdentifier': '10.21384/bar',
@@ -682,6 +683,7 @@ fundingReferences = {
 relatedItems = {
     'relatedItems-relatedItem-0-relatedItemType': 'Book',
     'relatedItems-relatedItem-0-relationType': 'Cites',
+    'relatedItems-relatedItem-0-relationTypeInformation': 'A citation relationship',
     'relatedItems-relatedItem-0-relatedItemIdentifier-relatedItemIdentifierType': 'ARK',
     'relatedItems-relatedItem-0-relatedItemIdentifier': 'ark:/99999/fk12345678',
     'relatedItems-relatedItem-0-creators-creator-0-creatorName': 'related item creator name',
