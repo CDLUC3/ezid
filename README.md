@@ -108,6 +108,13 @@ After install we can use `poetry check` to validate the installed dependencies a
    All set!
    ```
 
+Installing ezid-info-pages
+--------------------------
+
+Informational pages ("About", FAQs, documentation) originate from a separate repository: [ezid-info-pages](https://github.com/CDLUC3/ezid-info-pages).
+
+Clone the `ezid-info-pages` repo to the `SITE/PROJECT/templates/info` folder in the EZID site's file system.
+
 
 Keeping dependencies up-to-date with Poetry
 -------------------------------------------
@@ -260,12 +267,17 @@ $ export DJANGO_SETTINGS_MODULE=settings.tests
 $ pytest  --ds=settings.tests
 ```
 
-## Setup the test database
+## Prepare the test environment
 
-A script `prepare_test_db.sh` was created to automate the test database setup process. The script is in the home directory of the ezid project. The script does not require any parameters. Provide the root user password for your local mysql database when prompted.
+A script `prepare_test_env.sh` was created to prepare test environment including:
+- Clone the `ezid-info-pages` repo
+- Prepare the test database
+- Collect static files
+
+The script is in the home directory of the ezid project. The script does not require any parameters. Provide the root user password for your local mysql database when prompted.
 
 ```
-./prepare_test_db.sh
+./prepare_test_env.sh
 Enter password:
 ``` 
 
