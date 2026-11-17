@@ -1,3 +1,8 @@
+echo "Preparing test environment..."
+echo "Creating logs directory..."
+LOG_DIR="../logs"
+mkdir -p "$LOG_DIR"
+
 # This environment variable is used to be sure the correct database (the test one) is used inside this script.
 # This will not interfere with external settings for it because it is not exported from this script.
 DJANGO_SETTINGS_MODULE=settings.tests
